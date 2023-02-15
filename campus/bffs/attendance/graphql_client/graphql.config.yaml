@@ -1,0 +1,4 @@
+schema: "./schema.graphql"
+documents:
+  - "./avinya_types.graphql"
+  - "./activity.graphql"

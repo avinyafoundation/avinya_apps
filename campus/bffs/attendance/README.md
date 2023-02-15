@@ -1,3 +1,1 @@
-# Attendance BFF 
-
-
+# campus-config-bff
