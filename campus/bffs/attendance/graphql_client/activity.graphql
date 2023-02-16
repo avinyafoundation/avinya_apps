@@ -1,0 +1,61 @@
+query getActivity($name: String!) {
+    activity(name:$name) {
+        id
+        name
+        description
+        notes
+        activity_instances {
+            id
+            name
+            description
+            notes
+            start_time
+            end_time
+            daily_sequence
+            weekly_sequence
+            monthly_sequence
+        }
+        child_activities {
+            id
+            name
+            description
+            notes
+            activity_instances {
+                id
+                name
+                description
+                notes
+                start_time
+                end_time
+                daily_sequence
+                weekly_sequence
+                monthly_sequence
+            }
+            activity_sequence_plan {
+                id
+                sequence_number
+                timeslot_number
+                organization {
+                    id
+                    name {
+                        name_en
+                    }
+                }
+                person {
+                    preferred_name
+                }
+            }
+        }
+    }
+}
+
+ mutation addActivityAttendance($attendance: ActivityParticipantAttendance!)
+{
+    add_attendance(attendance:$attendance){
+        id
+        activity_instance_id
+        sign_in_time
+        sign_out_time
+        created
+    }
+}
