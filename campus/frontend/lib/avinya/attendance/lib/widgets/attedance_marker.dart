@@ -1,6 +1,5 @@
-import 'package:attendance/data/campus_attendance_system.dart';
 import 'package:flutter/material.dart';
-
+import '../data.dart';
 import '../data/activity_attendance.dart';
 
 class AttendanceMarker extends StatefulWidget {
@@ -17,7 +16,7 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
     createActivityAttendance(ActivityAttendance(
       activity_instance_id:
           campusAttendanceSystemInstance.getCheckinActivityInstance().id,
-      person_id: campusAttendanceSystemInstance.getUserPerson().id,
+      person_id: campusAppsPortalInstance.getUserPerson().id,
       sign_in_time: DateTime.now().toString(),
     ));
     setState(() {
@@ -31,7 +30,7 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
     createActivityAttendance(ActivityAttendance(
       activity_instance_id:
           campusAttendanceSystemInstance.getCheckoutActivityInstance().id,
-      person_id: campusAttendanceSystemInstance.getUserPerson().id,
+      person_id: campusAppsPortalInstance.getUserPerson().id,
       sign_out_time: DateTime.now().toString(),
     ));
     setState(() {
