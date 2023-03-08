@@ -281,10 +281,10 @@ class VacancyListState extends State<VacancyList> {
   Future<bool> addSudentApplicantEvaluation(BuildContext context) async {
     try {
       if (_formKey.currentState!.validate()) {
-        campusAttendanceSystemInstance
+        campusAppsPortalInstance
             .fetchPersonForUser(); // do a fetch to help cross check
-        Person person = campusAttendanceSystemInstance.getUserPerson();
-        if (campusAttendanceSystemInstance.getJWTSub() != person.jwt_sub_id) {
+        Person person = campusAppsPortalInstance.getUserPerson();
+        if (campusAppsPortalInstance.getJWTSub() != person.jwt_sub_id) {
           // the person has not logged in to the system
           // we can record the test responses against that person
           return false;
