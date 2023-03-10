@@ -130,25 +130,6 @@ Future<List<Person>> fetchPersons() async {
   }
 }
 
-Future<Person> fetchPerson(String jwt_sub_id) async {
-  final response = await http.get(
-    Uri.parse(
-        AppConfig.campusAttendanceBffApiUrl + '/student_applicant/$jwt_sub_id'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAttendanceBffApiKey,
-    },
-  );
-
-  if (response.statusCode == 200) {
-    Person person = Person.fromJson(json.decode(response.body));
-    return person;
-  } else {
-    throw Exception('Failed to load Person');
-  }
-}
-
 Future<Person> createPerson(Person person) async {
   final response = await http.post(
     Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/student_applicant'),
