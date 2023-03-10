@@ -1,5 +1,5 @@
 query getPerson($id:String!){
-    person_by_jwt(id:$id) {
+    person_by_digital_id(id:$id) {
     id
     preferred_name
     full_name

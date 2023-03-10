@@ -531,5 +531,5 @@ public type GetPersonResponse record {|
         string? bank_name;
         string? bank_account_number;
         string? bank_account_name;
-    |}? person_by_jwt;
+    |}? person_by_digital_id;
 |};
