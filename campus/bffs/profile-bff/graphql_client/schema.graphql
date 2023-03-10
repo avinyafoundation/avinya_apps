@@ -674,7 +674,7 @@ type Query {
   organizations(level: Int!): OrganizationStructureData
   organization(name: String, id: Int): OrganizationData
   person(name: String, id: Int): PersonData
-  person_by_jwt(id: String): PersonData
+  person_by_digital_id(id: String): PersonData
   prospect(email: String, phone: Int): ProspectData
   applicant_consent(email: String, phone: Int): ApplicantConsentData
   application(person_id: Int!): ApplicationData

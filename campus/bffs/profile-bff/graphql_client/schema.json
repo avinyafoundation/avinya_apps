@@ -634,7 +634,7 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "person_by_jwt",
+                            "name": "person_by_digital_id",
                             "args": [
                                 {
                                     "name": "id",
