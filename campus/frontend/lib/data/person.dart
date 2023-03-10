@@ -155,9 +155,9 @@ Future<List<Person>> fetchPersons() async {
   }
 }
 
-Future<Person> fetchPerson(String jwt_sub_id) async {
+Future<Person> fetchPerson(String digital_id) async {
   final uri = Uri.parse(AppConfig.campusProfileBffApiUrl + '/person')
-      .replace(queryParameters: {'id': jwt_sub_id});
+      .replace(queryParameters: {'id': digital_id});
 
   final response = await http.get(
     uri,

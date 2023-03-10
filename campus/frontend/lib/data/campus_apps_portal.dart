@@ -6,6 +6,7 @@ import '../auth.dart';
 
 final campusAppsPortalInstance = CampusAppsPortal()
   ..setJWTSub('jwt-sub-id123')
+  ..setDigitalId('digital-id123')
   ..setUserPerson(
       Person(id: 2, jwt_sub_id: 'jwt-sub-id123', preferred_name: 'Nimal'));
 
@@ -18,6 +19,7 @@ class CampusAppsPortal {
   Person userPerson = Person();
   String? user_jwt_sub;
   String? user_jwt_email;
+  String? user_digital_id;
   CampusAppsPortalAuth? auth;
   bool signedIn = false;
 
@@ -74,6 +76,14 @@ class CampusAppsPortal {
     return user_jwt_sub;
   }
 
+  void setDigitalId(String? jwt_sub) {
+    user_digital_id = jwt_sub;
+  }
+
+  String? getDigitalId() {
+    return user_digital_id;
+  }
+
   void setJWTEmail(String? jwt_email) {
     user_jwt_email = jwt_email;
   }
@@ -113,9 +123,9 @@ class CampusAppsPortal {
     // check if user is in Avinya database person table as a student
     try {
       Person person = campusAppsPortalInstance.getUserPerson();
-      if (person.jwt_sub_id == null ||
-          person.jwt_sub_id != this.user_jwt_sub!) {
-        person = await fetchPerson(this.user_jwt_sub!);
+      if (person.digital_id == null ||
+          person.digital_id != this.user_digital_id!) {
+        person = await fetchPerson(this.user_digital_id!);
         this.userPerson = person;
         log('AdmissionSystem fetchPersonForUser: ' +
             person.toJson().toString());
