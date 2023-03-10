@@ -41,6 +41,7 @@ class CampusAppsPortalAuth extends ChangeNotifier {
         // capture token information to help map the sing in user to Avinya person
         campusAppsPortalInstance.setJWTSub(decodedAccessToken["sub"]);
         campusAppsPortalInstance.setJWTEmail(decodedAccessToken["email"]);
+        campusAppsPortalInstance.setDigitalId(decodedAccessToken["email"]);
 
         bool isTokenExpired = JwtDecoder.isExpired(_openid_tokens["id_token"]);
         print("Open ID token is expired $isTokenExpired");

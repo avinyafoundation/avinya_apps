@@ -423,7 +423,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
   Future<Person> fetchStudentPerson() async {
     // check if user is in Avinya database person table as a student
     try {
-      this.futurePerson = fetchPerson(campusAppsPortalInstance.getJWTSub()!);
+      this.futurePerson = fetchPerson(campusAppsPortalInstance.getDigitalId()!);
     } catch (e) {
       print(
           'AdmissionSystem fetchPersonForUser :: Error fetching person for user');
