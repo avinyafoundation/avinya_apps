@@ -343,6 +343,11 @@ class _BackdropState extends State<Backdrop>
             toggleSettings: _toggleSettings,
             isSettingsOpenNotifier: _isSettingsOpenNotifier,
           ),
+          _ProfileIcon(
+            animationController: _iconController,
+            toggleSettings: _toggleSettings,
+            isSettingsOpenNotifier: _isSettingsOpenNotifier,
+          ),
         ],
       ),
     );
@@ -481,6 +486,72 @@ class _LogoutIcon extends AnimatedWidget {
                   padding: const EdgeInsetsDirectional.only(start: 3, end: 18),
                   child: Icon(
                     Icons.exit_to_app,
+                    size: 25.0,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileIcon extends AnimatedWidget {
+  const _ProfileIcon({
+    required this.animationController,
+    required this.toggleSettings,
+    required this.isSettingsOpenNotifier,
+  }) : super(listenable: animationController);
+
+  final AnimationController animationController;
+  final VoidCallback toggleSettings;
+  final ValueNotifier<bool> isSettingsOpenNotifier;
+
+  String _settingsSemanticLabel(bool isOpen, BuildContext context) {
+    return isOpen
+        ? GalleryLocalizations.of(context)!.settingsButtonCloseLabel
+        : GalleryLocalizations.of(context)!.settingsButtonLabel;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDesktop = isDisplayDesktop(context);
+    final safeAreaTopPadding = MediaQuery.of(context).padding.top;
+
+    return Container(
+      margin: const EdgeInsetsDirectional.only(end: 160),
+      child: Align(
+        alignment: AlignmentDirectional.topEnd,
+        child: Semantics(
+          sortKey: const OrdinalSortKey(1),
+          button: true,
+          enabled: true,
+          label: _settingsSemanticLabel(isSettingsOpenNotifier.value, context),
+          child: SizedBox(
+            width: _settingsButtonWidth,
+            height: isDesktop
+                ? _settingsButtonHeightDesktop
+                : _settingsButtonHeightMobile + safeAreaTopPadding,
+            child: Material(
+              borderRadius: const BorderRadiusDirectional.only(
+                bottomStart: Radius.circular(10),
+                bottomEnd: Radius.circular(10),
+              ),
+              color: isSettingsOpenNotifier.value &
+                      !animationController.isAnimating
+                  ? Colors.transparent
+                  : Theme.of(context).colorScheme.secondaryContainer,
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: () async {
+                  await Navigator.of(context).pushNamed('/profile');
+                },
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 3, end: 8),
+                  child: Icon(
+                    Icons.account_circle,
                     size: 25.0,
                   ),
                 ),

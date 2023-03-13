@@ -81,7 +81,7 @@ class _GalleryAppState extends State<GalleryApp> {
           final options = GalleryOptions.of(context);
           return MaterialApp(
               restorationScopeId: 'rootGallery',
-              title: 'Flutter Gallery',
+              title: 'Avinya Academy',
               debugShowCheckedModeBanner: false,
               navigatorObservers: [routeObserver],
               themeMode: options.themeMode,

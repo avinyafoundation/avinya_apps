@@ -420,12 +420,6 @@ public type GetPersonResponse record {|
             record {|
                 int? id;
             |}[]? parent_organizations;
-            record {|
-                int? id;
-            |}[]? people;
-            record {|
-                int? id;
-            |}[]? vacancies;
         |}? organization;
         record {|
             int? id;
