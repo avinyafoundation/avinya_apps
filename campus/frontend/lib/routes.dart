@@ -12,7 +12,8 @@ import 'package:gallery/main.dart';
 import 'package:gallery/pages/home.dart';
 import 'package:gallery/pages/login.dart';
 import 'package:attendance/app.dart' deferred as attendance;
-import 'package:attendance/routes.dart' as attendance_routes;
+import 'package:attendance/routes.dart' as routes;
+import 'package:gallery/pages/profile.dart' as profile;
 
 typedef PathWidgetBuilder = Widget Function(BuildContext, String?);
 
@@ -46,12 +47,20 @@ class RouteConfiguration {
   /// take priority.
   static List<Path> paths = [
     Path(
-      r'^' + attendance_routes.attendanceRoute,
+      r'^' + routes.attendanceRoute,
       (context, match) => StudyWrapper(
         study: DeferredWidget(
             attendance.loadLibrary,
             () => attendance
                 .CampusAttendanceManagementSystem()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),
+    Path(
+      r'^' + routes.profileRoute,
+      (context, match) => StudyWrapper(
+        study: DeferredWidget(attendance.loadLibrary,
+            () => profile.ProfileScreen()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),

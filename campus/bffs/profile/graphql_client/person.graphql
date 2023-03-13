@@ -47,12 +47,6 @@ query getPerson($id:String!){
       parent_organizations{
         id
       }
-      people{
-        id
-      }
-      vacancies{
-        id
-      }
     }
     avinya_type {
       id
