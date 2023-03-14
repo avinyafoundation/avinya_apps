@@ -41,6 +41,7 @@ dependencies:
   attendance:
     path: ./lib/avinya/attendance
   route_observer_mixin: ^1.7.0
+  sizer: ^2.0.15
 
 dev_dependencies:
   flutter_test:
