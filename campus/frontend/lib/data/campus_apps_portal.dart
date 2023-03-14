@@ -10,6 +10,10 @@ final campusAppsPortalInstance = CampusAppsPortal()
   ..setUserPerson(
       Person(id: 2, jwt_sub_id: 'jwt-sub-id123', preferred_name: 'Nimal'));
 
+final CampusAppsPortalPersonMetaDataInstance = CampusAppsPortalPersonMetaData()
+  ..setGroups(['educator', 'teacher'])
+  ..setScopes('address email');
+
 class CampusAppsPortal {
   List<Person>? persons = [];
   bool precondisionsSubmitted = false;
@@ -139,5 +143,29 @@ class CampusAppsPortal {
 
   void addPerson(Person person) {
     persons!.add(person);
+  }
+}
+
+class CampusAppsPortalPersonMetaData {
+  List<dynamic> _groups = [];
+  String? _scopes;
+
+  void setGroups(List<dynamic> groups) {
+    _groups = groups;
+  }
+
+  List<dynamic> getGroups() {
+    return this._groups;
+  }
+
+  void setScopes(String scopes) {
+    _scopes = scopes;
+  }
+
+  List<String>? getScopes() {
+    if (_scopes == null) {
+      return null;
+    }
+    return _scopes!.split(' ');
   }
 }

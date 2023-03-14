@@ -67,7 +67,7 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       body: Container(
         child: SplashPage(
-          child: ProfileInfoViewPage(),
+          child: MyProfileScreen(),
         ),
       ),
     );
