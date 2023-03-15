@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gallery/data/campus_apps_portal.dart';
 // import '../data.dart';
 // import '../data/activity_attendance.dart';
 
@@ -137,6 +138,14 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            if (campusAppsPortalPersonMetaDataInstance
+                .getGroups()
+                .contains('Student'))
+              Text("Student Group",
+                  style:
+                      TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
+            Text(campusAppsPortalInstance.activityIds['school-day'].toString(),
+                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
             Text(
               "Classes",
               style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
