@@ -320,3 +320,28 @@ public type AddActivityAttendanceResponse record {|
         string? created;
     |}? add_attendance;
 |};
+
+
+public type GetActivityInstancesTodayResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_id;
+        string? name;
+        int? daily_sequence;
+        int? weekly_sequence;
+        int? monthly_sequence;
+        string? description;
+        string? notes;
+        string? start_time;
+        string? end_time;
+        string? created;
+        string? updated;
+        record {|
+            int? id;
+        |}? place;
+        record {|
+            int? id;
+        |}? organization;
+    |}[] activity_instances_today;
+|};
