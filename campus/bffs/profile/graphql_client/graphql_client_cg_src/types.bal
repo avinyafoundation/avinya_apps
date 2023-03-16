@@ -243,6 +243,8 @@ public type Organization record {
 
 public type Person record {
     int? permanent_address_id?;
+    string? street_address?;
+    string? bank_account_number?;
     string? notes?;
     int[]? parent_student?;
     string? date_of_birth?;
@@ -251,14 +253,18 @@ public type Person record {
     int? mailing_address_id?;
     string? id_no?;
     string? jwt_email?;
+    string? bank_name?;
     int? id?;
     string? email?;
     string? created?;
+    string? digital_id?;
     string? sex?;
     string? passport_no?;
     string? record_type?;
     Address? mailing_address?;
     int[]? child_student?;
+    string? bank_account_name?;
+    int? avinya_phone?;
     string? full_name?;
     string? nic_no?;
     int? phone?;
@@ -267,6 +273,7 @@ public type Person record {
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
+    int? academy_org_id?;
 };
 
 public type Prospect record {
@@ -367,11 +374,160 @@ public type WorkExperience record {
 public type GetPersonResponse record {|
     map<json?> __extensions?;
     record {|
+        int? id;
+        string? preferred_name;
+        string? full_name;
+        string? date_of_birth;
+        string? sex;
         string? asgardeo_id;
+        string? jwt_sub_id;
+        string? jwt_email;
+        record {|
+            record {|
+                int? id;
+            |} city;
+            string street_address;
+            int? phone;
+            int? id;
+        |}? permanent_address;
+        record {|
+            record {|
+                int? id;
+            |} city;
+            string street_address;
+            int? phone;
+            int? id;
+        |}? mailing_address;
+        int? phone;
         record {|
             int? id;
+            string? description;
+            string? notes;
+            record {|
+                int? id;
+            |}? address;
+            record {|
+                int? id;
+            |}? avinya_type;
+            int? phone;
+            record {|
+                string name_en;
+                string? name_si;
+                string? name_ta;
+            |} name;
+            record {|
+                int? id;
+            |}[]? child_organizations;
+            record {|
+                int? id;
+            |}[]? parent_organizations;
+        |}? organization;
+        record {|
+            int? id;
+            boolean active;
+            string global_type;
+            string? name;
+            string? foundation_type;
+            string? focus;
+            int? level;
+            string? description;
         |}? avinya_type;
-        string? jwt_email;
-        string? jwt_sub_id;
-    |}? person_by_jwt;
+        int? avinya_type_id;
+        string? notes;
+        string? nic_no;
+        string? passport_no;
+        string? id_no;
+        string? email;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? full_name;
+            string? date_of_birth;
+            string? sex;
+            string? asgardeo_id;
+            string? jwt_sub_id;
+            string? jwt_email;
+            record {|
+                int? id;
+            |}? permanent_address;
+            record {|
+                int? id;
+            |}? mailing_address;
+            int? phone;
+            record {|
+                int? id;
+            |}? organization;
+            record {|
+                int? id;
+            |}? avinya_type;
+            int? avinya_type_id;
+            string? notes;
+            string? nic_no;
+            string? passport_no;
+            string? id_no;
+            string? email;
+            record {|
+                int? id;
+            |}[]? child_students;
+            record {|
+                int? id;
+            |}[]? parent_students;
+            string? street_address;
+            string? digital_id;
+            int? avinya_phone;
+            string? bank_name;
+            string? bank_account_number;
+            string? bank_account_name;
+            int? academy_org_id;
+        |}[]? child_students;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? full_name;
+            string? date_of_birth;
+            string? sex;
+            string? asgardeo_id;
+            string? jwt_sub_id;
+            string? jwt_email;
+            record {|
+                int? id;
+            |}? permanent_address;
+            record {|
+                int? id;
+            |}? mailing_address;
+            int? phone;
+            record {|
+                int? id;
+            |}? organization;
+            record {|
+                int? id;
+            |}? avinya_type;
+            int? avinya_type_id;
+            string? notes;
+            string? nic_no;
+            string? passport_no;
+            string? id_no;
+            string? email;
+            record {|
+                int? id;
+            |}[]? child_students;
+            record {|
+                int? id;
+            |}[]? parent_students;
+            string? street_address;
+            string? digital_id;
+            int? avinya_phone;
+            string? bank_name;
+            string? bank_account_number;
+            string? bank_account_name;
+            int? academy_org_id;
+        |}[]? parent_students;
+        string? street_address;
+        string? digital_id;
+        int? avinya_phone;
+        string? bank_name;
+        string? bank_account_number;
+        string? bank_account_name;
+        int? academy_org_id;
+    |}? person_by_digital_id;
 |};

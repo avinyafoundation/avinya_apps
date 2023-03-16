@@ -324,6 +324,17 @@
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
+                        },
+                        {
+                            "name": "academy_org_id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
                         }
                     ],
                     "inputFields": null,
@@ -954,7 +965,7 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "pcti_activity_instances_today",
+                            "name": "activity_instances_today",
                             "args": [
                                 {
                                     "name": "activity_id",
@@ -6600,6 +6611,15 @@
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "academy_org_id",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
                                 "ofType": null
                             },
                             "defaultValue": null

@@ -575,6 +575,7 @@ input Person {
   bank_name: String
   bank_account_number: String
   bank_account_name: String
+  academy_org_id: Int
 }
 
 type PersonData {
@@ -605,6 +606,7 @@ type PersonData {
   bank_name: String
   bank_account_number: String
   bank_account_name: String
+  academy_org_id: Int
 }
 
 type PlaceData {
@@ -685,7 +687,7 @@ type Query {
   pcti_activity(project_activity_name: String!, class_activity_name: String!): ActivityData
   pcti_project_activities(teacher_id: String!): [ActivityData!]
   pcti_participant_activities(participant_id: Int!): [ActivityData!]
-  pcti_activity_instances_today(activity_id: Int!): [ActivityInstanceData!]
+  activity_instances_today(activity_id: Int!): [ActivityInstanceData!]
   activity_instances_future(activity_id: Int!): [ActivityInstanceData!]
   available_teachers(activity_instance_id: Int!): [PersonData!]
   project_tasks(activity_id: Int!): [ActivityData!]

@@ -104,6 +104,7 @@ query getPerson($id:String!){
       bank_name
       bank_account_number
       bank_account_name
+      academy_org_id
     }
     parent_students {
       id
@@ -145,6 +146,7 @@ query getPerson($id:String!){
       bank_name
       bank_account_number
       bank_account_name
+      academy_org_id
     }
     street_address
     digital_id
@@ -152,6 +154,7 @@ query getPerson($id:String!){
     bank_name
     bank_account_number
     bank_account_name
+    academy_org_id
   }
 }
 
