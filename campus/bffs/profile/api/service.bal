@@ -44,7 +44,6 @@ service / on new http:Listener(9095) {
 
 
     resource function get person(string id) returns Person|error {
-                log:printError("Error while processing Application record received0");
 
         GetPersonResponse|graphql:ClientError getPersonResponse = globalDataClient->getPerson(id);
         if(getPersonResponse is GetPersonResponse) {
