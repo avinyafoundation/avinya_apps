@@ -59,3 +59,26 @@ query getActivity($name: String!) {
         created
     }
 }
+
+query getActivityInstancesToday($id: Int!) {
+    activity_instances_today(activity_id:$id) {
+        id
+        activity_id
+        name
+        daily_sequence
+        weekly_sequence
+        monthly_sequence
+        description
+        notes
+        start_time
+        end_time
+        created
+        updated
+        place {
+            id
+        }
+        organization {
+            id
+        }
+    }
+}

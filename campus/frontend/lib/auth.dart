@@ -42,10 +42,10 @@ class CampusAppsPortalAuth extends ChangeNotifier {
         campusAppsPortalInstance.setJWTSub(decodedAccessToken["sub"]);
         campusAppsPortalInstance.setJWTEmail(decodedAccessToken["email"]);
         campusAppsPortalInstance.setDigitalId(decodedAccessToken["email"]);
-        CampusAppsPortalPersonMetaDataInstance.setGroups(
-            decodedAccessToken["groups"] as List<dynamic>);
-        CampusAppsPortalPersonMetaDataInstance.setScopes(
-            decodedAccessToken["scope"] as String);
+        campusAppsPortalPersonMetaDataInstance
+            .setGroups(decodedAccessToken["groups"] as List<dynamic>);
+        campusAppsPortalPersonMetaDataInstance
+            .setScopes(decodedAccessToken["scope"] as String);
 
         bool isTokenExpired = JwtDecoder.isExpired(_openid_tokens["id_token"]);
         print("Open ID token is expired $isTokenExpired");

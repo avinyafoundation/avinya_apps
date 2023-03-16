@@ -12,6 +12,7 @@ class SMSScaffold extends StatelessWidget {
     '/avinya_types/popular',
     '/activities/popular',
     '/attendance_marker',
+    '/bulk_attendance_marker/class1',
   ];
 
   const SMSScaffold({
@@ -88,6 +89,10 @@ class SMSScaffold extends StatelessWidget {
           AdaptiveScaffoldDestination(
             title: 'Attendance Marker',
             icon: Icons.qr_code_scanner,
+          ),
+          AdaptiveScaffoldDestination(
+            title: 'Bulk Attendance Marker',
+            icon: Icons.qr_code_scanner_outlined,
           ),
           AdaptiveScaffoldDestination(
             title: 'Tests',

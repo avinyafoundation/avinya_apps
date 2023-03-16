@@ -10,7 +10,7 @@ final campusAppsPortalInstance = CampusAppsPortal()
   ..setUserPerson(
       Person(id: 2, jwt_sub_id: 'jwt-sub-id123', preferred_name: 'Nimal'));
 
-final CampusAppsPortalPersonMetaDataInstance = CampusAppsPortalPersonMetaData()
+final campusAppsPortalPersonMetaDataInstance = CampusAppsPortalPersonMetaData()
   ..setGroups(['educator', 'teacher'])
   ..setScopes('address email');
 
@@ -26,6 +26,21 @@ class CampusAppsPortal {
   String? user_digital_id;
   CampusAppsPortalAuth? auth;
   bool signedIn = false;
+
+  final activityIds = {
+    'school-day': 1,
+    'arrival': 2,
+    'breakfast-break': 3,
+    'homeroom': 4,
+    'pcti': 5,
+    'class-tutorial': 6,
+    'class-presentation': 7,
+    'tea-break': 8,
+    'free-time': 9,
+    'lunch-break': 10,
+    'work': 11,
+    'departure': 12,
+  };
 
   void setSignedIn(bool value) {
     signedIn = value;
@@ -143,6 +158,10 @@ class CampusAppsPortal {
 
   void addPerson(Person person) {
     persons!.add(person);
+  }
+
+  int getActivityId(String activityName) {
+    return activityIds[activityName]!;
   }
 }
 
