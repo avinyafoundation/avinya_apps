@@ -273,6 +273,7 @@ public type Person record {
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
+    int? academy_org_id?;
 };
 
 public type Prospect record {
@@ -477,6 +478,7 @@ public type GetPersonResponse record {|
             string? bank_name;
             string? bank_account_number;
             string? bank_account_name;
+            int? academy_org_id;
         |}[]? child_students;
         record {|
             int? id;
@@ -518,6 +520,7 @@ public type GetPersonResponse record {|
             string? bank_name;
             string? bank_account_number;
             string? bank_account_name;
+            int? academy_org_id;
         |}[]? parent_students;
         string? street_address;
         string? digital_id;
@@ -525,5 +528,6 @@ public type GetPersonResponse record {|
         string? bank_name;
         string? bank_account_number;
         string? bank_account_name;
+        int? academy_org_id;
     |}? person_by_digital_id;
 |};
