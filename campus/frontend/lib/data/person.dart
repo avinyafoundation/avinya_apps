@@ -34,6 +34,7 @@ class Person {
   String? digital_id;
   String? bank_account_name;
   int? avinya_phone;
+  int? academy_org_id;
 
   Person({
     this.id,
@@ -63,6 +64,7 @@ class Person {
     this.digital_id,
     this.bank_account_name,
     this.avinya_phone,
+    this.academy_org_id,
   });
 
   factory Person.fromJson(Map<String, dynamic> json) {
@@ -97,6 +99,7 @@ class Person {
       digital_id: json['digital_id'],
       bank_account_name: json['bank_account_name'],
       avinya_phone: json['avinya_phone'],
+      academy_org_id: json['academy_org_id'],
     );
   }
 
@@ -132,6 +135,7 @@ class Person {
         if (digital_id != null) 'digital_id': digital_id,
         if (bank_account_name != null) 'bank_account_name': bank_account_name,
         if (avinya_phone != null) 'avinya_phone': avinya_phone,
+        if (academy_org_id != null) 'academy_org_id': academy_org_id,
       };
 }
 

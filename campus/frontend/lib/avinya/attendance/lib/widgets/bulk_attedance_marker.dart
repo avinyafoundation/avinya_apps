@@ -146,6 +146,8 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                       TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
             Text(campusAppsPortalInstance.activityIds['school-day'].toString(),
                 style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
+            Text(campusAppsPortalInstance.getUserPerson().preferred_name!,
+                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
             Text(
               "Classes",
               style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
