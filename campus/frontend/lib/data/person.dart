@@ -28,8 +28,8 @@ class Person {
   String? email;
   Address? permanent_address;
   Address? mailing_address;
-  Address? street_address;
-  int? bank_account_number;
+  String? street_address;
+  String? bank_account_number;
   String? bank_name;
   String? digital_id;
   String? bank_account_name;
@@ -92,8 +92,7 @@ class Person {
           json['permanent_address'] != null ? json['permanent_address'] : {}),
       mailing_address: Address.fromJson(
           json['mailing_address'] != null ? json['mailing_address'] : {}),
-      street_address: Address.fromJson(
-          json['street_address'] != null ? json['street_address'] : {}),
+      street_address: json['street_address'],
       bank_account_number: json['bank_account_number'],
       bank_name: json['bank_name'],
       digital_id: json['digital_id'],
@@ -129,8 +128,9 @@ class Person {
           'permanent_address': permanent_address!.toJson(),
         if (mailing_address != null)
           'mailing_address': mailing_address!.toJson(),
-        if (mailing_address != null) 'street_address': street_address!.toJson(),
-        if (mailing_address != null) 'bank_account_number': bank_account_number,
+        if (street_address != null) 'street_address': street_address,
+        if (bank_account_number != null)
+          'bank_account_number': bank_account_number,
         if (bank_name != null) 'bank_name': bank_name,
         if (digital_id != null) 'digital_id': digital_id,
         if (bank_account_name != null) 'bank_account_name': bank_account_name,

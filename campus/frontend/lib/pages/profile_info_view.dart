@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:gallery/data/person.dart';
 import 'package:sizer/sizer.dart';
+import 'dart:developer';
 
 class MyProfileScreen extends StatefulWidget {
   const MyProfileScreen({Key? key}) : super(key: key);
@@ -12,7 +13,7 @@ class MyProfileScreen extends StatefulWidget {
 }
 
 class _MyProfileScreenState extends State<MyProfileScreen> {
-  late Person userPerson;
+  late Person userPerson = Person(full_name: 'John');
   // String? preferredName;
   // String? fullName;
   // String? notes;
@@ -96,7 +97,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          userPerson.full_name!,
+                          'Class ${userPerson.full_name} | Roll no: 12',
                           style: Theme.of(context)
                               .textTheme
                               .subtitle1!
