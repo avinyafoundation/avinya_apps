@@ -82,6 +82,8 @@ input ActivityParticipantAttendance {
   activity_instance_id: Int
   sign_in_time: String
   sign_out_time: String
+  in_marked_by: String
+  out_marked_by: String
   created: String
   updated: String
 }
@@ -94,6 +96,8 @@ type ActivityParticipantAttendanceData {
   sign_out_time: String
   created: String
   updated: String
+  in_marked_by: String
+  out_marked_by: String
 }
 
 type ActivityParticipantData {
@@ -583,6 +587,8 @@ type PersonData {
   preferred_name: String
   full_name: String
   date_of_birth: String
+  created: String
+  updated: String
   sex: String
   asgardeo_id: String
   jwt_sub_id: String
