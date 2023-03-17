@@ -4,6 +4,7 @@ import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:gallery/data/person.dart';
 import 'package:sizer/sizer.dart';
 import 'dart:developer';
+import 'package:intl/intl.dart';
 
 class MyProfileScreen extends StatefulWidget {
   const MyProfileScreen({Key? key}) : super(key: key);
@@ -13,7 +14,11 @@ class MyProfileScreen extends StatefulWidget {
 }
 
 class _MyProfileScreenState extends State<MyProfileScreen> {
-  late Person userPerson = Person(full_name: 'John');
+  late Person userPerson = Person()
+    ..full_name = 'John'
+    // ..organization = Organization()
+    // ..organization!.id = 2
+    ..nic_no = '12';
   // String? preferredName;
   // String? fullName;
   // String? notes;
@@ -97,7 +102,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Class ${userPerson.full_name} | Roll no: 12',
+                          userPerson.full_name!,
                           style: Theme.of(context)
                               .textTheme
                               .subtitle1!
@@ -111,7 +116,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           // style: Theme.of(context).textTheme.subtitle1,
                         ),
                         Text(
-                          'Class ${userPerson.avinya_type_id} | Roll no: 12',
+                          userPerson.organization!.name!.name_en!,
                           style: Theme.of(context)
                               .textTheme
                               .subtitle1!
@@ -133,29 +138,36 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ProfileDetailRow(
-                      title: 'Registration Number', value: '2020-ASDF-2021'),
+                      title: 'Registration Number', value: '${userPerson.id}'),
                   ProfileDetailRow(title: 'Academic Year', value: '2020-2021'),
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  ProfileDetailRow(title: 'Admission Class', value: 'X-II'),
-                  ProfileDetailRow(title: 'Admission Number', value: '000126'),
+                  ProfileDetailRow(
+                      title: 'Programme',
+                      value: '${userPerson.avinya_type!.focus!}'),
+                  ProfileDetailRow(title: 'Gender', value: '${userPerson.sex}'),
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ProfileDetailRow(
-                      title: 'Date of Admission', value: '1 Aug, 2020'),
-                  ProfileDetailRow(title: 'Date of Birth', value: '3 May 1998'),
+                      title: 'Date of Admission',
+                      value: DateFormat('d MMM, yyyy')
+                          .format(DateTime.parse(userPerson.date_of_birth!))),
+                  ProfileDetailRow(
+                      title: 'Date of Birth',
+                      value: DateFormat('d MMM, yyyy')
+                          .format(DateTime.parse(userPerson.date_of_birth!))),
                 ],
               ),
               sizedBox,
               ProfileDetailColumn(
                 title: 'Email',
-                value: 'aisha12@gmail.com',
+                value: '${userPerson.digital_id}',
               ),
               ProfileDetailColumn(
                 title: 'Father Name',
@@ -167,7 +179,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               ),
               ProfileDetailColumn(
                 title: 'Phone Number',
-                value: '+923066666666',
+                value: '${userPerson.phone}',
               ),
             ],
           ),

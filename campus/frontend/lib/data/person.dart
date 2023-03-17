@@ -1,10 +1,64 @@
 import 'dart:developer';
 
+import 'package:gallery/avinya/attendance/lib/data.dart';
 import 'package:gallery/data/address.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../config/app_config.dart';
+
+class Name {
+  String? name_en;
+  String? name_si;
+  String? name_ta;
+
+  Name({
+    this.name_en,
+    this.name_si,
+    this.name_ta,
+  });
+
+  factory Name.fromJson(Map<String, dynamic> json) {
+    return Name(
+      name_en: json['name_en'],
+      name_si: json['name_si'],
+      name_ta: json['name_ta'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (name_en != null) 'name_en': name_en,
+        if (name_si != null) 'name_si': name_si,
+        if (name_ta != null) 'name_ta': name_ta,
+        // if (address != null) 'address': address!.toJson(),
+        // if (employees != null) 'employees': List<dynamic>.from(employees!.map((x) => x.toJson())),
+      };
+}
+
+class Organization {
+  int? id;
+  Name? name;
+
+  Organization({
+    this.id,
+    this.name,
+  });
+
+  factory Organization.fromJson(Map<String, dynamic> json) {
+    return Organization(
+      id: json['id'],
+      name: json['name'] != null ? Name.fromJson(json['name']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        // if (name != null) 'name': name,
+        // if (name != null) 'name': Name!.toJson(),
+        if (name != null) 'name': name!.toJson(),
+        // if (employees != null) 'employees': List<dynamic>.from(employees!.map((x) => x.toJson())),
+      };
+}
 
 class Person {
   int? id;
@@ -22,6 +76,8 @@ class Person {
   String? id_no;
   int? phone;
   int? organization_id;
+  Organization? organization;
+  AvinyaType? avinya_type;
   String? asgardeo_id;
   String? jwt_sub_id;
   String? jwt_email;
@@ -52,6 +108,8 @@ class Person {
     this.id_no,
     this.phone,
     this.organization_id,
+    this.organization,
+    this.avinya_type,
     this.asgardeo_id,
     this.jwt_sub_id,
     this.jwt_email,
@@ -99,6 +157,10 @@ class Person {
       bank_account_name: json['bank_account_name'],
       avinya_phone: json['avinya_phone'],
       academy_org_id: json['academy_org_id'],
+      organization: Organization.fromJson(
+          json['organization'] != null ? json['organization'] : {}),
+      avinya_type: AvinyaType.fromJson(
+          json['avinya_type'] != null ? json['avinya_type'] : {}),
     );
   }
 
@@ -136,6 +198,8 @@ class Person {
         if (bank_account_name != null) 'bank_account_name': bank_account_name,
         if (avinya_phone != null) 'avinya_phone': avinya_phone,
         if (academy_org_id != null) 'academy_org_id': academy_org_id,
+        if (organization != null) 'organization': organization!.toJson(),
+        if (avinya_type != null) 'avinya_type': avinya_type!.toJson(),
       };
 }
 

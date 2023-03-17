@@ -7,6 +7,8 @@ query getPerson($id:String!){
     sex
     asgardeo_id
     jwt_sub_id
+    created
+    updated
     jwt_email
     permanent_address {
       city {

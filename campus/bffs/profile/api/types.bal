@@ -45,9 +45,11 @@ public type ActivityParticipant record {
 
 public type ActivityParticipantAttendance record {
     int? activity_instance_id?;
+    string? in_marked_by?;
     string? created?;
     string? sign_in_time?;
     int? id?;
+    string? out_marked_by?;
     string? updated?;
     string? record_type?;
     int? person_id?;
@@ -381,6 +383,8 @@ public type GetPersonResponse record {|
         string? sex;
         string? asgardeo_id;
         string? jwt_sub_id;
+        string? created;
+        string? updated;
         string? jwt_email;
         record {|
             record {|
