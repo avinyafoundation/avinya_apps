@@ -21,6 +21,7 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
       activity_instance_id: activityInstance.id,
       person_id: campusAppsPortalInstance.getUserPerson().id,
       sign_in_time: DateTime.now().toString(),
+      in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
     ));
     setState(() {
       _isCheckedIn = true;
@@ -37,6 +38,7 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
       activity_instance_id: activityInstance.id,
       person_id: campusAppsPortalInstance.getUserPerson().id,
       sign_out_time: DateTime.now().toString(),
+      out_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
     ));
     setState(() {
       _isCheckedOut = true;
