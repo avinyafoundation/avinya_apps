@@ -91,6 +91,9 @@ class Person {
   String? bank_account_name;
   int? avinya_phone;
   int? academy_org_id;
+  String? created;
+  String? updated;
+  var parent_students = <Person>[];
 
   Person({
     this.id,
@@ -123,6 +126,9 @@ class Person {
     this.bank_account_name,
     this.avinya_phone,
     this.academy_org_id,
+    this.created,
+    this.updated,
+    this.parent_students = const [],
   });
 
   factory Person.fromJson(Map<String, dynamic> json) {
@@ -161,6 +167,11 @@ class Person {
           json['organization'] != null ? json['organization'] : {}),
       avinya_type: AvinyaType.fromJson(
           json['avinya_type'] != null ? json['avinya_type'] : {}),
+      created: json['created'],
+      updated: json['updated'],
+      parent_students: json['parent_students']
+          .map<Person>((eval_json) => Person.fromJson(eval_json))
+          .toList(),
     );
   }
 
@@ -200,6 +211,9 @@ class Person {
         if (academy_org_id != null) 'academy_org_id': academy_org_id,
         if (organization != null) 'organization': organization!.toJson(),
         if (avinya_type != null) 'avinya_type': avinya_type!.toJson(),
+        if (created != null) 'created': created,
+        if (updated != null) 'updated': updated,
+        'parent_students': [parent_students],
       };
 }
 
