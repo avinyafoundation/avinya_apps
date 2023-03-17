@@ -1,19 +1,6 @@
-// public type ActivityInstance record {
-//     string? notes?;
-//     string? created?;
-//     int? weekly_sequence?;
-//     string? end_time?;
-//     string? description?;
-//     int? daily_sequence?;
-//     string? record_type?;
-//     int? monthly_sequence?;
-//     string? start_time?;
-//     int? activity_id?;
-//     string? name?;
-//     int? id?;
-//     string? updated?;
-//     int? place_id?;
-// };
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../config/app_config.dart';
 
 class ActivityInstance {
   int? id;
@@ -83,4 +70,20 @@ class ActivityInstance {
         if (monthly_sequence != null) 'monthly_sequence': monthly_sequence,
         if (place_id != null) 'place_id': place_id,
       };
+}
+
+Future<List<ActivityInstance>> fetchActivityInstance(int activityID) async {
+  final response = await http.get(Uri.parse(
+      AppConfig.campusAttendanceBffApiUrl +
+          '/activity_instances_today/$activityID'));
+
+  if (response.statusCode == 200) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityInstance> activityInstances = await resultsJson
+        .map<ActivityInstance>((json) => ActivityInstance.fromJson(json))
+        .toList();
+    return activityInstances;
+  } else {
+    throw Exception('Failed to load Activity');
+  }
 }

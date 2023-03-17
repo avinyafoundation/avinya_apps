@@ -161,12 +161,16 @@ class CampusAttendanceSystem {
     this.checkoutActivityInstance = activityInstance!;
   }
 
-  ActivityInstance getCheckinActivityInstance() {
-    return this.checkinActivityInstance;
+  Future<ActivityInstance> getCheckinActivityInstance(int? activityId) async {
+    List<ActivityInstance> activityInstances =
+        await fetchActivityInstance(activityId!);
+    return activityInstances[0];
   }
 
-  ActivityInstance getCheckoutActivityInstance() {
-    return this.checkoutActivityInstance;
+  Future<ActivityInstance> getCheckoutActivityInstance(int? activityId) async {
+    List<ActivityInstance> activityInstances =
+        await fetchActivityInstance(activityId!);
+    return activityInstances[0];
   }
 
   void fetchPersonForUser() async {

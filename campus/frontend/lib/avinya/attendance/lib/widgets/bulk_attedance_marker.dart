@@ -133,73 +133,79 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            if (campusAppsPortalPersonMetaDataInstance
-                .getGroups()
-                .contains('Student'))
-              Text("Student Group",
-                  style:
-                      TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
-            Text(campusAppsPortalInstance.activityIds['school-day'].toString(),
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
-            Text(campusAppsPortalInstance.getUserPerson().preferred_name!,
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
-            Text(
-              "Classes",
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16.0),
-            Wrap(
-              spacing: 16.0,
-              children: classes
-                  .map((className) => ChoiceChip(
-                        label: Text(className),
-                        selected: classes.indexOf(className) == 0,
-                        onSelected: (bool selected) {},
-                      ))
-                  .toList(),
-            ),
-            SizedBox(height: 32.0),
-            Text(
-              "Students",
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16.0),
-            Table(
-              border: TableBorder.all(),
-              children: [
-                TableRow(children: [
-                  TableCell(child: Text("Name")),
-                  ...classes
-                      .map((className) => TableCell(child: Text(className)))
-                      .toList()
-                ]),
-                ...students.map((studentName) {
-                  return TableRow(children: [
-                    TableCell(child: Text(studentName)),
-                    ...classes
-                        .map((className) => TableCell(
-                              child: Checkbox(
-                                value:
-                                    attendanceList[classes.indexOf(className)]
-                                        [studentName],
-                                onChanged: (bool? value) {
-                                  toggleAttendance(className, studentName);
-                                },
-                              ),
+      child: campusAppsPortalPersonMetaDataInstance
+              .getGroups()
+              .contains('Student')
+          ? Text("Please go to 'Mark Attedance' Page",
+              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold))
+          : Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                      campusAppsPortalInstance.activityIds['school-day']
+                          .toString(),
+                      style: TextStyle(
+                          fontSize: 24.0, fontWeight: FontWeight.bold)),
+                  Text(campusAppsPortalInstance.getUserPerson().preferred_name!,
+                      style: TextStyle(
+                          fontSize: 24.0, fontWeight: FontWeight.bold)),
+                  Text(
+                    "Classes",
+                    style:
+                        TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 16.0),
+                  Wrap(
+                    spacing: 16.0,
+                    children: classes
+                        .map((className) => ChoiceChip(
+                              label: Text(className),
+                              selected: classes.indexOf(className) == 0,
+                              onSelected: (bool selected) {},
                             ))
-                        .toList()
-                  ]);
-                }).toList()
-              ],
-            )
-          ],
-        ),
-      ),
+                        .toList(),
+                  ),
+                  SizedBox(height: 32.0),
+                  Text(
+                    "Students",
+                    style:
+                        TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 16.0),
+                  Table(
+                    border: TableBorder.all(),
+                    children: [
+                      TableRow(children: [
+                        TableCell(child: Text("Name")),
+                        ...classes
+                            .map((className) =>
+                                TableCell(child: Text(className)))
+                            .toList()
+                      ]),
+                      ...students.map((studentName) {
+                        return TableRow(children: [
+                          TableCell(child: Text(studentName)),
+                          ...classes
+                              .map((className) => TableCell(
+                                    child: Checkbox(
+                                      value: attendanceList[classes
+                                          .indexOf(className)][studentName],
+                                      onChanged: (bool? value) {
+                                        toggleAttendance(
+                                            className, studentName);
+                                      },
+                                    ),
+                                  ))
+                              .toList()
+                        ]);
+                      }).toList()
+                    ],
+                  )
+                ],
+              ),
+            ),
     );
   }
 }
