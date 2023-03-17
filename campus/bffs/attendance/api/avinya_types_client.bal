@@ -52,7 +52,7 @@ public isolated client class GraphqlClient {
         return <GetActivityResponse> check performDataBinding(graphqlResponse, GetActivityResponse);
     }
     remote isolated function addActivityAttendance(ActivityParticipantAttendance attendance) returns AddActivityAttendanceResponse|graphql:ClientError {
-        string query = string `mutation addActivityAttendance($attendance:ActivityParticipantAttendance!) {add_attendance(attendance:$attendance) {id activity_instance_id sign_in_time sign_out_time created}}`;
+        string query = string `mutation addActivityAttendance($attendance:ActivityParticipantAttendance!) {add_attendance(attendance:$attendance) {id activity_instance_id sign_in_time sign_out_time in_marked_by out_marked_by created updated}}`;
         map<anydata> variables = {"attendance": attendance};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <AddActivityAttendanceResponse> check performDataBinding(graphqlResponse, AddActivityAttendanceResponse);

@@ -13,6 +13,8 @@ class ActivityAttendance {
   String? updated;
   String? sign_in_time;
   String? sign_out_time;
+  String? in_marked_by;
+  String? out_marked_by;
 
   ActivityAttendance({
     this.id,
@@ -22,6 +24,8 @@ class ActivityAttendance {
     this.updated,
     this.sign_in_time,
     this.sign_out_time,
+    this.in_marked_by,
+    this.out_marked_by,
   });
 
   factory ActivityAttendance.fromJson(Map<String, dynamic> json) {
@@ -33,6 +37,8 @@ class ActivityAttendance {
       updated: json['updated'],
       sign_in_time: json['sign_in_time'],
       sign_out_time: json['sign_out_time'],
+      in_marked_by: json['in_marked_by'],
+      out_marked_by: json['out_marked_by'],
     );
   }
 
@@ -45,6 +51,8 @@ class ActivityAttendance {
         if (updated != null) 'updated': updated,
         if (sign_in_time != null) 'sign_in_time': sign_in_time,
         if (sign_out_time != null) 'sign_out_time': sign_out_time,
+        if (in_marked_by != null) 'in_marked_by': in_marked_by,
+        if (out_marked_by != null) 'out_marked_by': out_marked_by,
       };
 }
 

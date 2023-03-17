@@ -26,6 +26,12 @@ class CampusAppsPortal {
   String? user_digital_id;
   CampusAppsPortalAuth? auth;
   bool signedIn = false;
+  bool isStudent = false;
+  bool isParent = false;
+  bool isSecurity = false;
+  bool isJanitor = false;
+  bool isTeacher = false;
+  bool isFoundation = false;
 
   final activityIds = {
     'school-day': 1,
@@ -40,6 +46,21 @@ class CampusAppsPortal {
     'lunch-break': 10,
     'work': 11,
     'departure': 12,
+  };
+
+  final todaysActivityInstanceIds = {
+    'school-day': [],
+    'arrival': [],
+    'breakfast-break': [],
+    'homeroom': [],
+    'pcti': [],
+    'class-tutorial': [],
+    'class-presentation': [],
+    'tea-break': [],
+    'free-time': [],
+    'lunch-break': [],
+    'work': [],
+    'departure': [],
   };
 
   void setSignedIn(bool value) {
@@ -146,12 +167,34 @@ class CampusAppsPortal {
           person.digital_id != this.user_digital_id!) {
         person = await fetchPerson(this.user_digital_id!);
         this.userPerson = person;
-        log('AdmissionSystem fetchPersonForUser: ' +
+        log('Campus Apps Portal - fetchPersonForUser: ' +
             person.toJson().toString());
+        campusAppsPortalInstance.setUserPerson(person);
+
+        if (person.digital_id != null) {
+          this.isStudent = campusAppsPortalPersonMetaDataInstance
+              .getGroups()
+              .contains('Student');
+          this.isParent = campusAppsPortalPersonMetaDataInstance
+              .getGroups()
+              .contains('Parent');
+          this.isSecurity = campusAppsPortalPersonMetaDataInstance
+              .getGroups()
+              .contains('Security');
+          this.isJanitor = campusAppsPortalPersonMetaDataInstance
+              .getGroups()
+              .contains('Janitor');
+          this.isTeacher = campusAppsPortalPersonMetaDataInstance
+              .getGroups()
+              .contains('Teacher');
+          this.isFoundation = campusAppsPortalPersonMetaDataInstance
+              .getGroups()
+              .contains('Foundation');
+        }
       }
     } catch (e) {
       print(
-          'AdmissionSystem fetchPersonForUser :: Error fetching person for user');
+          'Campus Apps Portal fetchPersonForUser :: Error fetching person for user');
       print(e);
     }
   }
