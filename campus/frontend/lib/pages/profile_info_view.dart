@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:gallery/data/person.dart';
 import 'package:sizer/sizer.dart';
-import 'dart:developer';
 import 'package:intl/intl.dart';
 
 class MyProfileScreen extends StatefulWidget {
@@ -16,12 +15,7 @@ class MyProfileScreen extends StatefulWidget {
 class _MyProfileScreenState extends State<MyProfileScreen> {
   late Person userPerson = Person()
     ..full_name = 'John'
-    // ..organization = Organization()
-    // ..organization!.id = 2
     ..nic_no = '12';
-  // String? preferredName;
-  // String? fullName;
-  // String? notes;
 
   @override
   void initState() {
@@ -37,47 +31,26 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     });
   }
 
-  // String? preferredName = userPerson.preferred_name;
-
-  //  MyProfileScreen({Key? key}) : super(key: key);
-  static String routeName = 'MyProfileScreen';
-
-  //log user details
-  // print('userPerson: ${userPerson.id}');
-  // print('userPerson: ${userPerson.preferred_name}');
+  int calculateAge(String dateOfBirth) {
+    DateTime today = DateTime.now();
+    DateTime dob = DateTime.parse(dateOfBirth);
+    int age = today.year - dob.year;
+    if (today.month < dob.month ||
+        (today.month == dob.month && today.day < dob.day)) {
+      age--;
+    }
+    return age;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //app bar theme for tablet
-      // appBar: AppBar(
-      //   title: Text('My Profile'),
-      //   actions: [
-      //     InkWell(
-      //       onTap: () {
-      //         //send report to school management, in case if you want some changes to your profile
-      //       },
-      //       child: Container(
-      //         padding: EdgeInsets.only(right: kDefaultPadding / 2),
-      //         child: Row(
-      //           children: [
-      //             Icon(Icons.report_gmailerrorred_outlined),
-      //             kHalfWidthSizedBox,
-      //             Text(
-      //               'Report',
-      //               style: Theme.of(context).textTheme.subtitle2,
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //     ),
-      //   ],
-      // ),
       body: SingleChildScrollView(
         child: Container(
           color: kOtherColor,
           child: Column(
             children: [
+              sizedBox,
               Container(
                 width: 100.w,
                 height: SizerUtil.deviceType == DeviceType.tablet ? 19.h : 15.h,
@@ -113,7 +86,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                         ? 4.sp
                                         : 5.sp,
                               ),
-                          // style: Theme.of(context).textTheme.subtitle1,
                         ),
                         Text(
                           userPerson.organization!.name!.name_en!,
@@ -124,8 +96,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 color: kTextBlackColor,
                                 fontSize:
                                     SizerUtil.deviceType == DeviceType.tablet
-                                        ? 4.sp
-                                        : 5.sp,
+                                        ? 3.sp
+                                        : 4.sp,
                               ),
                         ),
                       ],
@@ -139,7 +111,10 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 children: [
                   ProfileDetailRow(
                       title: 'Registration Number', value: '${userPerson.id}'),
-                  ProfileDetailRow(title: 'Academic Year', value: '2020-2021'),
+                  ProfileDetailRow(
+                      title: 'Academic Year',
+                      value:
+                          '${DateFormat('yyyy').format(DateTime.parse(userPerson.updated!))} - ${DateFormat('yyyy').format(DateTime.parse(userPerson.updated!).add(Duration(days: 365)))} '),
                 ],
               ),
               Row(
@@ -148,7 +123,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                   ProfileDetailRow(
                       title: 'Programme',
                       value: '${userPerson.avinya_type!.focus!}'),
-                  ProfileDetailRow(title: 'Gender', value: '${userPerson.sex}'),
+                  ProfileDetailRow(title: 'Class', value: 'Leopard'),
                 ],
               ),
               Row(
@@ -157,30 +132,146 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                   ProfileDetailRow(
                       title: 'Date of Admission',
                       value: DateFormat('d MMM, yyyy')
-                          .format(DateTime.parse(userPerson.date_of_birth!))),
+                          .format(DateTime.parse(userPerson.created!))),
                   ProfileDetailRow(
-                      title: 'Date of Birth',
-                      value: DateFormat('d MMM, yyyy')
-                          .format(DateTime.parse(userPerson.date_of_birth!))),
+                      title: 'Age',
+                      value:
+                          '${calculateAge(userPerson.date_of_birth!)} years old'),
                 ],
               ),
               sizedBox,
+              sizedBox,
+              sizedBox,
+              Text(
+                'Student Information',
+                style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                      color: kTextBlackColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: SizerUtil.deviceType == DeviceType.tablet
+                          ? 4.sp
+                          : 5.sp,
+                    ),
+              ),
+              sizedBox,
+              ProfileDetailColumn(
+                title: 'Full Name',
+                value: '${userPerson.full_name}',
+              ),
+              ProfileDetailColumn(
+                title: 'Preferred Name',
+                value: '${userPerson.preferred_name}',
+              ),
+              ProfileDetailColumn(
+                title: 'Date of Birth',
+                value: DateFormat('d MMM, yyyy')
+                    .format(DateTime.parse(userPerson.date_of_birth!)),
+              ),
+              ProfileDetailColumn(
+                title: 'Gender',
+                value: '${userPerson.sex}',
+              ),
+              ProfileDetailColumn(
+                title: 'NIC Number',
+                value: '${userPerson.nic_no}',
+              ),
+              ProfileDetailColumn(
+                title: 'Passport Number',
+                value:
+                    '${userPerson.passport_no == null ? 'N/A' : userPerson.nic_no}',
+              ),
+              sizedBox,
+              sizedBox,
+              sizedBox,
+              Text(
+                'Student Contact Information',
+                style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                      color: kTextBlackColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: SizerUtil.deviceType == DeviceType.tablet
+                          ? 4.sp
+                          : 5.sp,
+                    ),
+              ),
+              sizedBox,
+              ProfileDetailColumn(
+                title: 'Personal Phone Number',
+                value: '${userPerson.phone}',
+              ),
+              ProfileDetailColumn(
+                title: 'Avinya Phone Number',
+                value: '${userPerson.avinya_phone}',
+              ),
               ProfileDetailColumn(
                 title: 'Email',
                 value: '${userPerson.digital_id}',
               ),
               ProfileDetailColumn(
+                title: 'Home Address',
+                value: '${userPerson.permanent_address!.street_address}',
+              ),
+              ProfileDetailColumn(
+                title: 'Mailing Address',
+                value: '${userPerson.mailing_address!.street_address}',
+              ),
+              sizedBox,
+              sizedBox,
+              sizedBox,
+              Text(
+                'Student Bank Information',
+                style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                      color: kTextBlackColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: SizerUtil.deviceType == DeviceType.tablet
+                          ? 4.sp
+                          : 5.sp,
+                    ),
+              ),
+              sizedBox,
+              ProfileDetailColumn(
+                title: 'Bank Name',
+                value: '${userPerson.bank_name}',
+              ),
+              ProfileDetailColumn(
+                title: 'Bank Account Name',
+                value: '${userPerson.bank_account_name}',
+              ),
+              ProfileDetailColumn(
+                title: 'Bank Account Number',
+                value: '${userPerson.bank_account_number}',
+              ),
+              sizedBox,
+              sizedBox,
+              sizedBox,
+              Text(
+                'Parent/Guardian Information',
+                style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                      color: kTextBlackColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: SizerUtil.deviceType == DeviceType.tablet
+                          ? 4.sp
+                          : 5.sp,
+                    ),
+              ),
+              sizedBox,
+              ProfileDetailColumn(
                 title: 'Father Name',
-                value: 'John Mirza',
+                value: '${userPerson.parent_students[0].preferred_name}',
               ),
               ProfileDetailColumn(
                 title: 'Mother Name',
-                value: 'Angelica Mirza',
+                value: '${userPerson.parent_students[1].preferred_name}',
               ),
               ProfileDetailColumn(
-                title: 'Phone Number',
-                value: '${userPerson.phone}',
+                title: 'Father Phone Number',
+                value: '${userPerson.parent_students[0].phone}',
               ),
+              ProfileDetailColumn(
+                title: 'Mother Phone Number',
+                value: '${userPerson.parent_students[1].phone}',
+              ),
+              sizedBox,
+              sizedBox,
+              sizedBox,
             ],
           ),
         ),
@@ -210,8 +301,8 @@ class ProfileDetailRow extends StatelessWidget {
                 style: Theme.of(context).textTheme.subtitle1!.copyWith(
                       color: kTextBlackColor,
                       fontSize: SizerUtil.deviceType == DeviceType.tablet
-                          ? 5.sp
-                          : 6.sp,
+                          ? 4.sp
+                          : 5.sp,
                     ),
               ),
               kHalfSizedBox,
@@ -220,8 +311,8 @@ class ProfileDetailRow extends StatelessWidget {
                 style: Theme.of(context).textTheme.subtitle1!.copyWith(
                       color: kTextBlackColor,
                       fontSize: SizerUtil.deviceType == DeviceType.tablet
-                          ? 4.sp
-                          : 5.sp,
+                          ? 3.sp
+                          : 4.sp,
                     ),
               ),
               kHalfSizedBox,
@@ -229,6 +320,7 @@ class ProfileDetailRow extends StatelessWidget {
                 width: 35.w,
                 child: Divider(
                   thickness: 1.0,
+                  color: kTextBlackColor,
                 ),
               ),
             ],
@@ -236,6 +328,7 @@ class ProfileDetailRow extends StatelessWidget {
           Icon(
             Icons.lock_outline,
             size: 6.sp,
+            color: kTextBlackColor,
           ),
         ],
       ),
@@ -264,8 +357,8 @@ class ProfileDetailColumn extends StatelessWidget {
                 style: Theme.of(context).textTheme.subtitle1!.copyWith(
                       color: kTextBlackColor,
                       fontSize: SizerUtil.deviceType == DeviceType.tablet
-                          ? 5.sp
-                          : 6.sp,
+                          ? 4.sp
+                          : 5.sp,
                     ),
               ),
               kHalfSizedBox,
@@ -274,8 +367,8 @@ class ProfileDetailColumn extends StatelessWidget {
                 style: Theme.of(context).textTheme.subtitle1!.copyWith(
                       color: kTextBlackColor,
                       fontSize: SizerUtil.deviceType == DeviceType.tablet
-                          ? 4.sp
-                          : 5.sp,
+                          ? 3.sp
+                          : 4.sp,
                     ),
               ),
               kHalfSizedBox,
@@ -283,6 +376,7 @@ class ProfileDetailColumn extends StatelessWidget {
                 width: 92.w,
                 child: Divider(
                   thickness: 1.0,
+                  color: kTextBlackColor,
                 ),
               )
             ],
@@ -290,6 +384,7 @@ class ProfileDetailColumn extends StatelessWidget {
           Icon(
             Icons.lock_outline,
             size: 6.sp,
+            color: kTextBlackColor,
           ),
         ],
       ),
