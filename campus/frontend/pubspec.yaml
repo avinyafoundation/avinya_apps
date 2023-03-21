@@ -56,6 +56,9 @@ dev_dependencies:
   test: ^1.21.1
   web_benchmarks: ^0.1.0
 
+dependency_overrides:
+  intl: ^0.18.0
+
 flutter:
   deferred-components:
     - name: crane
