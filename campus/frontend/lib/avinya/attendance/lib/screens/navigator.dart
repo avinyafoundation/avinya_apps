@@ -4,8 +4,7 @@ import 'package:attendance/screens/activity_details.dart';
 import 'package:attendance/screens/avinya_type_details.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-
-import '../auth.dart';
+import 'package:gallery/auth.dart';
 import '../data.dart';
 import '../routing.dart';
 import '../screens/sign_in.dart';

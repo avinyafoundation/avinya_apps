@@ -1,6 +1,6 @@
-import 'package:attendance/data/campus_attendance_system.dart';
 import 'package:flutter/material.dart';
-
+import 'package:gallery/avinya/attendance/lib/data/activity_instance.dart';
+import '../data.dart';
 import '../data/activity_attendance.dart';
 
 class AttendanceMarker extends StatefulWidget {
@@ -12,13 +12,16 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
   bool _isCheckedIn = false;
   bool _isCheckedOut = false;
 
-  void _handleCheckIn() {
+  Future<void> _handleCheckIn() async {
+    var activityInstance =
+        await campusAttendanceSystemInstance.getCheckinActivityInstance(
+            campusAppsPortalInstance.activityIds['school-day']);
     // call the API to check-in
     createActivityAttendance(ActivityAttendance(
-      activity_instance_id:
-          campusAttendanceSystemInstance.getCheckinActivityInstance().id,
-      person_id: campusAttendanceSystemInstance.getUserPerson().id,
+      activity_instance_id: activityInstance.id,
+      person_id: campusAppsPortalInstance.getUserPerson().id,
       sign_in_time: DateTime.now().toString(),
+      in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
     ));
     setState(() {
       _isCheckedIn = true;
@@ -26,13 +29,16 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
     print('Checked in for today.');
   }
 
-  void _handleCheckOut() {
+  Future<void> _handleCheckOut() async {
+    var activityInstance =
+        await campusAttendanceSystemInstance.getCheckoutActivityInstance(
+            campusAppsPortalInstance.activityIds['school-day']);
     // call the API to check-out
     createActivityAttendance(ActivityAttendance(
-      activity_instance_id:
-          campusAttendanceSystemInstance.getCheckoutActivityInstance().id,
-      person_id: campusAttendanceSystemInstance.getUserPerson().id,
+      activity_instance_id: activityInstance.id,
+      person_id: campusAppsPortalInstance.getUserPerson().id,
       sign_out_time: DateTime.now().toString(),
+      out_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
     ));
     setState(() {
       _isCheckedOut = true;

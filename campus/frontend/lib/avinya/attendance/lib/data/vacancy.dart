@@ -1,9 +1,7 @@
 import 'dart:developer';
-
-import 'package:attendance/data/campus_attendance_system.dart';
+import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import '../config/app_config.dart';
 import 'avinya_type.dart';
 import 'evaluation_criteria.dart';
@@ -69,7 +67,7 @@ Future<List<Vacancy>> fetchVacancies() async {
   final response = await http.get(
     Uri.parse(AppConfig.campusAttendanceBffApiUrl +
         '/student_vacancies/' +
-        campusAttendanceSystemInstance.getSchoolName()),
+        campusAppsPortalInstance.getSchoolName()),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',

@@ -1,10 +1,64 @@
 import 'dart:developer';
 
+import 'package:gallery/avinya/attendance/lib/data.dart';
 import 'package:gallery/data/address.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../config/app_config.dart';
+
+class Name {
+  String? name_en;
+  String? name_si;
+  String? name_ta;
+
+  Name({
+    this.name_en,
+    this.name_si,
+    this.name_ta,
+  });
+
+  factory Name.fromJson(Map<String, dynamic> json) {
+    return Name(
+      name_en: json['name_en'],
+      name_si: json['name_si'],
+      name_ta: json['name_ta'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (name_en != null) 'name_en': name_en,
+        if (name_si != null) 'name_si': name_si,
+        if (name_ta != null) 'name_ta': name_ta,
+        // if (address != null) 'address': address!.toJson(),
+        // if (employees != null) 'employees': List<dynamic>.from(employees!.map((x) => x.toJson())),
+      };
+}
+
+class Organization {
+  int? id;
+  Name? name;
+
+  Organization({
+    this.id,
+    this.name,
+  });
+
+  factory Organization.fromJson(Map<String, dynamic> json) {
+    return Organization(
+      id: json['id'],
+      name: json['name'] != null ? Name.fromJson(json['name']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        // if (name != null) 'name': name,
+        // if (name != null) 'name': Name!.toJson(),
+        if (name != null) 'name': name!.toJson(),
+        // if (employees != null) 'employees': List<dynamic>.from(employees!.map((x) => x.toJson())),
+      };
+}
 
 class Person {
   int? id;
@@ -22,12 +76,24 @@ class Person {
   String? id_no;
   int? phone;
   int? organization_id;
+  Organization? organization;
+  AvinyaType? avinya_type;
   String? asgardeo_id;
   String? jwt_sub_id;
   String? jwt_email;
   String? email;
   Address? permanent_address;
   Address? mailing_address;
+  String? street_address;
+  String? bank_account_number;
+  String? bank_name;
+  String? digital_id;
+  String? bank_account_name;
+  int? avinya_phone;
+  int? academy_org_id;
+  String? created;
+  String? updated;
+  var parent_students = <Person>[];
 
   Person({
     this.id,
@@ -45,12 +111,24 @@ class Person {
     this.id_no,
     this.phone,
     this.organization_id,
+    this.organization,
+    this.avinya_type,
     this.asgardeo_id,
     this.jwt_sub_id,
     this.jwt_email,
     this.email,
     this.permanent_address,
     this.mailing_address,
+    this.street_address,
+    this.bank_account_number,
+    this.bank_name,
+    this.digital_id,
+    this.bank_account_name,
+    this.avinya_phone,
+    this.academy_org_id,
+    this.created,
+    this.updated,
+    this.parent_students = const [],
   });
 
   factory Person.fromJson(Map<String, dynamic> json) {
@@ -78,6 +156,22 @@ class Person {
           json['permanent_address'] != null ? json['permanent_address'] : {}),
       mailing_address: Address.fromJson(
           json['mailing_address'] != null ? json['mailing_address'] : {}),
+      street_address: json['street_address'],
+      bank_account_number: json['bank_account_number'],
+      bank_name: json['bank_name'],
+      digital_id: json['digital_id'],
+      bank_account_name: json['bank_account_name'],
+      avinya_phone: json['avinya_phone'],
+      academy_org_id: json['academy_org_id'],
+      organization: Organization.fromJson(
+          json['organization'] != null ? json['organization'] : {}),
+      avinya_type: AvinyaType.fromJson(
+          json['avinya_type'] != null ? json['avinya_type'] : {}),
+      created: json['created'],
+      updated: json['updated'],
+      parent_students: json['parent_students']
+          .map<Person>((eval_json) => Person.fromJson(eval_json))
+          .toList(),
     );
   }
 
@@ -107,6 +201,19 @@ class Person {
           'permanent_address': permanent_address!.toJson(),
         if (mailing_address != null)
           'mailing_address': mailing_address!.toJson(),
+        if (street_address != null) 'street_address': street_address,
+        if (bank_account_number != null)
+          'bank_account_number': bank_account_number,
+        if (bank_name != null) 'bank_name': bank_name,
+        if (digital_id != null) 'digital_id': digital_id,
+        if (bank_account_name != null) 'bank_account_name': bank_account_name,
+        if (avinya_phone != null) 'avinya_phone': avinya_phone,
+        if (academy_org_id != null) 'academy_org_id': academy_org_id,
+        if (organization != null) 'organization': organization!.toJson(),
+        if (avinya_type != null) 'avinya_type': avinya_type!.toJson(),
+        if (created != null) 'created': created,
+        if (updated != null) 'updated': updated,
+        'parent_students': [parent_students],
       };
 }
 
@@ -130,10 +237,12 @@ Future<List<Person>> fetchPersons() async {
   }
 }
 
-Future<Person> fetchPerson(String jwt_sub_id) async {
+Future<Person> fetchPerson(String digital_id) async {
+  final uri = Uri.parse(AppConfig.campusProfileBffApiUrl + '/person')
+      .replace(queryParameters: {'id': digital_id});
+
   final response = await http.get(
-    Uri.parse(
-        AppConfig.campusAttendanceBffApiUrl + '/student_applicant/$jwt_sub_id'),
+    uri,
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',

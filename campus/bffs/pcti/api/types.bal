@@ -976,7 +976,7 @@ public type GetPctiActivityInstancesTodayResponse record {|
                 int? grade;
             |}[]? parent_evaluations;
         |}[]? evaluations;
-    |}[] pcti_activity_instances_today;
+    |}[] activity_instances_today;
 |};
 
 public type AddActivityResponse record {|

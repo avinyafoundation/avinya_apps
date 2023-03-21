@@ -160,7 +160,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
         future: fetchStudentPerson(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            campusAttendanceSystemInstance.setUserPerson(snapshot.data!);
+            campusAppsPortalInstance.setUserPerson(snapshot.data!);
             routeState.go('/application');
           } else if (snapshot.hasError) {
             return Scaffold(
@@ -423,8 +423,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
   Future<Person> fetchStudentPerson() async {
     // check if user is in Avinya database person table as a student
     try {
-      this.futurePerson =
-          fetchPerson(campusAttendanceSystemInstance.getJWTSub()!);
+      this.futurePerson = fetchPerson(campusAppsPortalInstance.getDigitalId()!);
     } catch (e) {
       print(
           'AdmissionSystem fetchPersonForUser :: Error fetching person for user');
@@ -475,8 +474,8 @@ class _ApplyScreenState extends State<ApplyScreen> {
             phone: int.parse(phoneMaskTextInputFormatter.getUnmaskedText()),
             email: _email_Controller.text,
             mailing_address_id: studentAddress.id,
-            jwt_sub_id: campusAttendanceSystemInstance.getJWTSub(),
-            jwt_email: campusAttendanceSystemInstance.getJWTEmail(),
+            jwt_sub_id: campusAppsPortalInstance.getJWTSub(),
+            jwt_email: campusAppsPortalInstance.getJWTEmail(),
           );
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -484,11 +483,11 @@ class _ApplyScreenState extends State<ApplyScreen> {
           );
           studentPerson = await createPerson(person);
 
-          campusAttendanceSystemInstance.setUserPerson(studentPerson);
+          campusAppsPortalInstance.setUserPerson(studentPerson);
 
           final Application application = Application(
             person_id: studentPerson.id,
-            vacancy_id: campusAttendanceSystemInstance.getVacancyId(),
+            vacancy_id: campusAppsPortalInstance.getVacancyId(),
           );
 
           ScaffoldMessenger.of(context).showSnackBar(

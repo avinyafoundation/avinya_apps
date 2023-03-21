@@ -21,22 +21,22 @@ class ApplicationDetailsState extends State<ApplicationDetails> {
   @override
   void initState() {
     super.initState();
-    if (campusAttendanceSystemInstance.getUserPerson().id == null) {
-      campusAttendanceSystemInstance.fetchPersonForUser();
+    if (campusAppsPortalInstance.getUserPerson().id == null) {
+      campusAppsPortalInstance.fetchPersonForUser();
     }
-    if (campusAttendanceSystemInstance.getUserPerson().id != null) {
+    if (campusAppsPortalInstance.getUserPerson().id != null) {
       futureApplication =
-          fetchApplication(campusAttendanceSystemInstance.getUserPerson().id!);
+          fetchApplication(campusAppsPortalInstance.getUserPerson().id!);
     }
   }
 
   Future<Application> refreshApplicationState() async {
-    if (campusAttendanceSystemInstance.getUserPerson().id == null) {
-      campusAttendanceSystemInstance.fetchPersonForUser();
+    if (campusAppsPortalInstance.getUserPerson().id == null) {
+      campusAppsPortalInstance.fetchPersonForUser();
     }
-    if (campusAttendanceSystemInstance.getUserPerson().id != null) {
+    if (campusAppsPortalInstance.getUserPerson().id != null) {
       futureApplication =
-          fetchApplication(campusAttendanceSystemInstance.getUserPerson().id!);
+          fetchApplication(campusAppsPortalInstance.getUserPerson().id!);
     }
     return futureApplication;
   }
@@ -45,10 +45,10 @@ class ApplicationDetailsState extends State<ApplicationDetails> {
   Widget build(BuildContext context) {
     final routeState = RouteStateScope.of(context);
     try {
-      campusAttendanceSystemInstance
+      campusAppsPortalInstance
           .fetchPersonForUser(); // do a fetch to help cross check
-      Person person = campusAttendanceSystemInstance.getUserPerson();
-      if (campusAttendanceSystemInstance.getJWTSub() != person.jwt_sub_id) {
+      Person person = campusAppsPortalInstance.getUserPerson();
+      if (campusAppsPortalInstance.getJWTSub() != person.jwt_sub_id) {
         // the person has not logged in
         routeState.go('/signin');
         return Container();

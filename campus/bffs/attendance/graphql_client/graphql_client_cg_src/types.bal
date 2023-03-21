@@ -21,6 +21,7 @@ public type ActivityInstance record {
     string? record_type?;
     int? monthly_sequence?;
     string? start_time?;
+    int? organization_id?;
     int? activity_id?;
     string? name?;
     int? id?;
@@ -131,6 +132,29 @@ public type AvinyaType record {
     string global_type?;
 };
 
+public type Consumable record {
+    string? created?;
+    int? avinya_type_id?;
+    string? name?;
+    string? description?;
+    string? model?;
+    string? serial_number?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    string? manufacturer?;
+};
+
+public type EducationExperience record {
+    string? end_date?;
+    int[]? evaluation_id?;
+    string? school?;
+    int? id?;
+    string? record_type?;
+    int? person_id?;
+    string? start_date?;
+};
+
 public type Evaluation record {
     int[]? parent_evaluations?;
     int? activity_instance_id?;
@@ -146,14 +170,72 @@ public type Evaluation record {
     string? record_type?;
 };
 
+public type EvaluationCriteria record {
+    string? difficulty?;
+    int? rating_out_of?;
+    string? description?;
+    string? evaluation_type?;
+    int? id?;
+    string? prompt?;
+    string? expected_answer?;
+    string? record_type?;
+};
+
+public type EvaluationCriteriaAnswerOption record {
+    string? answer?;
+    int? evaluation_criteria_id?;
+    int? id?;
+    boolean? expected_answer?;
+    string? record_type?;
+};
+
+public type EvaluationCycle record {
+    string? end_date?;
+    string? name?;
+    string? description?;
+    int? id?;
+    string? record_type?;
+    string? start_date?;
+};
+
+public type EvaluationMetadata record {
+    string? meta_type?;
+    int? evaluation_id?;
+    string? metadata?;
+    int? level?;
+    string? on_date_time?;
+    string? focus?;
+    string? location?;
+    int? id?;
+    string? record_type?;
+    string? status?;
+};
+
+public type Inventory record {
+    int? quantity_out?;
+    int? consumable_id?;
+    int? quantity?;
+    int? quantity_in?;
+    string? created?;
+    int? organization_id?;
+    int? avinya_type_id?;
+    int? id?;
+    int? asset_id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+};
+
 public type Organization record {
     int[]? parent_organizations?;
+    string? notes?;
     string? name_ta?;
     int[]? child_organizations?;
     int? phone?;
     int? address_id?;
     string? name_si?;
     int? avinya_type?;
+    string? description?;
     int? id?;
     string? record_type?;
     string name_en?;
@@ -161,6 +243,8 @@ public type Organization record {
 
 public type Person record {
     int? permanent_address_id?;
+    string? street_address?;
+    string? bank_account_number?;
     string? notes?;
     int[]? parent_student?;
     string? date_of_birth?;
@@ -169,14 +253,18 @@ public type Person record {
     int? mailing_address_id?;
     string? id_no?;
     string? jwt_email?;
+    string? bank_name?;
     int? id?;
     string? email?;
     string? created?;
+    string? digital_id?;
     string? sex?;
     string? passport_no?;
     string? record_type?;
     Address? mailing_address?;
     int[]? child_student?;
+    string? bank_account_name?;
+    int? avinya_phone?;
     string? full_name?;
     string? nic_no?;
     int? phone?;
@@ -208,6 +296,59 @@ public type Prospect record {
     string? email?;
 };
 
+public type ResourceAllocation record {
+    string? end_date?;
+    int? consumable_id?;
+    int? quantity?;
+    string? created?;
+    int? asset_id?;
+    string? record_type?;
+    boolean? requested?;
+    boolean? approved?;
+    int? organization_id?;
+    int? id?;
+    string? updated?;
+    boolean? allocated?;
+    int? person_id?;
+    string? start_date?;
+};
+
+public type ResourceProperty record {
+    int? consumable_id?;
+    string? property?;
+    int? id?;
+    int? asset_id?;
+    string? value?;
+    string? record_type?;
+};
+
+public type Supplier record {
+    int? phone?;
+    string? created?;
+    string? name?;
+    int? address_id?;
+    string? description?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    string? email?;
+};
+
+public type Supply record {
+    string? order_date?;
+    string? delivery_date?;
+    int? consumable_id?;
+    string? created?;
+    int? order_amount?;
+    int? id?;
+    int? asset_id?;
+    int? supplier_id?;
+    string? order_id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+};
+
 public type Vacancy record {
     int? organization_id?;
     string? name?;
@@ -217,6 +358,16 @@ public type Vacancy record {
     int? head_count?;
     int? id?;
     string? record_type?;
+};
+
+public type WorkExperience record {
+    string? end_date?;
+    int[]? evaluation_id?;
+    string? organization?;
+    int? id?;
+    string? record_type?;
+    int? person_id?;
+    string? start_date?;
 };
 
 public type GetAvinyaTypesResponse record {|
@@ -319,4 +470,28 @@ public type AddActivityAttendanceResponse record {|
         string? sign_out_time;
         string? created;
     |}? add_attendance;
+|};
+
+public type GetActivityInstancesTodayResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_id;
+        string? name;
+        int? daily_sequence;
+        int? weekly_sequence;
+        int? monthly_sequence;
+        string? description;
+        string? notes;
+        string? start_time;
+        string? end_time;
+        string? created;
+        string? updated;
+        record {|
+            int? id;
+        |}? place;
+        record {|
+            int? id;
+        |}? organization;
+    |}[]? activity_instances_today;
 |};

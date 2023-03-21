@@ -2,8 +2,9 @@ import 'dart:developer';
 
 // import 'package:attendance/src/data/campus_attendance_system.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery/auth.dart';
 
-import 'auth.dart';
+// import 'auth.dart';
 import 'routing.dart';
 import 'screens/navigator.dart';
 
@@ -17,7 +18,7 @@ class CampusAttendanceManagementSystem extends StatefulWidget {
 
 class _CampusAttendanceManagementSystemState
     extends State<CampusAttendanceManagementSystem> {
-  final _auth = SMSAuth();
+  final _auth = CampusAppsPortalAuth();
   final _navigatorKey = GlobalKey<NavigatorState>();
   late final RouteState _routeState;
   late final SimpleRouterDelegate _routerDelegate;
@@ -42,6 +43,9 @@ class _CampusAttendanceManagementSystemState
         '/activity/new',
         '/activity/edit',
         '/attendance_marker',
+        '/bulk_attendance_marker',
+        '/bulk_attendance_marker/class1',
+        '/bulk_attendance_marker/class2',
         '/avinya_types',
         '/#access_token',
       ],

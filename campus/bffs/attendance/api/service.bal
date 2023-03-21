@@ -137,4 +137,28 @@ service / on new http:Listener(9091) {
                 ":: Detail: " + addActivityAttendanceResponse.detail().toString());
         }
     }
+
+    resource function get activity_instances_today/[int activity_id]() returns ActivityInstance[]|error {
+        GetActivityInstancesTodayResponse|graphql:ClientError getActivityInstancesTodayResponse = globalDataClient->getActivityInstancesToday(activity_id);
+        if(getActivityInstancesTodayResponse is GetActivityInstancesTodayResponse) {
+            ActivityInstance[] activityInstances = [];
+            foreach var activity_instance in getActivityInstancesTodayResponse.activity_instances_today {
+                ActivityInstance|error activityInstance = activity_instance.cloneWithType(ActivityInstance);
+                if(activityInstance is ActivityInstance) {
+                    activityInstances.push(activityInstance);
+                } else {
+                    log:printError("Error while processing Application record received", activityInstance);
+                    return error("Error while processing Application record received: " + activityInstance.message() + 
+                        ":: Detail: " + activityInstance.detail().toString());
+                }
+            }
+
+            return activityInstances;
+            
+        } else {
+            log:printError("Error while creating application", getActivityInstancesTodayResponse);
+            return error("Error while creating application: " + getActivityInstancesTodayResponse.message() + 
+                ":: Detail: " + getActivityInstancesTodayResponse.detail().toString());
+        }
+    }
 }

@@ -51,6 +51,8 @@ public type ActivityParticipantAttendance record {
     string? record_type?;
     int? person_id?;
     string? sign_out_time?;
+    string? in_marked_by?;
+    string? out_marked_by?;
 };
 
 public type ActivitySequencePlan record {
@@ -318,5 +320,33 @@ public type AddActivityAttendanceResponse record {|
         string? sign_in_time;
         string? sign_out_time;
         string? created;
+        string? updated;
+        string? in_marked_by;
+        string? out_marked_by;
     |}? add_attendance;
+|};
+
+
+public type GetActivityInstancesTodayResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_id;
+        string? name;
+        int? daily_sequence;
+        int? weekly_sequence;
+        int? monthly_sequence;
+        string? description;
+        string? notes;
+        string? start_time;
+        string? end_time;
+        string? created;
+        string? updated;
+        record {|
+            int? id;
+        |}? place;
+        record {|
+            int? id;
+        |}? organization;
+    |}[] activity_instances_today;
 |};

@@ -204,11 +204,11 @@ service / on new http:Listener(9091) {
         }
     }
 
-    resource function get pcti_activity_instances_today(int activity_id) returns ActivityInstance[]|error {
+    resource function get activity_instances_today(int activity_id) returns ActivityInstance[]|error {
         GetPctiActivityInstancesTodayResponse|graphql:ClientError getPctiActivityInstancesTodayResponse = globalDataClient->getPctiActivityInstancesToday(activity_id);
         if (getPctiActivityInstancesTodayResponse is GetPctiActivityInstancesTodayResponse) {
             ActivityInstance[] activityInstances = [];
-            foreach var pctiActivityInstance in getPctiActivityInstancesTodayResponse.pcti_activity_instances_today {
+            foreach var pctiActivityInstance in getPctiActivityInstancesTodayResponse.activity_instances_today {
                 ActivityInstance|error activityInstance = pctiActivityInstance.cloneWithType(ActivityInstance);
                 if (activityInstance is ActivityInstance) {
                     activityInstances.push(activityInstance);

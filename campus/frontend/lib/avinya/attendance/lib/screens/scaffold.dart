@@ -1,11 +1,10 @@
 import 'package:adaptive_navigation/adaptive_navigation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery/auth.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../config/app_config.dart';
 import '../routing.dart';
-import '../auth.dart';
 import 'scaffold_body.dart';
 
 class SMSScaffold extends StatelessWidget {
@@ -13,6 +12,7 @@ class SMSScaffold extends StatelessWidget {
     '/avinya_types/popular',
     '/activities/popular',
     '/attendance_marker',
+    '/bulk_attendance_marker/class1',
   ];
 
   const SMSScaffold({
@@ -89,6 +89,10 @@ class SMSScaffold extends StatelessWidget {
           AdaptiveScaffoldDestination(
             title: 'Attendance Marker',
             icon: Icons.qr_code_scanner,
+          ),
+          AdaptiveScaffoldDestination(
+            title: 'Bulk Attendance Marker',
+            icon: Icons.qr_code_scanner_outlined,
           ),
           AdaptiveScaffoldDestination(
             title: 'Tests',
