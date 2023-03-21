@@ -1,0 +1,583 @@
+query getAsset ($id:Int!){
+    asset(id:$id) {
+        id
+        name
+        manufacturer
+        model
+        serial_number
+        registration_number
+        description
+        avinya_type_id
+        avinya_type{
+            id
+        }
+    }
+}
+
+query getAssets{
+    assets {
+        id
+        name
+        manufacturer
+        model
+        serial_number
+        registration_number
+        description
+        avinya_type_id
+        avinya_type{
+            id
+        }
+    }
+}
+
+mutation createAsset($asset: Asset!) {
+    add_asset(asset: $asset) {
+        id
+        name
+        manufacturer
+        model
+        serial_number
+        registration_number
+        description
+        avinya_type{
+            id
+        }
+    }
+}
+
+mutation updateAsset($asset: Asset!) {
+    update_asset(asset: $asset) {
+        id
+        name
+        manufacturer
+        model
+        serial_number
+        registration_number
+        description
+        avinya_type{
+            id
+        }
+    }
+}
+
+query getSupplier ($id:Int!) {
+    supplier (id:$id) {
+        id
+        name
+        description 
+        phone
+        email
+        address{
+            id
+        }
+    }
+}
+
+query getSuppliers  {
+    suppliers {
+        id
+        name
+        description 
+        phone
+        email
+        address{
+            id
+        }
+    }
+}
+
+mutation addSupplier($supplier: Supplier!) {
+    add_supplier(supplier: $supplier) {
+        id
+        name
+        description 
+        phone
+        email
+        address{
+            id
+        }
+    }
+}
+
+mutation updateSupplier($supplier: Supplier!) {
+    update_supplier(supplier: $supplier) {
+        id
+        name
+        description 
+        phone
+        email
+        address{
+            id
+        }
+    }
+}
+
+query getConsumable ($id:Int!){
+    consumable (id:$id){
+        id
+        avinya_type{
+            id
+        }
+        name
+        description
+        manufacturer
+        model
+        serial_number
+    }
+}
+
+query getConsumables {
+    consumables {
+        id
+        avinya_type{
+            id
+        }
+        name
+        description
+        manufacturer
+        model
+        serial_number
+    }
+}
+
+mutation addConsumable($consumable: Consumable!) {
+    add_consumable(consumable: $consumable) {
+        id
+        avinya_type{
+            id
+        }
+        name
+        description
+        manufacturer
+        model
+        serial_number
+    }
+}
+
+mutation updateConsumable($consumable: Consumable!) {
+    update_consumable(consumable: $consumable) {
+        id
+        avinya_type{
+            id
+        }
+        name
+        description
+        manufacturer
+        model
+        serial_number
+    }
+}
+
+query getResourceProperty ($id:Int!){
+    resource_property (id:$id){
+        id
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        property
+        value
+    }
+}
+
+query getResourceProperties{
+    resource_properties {
+        id
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        property
+        value
+    }
+}
+
+mutation addResourceProperty($resourceproperty: ResourceProperty!) {
+    add_resource_property(resourceProperty: $resourceproperty) {
+        id
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        property
+        value
+    }
+}
+
+mutation updateResourceProperty($resourceproperty: ResourceProperty!) {
+    update_resource_property(resourceProperty: $resourceproperty) {
+        id
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        property
+        value
+    }
+}
+
+query getSupply ($id:Int!){
+    supply (id:$id){
+        id
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        supplier{
+            id
+        }
+        person{
+            id
+        }
+        order_date
+        delivery_date
+        order_id
+        order_amount
+    }
+}
+
+query getSupplies {
+    supplies {
+        id
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        supplier{
+            id
+        }
+        person{
+            id
+        }
+        order_date
+        delivery_date
+        order_id
+        order_amount
+    }
+}
+
+mutation addSupply($supply: Supply!) {
+    add_supply(supply: $supply) {
+        id
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        supplier{
+            id
+        }
+        person{
+            id
+        }
+        order_date
+        delivery_date
+        order_id
+        order_amount
+    }
+}
+
+mutation updateSupply($supply: Supply!) {
+    update_supply(supply: $supply) {
+        id
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        supplier{
+            id
+        }
+        person{
+            id
+        }
+        order_date
+        delivery_date
+        order_id
+        order_amount
+    }
+}
+
+query getResourceAllocation ($id:Int!){
+    resource_allocation (id:$id){
+        id
+        requested
+        approved
+        allocated
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        organization{
+            id
+        }
+        person{
+            id
+        }
+        quantity
+        start_date
+        end_date
+    }
+}
+
+query getResourceAllocationByPerson ($id:Int!){
+    resource_allocation(person_id:$id){
+        id
+        requested
+        approved
+        allocated
+        asset{
+            id
+            name
+            manufacturer
+            model
+            serial_number
+            registration_number
+            description
+            avinya_type{
+                id
+            }
+        }
+        consumable{
+            id
+        }
+        organization{
+            id
+        }
+        person{
+            id
+        }
+        quantity
+        start_date
+        end_date
+    }  
+}
+
+query getResourceAllocations {
+    resource_allocations {
+        id
+        requested
+        approved
+        allocated
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        organization{
+            id
+        }
+        person{
+            id
+        }
+        quantity
+        start_date
+        end_date
+    }
+}
+
+mutation addResourceAllocation($resourceallocation: ResourceAllocation!) {
+    add_resource_allocation(resourceAllocation: $resourceallocation) {
+        id
+        requested
+        approved
+        allocated
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        organization{
+            id
+        }
+        person{
+            id
+        }
+        quantity
+        start_date
+        end_date
+    }
+}
+
+mutation updateResourceAllocation($resourceallocation: ResourceAllocation!) {
+    update_resource_allocation(resourceAllocation: $resourceallocation) {
+        id
+        requested
+        approved
+        allocated
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        organization{
+            id
+        }
+        person{
+            id
+        }
+        quantity
+        start_date
+        end_date
+    }
+}
+
+query getInventory ($id:Int!){
+    inventory (id:$id){
+        id
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        organization{
+            id
+        }
+        person{
+            id
+        }
+        avinya_type{
+            id
+            active
+            description
+            focus
+            foundation_type
+            global_type
+            level
+            name
+        }
+        avinya_type_id
+        quantity
+        quantity_in
+        quantity_out
+    }
+}
+
+query getInventories {
+    inventories {
+        id
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        organization{
+            id
+        }
+        person{
+            id
+        }
+        avinya_type{
+            id
+            active
+            description
+            focus
+            foundation_type
+            global_type
+            level
+            name
+        }
+        avinya_type_id
+        quantity
+        quantity_in
+        quantity_out
+    }
+}
+
+mutation addInventory($inventory: Inventory!) {
+    add_inventory(inventory: $inventory) {
+        id
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        organization{
+            id
+        }
+        person{
+            id
+        }
+        avinya_type{
+            id
+        }
+        quantity
+        quantity_in
+        quantity_out
+    }
+}
+
+mutation updateInventory($inventory: Inventory!) {
+    update_inventory(inventory: $inventory) {
+        id
+        asset{
+            id
+        }
+        consumable{
+            id
+        }
+        organization{
+            id
+        }
+        person{
+            id
+        }
+        avinya_type{
+            id
+        }
+        quantity
+        quantity_in
+        quantity_out
+    }
+}
+
+query getAssetByAvinyaType($id:Int!){
+    asset_by_avinya_type(id:$id){
+        id
+        name
+        model
+        manufacturer
+        description
+        registration_number
+        serial_number
+        avinya_type_id
+        avinya_type{
+            id
+        }
+    }
+}
+
+query getAvinyaTypeByAsset{
+    avinya_types_by_asset{
+        id
+        name
+        global_type
+        foundation_type
+        description
+        focus
+        active
+        level
+    }
+}
