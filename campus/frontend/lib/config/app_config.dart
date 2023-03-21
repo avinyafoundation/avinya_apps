@@ -5,7 +5,8 @@ import 'package:flutter/services.dart';
 class AppConfig {
   static String apiUrl = 'http://localhost:8080';
   static String campusAttendanceBffApiUrl = 'http://localhost:6060';
-  static String campusProfileBffApiUrl = 'http://localhost:9095';
+  static String campusProfileBffApiUrl =
+      'https://3a907137-52a3-4196-9e0d-22d054ea5789-dev.e1-us-east-azure.choreoapis.dev/fieg/profile-bff/1.0.0';
   static String campusAttendanceBffApiKey = '';
   static String choreoSTSEndpoint = "https://sts.choreo.dev/oauth2/token";
   static String choreoSTSClientID = "x23_1tY7kAUtLUH9il9I3YwyrJca";
