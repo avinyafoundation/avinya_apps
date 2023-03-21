@@ -13,6 +13,11 @@ query getPerson($id:String!){
     permanent_address {
       city {
         id
+        name {
+          name_en
+          name_si
+          name_ta
+        }
       }
       street_address
       phone
@@ -21,6 +26,11 @@ query getPerson($id:String!){
     mailing_address {
       city {
         id
+        name {
+          name_en
+          name_si
+          name_ta
+        }
       }
       street_address
       phone

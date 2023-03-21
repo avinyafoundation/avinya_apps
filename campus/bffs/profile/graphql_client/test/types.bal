@@ -389,6 +389,11 @@ public type GetPersonResponse record {|
         record {|
             record {|
                 int? id;
+                record {|
+                    string name_en;
+                    string? name_si;
+                    string? name_ta;
+                |} name;
             |} city;
             string street_address;
             int? phone;
@@ -397,6 +402,11 @@ public type GetPersonResponse record {|
         record {|
             record {|
                 int? id;
+                record {|
+                    string name_en;
+                    string? name_si;
+                    string? name_ta;
+                |} name;
             |} city;
             string street_address;
             int? phone;
