@@ -7,14 +7,14 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
-import 'package:google_fonts/src/google_fonts_family_with_variant.dart';
-import 'package:google_fonts/src/google_fonts_variant.dart';
+// import 'package:google_fonts/src/google_fonts_family_with_variant.dart';
+// import 'package:google_fonts/src/google_fonts_variant.dart';
 import 'package:path/path.dart' as path;
 
 /// Load fonts to make sure they show up in golden tests.
 Future<void> loadFonts() async {
   await _load(await loadFontsFromManifest()
-    ..addAll(loadGoogleFonts())
+    // ..addAll(loadGoogleFonts())
     ..addAll(loadFontsFromTestingDir()));
 }
 
@@ -57,25 +57,25 @@ Map<String, List<Future<ByteData>>> loadFontsFromTestingDir() {
   return fontFamilyToData;
 }
 
-Map<String, List<Future<ByteData>>> loadGoogleFonts() {
-  final currentDir = path.dirname(Platform.script.path);
-  final googleFontsDirectory = path.join(currentDir, 'fonts', 'google_fonts');
-  final fontFamilyToData = <String, List<Future<ByteData>>>{};
-  final files = Directory(googleFontsDirectory).listSync();
-  for (final file in files) {
-    if (file is File) {
-      final fileName = path.basenameWithoutExtension(file.path);
-      final googleFontName = GoogleFontsFamilyWithVariant(
-        family: fileName.split('-').first,
-        googleFontsVariant: GoogleFontsVariant.fromApiFilenamePart(fileName),
-      ).toString();
-      fontFamilyToData[googleFontName] = [
-        file.readAsBytes().then((bytes) => ByteData.view(bytes.buffer))
-      ];
-    }
-  }
-  return fontFamilyToData;
-}
+// Map<String, List<Future<ByteData>>> loadGoogleFonts() {
+//   final currentDir = path.dirname(Platform.script.path);
+//   final googleFontsDirectory = path.join(currentDir, 'fonts', 'google_fonts');
+//   final fontFamilyToData = <String, List<Future<ByteData>>>{};
+//   final files = Directory(googleFontsDirectory).listSync();
+//   for (final file in files) {
+//     if (file is File) {
+//       final fileName = path.basenameWithoutExtension(file.path);
+//       final googleFontName = GoogleFontsFamilyWithVariant(
+//         family: fileName.split('-').first,
+//         googleFontsVariant: GoogleFontsVariant.fromApiFilenamePart(fileName),
+//       ).toString();
+//       fontFamilyToData[googleFontName] = [
+//         file.readAsBytes().then((bytes) => ByteData.view(bytes.buffer))
+//       ];
+//     }
+//   }
+//   return fontFamilyToData;
+// }
 
 Future<void> _load(
     Map<String?, List<Future<ByteData>>> fontFamilyToData) async {
