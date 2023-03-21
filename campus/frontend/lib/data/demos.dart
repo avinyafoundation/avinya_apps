@@ -168,15 +168,15 @@ class Demos {
         category: GalleryDemoCategory.study,
         studyId: 'fortnightly',
       ),
-      'reply': GalleryDemo(
-        title: 'Reply',
-        subtitle: localizations.replyDescription,
+      'campuspctiadminApp': GalleryDemo(
+        title: "Campus Pcti Admin App",
+        subtitle: "Campus Pcti Admin App for the Admin",
         category: GalleryDemoCategory.study,
         studyId: 'reply',
       ),
-      'starterApp': GalleryDemo(
-        title: localizations.starterAppTitle,
-        subtitle: localizations.starterAppDescription,
+      'campuspctiApp': GalleryDemo(
+        title: "Campus Pcti App",
+        subtitle: "Campus Pcti App for the Educators",
         category: GalleryDemoCategory.study,
         studyId: 'starter',
       ),

@@ -15,7 +15,6 @@
 // under the License.
 
 import ballerina/graphql;
-import ballerina/http;
 
 # Client configuration details.
 @display {label: "Connection Config"}
@@ -44,7 +43,6 @@ public type ConnectionConfig record {|
     graphql:ProxyConfig proxy?;
     # Enables the inbound payload validation functionality which provided by the constraint package. Enabled by default
     boolean validation = true;
-    http:OAuth2ClientCredentialsGrantConfig oauth2ClientCredentialsGrantConfig?;
 |};
 
 # Provides settings related to HTTP/1.x protocol.

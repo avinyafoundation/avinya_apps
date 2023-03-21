@@ -27,7 +27,7 @@ public isolated client class GraphqlClient {
         graphql:Client clientEp = check new (serviceUrl, graphqlClientConfig);
         self.graphqlClient = clientEp;
     }
-    remote isolated function getPctiInstanceNotes(int pcti_instance_id) returns GetPctiInstanceNotesResponse|graphql:ClientError {
+       remote isolated function getPctiInstanceNotes(int pcti_instance_id) returns GetPctiInstanceNotesResponse|graphql:ClientError {
         string query = string `query getPctiInstanceNotes($pcti_instance_id:Int!) {pcti_instance_notes(pcti_instance_id:$pcti_instance_id) {id evaluatee_id evaluator_id evaluation_criteria_id updated notes grade child_evaluations {id evaluatee_id evaluator_id evaluation_criteria_id updated notes grade} parent_evaluations {id evaluatee_id evaluator_id evaluation_criteria_id updated notes grade}}}`;
         map<anydata> variables = {"pcti_instance_id": pcti_instance_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
