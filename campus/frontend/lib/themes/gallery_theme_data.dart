@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:google_fonts/google_fonts.dart' as google_fonts;
 
 class GalleryThemeData {
   static const _lightFillColor = Colors.black;
@@ -79,15 +79,25 @@ class GalleryThemeData {
   static const _bold = FontWeight.w700;
 
   static final TextTheme _textTheme = TextTheme(
-    headlineMedium: GoogleFonts.montserrat(fontWeight: _bold, fontSize: 20.0),
-    bodySmall: GoogleFonts.oswald(fontWeight: _semiBold, fontSize: 16.0),
-    headlineSmall: GoogleFonts.oswald(fontWeight: _medium, fontSize: 16.0),
-    titleMedium: GoogleFonts.montserrat(fontWeight: _medium, fontSize: 16.0),
-    labelSmall: GoogleFonts.montserrat(fontWeight: _medium, fontSize: 12.0),
-    bodyLarge: GoogleFonts.montserrat(fontWeight: _regular, fontSize: 14.0),
-    titleSmall: GoogleFonts.montserrat(fontWeight: _medium, fontSize: 14.0),
-    bodyMedium: GoogleFonts.montserrat(fontWeight: _regular, fontSize: 16.0),
-    titleLarge: GoogleFonts.montserrat(fontWeight: _bold, fontSize: 16.0),
-    labelLarge: GoogleFonts.montserrat(fontWeight: _semiBold, fontSize: 14.0),
+    headlineMedium:
+        google_fonts.GoogleFonts.montserrat(fontWeight: _bold, fontSize: 20.0),
+    bodySmall:
+        google_fonts.GoogleFonts.oswald(fontWeight: _semiBold, fontSize: 16.0),
+    headlineSmall:
+        google_fonts.GoogleFonts.oswald(fontWeight: _medium, fontSize: 16.0),
+    titleMedium: google_fonts.GoogleFonts.montserrat(
+        fontWeight: _medium, fontSize: 16.0),
+    labelSmall: google_fonts.GoogleFonts.montserrat(
+        fontWeight: _medium, fontSize: 12.0),
+    bodyLarge: google_fonts.GoogleFonts.montserrat(
+        fontWeight: _regular, fontSize: 14.0),
+    titleSmall: google_fonts.GoogleFonts.montserrat(
+        fontWeight: _medium, fontSize: 14.0),
+    bodyMedium: google_fonts.GoogleFonts.montserrat(
+        fontWeight: _regular, fontSize: 16.0),
+    titleLarge:
+        google_fonts.GoogleFonts.montserrat(fontWeight: _bold, fontSize: 16.0),
+    labelLarge: google_fonts.GoogleFonts.montserrat(
+        fontWeight: _semiBold, fontSize: 14.0),
   );
 }

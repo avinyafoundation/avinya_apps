@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:google_fonts/google_fonts.dart' as google_fonts;
 import 'package:sizer/sizer.dart';
 
 //colors
@@ -47,7 +47,7 @@ final kBottomBorderRadius = BorderRadius.only(
       Radius.circular(SizerUtil.deviceType == DeviceType.tablet ? 40 : 20),
 );
 
-final kInputTextStyle = GoogleFonts.poppins(
+final kInputTextStyle = google_fonts.GoogleFonts.poppins(
     color: kTextBlackColor, fontSize: 11.sp, fontWeight: FontWeight.w500);
 
 //validation for mobile
