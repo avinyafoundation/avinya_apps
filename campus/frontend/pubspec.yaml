@@ -40,6 +40,10 @@ dependencies:
   path_to_regexp: ^0.4.0
   attendance:
     path: ./lib/avinya/attendance
+  pcti_notes:
+    path: ./lib/avinya/pcti/pcti_notes
+  campus_pcti_admin:
+    path: ./lib/avinya/pcti/campus_pcti_admin
   route_observer_mixin: ^1.7.0
   sizer: ^2.0.15
 

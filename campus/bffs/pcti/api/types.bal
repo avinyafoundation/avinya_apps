@@ -21,6 +21,7 @@ public type ActivityInstance record {
     string? record_type?;
     int? monthly_sequence?;
     string? start_time?;
+    int? organization_id?;
     int? activity_id?;
     string? name?;
     int? id?;
@@ -144,19 +145,71 @@ public type Consumable record {
     string? manufacturer?;
 };
 
+public type EducationExperience record {
+    string? end_date?;
+    int[]? evaluation_id?;
+    string? school?;
+    int? id?;
+    string? record_type?;
+    int? person_id?;
+    string? start_date?;
+};
+
 public type Evaluation record {
     int[]? parent_evaluations?;
-    int? activity_instance_id?;
     string? notes?;
     int? evaluatee_id?;
+    string? created?;
+    int[]? child_evaluations?;
+    string? record_type?;
+    int? activity_instance_id?;
     int? evaluation_criteria_id?;
     string? response?;
-    int[]? child_evaluations?;
     int? evaluator_id?;
     int? grade?;
     int? id?;
     string? updated?;
+};
+
+public type EvaluationCriteria record {
+    string? difficulty?;
+    int? rating_out_of?;
+    string? description?;
+    string? evaluation_type?;
+    int? id?;
+    string? prompt?;
+    string? expected_answer?;
     string? record_type?;
+};
+
+public type EvaluationCriteriaAnswerOption record {
+    string? answer?;
+    int? evaluation_criteria_id?;
+    int? id?;
+    boolean? expected_answer?;
+    string? record_type?;
+};
+
+public type EvaluationCycle record {
+    string? end_date?;
+    string? name?;
+    string? description?;
+    int? id?;
+    string? record_type?;
+    string? start_date?;
+};
+
+public type EvaluationMetadata record {
+    string? meta_type?;
+    int? evaluation_id?;
+    string? metadata?;
+    int? level?;
+    string? on_date_time?;
+    string? focus?;
+    string? location?;
+    int? id?;
+    string? record_type?;
+    string? status?;
 };
 
 public type Inventory record {
@@ -191,6 +244,8 @@ public type Organization record {
 
 public type Person record {
     int? permanent_address_id?;
+    string? street_address?;
+    string? bank_account_number?;
     string? notes?;
     int[]? parent_student?;
     string? date_of_birth?;
@@ -199,14 +254,18 @@ public type Person record {
     int? mailing_address_id?;
     string? id_no?;
     string? jwt_email?;
+    string? bank_name?;
     int? id?;
     string? email?;
     string? created?;
+    string? digital_id?;
     string? sex?;
     string? passport_no?;
     string? record_type?;
     Address? mailing_address?;
     int[]? child_student?;
+    string? bank_account_name?;
+    int? avinya_phone?;
     string? full_name?;
     string? nic_no?;
     int? phone?;
@@ -300,6 +359,16 @@ public type Vacancy record {
     int? head_count?;
     int? id?;
     string? record_type?;
+};
+
+public type WorkExperience record {
+    string? end_date?;
+    int[]? evaluation_id?;
+    string? organization?;
+    int? id?;
+    string? record_type?;
+    int? person_id?;
+    string? start_date?;
 };
 
 public type GetPctiInstanceNotesResponse record {|
@@ -1457,4 +1526,3 @@ public type AddActivityParticipantResponse record {|
         string? updated;
     |}? add_activity_participant;
 |};
-
