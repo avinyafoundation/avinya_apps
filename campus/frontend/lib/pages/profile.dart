@@ -80,6 +80,7 @@ class Address {
   final String? city;
   final String? state;
   final String? zip;
+  final String? name_en;
 
   const Address({
     this.line1,
@@ -87,10 +88,11 @@ class Address {
     this.city,
     this.state,
     this.zip,
+    this.name_en,
   });
 
   @override
   String toString() {
-    return '$line1, $line2, $city, $state $zip';
+    return '$line1, $line2, $city, $state $zip $name_en';
   }
 }
