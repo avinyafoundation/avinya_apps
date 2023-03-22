@@ -34,10 +34,13 @@ void main() async {
   setHashUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
 
-  await AppConfig.forEnvironment('dev');
-  AppConfig.choreoSTSClientID = await const String.fromEnvironment(
-      'choreo_sts_client_id',
-      defaultValue: 'undefined');
+  if (kReleaseMode) {
+    AppConfig.choreoSTSClientID = await const String.fromEnvironment(
+        'choreo_sts_client_id',
+        defaultValue: 'undefined');
+  } else {
+    await AppConfig.forEnvironment('dev');
+  }
 
   // google_fonts.GoogleFonts.config.allowRuntimeFetching = false;
   GalleryApp galleryApp = GalleryApp();
