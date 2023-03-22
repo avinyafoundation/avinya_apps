@@ -34,6 +34,7 @@ void main() async {
   setHashUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
 
+  await AppConfig.forEnvironment('dev');
   AppConfig.choreoSTSClientID = await const String.fromEnvironment(
       'choreo_sts_client_id',
       defaultValue: 'undefined');
