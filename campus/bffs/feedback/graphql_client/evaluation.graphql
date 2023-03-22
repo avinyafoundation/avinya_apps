@@ -1,0 +1,829 @@
+query getEvaluations($eval_id: Int!) {
+  evaluation(eval_id: $eval_id) {
+    id
+    evaluatee_id
+    evaluator_id
+    evaluation_criteria_id
+    activity_instance_id
+    grade
+    notes
+    response
+    updated
+  }
+}
+
+query getEvaluationsAll {
+  all_evaluations {
+    id
+    evaluatee_id
+    evaluator_id
+    evaluation_criteria_id
+    activity_instance_id
+    grade
+    notes
+    response
+    updated
+    created
+  }
+}
+
+mutation updateEvaluation($evaluation: Evaluation!) {
+  update_evaluation(evaluation: $evaluation) {
+    id
+    evaluatee_id
+    evaluator_id
+    evaluation_criteria_id
+    activity_instance_id
+    grade
+    notes
+    response
+    updated
+  }
+}
+# mutation AddEvaluation($evaluations: [Evaluation!]!) {
+#   add_evaluations(evaluations: $evaluations)
+# }
+
+query getMetadata($meta_evaluation_id: Int!) {
+  evaluation_meta_data(meta_evaluation_id: $meta_evaluation_id) {
+    evaluation_id
+    location
+    on_date_time
+    level
+    meta_type
+    status
+    focus
+    metadata
+  }
+}
+
+mutation AddEvaluationMetaData($metadata: EvaluationMetadata!) {
+  add_evaluation_meta_data(metadata: $metadata) {
+    evaluation_id
+    location
+    level
+    meta_type
+    status
+    focus
+    metadata
+  }
+}
+
+# mutation AddEvaluationCycle($evaluationCycle: EvaluationCycle!) {
+#   add_evaluation_cycle(evaluationCycle: $evaluationCycle)
+# }
+
+query GetEvaluationCycle($id: Int!) {
+  evaluation_cycle(id: $id) {
+    name
+    description
+    start_date
+    end_date
+  }
+}
+
+# mutation updateEvaluationCycle($evaluation_cycle: EvaluationCycle!) {
+#   update_evaluation_cycles(evaluation_cycle: $evaluation_cycle)
+# }
+
+mutation AddEducationExperience($education_experience: EducationExperience!) {
+  add_education_experience(education_experience: $education_experience) {
+    person_id
+    school
+    start_date
+    end_date
+  }
+}
+
+query GetEducationExperience($person_id: Int!) {
+  education_experience_byPerson(person_id: $person_id) {
+    person_id
+    school
+    start_date
+    end_date
+  }
+}
+
+query GetWorkExperience($person_id: Int!) {
+  work_experience_ByPerson(person_id: $person_id) {
+    person_id
+    organization
+    start_date
+    end_date
+  }
+}
+
+mutation AddWorkExperience($work_experience: WorkExperience!) {
+  add_work_experience(work_experience: $work_experience) {
+    person_id
+    organization
+    start_date
+    end_date
+  }
+}
+
+# mutation AddEvaluationCriteria($evaluationCriteria: EvaluationCriteria!) {
+#   add_evaluation_criteria(evaluationCriteria: $evaluationCriteria) {
+#     prompt
+#     description
+#     expected_answer
+#     evaluation_type
+#     difficulty
+#     rating_out_of
+#   }
+# }
+
+query GetEvaluationCriteria($prompt: String!, $id: Int!) {
+  evaluationCriteria(prompt: $prompt, id: $id) {
+    prompt
+    description
+    expected_answer
+    evaluation_type
+    difficulty
+    rating_out_of
+    id
+    answer_options {
+      answer
+      expected_answer
+      evaluation_criteria_id
+    }
+  }
+}
+
+mutation AddEvaluationanswerOption(
+  $evaluationAnswer: EvaluationCriteriaAnswerOption!
+) {
+  add_evaluation_answer_option(evaluationAnswer: $evaluationAnswer) {
+    answer
+    expected_answer
+    evaluation_criteria_id
+  }
+}
+
+# query getEvaluationallCriterias {
+#   all_evaluation_criterias {
+#     id
+#     evaluation_type
+#     prompt
+#     description
+#     difficulty
+#     expected_answer
+#     rating_out_of
+#     answer_options {
+#       answer
+#       expected_answer
+#       evaluation_criteria_id
+#     }
+#   }
+# }
+
+mutation AddPctiActivityNotesEvaluation($evaluation: Evaluation!) {
+  add_pcti_notes(evaluation: $evaluation) {
+    id
+    evaluatee_id
+    evaluator_id
+    evaluation_criteria_id
+    activity_instance_id
+    grade
+    notes
+    response
+    updated
+    # child_evaluations {
+    #   evaluatee_id
+    #   evaluator_id
+    #   activity_instance_id
+    #   notes
+    # }
+    # parent_evaluations {
+    #   evaluatee_id
+    #   evaluator_id
+    #   activity_instance_id
+    #   notes
+    # }
+  }
+}
+
+
+query getPctiActivityNotes($pcti_activity_id: Int!){
+    pcti_activity_notes(pcti_activity_id: $pcti_activity_id){
+        id
+        evaluatee_id
+        evaluator_id
+        evaluation_criteria_id
+        updated
+        notes
+        grade
+        child_evaluations{
+            id
+            evaluatee_id
+            evaluator_id
+            evaluation_criteria_id
+            updated
+            notes
+            grade
+        }
+        parent_evaluations{
+            id
+            evaluatee_id
+            evaluator_id
+            evaluation_criteria_id
+            updated
+            notes
+            grade   
+        }
+    }
+}
+
+query getPctiActivity($project_activity_name: String!, $class_activity_name: String!){
+    pcti_activity(project_activity_name: $project_activity_name, class_activity_name: $class_activity_name){
+        id
+        name
+        description
+        avinya_type{
+            id
+            active
+            global_type
+            name
+            foundation_type
+            focus
+            level
+            description
+        }
+        notes
+        child_activities {
+            id
+            name
+            description
+            avinya_type {
+                id
+                active
+                global_type
+                name
+                foundation_type
+                focus
+                level
+                description
+            }
+            notes
+            activity_instances {
+                id
+                name
+                description
+                notes
+                start_time
+                end_time
+                daily_sequence
+                weekly_sequence
+                monthly_sequence
+            }
+            activity_sequence_plan {
+                id
+                sequence_number
+                timeslot_number
+                organization {
+                    id
+                    name {
+                        name_en
+                    }
+                }
+                person {
+                    preferred_name
+                }
+            }
+        }
+        parent_activities {
+            id
+            name
+            description
+            avinya_type {
+                id
+                active
+                global_type
+                name
+                foundation_type
+                focus
+                level
+                description
+            }
+            notes
+            activity_instances {
+                id
+                name
+                description
+                notes
+                start_time
+                end_time
+                daily_sequence
+                weekly_sequence
+                monthly_sequence
+            }
+            activity_sequence_plan {
+                id
+                sequence_number
+                timeslot_number
+                organization {
+                    id
+                    name {
+                        name_en
+                    }
+                }
+                person {
+                    preferred_name
+                }
+            }
+        }
+        activity_sequence_plan{
+            id
+            sequence_number
+            timeslot_number
+            organization {
+                id
+                name {
+                    name_en
+                }
+            }
+            person {
+                preferred_name
+            }
+        }
+        activity_instances{
+            id
+            name
+            description
+            notes
+            start_time
+            end_time
+            daily_sequence
+            weekly_sequence
+            monthly_sequence
+        }
+    }
+}
+
+query getPerson($id: Int, $name: String){
+    person(id: $id, name: $name){
+        id
+        preferred_name
+        full_name
+        date_of_birth
+        sex
+        asgardeo_id
+        jwt_sub_id
+        jwt_email
+        permanent_address{
+            id
+            city{
+                id
+                name{
+                    name_en
+                }
+                district{
+                    id
+                    name{
+                        name_en
+                    }
+                    province{
+                        id
+                        name{
+                            name_en
+                        }
+                    }
+                }
+            }
+        }
+        mailing_address{
+            id
+            city{
+                id
+                name{
+                    name_en
+                }
+                district{
+                    id
+                    name{
+                        name_en
+                    }
+                    province{
+                        id
+                        name{
+                            name_en
+                        }
+                    }
+                }
+            }
+        }
+        phone
+        organization{
+            id
+            name{
+                name_en
+            }
+        }
+        avinya_type{
+            id
+            active
+            global_type
+            name
+            foundation_type
+            focus
+            level
+            description
+        }
+        notes
+        nic_no
+        passport_no
+        id_no
+        email
+        child_students{
+            id
+            preferred_name
+            full_name
+            date_of_birth
+        }
+        parent_students{
+            id
+            preferred_name
+            full_name
+            date_of_birth
+        }
+        
+    }
+}
+
+query getActivity($name: String, $id: Int){
+    activity(name: $name, id: $id){
+        id
+        name
+        description
+        avinya_type{
+            id
+            active
+            global_type
+            name
+            foundation_type
+            focus
+            level
+            description
+        }
+        notes
+        child_activities {
+            id
+            name
+            description
+            avinya_type {
+                id
+                active
+                global_type
+                name
+                foundation_type
+                focus
+                level
+                description
+            }
+            notes
+            activity_instances {
+                id
+                name
+                description
+                notes
+                start_time
+                end_time
+                daily_sequence
+                weekly_sequence
+                monthly_sequence
+            }
+            activity_sequence_plan {
+                id
+                sequence_number
+                timeslot_number
+                organization {
+                    id
+                    name {
+                        name_en
+                    }
+                }
+                person {
+                    preferred_name
+                }
+            }
+        }
+        parent_activities {
+            id
+            name
+            description
+            avinya_type {
+                id
+                active
+                global_type
+                name
+                foundation_type
+                focus
+                level
+                description
+            }
+            notes
+            activity_instances {
+                id
+                name
+                description
+                notes
+                start_time
+                end_time
+                daily_sequence
+                weekly_sequence
+                monthly_sequence
+            }
+            activity_sequence_plan {
+                id
+                sequence_number
+                timeslot_number
+                organization {
+                    id
+                    name {
+                        name_en
+                    }
+                }
+                person {
+                    preferred_name
+                }
+            }
+        }
+        activity_sequence_plan{
+            id
+            sequence_number
+            timeslot_number
+            organization {
+                id
+                name {
+                    name_en
+                }
+            }
+            person {
+                preferred_name
+            }
+        }
+        activity_instances{
+            id
+            name
+            description
+            notes
+            start_time
+            end_time
+            daily_sequence
+            weekly_sequence
+            monthly_sequence
+        }
+    }
+}
+
+query getPctiActivities{
+    pcti_activities{
+        id
+        name
+        description
+        avinya_type{
+            id
+            active
+            global_type
+            name
+            foundation_type
+            focus
+            level
+            description
+        }
+        notes
+        child_activities {
+            id
+            name
+            description
+            avinya_type {
+                id
+                active
+                global_type
+                name
+                foundation_type
+                focus
+                level
+                description
+            }
+            notes
+            activity_instances {
+                id
+                name
+                description
+                notes
+                start_time
+                end_time
+                daily_sequence
+                weekly_sequence
+                monthly_sequence
+            }
+            activity_sequence_plan {
+                id
+                sequence_number
+                timeslot_number
+                organization {
+                    id
+                    name {
+                        name_en
+                    }
+                }
+                person {
+                    preferred_name
+                }
+            }
+        }
+        parent_activities {
+            id
+            name
+            description
+            avinya_type {
+                id
+                active
+                global_type
+                name
+                foundation_type
+                focus
+                level
+                description
+            }
+            notes
+            activity_instances {
+                id
+                name
+                description
+                notes
+                start_time
+                end_time
+                daily_sequence
+                weekly_sequence
+                monthly_sequence
+            }
+            activity_sequence_plan {
+                id
+                sequence_number
+                timeslot_number
+                organization {
+                    id
+                    name {
+                        name_en
+                    }
+                }
+                person {
+                    preferred_name
+                }
+            }
+        }
+        activity_sequence_plan{
+            id
+            sequence_number
+            timeslot_number
+            organization {
+                id
+                name {
+                    name_en
+                }
+            }
+            person {
+                preferred_name
+            }
+        }
+        activity_instances{
+            id
+            name
+            description
+            notes
+            start_time
+            end_time
+            daily_sequence
+            weekly_sequence
+            monthly_sequence
+        }
+    }
+}
+
+query getPctiParticipantActivities($pcti_participant_id: Int!){
+    pcti_participant_activities(participant_id: $pcti_participant_id){
+        id
+        name
+        description
+        avinya_type{
+            id
+            active
+            global_type
+            name
+            foundation_type
+            focus
+            level
+            description
+        }
+        notes
+        child_activities {
+            id
+            name
+            description
+            avinya_type {
+                id
+                active
+                global_type
+                name
+                foundation_type
+                focus
+                level
+                description
+            }
+            notes
+            activity_instances {
+                id
+                name
+                description
+                notes
+                start_time
+                end_time
+                daily_sequence
+                weekly_sequence
+                monthly_sequence
+            }
+            activity_sequence_plan {
+                id
+                sequence_number
+                timeslot_number
+                organization {
+                    id
+                    name {
+                        name_en
+                    }
+                }
+                person {
+                    preferred_name
+                }
+            }
+        }
+        parent_activities {
+            id
+            name
+            description
+            avinya_type {
+                id
+                active
+                global_type
+                name
+                foundation_type
+                focus
+                level
+                description
+            }
+            notes
+            activity_instances {
+                id
+                name
+                description
+                notes
+                start_time
+                end_time
+                daily_sequence
+                weekly_sequence
+                monthly_sequence
+            }
+            activity_sequence_plan {
+                id
+                sequence_number
+                timeslot_number
+                organization {
+                    id
+                    name {
+                        name_en
+                    }
+                }
+                person {
+                    preferred_name
+                }
+            }
+        }
+        activity_sequence_plan{
+            id
+            sequence_number
+            timeslot_number
+            organization {
+                id
+                name {
+                    name_en
+                }
+            }
+            person {
+                preferred_name
+            }
+        }
+        activity_instances{
+            id
+            name
+            description
+            notes
+            start_time
+            end_time
+            daily_sequence
+            weekly_sequence
+            monthly_sequence
+        }
+    }
+}
