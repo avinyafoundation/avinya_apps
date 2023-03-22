@@ -17,9 +17,11 @@ import 'package:gallery/layout/image_placeholder.dart';
 import 'package:gallery/pages/splash.dart';
 import 'package:attendance/colors.dart';
 import 'package:attendance/routes.dart' as attendance_routes;
-import 'package:pcti_notes/routes.dart' as campus_pcti_routes;
-import 'package:campus_pcti_admin/routes.dart' as campus_pcti_admin;
-import 'package:feedbacks/routes.dart' as feedback_routes;
+import 'package:gallery/avinya/pcti_notes/lib/routes.dart'
+    as campus_pcti_routes;
+import 'package:gallery/avinya/pcti_notes_admin/lib/routes.dart'
+    as campus_pcti_admin;
+import 'package:pcti_feedback/routes.dart' as feedback_routes;
 
 const _horizontalPadding = 32.0;
 const _carouselItemMargin = 8.0;
@@ -54,7 +56,8 @@ class HomePage extends StatelessWidget {
         textColor: shrineBrown900,
         studyRoute: attendance_routes.attendanceRoute,
       ),
-       _CarouselCard(                          //2023-03-09 lahiru added for campus_pcti 
+      _CarouselCard(
+        //2023-03-09 lahiru added for campus_pcti
         demo: studyDemos['campuspctiApp'],
         asset: const AssetImage(
           'assets/studies/rally_card.png',
@@ -69,7 +72,8 @@ class HomePage extends StatelessWidget {
         textColor: shrineBrown900,
         studyRoute: campus_pcti_routes.campuspctiRoute,
       ),
-        _CarouselCard(                          //2023-03-09 lahiru added for campus_pcti_admin
+      _CarouselCard(
+        //2023-03-09 lahiru added for campus_pcti_admin
         demo: studyDemos['campuspctiadminApp'],
         asset: const AssetImage(
           'assets/studies/shrine_card.png',
@@ -84,7 +88,8 @@ class HomePage extends StatelessWidget {
         textColor: shrineBrown900,
         studyRoute: campus_pcti_admin.campuspctiadminRoute,
       ),
-      _CarouselCard(                          //2023-03-09 lahiru added for campus_pcti_admin
+      _CarouselCard(
+        //2023-03-09 lahiru added for campus_pcti_admin
         demo: studyDemos['feedbackApp'],
         asset: const AssetImage(
           'assets/studies/shrine_card.png',
