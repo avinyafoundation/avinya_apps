@@ -35,9 +35,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (kReleaseMode) {
-    AppConfig.choreoSTSClientID = await const String.fromEnvironment(
-        'choreo_sts_client_id',
-        defaultValue: 'undefined');
+// AppConfig.choreoSTSClientID = await const String.fromEnvironment(
+    //     'choreo_sts_client_id',
+    //     defaultValue: 'undefined');
+    //get variables from prod environment
+    await AppConfig.forEnvironment('prod');
   } else {
     await AppConfig.forEnvironment('dev');
   }
