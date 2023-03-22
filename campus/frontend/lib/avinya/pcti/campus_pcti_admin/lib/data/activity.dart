@@ -76,7 +76,7 @@ class Activity {
 
 Future<List<Activity>> fetchActivitys() async {
   final response = await http
-      .get(Uri.parse(AppConfig.campusPctiBffApiUrl + '/activity'));
+      .get(Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/activity'));
 
   if (response.statusCode == 200) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
@@ -91,7 +91,7 @@ Future<List<Activity>> fetchActivitys() async {
 
 Future<Activity> fetchActivity(String name) async {
   final response = await http
-      .get(Uri.parse(AppConfig.campusPctiBffApiUrl + '/activity/$name'));
+      .get(Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/activity/$name'));
 
   if (response.statusCode == 200) {
     //var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
@@ -107,7 +107,7 @@ Future<Activity> fetchActivity(String name) async {
 
 Future<http.Response> createActivity(Activity activity) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusPctiBffApiUrl + '/activity'),
+    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/activity'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -122,7 +122,7 @@ Future<http.Response> createActivity(Activity activity) async {
 
 Future<http.Response> updateActivity(Activity activity) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusPctiBffApiUrl + '/activity'),
+    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/activity'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -137,7 +137,7 @@ Future<http.Response> updateActivity(Activity activity) async {
 
 Future<http.Response> deleteActivity(String id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusPctiBffApiUrl + '/activity/$id'),
+    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/activity/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },

@@ -67,7 +67,7 @@ class Vacancy {
 
 Future<List<Vacancy>> fetchVacancies() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusPctiBffApiUrl +
+    Uri.parse(AppConfig.campusPctiNotesBffApiUrl +
         '/student_vacancies/' +
         campusConfigSystemInstance.getSchoolName()),
     headers: <String, String>{

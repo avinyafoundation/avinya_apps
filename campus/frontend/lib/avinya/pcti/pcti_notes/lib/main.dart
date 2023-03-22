@@ -33,7 +33,7 @@ Future<void> main() async {
       'asgardeo_client_id',
       defaultValue: 'undefined');
 
-  log(AppConfig.campusPctiBffApiUrl);
+  log(AppConfig.campusPctiNotesBffApiUrl);
   log(AppConfig.choreoSTSClientID);
   log(AppConfig.asgardeoClientId);
 

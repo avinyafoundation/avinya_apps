@@ -112,7 +112,7 @@ class Person {
 
 Future<List<Person>> fetchStudentApplicants() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusPctiBffApiUrl + '/student_applicant'),
+    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -132,7 +132,7 @@ Future<List<Person>> fetchStudentApplicants() async {
 
 Future<Person> fetchPerson(int person_id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusPctiBffApiUrl + '/person?id=$person_id'),
+    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/person?id=$person_id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -151,7 +151,7 @@ Future<Person> fetchPerson(int person_id) async {
 Future<Person> fetchStudentApplicant(String jwt_sub_id) async {
   final response = await http.get(
     Uri.parse(
-        AppConfig.campusPctiBffApiUrl + '/student_applicant/$jwt_sub_id'),
+        AppConfig.campusPctiNotesBffApiUrl + '/student_applicant/$jwt_sub_id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -169,7 +169,7 @@ Future<Person> fetchStudentApplicant(String jwt_sub_id) async {
 
 Future<Person> createStudentApplicant(Person person) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusPctiBffApiUrl + '/student_applicant'),
+    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -188,7 +188,7 @@ Future<Person> createStudentApplicant(Person person) async {
 
 Future<http.Response> updateStudentApplicant(Person person) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusPctiBffApiUrl + '/student_applicant'),
+    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -204,7 +204,7 @@ Future<http.Response> updateStudentApplicant(Person person) async {
 
 Future<http.Response> deleteStudentApplicant(String id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusPctiBffApiUrl + '/student_applicant/$id'),
+    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/student_applicant/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
