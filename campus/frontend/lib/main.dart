@@ -20,6 +20,8 @@ import 'package:gallery/themes/gallery_theme_data.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_strategy/url_strategy.dart';
 
+import 'config/app_config.dart';
+
 void main() async {
   // Use package:url_strategy until this pull request is released:
   // https://github.com/flutter/flutter/pull/77103
@@ -31,6 +33,10 @@ void main() async {
   // On mobile platforms, both functions are no-ops.
   setHashUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
+
+  AppConfig.choreoSTSClientID = await const String.fromEnvironment(
+      'choreo_sts_client_id',
+      defaultValue: 'undefined');
 
   // google_fonts.GoogleFonts.config.allowRuntimeFetching = false;
   GalleryApp galleryApp = GalleryApp();
