@@ -1,5 +1,5 @@
 input Activity {
-  record_type: String
+  record_type: String = ""
   id: Int
   name: String
   description: String
@@ -24,7 +24,7 @@ type ActivityData {
 }
 
 input ActivityInstance {
-  record_type: String
+  record_type: String = ""
   id: Int
   activity_id: Int
   name: String
@@ -62,7 +62,7 @@ type ActivityInstanceData {
 }
 
 input ActivityParticipant {
-  record_type: String
+  record_type: String = ""
   id: Int
   activity_instance_id: Int
   person_id: Int
@@ -76,7 +76,7 @@ input ActivityParticipant {
 }
 
 input ActivityParticipantAttendance {
-  record_type: String
+  record_type: String = ""
   id: Int
   person_id: Int
   activity_instance_id: Int
@@ -110,7 +110,7 @@ type ActivityParticipantData {
 }
 
 input ActivitySequencePlan {
-  record_type: String
+  record_type: String = ""
   id: Int
   activity_id: Int
   sequence_number: Int
@@ -133,7 +133,7 @@ type ActivitySequencePlanData {
 }
 
 input Address {
-  record_type: String
+  record_type: String = ""
   id: Int
   street_address: String!
   phone: Int
@@ -151,7 +151,7 @@ type AddressData {
 }
 
 input ApplicantConsent {
-  record_type: String
+  record_type: String = ""
   id: Int
   active: Boolean
   organization_id: Int
@@ -187,7 +187,7 @@ type ApplicantConsentData {
 }
 
 input Application {
-  record_type: String
+  record_type: String = ""
   id: Int
   person_id: Int
   vacancy_id: Int
@@ -210,7 +210,7 @@ type ApplicationStatusData {
 }
 
 input Asset {
-  record_type: String
+  record_type: String = ""
   id: Int
   name: String
   manufacturer: String
@@ -237,7 +237,7 @@ type AssetData {
 }
 
 input AvinyaType {
-  record_type: String
+  record_type: String = ""
   id: Int
   active: Boolean!
   global_type: String!
@@ -266,7 +266,7 @@ type CityData {
 }
 
 input Consumable {
-  record_type: String
+  record_type: String = ""
   id: Int
   avinya_type_id: Int
   name: String
@@ -297,19 +297,57 @@ type DistrictData {
   cities: [CityData!]!
 }
 
+input EducationExperience {
+  record_type: String = ""
+  id: Int
+  person_id: Int
+  school: String
+  start_date: String
+  end_date: String
+  evaluation_id: [Int!]
+}
+
+type EducationExperienceData {
+  person_id: Int
+  school: String
+  start_date: String
+  end_date: String
+  education_evaluations: [EducationExperienceData!]
+}
+
 input Evaluation {
-  record_type: String
+  record_type: String = ""
   id: Int
   evaluatee_id: Int
   evaluator_id: Int
   evaluation_criteria_id: Int
   activity_instance_id: Int
+  created: String
   updated: String
   response: String
   notes: String
   grade: Int
   child_evaluations: [Int!]
   parent_evaluations: [Int!]
+}
+
+input EvaluationCriteria {
+  record_type: String = ""
+  id: Int
+  prompt: String
+  description: String
+  expected_answer: String
+  evaluation_type: String
+  difficulty: String
+  rating_out_of: Int
+}
+
+input EvaluationCriteriaAnswerOption {
+  record_type: String = ""
+  id: Int
+  evaluation_criteria_id: Int
+  answer: String
+  expected_answer: Boolean
 }
 
 type EvaluationCriteriaAnswerOptionData {
@@ -322,11 +360,27 @@ type EvaluationCriteriaData {
   prompt: String
   description: String
   expected_answer: String
-  evalualtion_type: String
+  evaluation_type: String
   difficulty: String
   rating_out_of: Int
   id: Int
   answer_options: [EvaluationCriteriaAnswerOptionData!]
+}
+
+input EvaluationCycle {
+  record_type: String = ""
+  id: Int
+  name: String
+  description: String
+  start_date: String
+  end_date: String
+}
+
+type EvaluationCycleData {
+  name: String
+  description: String
+  start_date: String
+  end_date: String
 }
 
 type EvaluationData {
@@ -338,8 +392,35 @@ type EvaluationData {
   updated: String
   notes: String
   grade: Int
+  response: String
+  created: String
   child_evaluations: [EvaluationData!]
   parent_evaluations: [EvaluationData!]
+}
+
+input EvaluationMetadata {
+  record_type: String = ""
+  id: Int
+  evaluation_id: Int
+  location: String
+  on_date_time: String
+  level: Int
+  meta_type: String
+  focus: String
+  status: String
+  metadata: String
+}
+
+type EvaluationMetadataData {
+  id: Int
+  evaluation_id: Int
+  location: String
+  on_date_time: String
+  level: Int
+  meta_type: String
+  status: String
+  focus: String
+  metadata: String
 }
 
 type GeoData {
@@ -350,7 +431,7 @@ type GeoData {
 }
 
 input Inventory {
-  record_type: String
+  record_type: String = ""
   id: Int
   avinya_type_id: Int
   asset_id: Int
@@ -391,6 +472,14 @@ type Mutation {
   add_student_applicant_consent(applicantConsent: ApplicantConsent!): ApplicantConsentData
   add_application(application: Application!): ApplicationData
   add_evaluations(evaluations: [Evaluation!]!): Int
+  update_evaluation(evaluation: Evaluation!): EvaluationData
+  add_evaluation_meta_data(metadata: EvaluationMetadata!): EvaluationMetadataData
+  add_evaluation_criteria(evaluationCriteria: EvaluationCriteria!): EvaluationCriteriaData
+  add_evaluation_answer_option(evaluationAnswer: EvaluationCriteriaAnswerOption!): EvaluationCriteriaAnswerOptionData
+  add_evaluation_cycle(evaluationCycle: EvaluationCycle!): Int
+  update_evaluation_cycles(evaluation_cycle: EvaluationCycle!): Int!
+  add_education_experience(education_experience: EducationExperience!): EducationExperienceData
+  add_work_experience(work_experience: WorkExperience!): WorkExperienceData
   add_address(address: Address!): AddressData
   add_prospect(prospect: Prospect!): ProspectData
   add_organization(org: Organization!): OrganizationData
@@ -424,7 +513,7 @@ type Mutation {
 }
 
 input Organization {
-  record_type: String
+  record_type: String = ""
   id: Int
   child_organizations: [Int!]
   parent_organizations: [Int!]
@@ -457,7 +546,7 @@ type OrganizationStructureData {
 }
 
 input Person {
-  record_type: String
+  record_type: String = ""
   id: Int
   preferred_name: String
   full_name: String
@@ -482,6 +571,12 @@ input Person {
   updated: String
   child_student: [Int!]
   parent_student: [Int!]
+  street_address: String
+  digital_id: String
+  avinya_phone: Int
+  bank_name: String
+  bank_account_number: String
+  bank_account_name: String
 }
 
 type PersonData {
@@ -506,6 +601,12 @@ type PersonData {
   email: String
   child_students: [PersonData!]
   parent_students: [PersonData!]
+  street_address: String
+  digital_id: String
+  avinya_phone: Int
+  bank_name: String
+  bank_account_number: String
+  bank_account_name: String
 }
 
 type PlaceData {
@@ -526,7 +627,7 @@ type PlaceData {
 }
 
 input Prospect {
-  record_type: String
+  record_type: String = ""
   id: Int
   active: Boolean
   name: String
@@ -575,6 +676,7 @@ type Query {
   organizations(level: Int!): OrganizationStructureData
   organization(name: String, id: Int): OrganizationData
   person(name: String, id: Int): PersonData
+  person_by_digital_id(id: String): PersonData
   prospect(email: String, phone: Int): ProspectData
   applicant_consent(email: String, phone: Int): ApplicantConsentData
   application(person_id: Int!): ApplicationData
@@ -590,6 +692,14 @@ type Query {
   available_teachers(activity_instance_id: Int!): [PersonData!]
   project_tasks(activity_id: Int!): [ActivityData!]
   student_applicant(jwt_sub_id: String): PersonData
+  all_evaluations: [EvaluationData!]!
+  evaluation_meta_data(meta_evaluation_id: Int!): EvaluationMetadataData
+  evaluationCriteria(prompt: String, id: Int): EvaluationCriteriaData!
+  evaluation_cycle(name: String, id: Int): EvaluationCycleData!
+  education_experience(id: Int): EducationExperienceData
+  education_experience_byPerson(person_id: Int): [EducationExperienceData!]!
+  work_experience(id: Int): WorkExperienceData
+  work_experience_ByPerson(person_id: Int): [WorkExperienceData!]
   activity(name: String, id: Int): ActivityData
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
@@ -610,7 +720,7 @@ type Query {
 }
 
 input ResourceAllocation {
-  record_type: String
+  record_type: String = ""
   id: Int
   requested: Boolean
   approved: Boolean
@@ -643,7 +753,7 @@ type ResourceAllocationData {
 }
 
 input ResourceProperty {
-  record_type: String
+  record_type: String = ""
   id: Int
   asset_id: Int
   consumable_id: Int
@@ -660,7 +770,7 @@ type ResourcePropertyData {
 }
 
 input Supplier {
-  record_type: String
+  record_type: String = ""
   id: Int
   name: String
   description: String
@@ -683,7 +793,7 @@ type SupplierData {
 }
 
 input Supply {
-  record_type: String
+  record_type: String = ""
   id: Int
   asset_id: Int
   consumable_id: Int
@@ -712,7 +822,7 @@ type SupplyData {
 }
 
 input Vacancy {
-  record_type: String
+  record_type: String = ""
   id: Int
   name: String
   description: String
@@ -729,5 +839,22 @@ type VacancyData {
   description: String
   head_count: Int
   evaluation_criteria: [EvaluationCriteriaData!]
+}
+
+input WorkExperience {
+  record_type: String = ""
+  id: Int
+  person_id: Int
+  organization: String
+  start_date: String
+  end_date: String
+  evaluation_id: [Int!]
+}
+
+type WorkExperienceData {
+  person_id: Int
+  organization: String
+  start_date: String
+  end_date: String
 }
 

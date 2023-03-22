@@ -12,6 +12,10 @@ import 'package:gallery/main.dart';
 import 'package:gallery/pages/home.dart';
 import 'package:gallery/pages/login.dart';
 import 'package:attendance/app.dart' deferred as attendance;
+import 'package:pcti_notes/app.dart' deferred as campus_pcti;
+import 'package:pcti_notes/routes.dart' as campus_pcti_routes;
+import 'package:campus_pcti_admin/app.dart' deferred as campus_pcti_admin;
+import 'package:campus_pcti_admin/routes.dart' as campus_pcti_admin_routes;
 import 'package:attendance/routes.dart' as routes;
 import 'package:gallery/pages/profile.dart' as profile;
 
@@ -53,6 +57,26 @@ class RouteConfiguration {
             attendance.loadLibrary,
             () => attendance
                 .CampusAttendanceManagementSystem()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),
+    Path(                                        //block added lahiru-2023-03-10
+      r'^' + campus_pcti_routes.campuspctiRoute,
+      (context, match) => StudyWrapper(
+        study: DeferredWidget(
+            campus_pcti.loadLibrary,
+            () => campus_pcti
+                .CampusPctiSystem()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),
+    Path(                                        //block added lahiru-2023-03-10
+      r'^' + campus_pcti_admin_routes.campuspctiadminRoute,
+      (context, match) => StudyWrapper(
+        study: DeferredWidget(
+            campus_pcti_admin.loadLibrary,
+            () => campus_pcti_admin
+                .CampusPctiSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),

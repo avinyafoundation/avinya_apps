@@ -1,11 +1,5 @@
 import ballerina/graphql;
 
-public configurable boolean GLOBAL_DATA_USE_AUTH = true;
-public configurable string GLOBAL_DATA_API_URL = "http://localhost:4000/graphql";
-public configurable string CHOREO_TOKEN_URL = "https://id.choreo.dev/oauth2/token";
-public configurable string GLOBAL_DATA_CLIENT_ID = "undefined";
-public configurable string GLOBAL_DATA_CLIENT_SECRET = "undefined";
-
 type OperationResponse record {| anydata...; |}|record {| anydata...; |}[]|boolean|string|int|float|();
 
 type DataResponse record {|

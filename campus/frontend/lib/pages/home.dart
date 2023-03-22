@@ -17,6 +17,8 @@ import 'package:gallery/layout/image_placeholder.dart';
 import 'package:gallery/pages/splash.dart';
 import 'package:attendance/colors.dart';
 import 'package:attendance/routes.dart' as attendance_routes;
+import 'package:pcti_notes/routes.dart' as campus_pcti_routes;
+import 'package:campus_pcti_admin/routes.dart' as campus_pcti_admin;
 
 const _horizontalPadding = 32.0;
 const _carouselItemMargin = 8.0;
@@ -50,6 +52,36 @@ class HomePage extends StatelessWidget {
         assetDarkColor: const Color(0xFF543B3C),
         textColor: shrineBrown900,
         studyRoute: attendance_routes.attendanceRoute,
+      ),
+       _CarouselCard(                          //2023-03-09 lahiru added for campus_pcti 
+        demo: studyDemos['campuspctiApp'],
+        asset: const AssetImage(
+          'assets/studies/rally_card.png',
+          package: 'flutter_gallery_assets',
+        ),
+        assetColor: const Color(0xFFD1F2E6),
+        assetDark: const AssetImage(
+          'assets/studies/rally_card_dark.png',
+          package: 'flutter_gallery_assets',
+        ),
+        assetDarkColor: const Color(0xFF253538),
+        textColor: shrineBrown900,
+        studyRoute: campus_pcti_routes.campuspctiRoute,
+      ),
+        _CarouselCard(                          //2023-03-09 lahiru added for campus_pcti_admin
+        demo: studyDemos['campuspctiadminApp'],
+        asset: const AssetImage(
+          'assets/studies/shrine_card.png',
+          package: 'flutter_gallery_assets',
+        ),
+        assetColor: const Color(0xFFFEDBD0),
+        assetDark: const AssetImage(
+          'assets/studies/shrine_card_dark.png',
+          package: 'flutter_gallery_assets',
+        ),
+        assetDarkColor: const Color(0xFF543B3C),
+        textColor: shrineBrown900,
+        studyRoute: campus_pcti_admin.campuspctiadminRoute,
       ),
     ];
 
