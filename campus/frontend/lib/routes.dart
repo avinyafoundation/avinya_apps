@@ -19,6 +19,9 @@ import 'package:campus_pcti_admin/routes.dart' as campus_pcti_admin_routes;
 import 'package:attendance/routes.dart' as routes;
 import 'package:gallery/pages/profile.dart' as profile;
 
+import 'package:feedbacks/app.dart' deferred as feedback;
+import 'package:feedbacks/routes.dart' as feedback_routes;
+
 typedef PathWidgetBuilder = Widget Function(BuildContext, String?);
 
 class Path {
@@ -77,6 +80,16 @@ class RouteConfiguration {
             campus_pcti_admin.loadLibrary,
             () => campus_pcti_admin
                 .CampusPctiSystem()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),
+    Path(
+      r'^' + feedback_routes.feedbackRoute,
+      (context, match) => StudyWrapper(
+        study: DeferredWidget(
+            feedback.loadLibrary,
+            () => feedback
+                .CampusFeedbackSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),
