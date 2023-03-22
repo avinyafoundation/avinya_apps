@@ -7,11 +7,10 @@ class AppConfig {
   static String campusAttendanceBffApiUrl = '';
   static String campusProfileBffApiUrl = '';
   static String campusAttendanceBffApiKey = '';
-  static String choreoSTSEndpoint = "https://sts.choreo.dev/oauth2/token";
-  static String choreoSTSClientID = "HYDMyYYEYZ3Q3VzGaBYFn5eydYoa";
-  static String asgardeoTokenEndpoint =
-      "https://api.asgardeo.io/t/avinyatest/oauth2/token";
-  static String asgardeoClientId = "pJ2gM2o6yXN4f60FypEYWWERrAoa";
+  static String choreoSTSEndpoint = "";
+  static String choreoSTSClientID = "";
+  static String asgardeoTokenEndpoint = "";
+  static String asgardeoClientId = "";
   static var apiTokens = null;
   static String applicationName = 'Avinya Campus Apps';
   static String applicationVersion = '1.0.0';
@@ -40,6 +39,10 @@ class AppConfig {
     campusPctiNotesBffApiUrl = json['campusPctiNotesBffApiUrl'];
     campusPctiNotesBffApiUrl = json['campusPctiNotesBffApiUrl'];
     campusPctiFeedbackBffApiUrl = json['campusPctiFeedbackBffApiUrl'];
+    choreoSTSClientID = json['choreo_sts_client_id'];
+    asgardeoClientId = json['asgardeo_client_id'];
+    choreoSTSEndpoint = json['choreo_sts_endpoint'];
+    asgardeoTokenEndpoint = json['asgardeo_token_endpoint'];
 
     // convert our JSON into an instance of our AppConfig class
     return AppConfig();
