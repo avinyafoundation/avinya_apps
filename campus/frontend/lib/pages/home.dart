@@ -92,12 +92,12 @@ class HomePage extends StatelessWidget {
         //2023-03-09 lahiru added for campus_pcti_admin
         demo: studyDemos['feedbackApp'],
         asset: const AssetImage(
-          'assets/studies/shrine_card.png',
+          'assets/studies/rally_card.png',
           package: 'flutter_gallery_assets',
         ),
         assetColor: const Color(0xFFFEDBD0),
         assetDark: const AssetImage(
-          'assets/studies/shrine_card_dark.png',
+          'assets/studies/rally_card_dark.png',
           package: 'flutter_gallery_assets',
         ),
         assetDarkColor: const Color(0xFF543B3C),

@@ -186,6 +186,12 @@ class Demos {
         category: GalleryDemoCategory.study,
         studyId: 'starter',
       ),
+      'feedbackApp': GalleryDemo(
+        title: "Pcti Feedback App",
+        subtitle: "Attendance App for the Students",
+        category: GalleryDemoCategory.study,
+        studyId: 'starter',
+      ),
     };
   }
 
