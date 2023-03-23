@@ -1,12 +1,8 @@
 {
-    "sms_api_url": "http://localhost:9090",
-    "admissionsApplicationBffApiUrl": "https://3a907137-52a3-4196-9e0d-22d054ea5789-dev.e1-us-east-azure.choreoapis.dev/gkwb/application-bff-api/0.33.0",
-    "campusProfileBffApiUrl" : "http://localhost:9090",
-    "campusAttendanceBffApiUrl" : "http://localhost:9091",
+    "campusProfileBffApiUrl" : "https://3a907137-52a3-4196-9e0d-22d054ea5789-dev.e1-us-east-azure.choreoapis.dev/fieg/profile-bff/1.0.0",
+    "campusAttendanceBffApiUrl" : "https://3a907137-52a3-4196-9e0d-22d054ea5789-dev.e1-us-east-azure.choreoapis.dev/fieg/attendance-bff/1.0.0",
     "campusPctiNotesBffApiUrl" : "http://localhost:9092",
     "campusPctiFeedbackBffApiUrl" : "http://localhost:9093",
-    "choreo_sts_client_id" : "x23_1tY7kAUtLUH9il9I3YwyrJca",
-    "asgardeo_client_id" : "pJ2gM2o6yXN4f60FypEYWWERrAoa",
     "choreo_sts_endpoint" : "https://sts.choreo.dev/oauth2/token",
     "asgardeo_token_endpoint" : "https://api.asgardeo.io/t/avinyatest/oauth2/token"
 }
