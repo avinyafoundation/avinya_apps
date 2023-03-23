@@ -2,7 +2,7 @@ import 'package:attendance/data/activity_instance.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 
 class Activity {
   String? notes;
@@ -88,8 +88,14 @@ Future<List<Activity>> fetchActivitys() async {
 }
 
 Future<Activity> fetchActivity(String name) async {
-  final response = await http
-      .get(Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/activity/$name'));
+  final response = await http.get(
+    Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/activity/$name'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusAttendanceBffApiKey,
+    },
+  );
 
   if (response.statusCode == 200) {
     Activity activity = Activity.fromJson(json.decode(response.body));

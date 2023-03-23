@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import 'avinya_type.dart';
 import 'evaluation_criteria.dart';
 
