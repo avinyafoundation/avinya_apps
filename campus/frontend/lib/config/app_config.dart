@@ -8,9 +8,9 @@ class AppConfig {
   static String campusProfileBffApiUrl = '';
   static String campusAttendanceBffApiKey = '';
   static String choreoSTSEndpoint = "";
-  static String choreoSTSClientID = "";
+  static String choreoSTSClientID = "x23_1tY7kAUtLUH9il9I3YwyrJca";
   static String asgardeoTokenEndpoint = "";
-  static String asgardeoClientId = "";
+  static String asgardeoClientId = "pJ2gM2o6yXN4f60FypEYWWERrAoa";
   static var apiTokens = null;
   static String applicationName = 'Avinya Campus Apps';
   static String applicationVersion = '1.0.0';
@@ -39,8 +39,6 @@ class AppConfig {
     campusPctiNotesBffApiUrl = json['campusPctiNotesBffApiUrl'];
     campusPctiNotesBffApiUrl = json['campusPctiNotesBffApiUrl'];
     campusPctiFeedbackBffApiUrl = json['campusPctiFeedbackBffApiUrl'];
-    choreoSTSClientID = json['choreo_sts_client_id'];
-    asgardeoClientId = json['asgardeo_client_id'];
     choreoSTSEndpoint = json['choreo_sts_endpoint'];
     asgardeoTokenEndpoint = json['asgardeo_token_endpoint'];
 
