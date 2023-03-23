@@ -99,7 +99,7 @@ class SMSAuth extends ChangeNotifier {
             AppConfig.campusConfigBffApiKey = _api_tokens["access_token"];
             print('Fetch API tokens success');
           } else {
-            print('Failed to fetch API key');
+            print('Failed to fetch API key1');
             print('Fetch API tokens error :: ' + response.body.toString());
             print(response.statusCode);
             _signedIn = false;
