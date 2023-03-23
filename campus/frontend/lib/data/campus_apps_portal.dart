@@ -169,6 +169,8 @@ class CampusAppsPortal {
         this.userPerson = person;
         log('Campus Apps Portal - fetchPersonForUser: ' +
             person.toJson().toString());
+        print('Campus Apps Portal - fetchPersonForUser: ' +
+            person.toJson().toString());
         campusAppsPortalInstance.setUserPerson(person);
 
         if (person.digital_id != null) {
