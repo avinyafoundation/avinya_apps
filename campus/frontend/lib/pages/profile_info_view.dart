@@ -88,7 +88,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               ),
                         ),
                         Text(
-                          '${userPerson.organization!.name!.name_en == null ? 'N/A' : userPerson.organization!.name!.name_en!}',
+                          '${userPerson.organization == null ? 'N/A' : userPerson.organization!.name == null ? 'N/A' : userPerson.organization!.name!.name_en == null ? 'N/A' : userPerson.organization!.name!.name_en!}',
                           style: Theme.of(context)
                               .textTheme
                               .subtitle1!
@@ -119,16 +119,16 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           '${userPerson.updated == null ? 'N/A' : '${DateFormat('yyyy').format(DateTime.parse(userPerson.updated!))} - ${DateFormat('yyyy').format(DateTime.parse(userPerson.updated!).add(Duration(days: 365)))} '}'),
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ProfileDetailRow(
-                      title: 'Programme',
-                      value:
-                          '${userPerson.avinya_type!.focus == null ? 'N/A' : '${userPerson.avinya_type!.focus!}'}'),
-                  ProfileDetailRow(title: 'Class', value: 'TBD'),
-                ],
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+              //   children: [
+              //     ProfileDetailRow(
+              //         title: 'Programme',
+              //         value:
+              //             '${userPerson.avinya_type!.focus == null ? 'N/A' : '${userPerson.avinya_type!.focus!}'}'),
+              //     ProfileDetailRow(title: 'Class', value: 'TBD'),
+              //   ],
+              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -215,12 +215,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               ProfileDetailColumn(
                 title: 'Home Address',
                 value:
-                    '${userPerson.permanent_address!.street_address == null ? 'N/A' : userPerson.permanent_address!.street_address}',
+                    '${userPerson.permanent_address == null ? 'N/A' : userPerson.permanent_address!.street_address == null ? 'N/A' : userPerson.permanent_address!.street_address}',
               ),
               ProfileDetailColumn(
                 title: 'Mailing Address',
                 value:
-                    '${userPerson.mailing_address!.street_address == null ? 'N/A' : userPerson.mailing_address!.street_address}',
+                    '${userPerson.mailing_address == null ? 'N/A' : userPerson.mailing_address!.street_address == null ? 'N/A' : userPerson.mailing_address!.street_address}',
               ),
               sizedBox,
               sizedBox,
@@ -265,26 +265,26 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     ),
               ),
               sizedBox,
-              ProfileDetailColumn(
-                title: 'Father Name',
-                value:
-                    '${userPerson.parent_students[0].preferred_name == null ? 'N/A' : userPerson.parent_students[0].preferred_name}',
-              ),
-              ProfileDetailColumn(
-                title: 'Mother Name',
-                value:
-                    '${userPerson.parent_students[1].preferred_name == null ? 'N/A' : userPerson.parent_students[1].preferred_name}',
-              ),
-              ProfileDetailColumn(
-                title: 'Father Phone Number',
-                value:
-                    '${userPerson.parent_students[0].phone == null ? 'N/A' : userPerson.parent_students[0].phone}',
-              ),
-              ProfileDetailColumn(
-                title: 'Mother Phone Number',
-                value:
-                    '${userPerson.parent_students[1].phone == null ? 'N/A' : userPerson.parent_students[1].phone}',
-              ),
+              // ProfileDetailColumn(
+              //   title: 'Father Name',
+              //   value:
+              //       '${userPerson.parent_students[0].preferred_name == null ? 'N/A' : userPerson.parent_students[0].preferred_name}',
+              // ),
+              // ProfileDetailColumn(
+              //   title: 'Mother Name',
+              //   value:
+              //       '${userPerson.parent_students[1].preferred_name == null ? 'N/A' : userPerson.parent_students[1].preferred_name}',
+              // ),
+              // ProfileDetailColumn(
+              //   title: 'Father Phone Number',
+              //   value:
+              //       '${userPerson.parent_students[0].phone == null ? 'N/A' : userPerson.parent_students[0].phone}',
+              // ),
+              // ProfileDetailColumn(
+              //   title: 'Mother Phone Number',
+              //   value:
+              //       '${userPerson.parent_students[1].phone == null ? 'N/A' : userPerson.parent_students[1].phone}',
+              // ),
               sizedBox,
               sizedBox,
               sizedBox,
