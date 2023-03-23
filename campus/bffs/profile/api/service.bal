@@ -52,12 +52,12 @@ service / on new http:Listener(9090) {
                 return person_record;
             } else {
                 log:printError("Error while processing Application record received1", person_record);
-                return error("Error while processing Application record received2: " + person_record.message() + 
+                return error("Error while processing Person record received2: " + person_record.message() + 
                     ":: Detail: " + person_record.detail().toString());
             }
         } else {
-            log:printError("Error while creating application3", getPersonResponse);
-            return error("Error while creating application4: " + getPersonResponse.message() + 
+            log:printError("Error while fetching person records application3", getPersonResponse);
+            return error("Error while fetching person records application4: " + getPersonResponse.message() + 
                 ":: Detail: " + getPersonResponse.detail().toString());
         }
     }

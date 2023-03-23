@@ -75,7 +75,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          userPerson.full_name!,
+                          '${userPerson.full_name == null ? 'N/A' : userPerson.full_name!}',
                           style: Theme.of(context)
                               .textTheme
                               .subtitle1!
@@ -88,7 +88,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               ),
                         ),
                         Text(
-                          userPerson.organization!.name!.name_en!,
+                          '${userPerson.organization!.name!.name_en == null ? 'N/A' : userPerson.organization!.name!.name_en!}',
                           style: Theme.of(context)
                               .textTheme
                               .subtitle1!
@@ -110,11 +110,13 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ProfileDetailRow(
-                      title: 'Registration Number', value: '${userPerson.id}'),
+                      title: 'Registration Number',
+                      value:
+                          '${userPerson.id == null ? 'N/A' : userPerson.id}'),
                   ProfileDetailRow(
                       title: 'Academic Year',
                       value:
-                          '${DateFormat('yyyy').format(DateTime.parse(userPerson.updated!))} - ${DateFormat('yyyy').format(DateTime.parse(userPerson.updated!).add(Duration(days: 365)))} '),
+                          '${userPerson.updated == null ? 'N/A' : '${DateFormat('yyyy').format(DateTime.parse(userPerson.updated!))} - ${DateFormat('yyyy').format(DateTime.parse(userPerson.updated!).add(Duration(days: 365)))} '}'),
                 ],
               ),
               Row(
@@ -122,8 +124,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 children: [
                   ProfileDetailRow(
                       title: 'Programme',
-                      value: '${userPerson.avinya_type!.focus!}'),
-                  ProfileDetailRow(title: 'Class', value: 'Leopard'),
+                      value:
+                          '${userPerson.avinya_type!.focus == null ? 'N/A' : '${userPerson.avinya_type!.focus!}'}'),
+                  ProfileDetailRow(title: 'Class', value: 'TBD'),
                 ],
               ),
               Row(
@@ -131,12 +134,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 children: [
                   ProfileDetailRow(
                       title: 'Date of Admission',
-                      value: DateFormat('d MMM, yyyy')
-                          .format(DateTime.parse(userPerson.created!))),
-                  ProfileDetailRow(
-                      title: 'Age',
                       value:
-                          '${calculateAge(userPerson.date_of_birth!)} years old'),
+                          '${userPerson.created == null ? 'N/A' : DateFormat('d MMM, yyyy').format(DateTime.parse(userPerson.created!))}'),
+                  // ProfileDetailRow(
+                  //     title: 'Age',
+                  //     value:
+                  //         '${calculateAge(userPerson.date_of_birth!)} years old'),
                 ],
               ),
               sizedBox,
@@ -155,29 +158,32 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               sizedBox,
               ProfileDetailColumn(
                 title: 'Full Name',
-                value: '${userPerson.full_name}',
+                value:
+                    '${userPerson.full_name == null ? 'N/A' : userPerson.full_name}',
               ),
               ProfileDetailColumn(
                 title: 'Preferred Name',
-                value: '${userPerson.preferred_name}',
+                value:
+                    '${userPerson.preferred_name == null ? 'N/A' : userPerson.preferred_name}',
               ),
               ProfileDetailColumn(
                 title: 'Date of Birth',
-                value: DateFormat('d MMM, yyyy')
-                    .format(DateTime.parse(userPerson.date_of_birth!)),
+                value:
+                    '${userPerson.date_of_birth == null ? 'N/A' : DateFormat('d MMM, yyyy').format(DateTime.parse(userPerson.date_of_birth!))}',
               ),
               ProfileDetailColumn(
                 title: 'Gender',
-                value: '${userPerson.sex}',
+                value: '${userPerson.sex == null ? 'N/A' : userPerson.sex}',
               ),
               ProfileDetailColumn(
                 title: 'NIC Number',
-                value: '${userPerson.nic_no}',
+                value:
+                    '${userPerson.nic_no == null ? 'N/A' : userPerson.nic_no}',
               ),
               ProfileDetailColumn(
                 title: 'Passport Number',
                 value:
-                    '${userPerson.passport_no == null ? 'N/A' : userPerson.nic_no}',
+                    '${userPerson.passport_no == null ? 'N/A' : userPerson.passport_no}',
               ),
               sizedBox,
               sizedBox,
@@ -195,23 +201,26 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               sizedBox,
               ProfileDetailColumn(
                 title: 'Personal Phone Number',
-                value: '${userPerson.phone}',
+                value: '${userPerson.phone == null ? 'N/A' : userPerson.phone}',
               ),
               ProfileDetailColumn(
                 title: 'Avinya Phone Number',
-                value: '${userPerson.avinya_phone}',
+                value:
+                    '${userPerson.avinya_phone == null ? 'N/A' : userPerson.avinya_phone}',
               ),
               ProfileDetailColumn(
                 title: 'Email',
-                value: '${userPerson.digital_id}',
+                value: '${userPerson.email == null ? 'N/A' : userPerson.email}',
               ),
               ProfileDetailColumn(
                 title: 'Home Address',
-                value: '${userPerson.permanent_address!.street_address}',
+                value:
+                    '${userPerson.permanent_address!.street_address == null ? 'N/A' : userPerson.permanent_address!.street_address}',
               ),
               ProfileDetailColumn(
                 title: 'Mailing Address',
-                value: '${userPerson.mailing_address!.street_address}',
+                value:
+                    '${userPerson.mailing_address!.street_address == null ? 'N/A' : userPerson.mailing_address!.street_address}',
               ),
               sizedBox,
               sizedBox,
@@ -229,15 +238,18 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               sizedBox,
               ProfileDetailColumn(
                 title: 'Bank Name',
-                value: '${userPerson.bank_name}',
+                value:
+                    '${userPerson.bank_name == null ? 'N/A' : userPerson.bank_name}',
               ),
               ProfileDetailColumn(
                 title: 'Bank Account Name',
-                value: '${userPerson.bank_account_name}',
+                value:
+                    '${userPerson.bank_account_name == null ? 'N/A' : userPerson.bank_account_name}',
               ),
               ProfileDetailColumn(
                 title: 'Bank Account Number',
-                value: '${userPerson.bank_account_number}',
+                value:
+                    '${userPerson.bank_account_number == null ? 'N/A' : userPerson.bank_account_number}',
               ),
               sizedBox,
               sizedBox,
@@ -255,19 +267,23 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               sizedBox,
               ProfileDetailColumn(
                 title: 'Father Name',
-                value: '${userPerson.parent_students[0].preferred_name}',
+                value:
+                    '${userPerson.parent_students[0].preferred_name == null ? 'N/A' : userPerson.parent_students[0].preferred_name}',
               ),
               ProfileDetailColumn(
                 title: 'Mother Name',
-                value: '${userPerson.parent_students[1].preferred_name}',
+                value:
+                    '${userPerson.parent_students[1].preferred_name == null ? 'N/A' : userPerson.parent_students[1].preferred_name}',
               ),
               ProfileDetailColumn(
                 title: 'Father Phone Number',
-                value: '${userPerson.parent_students[0].phone}',
+                value:
+                    '${userPerson.parent_students[0].phone == null ? 'N/A' : userPerson.parent_students[0].phone}',
               ),
               ProfileDetailColumn(
                 title: 'Mother Phone Number',
-                value: '${userPerson.parent_students[1].phone}',
+                value:
+                    '${userPerson.parent_students[1].phone == null ? 'N/A' : userPerson.parent_students[1].phone}',
               ),
               sizedBox,
               sizedBox,
