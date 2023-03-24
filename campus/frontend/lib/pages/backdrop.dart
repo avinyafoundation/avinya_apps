@@ -219,7 +219,7 @@ class _BackdropState extends State<Backdrop>
       value: GalleryOptions.of(context).resolvedSystemUiOverlayStyle(),
       child: Stack(
         children: [
-          if (!isDesktop) ...[
+          if (!isDesktop && signedIn) ...[
             // Slides the settings page up and down from the top of the
             // screen.
             PositionedTransition(
@@ -231,6 +231,20 @@ class _BackdropState extends State<Backdrop>
             PositionedTransition(
               rect: _slideDownHomePageAnimation(constraints),
               child: homePage,
+            ),
+          ],
+          if (!isDesktop && !signedIn) ...[
+            // Slides the settings page up and down from the top of the
+            // screen.
+            PositionedTransition(
+              rect: _slideDownSettingsPageAnimation(constraints),
+              child: settingsPage,
+            ),
+            // Slides the home page up and down below the bottom of the
+            // screen.
+            PositionedTransition(
+              rect: _slideDownHomePageAnimation(constraints),
+              child: loginPage,
             ),
           ],
           if (isDesktop && signedIn) ...[
