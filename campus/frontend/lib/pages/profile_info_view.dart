@@ -374,7 +374,7 @@ class ProfileDetailColumn extends StatelessWidget {
                 style: Theme.of(context).textTheme.subtitle1!.copyWith(
                       color: kTextBlackColor,
                       fontSize: SizerUtil.deviceType == DeviceType.tablet
-                          ? 4.sp
+                          ? 8.sp
                           : 5.sp,
                     ),
               ),
@@ -384,7 +384,7 @@ class ProfileDetailColumn extends StatelessWidget {
                 style: Theme.of(context).textTheme.subtitle1!.copyWith(
                       color: kTextBlackColor,
                       fontSize: SizerUtil.deviceType == DeviceType.tablet
-                          ? 3.sp
+                          ? 7.sp
                           : 4.sp,
                     ),
               ),
