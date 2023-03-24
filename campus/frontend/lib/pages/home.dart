@@ -156,7 +156,7 @@ class HomePage extends StatelessWidget {
       // );
       return Scaffold(
         body: Container(
-          padding: EdgeInsets.all(16.0),
+          padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
           child: GridView.count(
             crossAxisCount: 1,
             childAspectRatio:
