@@ -41,93 +41,128 @@ class HomePage extends StatelessWidget {
     final localizations = GalleryLocalizations.of(context)!;
     final studyDemos = Demos.studies(localizations);
     final carouselCards = <Widget>[
-      _CarouselCard(
-        demo: studyDemos['attendanceApp'],
-        asset: const AssetImage(
-          'assets/studies/shrine_card.png',
-          package: 'flutter_gallery_assets',
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: _CarouselCard(
+          demo: studyDemos['attendanceApp'],
+          asset: const AssetImage(
+            'assets/studies/shrine_card.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetColor: const Color(0xFFFEDBD0),
+          assetDark: const AssetImage(
+            'assets/studies/shrine_card_dark.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetDarkColor: const Color(0xFF543B3C),
+          textColor: shrineBrown900,
+          studyRoute: attendance_routes.attendanceRoute,
         ),
-        assetColor: const Color(0xFFFEDBD0),
-        assetDark: const AssetImage(
-          'assets/studies/shrine_card_dark.png',
-          package: 'flutter_gallery_assets',
-        ),
-        assetDarkColor: const Color(0xFF543B3C),
-        textColor: shrineBrown900,
-        studyRoute: attendance_routes.attendanceRoute,
       ),
-      _CarouselCard(
-        //2023-03-09 lahiru added for campus_pcti
-        demo: studyDemos['campuspctiApp'],
-        asset: const AssetImage(
-          'assets/studies/rally_card.png',
-          package: 'flutter_gallery_assets',
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: _CarouselCard(
+          //2023-03-09 lahiru added for campus_pcti
+          demo: studyDemos['campuspctiApp'],
+          asset: const AssetImage(
+            'assets/studies/rally_card.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetColor: const Color(0xFFD1F2E6),
+          assetDark: const AssetImage(
+            'assets/studies/rally_card_dark.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetDarkColor: const Color(0xFF253538),
+          textColor: shrineBrown900,
+          studyRoute: campus_pcti_routes.campuspctiRoute,
         ),
-        assetColor: const Color(0xFFD1F2E6),
-        assetDark: const AssetImage(
-          'assets/studies/rally_card_dark.png',
-          package: 'flutter_gallery_assets',
-        ),
-        assetDarkColor: const Color(0xFF253538),
-        textColor: shrineBrown900,
-        studyRoute: campus_pcti_routes.campuspctiRoute,
       ),
-      _CarouselCard(
-        //2023-03-09 lahiru added for campus_pcti_admin
-        demo: studyDemos['campuspctiadminApp'],
-        asset: const AssetImage(
-          'assets/studies/shrine_card.png',
-          package: 'flutter_gallery_assets',
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: _CarouselCard(
+          //2023-03-09 lahiru added for campus_pcti_admin
+          demo: studyDemos['campuspctiadminApp'],
+          asset: const AssetImage(
+            'assets/studies/shrine_card.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetColor: const Color(0xFFFEDBD0),
+          assetDark: const AssetImage(
+            'assets/studies/shrine_card_dark.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetDarkColor: const Color(0xFF543B3C),
+          textColor: shrineBrown900,
+          studyRoute: campus_pcti_admin.campuspctiadminRoute,
         ),
-        assetColor: const Color(0xFFFEDBD0),
-        assetDark: const AssetImage(
-          'assets/studies/shrine_card_dark.png',
-          package: 'flutter_gallery_assets',
-        ),
-        assetDarkColor: const Color(0xFF543B3C),
-        textColor: shrineBrown900,
-        studyRoute: campus_pcti_admin.campuspctiadminRoute,
       ),
-      _CarouselCard(
-        //2023-03-09 lahiru added for campus_pcti_admin
-        demo: studyDemos['feedbackApp'],
-        asset: const AssetImage(
-          'assets/studies/rally_card.png',
-          package: 'flutter_gallery_assets',
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: _CarouselCard(
+          //2023-03-09 lahiru added for campus_pcti_admin
+          demo: studyDemos['feedbackApp'],
+          asset: const AssetImage(
+            'assets/studies/rally_card.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetColor: const Color(0xFFFEDBD0),
+          assetDark: const AssetImage(
+            'assets/studies/rally_card_dark.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetDarkColor: const Color(0xFF543B3C),
+          textColor: shrineBrown900,
+          studyRoute: feedback_routes.feedbackRoute,
         ),
-        assetColor: const Color(0xFFFEDBD0),
-        assetDark: const AssetImage(
-          'assets/studies/rally_card_dark.png',
-          package: 'flutter_gallery_assets',
-        ),
-        assetDarkColor: const Color(0xFF543B3C),
-        textColor: shrineBrown900,
-        studyRoute: feedback_routes.feedbackRoute,
       ),
     ];
 
     if (isDesktop) {
+      // uncomment this if you want to use the animated home page
+      // return Scaffold(
+      //   body: ListView(
+      //     // Makes integration tests possible.
+      //     key: const ValueKey('HomeListView'),
+      //     primary: true,
+      //     padding: const EdgeInsetsDirectional.only(
+      //       top: firstHeaderDesktopTopPadding,
+      //     ),
+      //     children: [
+      //       _DesktopCarousel(height: carouselHeight, children: carouselCards),
+      //       const SizedBox(height: 109),
+      //     ],
+      //   ),
+      // );
       return Scaffold(
-        body: ListView(
-          // Makes integration tests possible.
-          key: const ValueKey('HomeListView'),
-          primary: true,
-          padding: const EdgeInsetsDirectional.only(
-            top: firstHeaderDesktopTopPadding,
+        body: Container(
+          padding: EdgeInsets.symmetric(vertical: 70.0, horizontal: 70.0),
+          child: GridView.count(
+            crossAxisCount: 3,
+            childAspectRatio: 1.8,
+            children: carouselCards,
           ),
-          children: [
-            _DesktopCarousel(height: carouselHeight, children: carouselCards),
-            const SizedBox(height: 109),
-          ],
         ),
       );
     } else {
+      // uncomment this if you want to use the animated home page
+      // return Scaffold(
+      //   body: _AnimatedHomePage(
+      //     restorationId: 'animated_page',
+      //     isSplashPageAnimationFinished:
+      //         SplashPageAnimation.of(context)!.isFinished,
+      //     carouselCards: carouselCards,
+      //   ),
+      // );
       return Scaffold(
-        body: _AnimatedHomePage(
-          restorationId: 'animated_page',
-          isSplashPageAnimationFinished:
-              SplashPageAnimation.of(context)!.isFinished,
-          carouselCards: carouselCards,
+        body: Container(
+          padding: EdgeInsets.all(16.0),
+          child: GridView.count(
+            crossAxisCount: 2,
+            childAspectRatio:
+                1.5, // set a higher value to make the cards wider and shorter
+            children: carouselCards,
+          ),
         ),
       );
     }
@@ -657,27 +692,27 @@ class _DesktopCarouselState extends State<_DesktopCarousel> {
                 itemBuilder: (context, index) => _builder(index),
               ),
             ),
-            if (showPreviousButton)
-              _DesktopPageButton(
-                onTap: () {
-                  _controller.animateTo(
-                    _controller.offset - itemWidth,
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeInOut,
-                  );
-                },
-              ),
-            if (showNextButton)
-              _DesktopPageButton(
-                isEnd: true,
-                onTap: () {
-                  _controller.animateTo(
-                    _controller.offset + itemWidth,
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeInOut,
-                  );
-                },
-              ),
+            // if (showPreviousButton)
+            //   _DesktopPageButton(
+            //     onTap: () {
+            //       _controller.animateTo(
+            //         _controller.offset - itemWidth,
+            //         duration: const Duration(milliseconds: 200),
+            //         curve: Curves.easeInOut,
+            //       );
+            //     },
+            //   ),
+            // if (showNextButton)
+            //   _DesktopPageButton(
+            //     isEnd: true,
+            //     onTap: () {
+            //       _controller.animateTo(
+            //         _controller.offset + itemWidth,
+            //         duration: const Duration(milliseconds: 200),
+            //         curve: Curves.easeInOut,
+            //       );
+            //     },
+            //   ),
           ],
         ),
       ),
