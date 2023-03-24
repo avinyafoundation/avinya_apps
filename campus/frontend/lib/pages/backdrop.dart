@@ -233,6 +233,7 @@ class _BackdropState extends State<Backdrop>
               child: homePage,
             ),
           ],
+          // for mobile view login page
           if (!isDesktop && !signedIn) ...[
             // Slides the settings page up and down from the top of the
             // screen.
