@@ -84,7 +84,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 fontSize:
                                     SizerUtil.deviceType == DeviceType.tablet
                                         ? 4.sp
-                                        : 5.sp,
+                                        : 12.sp,
                               ),
                         ),
                         Text(
@@ -97,7 +97,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 fontSize:
                                     SizerUtil.deviceType == DeviceType.tablet
                                         ? 3.sp
-                                        : 4.sp,
+                                        : 11.sp,
                               ),
                         ),
                       ],
@@ -153,7 +153,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: SizerUtil.deviceType == DeviceType.tablet
                           ? 4.sp
-                          : 5.sp,
+                          : 12.sp,
                     ),
               ),
               sizedBox,
@@ -196,7 +196,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: SizerUtil.deviceType == DeviceType.tablet
                           ? 4.sp
-                          : 5.sp,
+                          : 12.sp,
                     ),
               ),
               sizedBox,
@@ -233,7 +233,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: SizerUtil.deviceType == DeviceType.tablet
                           ? 4.sp
-                          : 5.sp,
+                          : 12.sp,
                     ),
               ),
               sizedBox,
@@ -262,7 +262,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: SizerUtil.deviceType == DeviceType.tablet
                           ? 4.sp
-                          : 5.sp,
+                          : 12.sp,
                     ),
               ),
               sizedBox,
@@ -319,7 +319,7 @@ class ProfileDetailRow extends StatelessWidget {
                       color: kTextBlackColor,
                       fontSize: SizerUtil.deviceType == DeviceType.tablet
                           ? 4.sp
-                          : 5.sp,
+                          : 12.sp,
                     ),
               ),
               kHalfSizedBox,
@@ -329,7 +329,7 @@ class ProfileDetailRow extends StatelessWidget {
                       color: kTextBlackColor,
                       fontSize: SizerUtil.deviceType == DeviceType.tablet
                           ? 3.sp
-                          : 4.sp,
+                          : 11.sp,
                     ),
               ),
               kHalfSizedBox,
@@ -375,7 +375,7 @@ class ProfileDetailColumn extends StatelessWidget {
                       color: kTextBlackColor,
                       fontSize: SizerUtil.deviceType == DeviceType.tablet
                           ? 8.sp
-                          : 5.sp,
+                          : 12.sp,
                     ),
               ),
               kHalfSizedBox,
@@ -385,7 +385,7 @@ class ProfileDetailColumn extends StatelessWidget {
                       color: kTextBlackColor,
                       fontSize: SizerUtil.deviceType == DeviceType.tablet
                           ? 7.sp
-                          : 4.sp,
+                          : 11.sp,
                     ),
               ),
               kHalfSizedBox,
