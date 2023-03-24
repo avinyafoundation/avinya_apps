@@ -232,10 +232,6 @@ class _BackdropState extends State<Backdrop>
               rect: _slideDownHomePageAnimation(constraints),
               child: homePage,
             ),
-            PositionedTransition(
-              rect: _slideDownHomePageAnimation(constraints),
-              child: loginPage,
-            ),
           ],
           if (isDesktop && signedIn) ...[
             Semantics(sortKey: const OrdinalSortKey(2), child: homePage),
@@ -283,6 +279,21 @@ class _BackdropState extends State<Backdrop>
                   ),
                 ),
               ),
+            ),
+            _SettingsIcon(
+              animationController: _iconController,
+              toggleSettings: _toggleSettings,
+              isSettingsOpenNotifier: _isSettingsOpenNotifier,
+            ),
+            _LogoutIcon(
+              animationController: _iconController,
+              toggleSettings: _toggleSettings,
+              isSettingsOpenNotifier: _isSettingsOpenNotifier,
+            ),
+            _ProfileIcon(
+              animationController: _iconController,
+              toggleSettings: _toggleSettings,
+              isSettingsOpenNotifier: _isSettingsOpenNotifier,
             ),
           ],
           if (isDesktop && !signedIn) ...[
@@ -332,22 +343,12 @@ class _BackdropState extends State<Backdrop>
                 ),
               ),
             ),
+            _SettingsIcon(
+              animationController: _iconController,
+              toggleSettings: _toggleSettings,
+              isSettingsOpenNotifier: _isSettingsOpenNotifier,
+            ),
           ],
-          _SettingsIcon(
-            animationController: _iconController,
-            toggleSettings: _toggleSettings,
-            isSettingsOpenNotifier: _isSettingsOpenNotifier,
-          ),
-          _LogoutIcon(
-            animationController: _iconController,
-            toggleSettings: _toggleSettings,
-            isSettingsOpenNotifier: _isSettingsOpenNotifier,
-          ),
-          _ProfileIcon(
-            animationController: _iconController,
-            toggleSettings: _toggleSettings,
-            isSettingsOpenNotifier: _isSettingsOpenNotifier,
-          ),
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gallery/layout/adaptive.dart';
 import 'package:gallery/pages/profile_info_view.dart';
 import 'package:gallery/pages/splash.dart';
 
@@ -64,13 +65,29 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        child: SplashPage(
-          child: MyProfileScreen(),
+    if (isDisplayDesktop(context)) {
+      return Scaffold(
+        body: Container(
+          child: SplashPage(
+            child: MyProfileScreen(),
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      return Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.only(top: 50),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(40),
+            ),
+            child: Container(
+              child: MyProfileScreen(),
+            ),
+          ),
+        ),
+      );
+    }
   }
 }
 
