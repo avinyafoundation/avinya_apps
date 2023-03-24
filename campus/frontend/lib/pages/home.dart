@@ -158,7 +158,7 @@ class HomePage extends StatelessWidget {
         body: Container(
           padding: EdgeInsets.all(16.0),
           child: GridView.count(
-            crossAxisCount: 2,
+            crossAxisCount: 1,
             childAspectRatio:
                 1.5, // set a higher value to make the cards wider and shorter
             children: carouselCards,
