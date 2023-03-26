@@ -21,6 +21,10 @@ bool isDisplayDesktop(BuildContext context) =>
     !isDisplayFoldable(context) &&
     getWindowType(context) >= AdaptiveWindowType.medium;
 
+bool isDisplayTab(BuildContext context) =>
+    !isDisplayFoldable(context) &&
+    getWindowType(context) >= AdaptiveWindowType.small;
+
 /// Returns boolean value whether the window is considered medium size.
 ///
 /// Used to build adaptive and responsive layouts.
