@@ -1,6 +1,8 @@
 import 'dart:developer';
 
-import 'package:ShoolManagementSystem/src/data.dart';
+import 'package:gallery/avinya/asset/lib/data.dart';
+
+//import 'package:ShoolManagementSystem/src/data.dart';
 
 final campusConfigSystemInstance = CampusConfigSystem()
   ..addBook(

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
-import 'package:ShoolManagementSystem/src/data/address.dart';
+//import 'package:ShoolManagementSystem/src/data/address.dart';
+import 'package:gallery/avinya/asset/lib/data/address.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
