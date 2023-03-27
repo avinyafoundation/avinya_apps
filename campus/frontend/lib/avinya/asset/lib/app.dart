@@ -1,10 +1,11 @@
 import 'dart:developer';
 
-import 'package:ShoolManagementSystem/src/data/campus_config_system.dart';
-import 'package:ShoolManagementSystem/src/data/resource_allocation.dart';
+//import 'package:ShoolManagementSystem/src/data/campus_config_system.dart';
+//import 'package:ShoolManagementSystem/src/data/resource_allocation.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery/auth.dart';
 
-import 'auth.dart';
+//import 'auth.dart';
 import 'routing.dart';
 import 'screens/navigator.dart';
 
@@ -18,7 +19,7 @@ class AdmissionsManagementSystem extends StatefulWidget {
 
 class _AdmissionsManagementSystemState
     extends State<AdmissionsManagementSystem> {
-  final _auth = SMSAuth();
+  final _auth = CampusAppsPortalAuth();
   final _navigatorKey = GlobalKey<NavigatorState>();
   late final RouteState _routeState;
   late final SimpleRouterDelegate _routerDelegate;
@@ -87,7 +88,7 @@ class _AdmissionsManagementSystemState
 
   Future<ParsedRoute> _guard(ParsedRoute from) async {
     final signedIn = await _auth.getSignedIn();
-    String? jwt_sub = campusConfigSystemInstance.getJWTSub();
+    // String? jwt_sub = campusConfigSystemInstance.getJWTSub();
 
     final signInRoute = ParsedRoute('/signin', '/signin', {}, {});
 
@@ -106,24 +107,27 @@ class _AdmissionsManagementSystemState
     else if (signedIn && from == signInRoute) {
       return ParsedRoute(
           '/resource_allocations', '/resource_allocations', {}, {});
-    } else if (signedIn && jwt_sub != null) {
-      return resourceAllocationRoute;
     }
+    log("_guard signed in2 $signedIn");
+      // } else if (signedIn && jwt_sub != null) {
+      //   return resourceAllocationRoute;
+      // }
     return from;
-  }
-
-  void _handleAuthStateChanged() async {
-    bool signedIn = await _auth.getSignedIn();
-    if (!signedIn) {
-      _routeState.go('/signin');
     }
-  }
 
-  @override
-  void dispose() {
-    _auth.removeListener(_handleAuthStateChanged);
-    _routeState.dispose();
-    _routerDelegate.dispose();
-    super.dispose();
+    void _handleAuthStateChanged() async {
+      bool signedIn = await _auth.getSignedIn();
+      if (!signedIn) {
+        _routeState.go('/signin');
+      }
+    }
+
+    @override
+    void dispose() {
+      _auth.removeListener(_handleAuthStateChanged);
+      _routeState.dispose();
+      _routerDelegate.dispose();
+      super.dispose();
+    }
   }
 }
