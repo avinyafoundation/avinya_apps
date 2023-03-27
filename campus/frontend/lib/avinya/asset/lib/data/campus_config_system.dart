@@ -32,7 +32,7 @@ class CampusConfigSystem {
   List<Employee>? allEmployees = [];
   List<AddressType>? addressTypes = [];
   List<Person>? persons = [];
-  late Future<List<Vacancy>>? vacancies;
+  //late Future<List<Vacancy>>? vacancies;
   List<AvinyaType>? avinyaTypes = [];
   List<Asset>? assets = [];
   List<Supplier>? suppliers = [];
@@ -125,9 +125,9 @@ class CampusConfigSystem {
     this.persons = persons;
   }
 
-  void setVacancies(Future<List<Vacancy>> vacancies) {
-    this.vacancies = vacancies;
-  }
+  // void setVacancies(Future<List<Vacancy>> vacancies) {
+  //   this.vacancies = vacancies;
+  // }
 
   void setAvinyaTypes(List<AvinyaType>? avinyaTypes) {
     this.avinyaTypes = avinyaTypes;
@@ -161,9 +161,9 @@ class CampusConfigSystem {
     this.resourceAllocations = resourceAllocations;
   }
 
-  Future<List<Vacancy>>? getVacancies() {
-    return vacancies;
-  }
+  // Future<List<Vacancy>>? getVacancies() {
+  //   return vacancies;
+  // }
 
   void fetchPersonForUser() async {
     // check if user is in Avinya database person table as a student
