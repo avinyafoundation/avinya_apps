@@ -19,6 +19,7 @@ import 'package:gallery/avinya/pcti_notes_admin/lib/app.dart'
     deferred as campus_pcti_admin;
 import 'package:gallery/avinya/pcti_notes_admin/lib/routes.dart'
     as campus_pcti_admin_routes;
+import 'package:gallery/avinya/asset/lib/routes.dart' as asset;
 import 'package:attendance/routes.dart' as routes;
 import 'package:gallery/pages/profile.dart' as profile;
 
@@ -95,6 +96,16 @@ class RouteConfiguration {
             feedback.loadLibrary,
             () => feedback
                 .CampusFeedbackSystem()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),
+    Path(
+      r'^' + asset.assetRoute,
+      (context, match) => StudyWrapper(
+        study: DeferredWidget(
+            asset.loadLibrary,
+            () => asset
+                .CampusAttendanceManagementSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),
