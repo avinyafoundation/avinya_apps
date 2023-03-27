@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gallery/auth.dart';
 import 'package:url_launcher/link.dart';
 
-import '../auth.dart';
 import '../routing.dart';
 
 class SettingsScreen extends StatefulWidget {

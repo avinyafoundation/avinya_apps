@@ -1,8 +1,7 @@
-import 'package:pcti_feedback/data/evaluation.dart';
+
 import 'package:pcti_feedback/data/evaluation_criteria.dart';
 import 'package:pcti_feedback/widgets/evaluation_criteria.dart';
 
-import 'package:pcti_feedback/widgets/evaluation_list.dart';
 import 'package:flutter/material.dart';
 
 import '../data.dart';
