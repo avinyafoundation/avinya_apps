@@ -1,4 +1,4 @@
-import 'package:ShoolManagementSystem/src/screens/resource_allocation_details.dart';
+//import 'package:ShoolManagementSystem/src/screens/resource_allocation_details.dart';
 import 'package:flutter/material.dart';
 
 import '../data.dart';

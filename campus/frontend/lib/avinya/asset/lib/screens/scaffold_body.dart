@@ -1,6 +1,7 @@
-import 'package:ShoolManagementSystem/src/screens/assets.dart';
-import 'package:ShoolManagementSystem/src/screens/resource_allocations.dart';
+// import 'package:ShoolManagementSystem/src/screens/assets.dart';
+// import 'package:ShoolManagementSystem/src/screens/resource_allocations.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery/avinya/asset/lib/screens/resource_allocations.dart';
 
 import '../routing.dart';
 import '../widgets/fade_transition_page.dart';

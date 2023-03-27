@@ -1,12 +1,14 @@
 import 'dart:developer';
 
-import 'package:ShoolManagementSystem/src/data.dart';
-import 'package:ShoolManagementSystem/src/data/address.dart';
+// import 'package:ShoolManagementSystem/src/data.dart';
+// import 'package:ShoolManagementSystem/src/data/address.dart';
 import 'package:flutter/gestures.dart';
 // import 'package:ShoolManagementSystem/src/data/library.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:gallery/avinya/asset/lib/data.dart';
+import 'package:gallery/avinya/asset/lib/data/address.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../config/app_config.dart';

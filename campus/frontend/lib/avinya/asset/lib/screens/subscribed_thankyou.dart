@@ -1,6 +1,7 @@
-import 'package:ShoolManagementSystem/src/data/prospect.dart';
+//import 'package:ShoolManagementSystem/src/data/prospect.dart';
 import 'package:flutter/material.dart';
 
+import '../../../asset/lib/data/prospect.dart';
 import '../routing.dart';
 
 class SubscribedThankyouScreen extends StatefulWidget {
