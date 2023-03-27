@@ -9,16 +9,14 @@ import 'package:gallery/auth.dart';
 import 'routing.dart';
 import 'screens/navigator.dart';
 
-class AdmissionsManagementSystem extends StatefulWidget {
-  const AdmissionsManagementSystem({super.key});
+class AssetUserSystem extends StatefulWidget {
+  const AssetUserSystem({super.key});
 
   @override
-  State<AdmissionsManagementSystem> createState() =>
-      _AdmissionsManagementSystemState();
+  State<AssetUserSystem> createState() => _AssetUserSystemState();
 }
 
-class _AdmissionsManagementSystemState
-    extends State<AdmissionsManagementSystem> {
+class _AssetUserSystemState extends State<AssetUserSystem> {
   final _auth = CampusAppsPortalAuth();
   final _navigatorKey = GlobalKey<NavigatorState>();
   late final RouteState _routeState;
