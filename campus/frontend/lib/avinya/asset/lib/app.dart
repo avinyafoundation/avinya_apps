@@ -109,25 +109,24 @@ class _AdmissionsManagementSystemState
           '/resource_allocations', '/resource_allocations', {}, {});
     }
     log("_guard signed in2 $signedIn");
-      // } else if (signedIn && jwt_sub != null) {
-      //   return resourceAllocationRoute;
-      // }
+    // } else if (signedIn && jwt_sub != null) {
+    //   return resourceAllocationRoute;
+    // }
     return from;
-    }
+  }
 
-    void _handleAuthStateChanged() async {
-      bool signedIn = await _auth.getSignedIn();
-      if (!signedIn) {
-        _routeState.go('/signin');
-      }
+  void _handleAuthStateChanged() async {
+    bool signedIn = await _auth.getSignedIn();
+    if (!signedIn) {
+      _routeState.go('/signin');
     }
+  }
 
-    @override
-    void dispose() {
-      _auth.removeListener(_handleAuthStateChanged);
-      _routeState.dispose();
-      _routerDelegate.dispose();
-      super.dispose();
-    }
+  @override
+  void dispose() {
+    _auth.removeListener(_handleAuthStateChanged);
+    _routeState.dispose();
+    _routerDelegate.dispose();
+    super.dispose();
   }
 }
