@@ -239,7 +239,7 @@ Future<List<Person>> fetchPersons() async {
 
 Future<Person> fetchPerson(String digital_id) async {
   final uri = Uri.parse(AppConfig.campusProfileBffApiUrl + '/person')
-      .replace(queryParameters: {'id': digital_id});
+      .replace(queryParameters: {'digital_id': digital_id});
 
   final response = await http.get(
     uri,
