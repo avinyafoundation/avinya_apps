@@ -1,8 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-
-import 'auth.dart';
+import 'package:gallery/auth.dart';
 import 'routing.dart';
 import 'screens/navigator.dart';
 
@@ -14,7 +13,7 @@ class CampusPctiSystem extends StatefulWidget {
 }
 
 class _CampusPctiSystemState extends State<CampusPctiSystem> {
-  final _auth = SMSAuth();
+  final _auth = CampusAppsPortalAuth();
   final _navigatorKey = GlobalKey<NavigatorState>();
   late final RouteState _routeState;
   late final SimpleRouterDelegate _routerDelegate;

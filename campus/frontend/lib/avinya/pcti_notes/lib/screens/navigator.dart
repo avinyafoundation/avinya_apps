@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 // import 'package:pcti_notes/data/activity.dart';
 import 'package:pcti_notes/screens/pcti_notes.dart';
 
-import '../auth.dart';
+import 'package:gallery/auth.dart';
 import '../data.dart';
 import '../routing.dart';
 import '../screens/sign_in.dart';
