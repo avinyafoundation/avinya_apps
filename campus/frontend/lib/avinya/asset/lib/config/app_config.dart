@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 class AppConfig {
   static String apiUrl = 'http://localhost:8080';
-  static String campusConfigBffApiUrl = 'http://localhost:9090';
+  static String campusAssetBffApiUrl = 'http://localhost:9094';
   static String campusConfigBffApiKey = '';
   static String choreoSTSEndpoint = "https://sts.choreo.dev/oauth2/token";
   static String choreoSTSClientID = "";
@@ -30,7 +30,7 @@ class AppConfig {
 
     // decode our json
     final json = jsonDecode(contents);
-    campusConfigBffApiUrl = json['campusConfigBffApiUrl'];
+    campusAssetBffApiUrl = json['campusAssetBffApiUrl'];
 
     // convert our JSON into an instance of our AppConfig class
     return AppConfig();
