@@ -1,11 +1,9 @@
 import 'dart:developer';
 
-import 'package:pcti_notes_admin/screens/pcti_note_details.dart';
 import 'package:pcti_notes_admin/screens/pcti_notes.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-
-import '../auth.dart';
+import 'package:gallery/auth.dart';
 import '../data.dart';
 import '../routing.dart';
 import '../screens/sign_in.dart';
