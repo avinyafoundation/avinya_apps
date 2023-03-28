@@ -160,7 +160,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
         future: fetchStudentPerson(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            campusConfigSystemInstance.setStudentPerson(snapshot.data!);
+            campusAppsPortalInstance.setUserPerson(snapshot.data!);
             routeState.go('/application');
           } else if (snapshot.hasError) {
             return Scaffold(
@@ -423,7 +423,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
   Future<Person> fetchStudentPerson() async {
     // check if user is in Avinya database person table as a student
     try {
-      this.futurePerson = fetchStudentApplicant(campusConfigSystemInstance.getJWTSub()!);
+      this.futurePerson = fetchPerson(campusAppsPortalInstance.getDigitalId()!);
     } catch (e) {
       print(
           'AdmissionSystem fetchPersonForUser :: Error fetching person for user');
@@ -481,7 +481,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Processing Student Data')),
           );
-          studentPerson = await createStudentApplicant(person);
+          studentPerson = await createPerson(person);
 
           campusConfigSystemInstance.setStudentPerson(studentPerson);
 
