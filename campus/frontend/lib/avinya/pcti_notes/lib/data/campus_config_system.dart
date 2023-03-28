@@ -2,9 +2,6 @@ import 'dart:developer';
 
 import 'package:pcti_notes/data.dart';
 
-// import '../data.dart';
-// import 'activity.dart';
-
 final campusConfigSystemInstance = CampusConfigSystem()
   ..addBook(
       title: 'Left Hand of Darkness',
@@ -172,8 +169,7 @@ class CampusConfigSystem {
           person.digital_id != this.user_digital_id!) {
         person = await fetchPerson(this.user_digital_id!);
         this.studentPerson = person;
-        log('AdmissionSystem fetchPersonForUser: ' +
-            person.toJson().toString());
+        log('AdmissionSystem fetchPersonForUser: ${person.toJson()}');
       }
     } catch (e) {
       print(

@@ -2,10 +2,8 @@ import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import '../data.dart';
-import 'avinya_type.dart';
 import 'evaluation_criteria.dart';
 
 class Vacancy {
@@ -67,13 +65,12 @@ class Vacancy {
 
 Future<List<Vacancy>> fetchVacancies() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusPctiNotesBffApiUrl +
-        '/student_vacancies/' +
-        campusConfigSystemInstance.getSchoolName()),
+    Uri.parse(
+        '${AppConfig.campusPctiNotesBffApiUrl}/student_vacancies/${campusConfigSystemInstance.getSchoolName()}'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
     },
   );
 

@@ -308,3 +308,115 @@ Future<http.Response> deletePerson(String id) async {
     throw Exception('Failed to delete Person.');
   }
 }
+
+//-------- start of pcti_notes_admin functions ---------------
+
+Future<List<Person>> fetchStudentApplicants() async {
+  final response = await http.get(
+    Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/student_applicant'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<Person> persons =
+        await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
+    return persons;
+  } else {
+    throw Exception('Failed to load Person');
+  }
+}
+
+Future<http.Response> deleteStudentApplicant(String id) async {
+  final http.Response response = await http.delete(
+    Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/student_applicant/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    return response;
+  } else {
+    throw Exception('Failed to delete Person.');
+  }
+}
+
+Future<Person> createStudentApplicant(Person person) async {
+  final response = await http.post(
+    Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/student_applicant'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+    },
+    body: jsonEncode(person.toJson()),
+  );
+  if (response.statusCode == 200) {
+    // var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    Person person = Person.fromJson(json.decode(response.body));
+    return person;
+  } else {
+    log("${response.body} Status code =${response.statusCode}");
+    throw Exception('Failed to create Person.');
+  }
+}
+
+Future<http.Response> updateStudentApplicant(Person person) async {
+  final response = await http.put(
+    Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/student_applicant'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+    },
+    body: jsonEncode(person.toJson()),
+  );
+  if (response.statusCode == 200) {
+    return response;
+  } else {
+    throw Exception('Failed to update Person.');
+  }
+}
+
+Future<Person> fetchPersonFromPctiNoteAdmin(int person_id) async {
+  final response = await http.get(
+    Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/person?id=$person_id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    Person person = Person.fromJson(json.decode(response.body));
+    return person;
+  } else {
+    throw Exception('Failed to load Person');
+  }
+}
+
+Future<Person> fetchStudentApplicant(String jwt_sub_id) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusPctiNotesBffApiUrl}/student_applicant/$jwt_sub_id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    Person person = Person.fromJson(json.decode(response.body));
+    return person;
+  } else {
+    throw Exception('Failed to load Person');
+  }
+}
+
+//-------- end of pcti_notes_admin functions ---------------

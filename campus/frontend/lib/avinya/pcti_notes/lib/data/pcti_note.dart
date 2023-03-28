@@ -4,17 +4,17 @@ import 'package:http/http.dart' as http;
 // import 'package:pcti_notes/data/activity.dart';
 import 'dart:convert';
 
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import '../data.dart';
 
 Future<List<Activity>> fetchPctiParticipantActivities(int person_id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusPctiNotesBffApiUrl +
-        '/pcti_participant_activities?person_id=$person_id'),
+    Uri.parse(
+        '${AppConfig.campusPctiNotesBffApiUrl}/pcti_participant_activities?person_id=$person_id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
     },
   );
 
@@ -31,12 +31,12 @@ Future<List<Activity>> fetchPctiParticipantActivities(int person_id) async {
 
 Future<List<Evaluation>> fetchPctiActivityNotes(int pcti_activity_id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusPctiNotesBffApiUrl +
-        '/pcti_activity_notes?pcti_activity_id=$pcti_activity_id'),
+    Uri.parse(
+        '${AppConfig.campusPctiNotesBffApiUrl}/pcti_activity_notes?pcti_activity_id=$pcti_activity_id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
     },
   );
 
@@ -54,12 +54,12 @@ Future<List<Evaluation>> fetchPctiActivityNotes(int pcti_activity_id) async {
 Future<List<ActivityInstance>> fetchPctiActivityInstancesToday(
     activity_id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusPctiNotesBffApiUrl +
-        '/activity_instances_today?activity_id=$activity_id'),
+    Uri.parse(
+        '${AppConfig.campusPctiNotesBffApiUrl}/activity_instances_today?activity_id=$activity_id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
     },
   );
 
@@ -76,10 +76,10 @@ Future<List<ActivityInstance>> fetchPctiActivityInstancesToday(
 
 Future<http.Response> createPctiNote(Evaluation pctiNote) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/pcti_notes'),
+    Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/pcti_notes'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
     },
     body: jsonEncode(pctiNote.toJson()),
   );
