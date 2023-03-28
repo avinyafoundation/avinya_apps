@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import '../data.dart';
 import '../data/prospect.dart';
 import '../routing.dart';
@@ -258,7 +258,6 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
                   ),
                 ]),
                 SizedBox(width: 10.0, height: 5.0),
-              
                 ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
