@@ -56,7 +56,7 @@ class Supply {
 
 Future<List<Supply>> fetchSupplies() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/supplies'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/supplies'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -76,7 +76,7 @@ Future<List<Supply>> fetchSupplies() async {
 
 Future<Supply> fetchSupply(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/supplies/$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/supplies/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -96,7 +96,7 @@ Future<Supply> fetchSupply(int id) async {
 
 Future<http.Response> createSupply(Supply supply) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/supplies'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/supplies'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -112,7 +112,7 @@ Future<http.Response> createSupply(Supply supply) async {
 
 Future<http.Response> updateSupply(Supply supply) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/supplies'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/supplies'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -128,7 +128,7 @@ Future<http.Response> updateSupply(Supply supply) async {
 
 Future<http.Response> deleteSupply(int id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/supplies/$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/supplies/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
