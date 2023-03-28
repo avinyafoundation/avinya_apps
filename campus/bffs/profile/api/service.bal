@@ -42,10 +42,12 @@ service / on new http:Listener(9090) {
         return "Hello, " + name;
     }
 
+    # Person resource for getting person details given the digitial ID 
+    # + digital_id - is the Asgardeo ID of the user which is also the official email address
+    # + return - Person record for the given digital ID or error
+    resource function get person(string digital_id) returns Person|error {
 
-    resource function get person(string id) returns Person|error {
-
-        GetPersonResponse|graphql:ClientError getPersonResponse = globalDataClient->getPerson(id);
+        GetPersonResponse|graphql:ClientError getPersonResponse = globalDataClient->getPerson(digital_id);
         if(getPersonResponse is GetPersonResponse) {
             Person|error person_record = getPersonResponse.person_by_digital_id.cloneWithType(Person);
             if(person_record is Person) {
