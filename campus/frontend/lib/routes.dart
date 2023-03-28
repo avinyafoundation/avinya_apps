@@ -6,6 +6,7 @@ import 'dart:developer';
 import 'package:dual_screen/dual_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery/avinya/asset/lib/app.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:gallery/deferred_widget.dart';
 import 'package:gallery/main.dart';
@@ -19,6 +20,8 @@ import 'package:gallery/avinya/pcti_notes_admin/lib/app.dart'
     deferred as campus_pcti_admin;
 import 'package:gallery/avinya/pcti_notes_admin/lib/routes.dart'
     as campus_pcti_admin_routes;
+import 'package:gallery/avinya/asset/lib/app.dart' deferred as asset;
+import 'package:gallery/avinya/asset/lib/routes.dart' as asset_routes;
 import 'package:attendance/routes.dart' as routes;
 import 'package:gallery/pages/profile.dart' as profile;
 
@@ -95,6 +98,14 @@ class RouteConfiguration {
             feedback.loadLibrary,
             () => feedback
                 .CampusFeedbackSystem()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),
+    Path(
+      r'^' + asset_routes.assetRoute,
+      (context, match) => StudyWrapper(
+        study: DeferredWidget(asset.loadLibrary,
+            () => asset.AssetUserSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),

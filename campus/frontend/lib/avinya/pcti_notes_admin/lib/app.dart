@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:pcti_notes_admin/data/campus_config_system.dart';
 import 'package:flutter/material.dart';
 
 import 'auth.dart';

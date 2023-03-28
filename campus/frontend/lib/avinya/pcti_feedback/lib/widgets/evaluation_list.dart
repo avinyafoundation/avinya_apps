@@ -1,6 +1,3 @@
-import 'dart:developer';
-import 'dart:html';
-
 import 'package:pcti_feedback/data/campus_feedback_system.dart';
 import 'package:pcti_feedback/data/evaluation.dart';
 import 'package:flutter/material.dart';
@@ -177,8 +174,8 @@ class _AddEvaluationPageState extends State<AddEvaluationPage> {
   late FocusNode _evaluation_criteria_id_FocusNode;
   late TextEditingController _activity_instance_id_Controller;
   late FocusNode _activity_instance_id_FocusNode;
-  late TextEditingController _updated_Controller;
-  late FocusNode _updated_FocusNode;
+  // late TextEditingController _updated_Controller;
+  // late FocusNode _updated_FocusNode;
   late TextEditingController _response_Controller;
   late FocusNode _response_FocusNode;
   late TextEditingController _notes_Controller;
