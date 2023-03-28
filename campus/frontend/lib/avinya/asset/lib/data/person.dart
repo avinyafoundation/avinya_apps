@@ -4,8 +4,7 @@ import 'dart:developer';
 import 'package:gallery/avinya/asset/lib/data/address.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 
 class Person {
   int? id;
@@ -113,11 +112,11 @@ class Person {
 
 Future<List<Person>> fetchPersons() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/student_applicant'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
   );
 
@@ -134,11 +133,11 @@ Future<List<Person>> fetchPersons() async {
 Future<Person> fetchPerson(String jwt_sub_id) async {
   final response = await http.get(
     Uri.parse(
-        AppConfig.campusAssetBffApiUrl + '/student_applicant/$jwt_sub_id'),
+        AppConfig.campusAssetsBffApiUrl + '/student_applicant/$jwt_sub_id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
   );
 
@@ -152,10 +151,10 @@ Future<Person> fetchPerson(String jwt_sub_id) async {
 
 Future<Person> createPerson(Person person) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/student_applicant'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
     body: jsonEncode(person.toJson()),
   );
@@ -171,10 +170,10 @@ Future<Person> createPerson(Person person) async {
 
 Future<http.Response> updatePerson(Person person) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/student_applicant'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
     body: jsonEncode(person.toJson()),
   );
@@ -187,10 +186,10 @@ Future<http.Response> updatePerson(Person person) async {
 
 Future<http.Response> deletePerson(String id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/student_applicant/$id'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
   );
 

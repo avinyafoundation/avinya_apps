@@ -10,7 +10,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import '../routing.dart';
 
 class PreconditionsScreen extends StatefulWidget {

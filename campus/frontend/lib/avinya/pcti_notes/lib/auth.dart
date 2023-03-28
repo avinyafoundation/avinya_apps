@@ -8,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 
 import 'package:http/http.dart' as http;
-import './config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 
 import 'package:jwt_decoder/jwt_decoder.dart';
 
@@ -96,7 +96,7 @@ class SMSAuth extends ChangeNotifier {
             _api_tokens
               ..forEach((key, value) =>
                   print("API tokens Key : $key, Value : $value"));
-            AppConfig.campusConfigBffApiKey = _api_tokens["access_token"];
+            AppConfig.campusPctiNotesBffApiKey = _api_tokens["access_token"];
             print('Fetch API tokens success');
           } else {
             print('Failed to fetch API key1');

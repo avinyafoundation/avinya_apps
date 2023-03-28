@@ -1,7 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 
 class Inventory {
   int? id;
@@ -52,11 +51,11 @@ class Inventory {
 
 Future<List<Inventory>> fetchInventories() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/inventories'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/inventories'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
   );
 
@@ -73,11 +72,12 @@ Future<List<Inventory>> fetchInventories() async {
 
 Future<Inventory> fetchInventory(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/inventories/' + id.toString()),
+    Uri.parse(
+        AppConfig.campusAssetsBffApiUrl + '/inventories/' + id.toString()),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
   );
 
@@ -90,10 +90,10 @@ Future<Inventory> fetchInventory(int id) async {
 
 Future<http.Response> createInventory(Inventory inventory) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/inventories'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/inventories'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
     body: jsonEncode(inventory.toJson()),
   );
@@ -106,12 +106,12 @@ Future<http.Response> createInventory(Inventory inventory) async {
 
 Future<http.Response> updateInventory(Inventory inventory) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusAssetBffApiUrl +
+    Uri.parse(AppConfig.campusAssetsBffApiUrl +
         '/inventories/' +
         inventory.id.toString()),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
     body: jsonEncode(inventory.toJson()),
   );
@@ -124,10 +124,10 @@ Future<http.Response> updateInventory(Inventory inventory) async {
 
 Future<http.Response> deleteInventory(int id) async {
   final response = await http.delete(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/inventories/$id'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/inventories/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
   );
   if (response.statusCode == 200) {

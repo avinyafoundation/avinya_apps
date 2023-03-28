@@ -1,4 +1,4 @@
-import 'package:attendance/config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import 'package:flutter/material.dart';
 
 import '../data.dart';

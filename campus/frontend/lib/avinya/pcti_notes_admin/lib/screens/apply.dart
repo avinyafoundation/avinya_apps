@@ -9,8 +9,9 @@ import 'package:flutter/services.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import '../routing.dart';
+// import '../data/person.dart' as pcti_person;
 
 class CityNearBandaragama {
   int? id;
@@ -430,7 +431,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
           'AdmissionSystem fetchPersonForUser :: Error fetching person for user');
       print(e);
     }
-    return this.futurePerson;
+    return futurePerson;
   }
 
   String? _mandatoryValidator(String? text) {

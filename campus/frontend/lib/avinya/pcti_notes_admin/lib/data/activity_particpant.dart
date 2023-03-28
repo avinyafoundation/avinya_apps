@@ -1,8 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
-import '../data.dart';
+import 'package:gallery/config/app_config.dart';
 
 class ActivityParticipant {
   ActivityParticipant({
@@ -61,7 +59,7 @@ class ActivityParticipant {
 Future<http.Response> createActivityParticipant(
     ActivityParticipant activityParticipant) async {
   final http.Response response = await http.post(
-    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/activity_participant'),
+    Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/activity_participant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },

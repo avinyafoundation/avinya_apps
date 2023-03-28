@@ -1,7 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 
 class EvaluationCriteriaAnswerOption {
   int? id;
@@ -42,7 +41,7 @@ Future<List<EvaluationCriteriaAnswerOption>>
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 
@@ -67,7 +66,7 @@ Future<EvaluationCriteriaAnswerOption> fetchEvaluationCriteriaAnswerOption(
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 
@@ -89,7 +88,7 @@ Future<http.Response> createEvaluationCriteriaAnswerOption(
         '/evaluation_criteria_answer_option/evaluation_criteria_answer_options'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
     body: jsonEncode(evaluationCriteriaAnswerOption.toJson()),
   );
@@ -107,7 +106,7 @@ Future<http.Response> updateEvaluationCriteriaAnswerOption(
         '/evaluation_criteria_answer_option/evaluation_criteria_answer_options'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
     body: jsonEncode(evaluationCriteriaAnswerOption.toJson()),
   );
@@ -124,7 +123,7 @@ Future<http.Response> deleteEvaluationCriteriaAnswerOption(String id) async {
         '/evaluation_criteria_answer_option/evaluation_criteria_answer_options/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 
