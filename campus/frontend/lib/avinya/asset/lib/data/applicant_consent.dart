@@ -86,7 +86,7 @@ class ApplicantConsent {
 
 Future<List<ApplicantConsent>> fetchApplicantConsents() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/applicant_consent'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/applicant_consent'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -107,7 +107,7 @@ Future<List<ApplicantConsent>> fetchApplicantConsents() async {
 
 Future<ApplicantConsent> fetchApplicantConsent(String id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/applicant_consent/$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/applicant_consent/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -128,7 +128,7 @@ Future<ApplicantConsent> fetchApplicantConsent(String id) async {
 Future<http.Response> createApplicantConsent(
     ApplicantConsent applicantConsent) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/applicant_consent'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/applicant_consent'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       // 'Authorization': 'Bearer ' + AppConfig.admissionsApplicationBffApiKey,
@@ -145,7 +145,7 @@ Future<http.Response> createApplicantConsent(
 Future<http.Response> updateApplicantConsent(
     ApplicantConsent applicantConsent) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/applicant_consent'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/applicant_consent'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -161,7 +161,7 @@ Future<http.Response> updateApplicantConsent(
 
 Future<http.Response> deleteApplicantConsent(String id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/applicant_consent/$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/applicant_consent/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       // 'Authorization': 'Bearer ' + AppConfig.admissionsApplicationBffApiKey,

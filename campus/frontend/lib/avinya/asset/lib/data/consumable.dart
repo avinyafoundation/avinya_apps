@@ -48,7 +48,7 @@ class Consumable {
 
 Future<List<Consumable>> fetchConsumables() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/consumables'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/consumables'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -69,7 +69,7 @@ Future<List<Consumable>> fetchConsumables() async {
 
 Future<Consumable> fetchConsumable(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/consumable/$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/consumable/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -89,7 +89,7 @@ Future<Consumable> fetchConsumable(int id) async {
 
 Future<http.Response> createConsumable(Consumable consumable) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/consumable'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/consumable'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -105,7 +105,7 @@ Future<http.Response> createConsumable(Consumable consumable) async {
 
 Future<http.Response> updateConsumable(Consumable consumable) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/consumable'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/consumable'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -121,7 +121,7 @@ Future<http.Response> updateConsumable(Consumable consumable) async {
 
 Future<http.Response> deleteConsumable(int id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/consumable/$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/consumable/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,

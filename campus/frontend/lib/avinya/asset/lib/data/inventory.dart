@@ -52,7 +52,7 @@ class Inventory {
 
 Future<List<Inventory>> fetchInventories() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/inventories'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/inventories'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -73,8 +73,7 @@ Future<List<Inventory>> fetchInventories() async {
 
 Future<Inventory> fetchInventory(int id) async {
   final response = await http.get(
-    Uri.parse(
-        AppConfig.campusConfigBffApiUrl + '/inventories/' + id.toString()),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/inventories/' + id.toString()),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -91,7 +90,7 @@ Future<Inventory> fetchInventory(int id) async {
 
 Future<http.Response> createInventory(Inventory inventory) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/inventories'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/inventories'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -107,7 +106,7 @@ Future<http.Response> createInventory(Inventory inventory) async {
 
 Future<http.Response> updateInventory(Inventory inventory) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusConfigBffApiUrl +
+    Uri.parse(AppConfig.campusAssetBffApiUrl +
         '/inventories/' +
         inventory.id.toString()),
     headers: <String, String>{
@@ -125,7 +124,7 @@ Future<http.Response> updateInventory(Inventory inventory) async {
 
 Future<http.Response> deleteInventory(int id) async {
   final response = await http.delete(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/inventories/$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/inventories/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,

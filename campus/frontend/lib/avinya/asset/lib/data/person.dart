@@ -113,7 +113,7 @@ class Person {
 
 Future<List<Person>> fetchPersons() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/student_applicant'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -134,7 +134,7 @@ Future<List<Person>> fetchPersons() async {
 Future<Person> fetchPerson(String jwt_sub_id) async {
   final response = await http.get(
     Uri.parse(
-        AppConfig.campusConfigBffApiUrl + '/student_applicant/$jwt_sub_id'),
+        AppConfig.campusAssetBffApiUrl + '/student_applicant/$jwt_sub_id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -152,7 +152,7 @@ Future<Person> fetchPerson(String jwt_sub_id) async {
 
 Future<Person> createPerson(Person person) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/student_applicant'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -171,7 +171,7 @@ Future<Person> createPerson(Person person) async {
 
 Future<http.Response> updatePerson(Person person) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/student_applicant'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -187,7 +187,7 @@ Future<http.Response> updatePerson(Person person) async {
 
 Future<http.Response> deletePerson(String id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/student_applicant/$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/student_applicant/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,

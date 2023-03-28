@@ -70,7 +70,7 @@ class ResourceAllocation {
 
 Future<List<ResourceAllocation>> fetchResourceAllocation(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl +
+    Uri.parse(AppConfig.campusAssetBffApiUrl +
         '/resource_allocation?resourceAllocationId=$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
@@ -91,7 +91,7 @@ Future<List<ResourceAllocation>> fetchResourceAllocation(int id) async {
 }
 
 Future<List<ResourceAllocation>> fetchResourceAllocations(int personId) async {
-  final response = await http.get(Uri.parse(AppConfig.campusConfigBffApiUrl +
+  final response = await http.get(Uri.parse(AppConfig.campusAssetBffApiUrl +
       '/resource_allocation_by_person?personId=$personId'));
 
   if (response.statusCode == 200) {
@@ -108,7 +108,7 @@ Future<List<ResourceAllocation>> fetchResourceAllocations(int personId) async {
 Future<http.Response> createResourceAllocation(
     ResourceAllocation resourceAllocation) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/resource_allocation'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -124,7 +124,7 @@ Future<http.Response> createResourceAllocation(
 
 Future<List<AvinyaType>> fetchAvinyaTypesByAsset() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/avinyaTypesByAsset'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/avinyaTypesByAsset'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -146,7 +146,7 @@ Future<List<AvinyaType>> fetchAvinyaTypesByAsset() async {
 Future<Asset> fetchAssetByAvinyaType(int id) async {
   final response = await http.get(
     Uri.parse(
-        AppConfig.campusConfigBffApiUrl + '/assetByAvinyaType?avinyaType=$id'),
+        AppConfig.campusAssetBffApiUrl + '/assetByAvinyaType?avinyaType=$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -247,7 +247,7 @@ Future<Asset> fetchAssetByAvinyaType(int id) async {
 
 //   Future<List<ResourceAllocation>> fetchResourceAllocations() async {
 //     final response = await http.get(
-//       Uri.parse(AppConfig.campusConfigBffApiUrl + '/resource_allocations'),
+//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocations'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
 //         'accept': 'application/json',
@@ -269,7 +269,7 @@ Future<Asset> fetchAssetByAvinyaType(int id) async {
 //   Future<List<ResourceAllocation>> fetchResourceAllocationsByPersonId(
 //       int id) async {
 //     final response = await http.get(
-//       Uri.parse(AppConfig.campusConfigBffApiUrl +
+//       Uri.parse(AppConfig.campusAssetBffApiUrl +
 //           '/resource_allocation_by_person?personId=$id'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
@@ -291,7 +291,7 @@ Future<Asset> fetchAssetByAvinyaType(int id) async {
 
 //   Future<List<ResourceAllocation>> fetchResourceAllocation(int id) async {
 //     final response = await http.get(
-//       Uri.parse(AppConfig.campusConfigBffApiUrl +
+//       Uri.parse(AppConfig.campusAssetBffApiUrl +
 //           '/resource_allocation?resourceAllocationId=$id'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
@@ -314,7 +314,7 @@ Future<Asset> fetchAssetByAvinyaType(int id) async {
 //   Future<http.Response> createResourceAllocation(
 //       ResourceAllocation resourceAllocation) async {
 //     final response = await http.post(
-//       Uri.parse(AppConfig.campusConfigBffApiUrl + '/resource_allocation'),
+//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
 //         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -331,7 +331,7 @@ Future<Asset> fetchAssetByAvinyaType(int id) async {
 //   Future<http.Response> updateResourceAllocation(
 //       ResourceAllocation resourceAllocation) async {
 //     final response = await http.put(
-//       Uri.parse(AppConfig.campusConfigBffApiUrl + '/resource_allocation'),
+//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
 //         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -347,7 +347,7 @@ Future<Asset> fetchAssetByAvinyaType(int id) async {
 
 //   Future<http.Response> deleteResourceAllocation(int id) async {
 //     final response = await http.delete(
-//       Uri.parse(AppConfig.campusConfigBffApiUrl + '/resource_allocation/$id'),
+//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation/$id'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
 //         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,

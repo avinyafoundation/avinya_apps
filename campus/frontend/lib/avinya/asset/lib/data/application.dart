@@ -76,7 +76,7 @@ class Application {
 
 Future<List<Application>> fetchApplications() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/application'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/application'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -97,7 +97,7 @@ Future<List<Application>> fetchApplications() async {
 
 Future<Application> fetchApplication(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/application/$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/application/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -116,7 +116,7 @@ Future<Application> fetchApplication(int id) async {
 
 Future<Application> createApplication(Application applicantConsent) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/application'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/application'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -134,7 +134,7 @@ Future<Application> createApplication(Application applicantConsent) async {
 
 Future<http.Response> updateApplication(Application applicantConsent) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/application'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/application'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -150,7 +150,7 @@ Future<http.Response> updateApplication(Application applicantConsent) async {
 
 Future<http.Response> deleteApplication(String id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/application/$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/application/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,

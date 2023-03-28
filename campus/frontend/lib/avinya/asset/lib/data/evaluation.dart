@@ -64,7 +64,7 @@ class Evaluation {
 
 Future<List<Evaluation>> fetchEvaluations() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/evaluations'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/evaluations'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -85,7 +85,7 @@ Future<List<Evaluation>> fetchEvaluations() async {
 
 Future<Evaluation> fetchEvaluation(String id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/evaluations/$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/evaluations/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -108,7 +108,7 @@ Future<http.Response> createEvaluation(List<Evaluation> evaluations) async {
   print(evaluations.map((evaluation) => evaluation.toJson()).toList());
   // log(evaluations.map((evaluation) => evaluation.toJson()).toString());
   final response = await http.post(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/evaluations'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/evaluations'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -125,7 +125,7 @@ Future<http.Response> createEvaluation(List<Evaluation> evaluations) async {
 
 Future<http.Response> updateEvaluation(Evaluation applicantConsent) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/evaluations'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/evaluations'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -141,7 +141,7 @@ Future<http.Response> updateEvaluation(Evaluation applicantConsent) async {
 
 Future<http.Response> deleteEvaluation(String id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/evaluations/$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/evaluations/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,

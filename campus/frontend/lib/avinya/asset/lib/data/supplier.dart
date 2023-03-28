@@ -37,7 +37,7 @@ class Supplier {
 
 Future<List<Supplier>> fetchSuppliers() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/suppliers'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/suppliers'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -58,7 +58,7 @@ Future<List<Supplier>> fetchSuppliers() async {
 
 Future<Supplier> fetchSupplier(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/supplier/$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/supplier/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -78,7 +78,7 @@ Future<Supplier> fetchSupplier(int id) async {
 
 Future<http.Response> createSupplier(Supplier supplier) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/supplier'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/supplier'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -94,7 +94,7 @@ Future<http.Response> createSupplier(Supplier supplier) async {
 
 Future<http.Response> updateSupplier(Supplier supplier) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/supplier'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/supplier'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -110,7 +110,7 @@ Future<http.Response> updateSupplier(Supplier supplier) async {
 
 Future<http.Response> deleteSupplier(int id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/supplier/$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/supplier/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,

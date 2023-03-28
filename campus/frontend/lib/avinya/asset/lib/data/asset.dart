@@ -62,7 +62,7 @@ class Asset {
 
 Future<List<Asset>> fetchAssets() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/assets'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/assets'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -82,7 +82,7 @@ Future<List<Asset>> fetchAssets() async {
 
 Future<Asset> fetchAsset(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/asset?assetId=$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/asset?assetId=$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -101,7 +101,7 @@ Future<Asset> fetchAsset(int id) async {
 
 Future<http.Response> createAsset(Asset asset) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/asset'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/asset'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -117,7 +117,7 @@ Future<http.Response> createAsset(Asset asset) async {
 
 Future<http.Response> updateAsset(Asset asset) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/asset'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/asset'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
@@ -133,7 +133,7 @@ Future<http.Response> updateAsset(Asset asset) async {
 
 Future<http.Response> deleteAsset(int id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusConfigBffApiUrl + '/asset?assetId=$id'),
+    Uri.parse(AppConfig.campusAssetBffApiUrl + '/asset?assetId=$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
