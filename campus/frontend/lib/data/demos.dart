@@ -192,6 +192,12 @@ class Demos {
         category: GalleryDemoCategory.study,
         studyId: 'starter',
       ),
+      'assetApp': GalleryDemo(
+        title: "Asset User App",
+        subtitle: "Asset Allocation App for the Users",
+        category: GalleryDemoCategory.study,
+        studyId: 'starter',
+      ),
     };
   }
 
