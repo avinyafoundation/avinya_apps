@@ -2,10 +2,8 @@ import 'dart:developer';
 
 import 'package:pcti_feedback/data/address.dart';
 import 'package:http/http.dart' as http;
-
 import 'dart:convert';
-
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 
 class Person {
   int? id;
@@ -117,7 +115,7 @@ Future<List<Person>> fetchStudentApplicants() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 
@@ -137,7 +135,7 @@ Future<Person> fetchPerson(int person_id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 
@@ -164,7 +162,7 @@ Future<Person> fetchStudentApplicant(String jwt_sub_id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 
@@ -181,7 +179,7 @@ Future<Person> createStudentApplicant(Person person) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
     body: jsonEncode(person.toJson()),
   );
@@ -200,7 +198,7 @@ Future<http.Response> updateStudentApplicant(Person person) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
     body: jsonEncode(person.toJson()),
   );
@@ -216,7 +214,7 @@ Future<http.Response> deleteStudentApplicant(String id) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/student_applicant/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 

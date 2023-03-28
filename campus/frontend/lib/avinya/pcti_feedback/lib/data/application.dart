@@ -1,7 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 
 class ApplicationStatus {
   int? id;
@@ -80,7 +79,7 @@ Future<List<Application>> fetchApplications() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 
@@ -101,7 +100,7 @@ Future<Application> fetchApplication(int id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 
@@ -119,7 +118,7 @@ Future<Application> createApplication(Application applicantConsent) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/application'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
     body: jsonEncode(applicantConsent.toJson()),
   );
@@ -137,7 +136,7 @@ Future<http.Response> updateApplication(Application applicantConsent) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/application'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
     body: jsonEncode(applicantConsent.toJson()),
   );
@@ -153,7 +152,7 @@ Future<http.Response> deleteApplication(String id) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/application/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 

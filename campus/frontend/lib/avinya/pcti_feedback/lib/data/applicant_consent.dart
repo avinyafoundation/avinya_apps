@@ -1,7 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 
 class ApplicantConsent {
   int? id;
@@ -148,7 +147,7 @@ Future<http.Response> updateApplicantConsent(
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/applicant_consent'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
     body: jsonEncode(applicantConsent.toJson()),
   );
