@@ -26,7 +26,7 @@ final GraphqlClient globalDataClient = check new (GLOBAL_DATA_API_URL,
         allowOrigins: ["*"]
     }
 }
-service / on new http:Listener(9090) {
+service / on new http:Listener(9094) {
 
     resource function get asset (int assetId) returns Asset|error {
         GetAssetResponse|graphql:ClientError getAssetResponse = globalDataClient->getAsset(assetId);
