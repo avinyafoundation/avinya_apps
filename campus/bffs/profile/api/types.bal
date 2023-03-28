@@ -431,6 +431,28 @@ public type GetPersonResponse record {|
             |} name;
             record {|
                 int? id;
+                record {|
+                    string name_en;
+                |} name;
+                string? description;
+                record {|
+                    int? id;
+                    record {|
+                        string name_en;
+                    |} name;
+                    string? description;
+                    record {|
+                        int? id;
+                        record {|
+                            string name_en;
+                        |} name;
+                        string? description;
+                        record {|
+                            int? id;
+                            string? digital_id;
+                        |}[]? people;
+                    |}[]? child_organizations;
+                |}[]? child_organizations;
             |}[]? child_organizations;
             record {|
                 int? id;
