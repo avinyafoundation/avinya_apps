@@ -2,9 +2,8 @@ import 'package:adaptive_navigation/adaptive_navigation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../../../../auth.dart';
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import '../routing.dart';
 // import '../auth.dart';
 import 'scaffold_body.dart';
