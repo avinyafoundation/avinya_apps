@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../data.dart';
 
 class PersonList extends StatefulWidget {
@@ -20,11 +19,11 @@ class PersonListState extends State<PersonList> {
   @override
   void initState() {
     super.initState();
-    futurePersons = fetchStudentApplicants();
+    futurePersons = fetchPersons();
   }
 
   Future<List<Person>> refreshPersonState() async {
-    futurePersons = fetchStudentApplicants();
+    futurePersons = fetchPersons();
     return futurePersons;
   }
 
@@ -114,7 +113,7 @@ class PersonListState extends State<PersonList> {
 
   Future<void> _deletePerson(Person person) async {
     try {
-      await deleteStudentApplicant(person.id!.toString());
+      await deletePerson(person.id!.toString());
     } on Exception {
       await showDialog(
         context: context,
@@ -434,7 +433,7 @@ class _AddPersonPageState extends State<AddPersonPage> {
           asgardeo_id: _asgardeo_id_Controller.text,
           email: _email_Controller.text,
         );
-        await createStudentApplicant(person);
+        await createPerson(person);
         Navigator.of(context).pop(true);
       }
     } on Exception {
@@ -763,7 +762,7 @@ class _EditPersonPageState extends State<EditPersonPage> {
           asgardeo_id: _asgardeo_id_Controller.text,
           email: _email_Controller.text,
         );
-        await updateStudentApplicant(person);
+        await updatePerson(person);
         Navigator.of(context).pop(true);
       }
     } on Exception {

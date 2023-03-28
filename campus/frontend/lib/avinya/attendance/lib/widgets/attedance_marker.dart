@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gallery/avinya/attendance/lib/data/activity_instance.dart';
 import '../data.dart';
 import '../data/activity_attendance.dart';
 

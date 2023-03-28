@@ -54,7 +54,29 @@ query getPerson($id:String!){
         name_ta
       }
       child_organizations{
-        id
+          id
+          name{
+              name_en
+          }
+          description
+          child_organizations {
+              id
+              name{
+                  name_en
+              }
+              description
+              child_organizations {
+                  id
+                  name{
+                      name_en
+                  }
+                  description
+                  people {
+                      id
+                      digital_id
+                  }
+              }
+          }
       }
       parent_organizations{
         id
