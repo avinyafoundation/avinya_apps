@@ -1,7 +1,4 @@
-import 'dart:developer';
-import 'dart:math';
 
-import 'package:pcti_feedback/data/evaluation.dart';
 import 'package:pcti_feedback/data/evaluation_criteria.dart';
 import 'package:flutter/material.dart';
 

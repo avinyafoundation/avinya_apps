@@ -3,13 +3,13 @@ import 'dart:developer';
 import 'package:pcti_feedback/data.dart';
 import 'package:pcti_feedback/data/address.dart';
 import 'package:flutter/gestures.dart';
-// import 'package:feedbacks/src/data/library.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import '../routing.dart';
 
 class CityNearBandaragama {

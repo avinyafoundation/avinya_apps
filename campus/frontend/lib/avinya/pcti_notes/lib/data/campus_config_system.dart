@@ -2,9 +2,6 @@ import 'dart:developer';
 
 import 'package:pcti_notes/data.dart';
 
-// import '../data.dart';
-// import 'activity.dart';
-
 final campusConfigSystemInstance = CampusConfigSystem()
   ..addBook(
       title: 'Left Hand of Darkness',
@@ -43,6 +40,7 @@ class CampusConfigSystem {
   Application application = Application();
   String? user_jwt_sub;
   String? user_jwt_email;
+  String? user_digital_id;
   List<Evaluation>? pctiNotes = [];
   List<Activity>? activities = [];
   List<ActivityInstance>? activityInstances = [];
@@ -146,16 +144,32 @@ class CampusConfigSystem {
     return vacancies;
   }
 
+  // void fetchPersonForUser() async {
+  //   // check if user is in Avinya database person table as a student
+  //   try {
+  //     Person person = campusConfigSystemInstance.getStudentPerson();
+  //     if (person.jwt_sub_id == null ||
+  //         person.jwt_sub_id != this.user_jwt_sub!) {
+  //       person = await fetchStudentApplicant(this.user_jwt_sub!);
+  //       this.studentPerson = person;
+  //       log('AdmissionSystem fetchPersonForUser: ' +
+  //           person.toJson().toString());
+  //     }
+  //   } catch (e) {
+  //     print(
+  //         'AdmissionSystem fetchPersonForUser :: Error fetching person for user');
+  //     print(e);
+  //   }
+  // }
   void fetchPersonForUser() async {
     // check if user is in Avinya database person table as a student
     try {
-      Person person = campusConfigSystemInstance.getStudentPerson();
-      if (person.jwt_sub_id == null ||
-          person.jwt_sub_id != this.user_jwt_sub!) {
-        person = await fetchStudentApplicant(this.user_jwt_sub!);
+      Person person = campusAppsPortalInstance.getUserPerson();
+      if (person.digital_id == null ||
+          person.digital_id != this.user_digital_id!) {
+        person = await fetchPerson(this.user_digital_id!);
         this.studentPerson = person;
-        log('AdmissionSystem fetchPersonForUser: ' +
-            person.toJson().toString());
+        log('AdmissionSystem fetchPersonForUser: ${person.toJson()}');
       }
     } catch (e) {
       print(

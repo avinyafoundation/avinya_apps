@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import '../data.dart';
 import '../data/address.dart';
 import '../routing.dart';
@@ -160,7 +160,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
         future: fetchStudentPerson(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            campusConfigSystemInstance.setStudentPerson(snapshot.data!);
+            campusAppsPortalInstance.setUserPerson(snapshot.data!);
             routeState.go('/application');
           } else if (snapshot.hasError) {
             return Scaffold(
@@ -423,7 +423,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
   Future<Person> fetchStudentPerson() async {
     // check if user is in Avinya database person table as a student
     try {
-      this.futurePerson = fetchStudentApplicant(campusConfigSystemInstance.getJWTSub()!);
+      this.futurePerson = fetchPerson(campusAppsPortalInstance.getDigitalId()!);
     } catch (e) {
       print(
           'AdmissionSystem fetchPersonForUser :: Error fetching person for user');
@@ -481,7 +481,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Processing Student Data')),
           );
-          studentPerson = await createStudentApplicant(person);
+          studentPerson = await createPerson(person);
 
           campusConfigSystemInstance.setStudentPerson(studentPerson);
 

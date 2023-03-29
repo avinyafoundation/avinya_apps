@@ -2,8 +2,7 @@ import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 
 class Address {
   String? record_type;
@@ -49,7 +48,7 @@ Future<List<Address>> fetchAddresss() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 
@@ -71,7 +70,7 @@ Future<Address> fetchAddress(String id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 
@@ -88,7 +87,7 @@ Future<Address> createAddress(Address address) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/address'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
     body: jsonEncode(address.toJson()),
   );
@@ -108,7 +107,7 @@ Future<http.Response> updateAddress(Address address) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/address'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
     body: jsonEncode(address.toJson()),
   );
@@ -124,7 +123,7 @@ Future<http.Response> deleteAddress(String id) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/address/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 

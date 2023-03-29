@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import '../data.dart';
-import '../data/evaluation_criteria.dart';
+
 
 class EvaluationCriteriaList extends StatefulWidget {
   const EvaluationCriteriaList({super.key, this.onTap});

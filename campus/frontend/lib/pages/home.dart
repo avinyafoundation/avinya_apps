@@ -14,9 +14,9 @@ import 'package:gallery/data/demos.dart';
 import 'package:gallery/data/gallery_options.dart';
 import 'package:gallery/layout/adaptive.dart';
 import 'package:gallery/layout/image_placeholder.dart';
-import 'package:gallery/pages/splash.dart';
 import 'package:attendance/colors.dart';
 import 'package:attendance/routes.dart' as attendance_routes;
+import 'package:asset/routes.dart' as asset_routes;
 import 'package:gallery/avinya/pcti_notes/lib/routes.dart'
     as campus_pcti_routes;
 import 'package:gallery/avinya/pcti_notes_admin/lib/routes.dart'
@@ -36,8 +36,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var carouselHeight = _carouselHeight(.7, context);
+    // var carouselHeight = _carouselHeight(.7, context);
     final isDesktop = isDisplayDesktop(context);
+    final isTab = isDisplayTab(context);
     final localizations = GalleryLocalizations.of(context)!;
     final studyDemos = Demos.studies(localizations);
     final carouselCards = <Widget>[
@@ -116,6 +117,24 @@ class HomePage extends StatelessWidget {
           studyRoute: feedback_routes.feedbackRoute,
         ),
       ),
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: _CarouselCard(
+          demo: studyDemos['assetApp'],
+          asset: const AssetImage(
+            'assets/studies/shrine_card.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetColor: const Color(0xFFFEDBD0),
+          assetDark: const AssetImage(
+            'assets/studies/shrine_card_dark.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetDarkColor: const Color(0xFF543B3C),
+          textColor: shrineBrown900,
+          studyRoute: asset_routes.assetRoute,
+        ),
+      ),
     ];
 
     if (isDesktop) {
@@ -140,6 +159,18 @@ class HomePage extends StatelessWidget {
           child: GridView.count(
             crossAxisCount: 3,
             childAspectRatio: 1.8,
+            children: carouselCards,
+          ),
+        ),
+      );
+    } else if (isTab) {
+      return Scaffold(
+        body: Container(
+          padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
+          child: GridView.count(
+            crossAxisCount: 2,
+            childAspectRatio:
+                1.5, // set a higher value to make the cards wider and shorter
             children: carouselCards,
           ),
         ),
@@ -659,14 +690,15 @@ class _DesktopCarouselState extends State<_DesktopCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    var showPreviousButton = false;
-    var showNextButton = true;
-    // Only check this after the _controller has been attached to the ListView.
-    if (_controller.hasClients) {
-      showPreviousButton = _controller.offset > 0;
-      showNextButton =
-          _controller.offset < _controller.position.maxScrollExtent;
-    }
+    // uncomment this to show the previous and next buttons
+    // var showPreviousButton = false;
+    // var showNextButton = true;
+    // // Only check this after the _controller has been attached to the ListView.
+    // if (_controller.hasClients) {
+    //   showPreviousButton = _controller.offset > 0;
+    //   showNextButton =
+    //       _controller.offset < _controller.position.maxScrollExtent;
+    // }
     final totalWidth = MediaQuery.of(context).size.width -
         (_horizontalDesktopPadding - cardPadding) * 2;
     final itemWidth = totalWidth / _desktopCardsPerPage;
@@ -774,54 +806,54 @@ class _SnappingScrollPhysics extends ScrollPhysics {
   @override
   bool get allowImplicitScrolling => true;
 }
+// uncomment this to show the page buttons
+// class _DesktopPageButton extends StatelessWidget {
+//   const _DesktopPageButton({
+//     this.isEnd = false,
+//     this.onTap,
+//   });
 
-class _DesktopPageButton extends StatelessWidget {
-  const _DesktopPageButton({
-    this.isEnd = false,
-    this.onTap,
-  });
+//   final bool isEnd;
+//   final GestureTapCallback? onTap;
 
-  final bool isEnd;
-  final GestureTapCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    const buttonSize = 58.0;
-    const padding = _horizontalDesktopPadding - buttonSize / 2;
-    return ExcludeSemantics(
-      child: Align(
-        alignment: isEnd
-            ? AlignmentDirectional.centerEnd
-            : AlignmentDirectional.centerStart,
-        child: Container(
-          width: buttonSize,
-          height: buttonSize,
-          margin: EdgeInsetsDirectional.only(
-            start: isEnd ? 0 : padding,
-            end: isEnd ? padding : 0,
-          ),
-          child: Tooltip(
-            message: isEnd
-                ? MaterialLocalizations.of(context).nextPageTooltip
-                : MaterialLocalizations.of(context).previousPageTooltip,
-            child: Material(
-              color: Colors.black.withOpacity(0.5),
-              shape: const CircleBorder(),
-              clipBehavior: Clip.antiAlias,
-              child: InkWell(
-                onTap: onTap,
-                child: Icon(
-                  isEnd ? Icons.arrow_forward_ios : Icons.arrow_back_ios,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     const buttonSize = 58.0;
+//     const padding = _horizontalDesktopPadding - buttonSize / 2;
+//     return ExcludeSemantics(
+//       child: Align(
+//         alignment: isEnd
+//             ? AlignmentDirectional.centerEnd
+//             : AlignmentDirectional.centerStart,
+//         child: Container(
+//           width: buttonSize,
+//           height: buttonSize,
+//           margin: EdgeInsetsDirectional.only(
+//             start: isEnd ? 0 : padding,
+//             end: isEnd ? padding : 0,
+//           ),
+//           child: Tooltip(
+//             message: isEnd
+//                 ? MaterialLocalizations.of(context).nextPageTooltip
+//                 : MaterialLocalizations.of(context).previousPageTooltip,
+//             child: Material(
+//               color: Colors.black.withOpacity(0.5),
+//               shape: const CircleBorder(),
+//               clipBehavior: Clip.antiAlias,
+//               child: InkWell(
+//                 onTap: onTap,
+//                 child: Icon(
+//                   isEnd ? Icons.arrow_forward_ios : Icons.arrow_back_ios,
+//                   color: Colors.white,
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class _CarouselCard extends StatelessWidget {
   const _CarouselCard({
