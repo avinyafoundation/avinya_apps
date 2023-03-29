@@ -38,16 +38,25 @@ class Name {
 class Organization {
   int? id;
   Name? name;
+  String? description;
+  var child_organizations = <Organization>[];
 
   Organization({
     this.id,
     this.name,
+    this.description,
+    this.child_organizations = const [],
   });
 
   factory Organization.fromJson(Map<String, dynamic> json) {
     return Organization(
       id: json['id'],
       name: json['name'] != null ? Name.fromJson(json['name']) : null,
+      description: json['description'],
+      child_organizations: json['child_organizations'] != null
+          ? List<Organization>.from(
+              json['child_organizations'].map((x) => Organization.fromJson(x)))
+          : [],
     );
   }
 
@@ -56,6 +65,9 @@ class Organization {
         // if (name != null) 'name': name,
         // if (name != null) 'name': Name!.toJson(),
         if (name != null) 'name': name!.toJson(),
+        if (description != null) 'description': description,
+        'child_organizations':
+            List<dynamic>.from(child_organizations.map((x) => x.toJson())),
         // if (employees != null) 'employees': List<dynamic>.from(employees!.map((x) => x.toJson())),
       };
 }
