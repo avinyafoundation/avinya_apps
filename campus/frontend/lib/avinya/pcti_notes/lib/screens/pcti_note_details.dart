@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
 import '../data.dart';
-import 'package:pcti_notes/data/person.dart' as person;
 
 class PctiNoteDetail extends StatefulWidget {
   final Evaluation? pctiNote;
@@ -19,15 +17,13 @@ class _PctiNoteDetailState extends State<PctiNoteDetail> {
   @override
   void initState() {
     super.initState();
-    futureEvaluator =
-        person.fetchPerson(pctiNote!.evaluator_id!) as Future<Person>;
+    futureEvaluator = fetchPersonFromPctiNoteAdmin(pctiNote!.evaluator_id!);
 
     //fetchPctiActivityNotes(pctiActivity!.id!); // for now get notes for activity id 1
   }
 
   Future<Person> refreshEvaluatorState() async {
-    futureEvaluator =
-        person.fetchPerson(pctiNote!.evaluator_id!) as Future<Person>;
+    futureEvaluator = fetchPersonFromPctiNoteAdmin(pctiNote!.evaluator_id!);
     return futureEvaluator;
   }
 
@@ -48,7 +44,7 @@ class _PctiNoteDetailState extends State<PctiNoteDetail> {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       pctiNote!.updated!.toString(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 24,
@@ -59,7 +55,7 @@ class _PctiNoteDetailState extends State<PctiNoteDetail> {
                     padding: const EdgeInsets.all(8.0),
                     child: ListTile(
                         tileColor: Colors.black12,
-                        title: Text("Evaluator Name"),
+                        title: const Text("Evaluator Name"),
                         subtitle: Text(
                           snapshot.data!.preferred_name.toString(),
                         )),
@@ -68,7 +64,7 @@ class _PctiNoteDetailState extends State<PctiNoteDetail> {
                     padding: const EdgeInsets.all(8.0),
                     child: ListTile(
                         tileColor: Colors.black12,
-                        title: Text("Note"),
+                        title: const Text("Note"),
                         subtitle: Text(
                           pctiNote!.notes.toString(),
                         )),
@@ -79,7 +75,7 @@ class _PctiNoteDetailState extends State<PctiNoteDetail> {
               return Text('${snapshot.error}');
             }
             // By default, show a loading spinner.
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           },

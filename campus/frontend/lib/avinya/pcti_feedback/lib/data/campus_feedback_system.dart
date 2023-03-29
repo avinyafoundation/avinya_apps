@@ -170,24 +170,6 @@ class CampusFeedbackSystem {
     return vacancies;
   }
 
-  void fetchPersonForUser() async {
-    // check if user is in Avinya database person table as a student
-    try {
-      Person person = campusFeedbackSystemInstance.getStudentPerson();
-      if (person.jwt_sub_id == null ||
-          person.jwt_sub_id != this.user_jwt_sub!) {
-        person = await fetchStudentApplicant(this.user_jwt_sub!.toString());
-        this.studentPerson = person;
-        log('AdmissionSystem fetchPersonForUser: ' +
-            person.toJson().toString());
-      }
-    } catch (e) {
-      print(
-          'AdmissionSystem fetchPersonForUser :: Error fetching person for user');
-      print(e);
-    }
-  }
-
   void addPerson(Person person) {
     persons!.add(person);
   }

@@ -439,3 +439,218 @@ Future<Person> fetchStudentApplicant(String jwt_sub_id) async {
 }
 
 //-------- end of pcti_notes_admin functions ---------------
+
+//-------- start of asset functions ---------------
+
+Future<List<Person>> fetchPersonsFromAsset() async {
+  final response = await http.get(
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<Person> persons =
+        await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
+    return persons;
+  } else {
+    throw Exception('Failed to load Person');
+  }
+}
+
+Future<Person> fetchPersonFromAsset(String jwt_sub_id) async {
+  final response = await http.get(
+    Uri.parse(
+        AppConfig.campusAssetsBffApiUrl + '/student_applicant/$jwt_sub_id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    Person person = Person.fromJson(json.decode(response.body));
+    return person;
+  } else {
+    throw Exception('Failed to load Person');
+  }
+}
+
+Future<Person> createPersonFromAsset(Person person) async {
+  final response = await http.post(
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+    },
+    body: jsonEncode(person.toJson()),
+  );
+  if (response.statusCode == 200) {
+    // var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    Person person = Person.fromJson(json.decode(response.body));
+    return person;
+  } else {
+    log(response.body + " Status code =" + response.statusCode.toString());
+    throw Exception('Failed to create Person.');
+  }
+}
+
+Future<http.Response> updatePersonFromAsset(Person person) async {
+  final response = await http.put(
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+    },
+    body: jsonEncode(person.toJson()),
+  );
+  if (response.statusCode == 200) {
+    return response;
+  } else {
+    throw Exception('Failed to update Person.');
+  }
+}
+
+Future<http.Response> deletePersonFromAsset(String id) async {
+  final http.Response response = await http.delete(
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    return response;
+  } else {
+    throw Exception('Failed to delete Person.');
+  }
+}
+
+//-------- end of asset functions -----------------
+
+//-------- start of pcti_feedback functions ---------------
+
+Future<Person> fetchPersonFromPctiFeedback(int person_id) async {
+  final response = await http.get(
+    Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/person?id=$person_id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+    },
+  );
+
+  // if (response.statusCode == 200) {
+  //   var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+  //   List<Person> persons =
+  //       await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
+  //   return persons;
+  // } else {
+  //   throw Exception('Failed to load Person');
+  // }
+  if (response.statusCode == 200) {
+    Person person = Person.fromJson(json.decode(response.body));
+    return person;
+  } else {
+    throw Exception('Failed to load Person');
+  }
+}
+
+Future<List<Person>> fetchStudentApplicantsFromPctiFeedback() async {
+  final response = await http.get(
+    Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/student_applicant'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<Person> persons =
+        await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
+    return persons;
+  } else {
+    throw Exception('Failed to load Person');
+  }
+}
+
+Future<Person> fetchStudentApplicantFromPctiFeedback(String jwt_sub_id) async {
+  final response = await http.get(
+    Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl +
+        '/student_applicant/$jwt_sub_id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    Person person = Person.fromJson(json.decode(response.body));
+    return person;
+  } else {
+    throw Exception('Failed to load Person');
+  }
+}
+
+Future<Person> createStudentApplicantFromPctiFeedback(Person person) async {
+  final response = await http.post(
+    Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/student_applicant'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+    },
+    body: jsonEncode(person.toJson()),
+  );
+  if (response.statusCode == 200) {
+    // var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    Person person = Person.fromJson(json.decode(response.body));
+    return person;
+  } else {
+    log(response.body + " Status code =" + response.statusCode.toString());
+    throw Exception('Failed to create Person.');
+  }
+}
+
+Future<http.Response> updateStudentApplicantFromPctiFeedback(
+    Person person) async {
+  final response = await http.put(
+    Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/student_applicant'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+    },
+    body: jsonEncode(person.toJson()),
+  );
+  if (response.statusCode == 200) {
+    return response;
+  } else {
+    throw Exception('Failed to update Person.');
+  }
+}
+
+Future<http.Response> deleteStudentApplicantFromPctiFeedback(String id) async {
+  final http.Response response = await http.delete(
+    Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/student_applicant/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    return response;
+  } else {
+    throw Exception('Failed to delete Person.');
+  }
+}
+
+//-------- end of pcti_feedback functions ---------------
