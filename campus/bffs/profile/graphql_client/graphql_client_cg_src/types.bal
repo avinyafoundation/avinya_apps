@@ -567,3 +567,33 @@ public type GetPersonResponse record {|
         int? academy_org_id;
     |}? person_by_digital_id;
 |};
+
+public type GetOrganizationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string name_en;
+        |} name;
+        string? description;
+        record {|
+            int? id;
+            record {|
+                string name_en;
+            |} name;
+            string? description;
+        |}[]? child_organizations;
+        record {|
+            int? id;
+            record {|
+                string name_en;
+            |} name;
+            string? description;
+        |}[]? parent_organizations;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? digital_id;
+        |}[]? people;
+    |}? organization;
+|};
