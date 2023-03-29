@@ -176,7 +176,7 @@ class CampusAttendanceSystem {
   void fetchPersonForUser() async {
     // check if user is in Avinya database person table as a student
     try {
-      Person person = campusAttendanceSystemInstance.getUserPerson();
+      Person person = campusAppsPortalInstance.getUserPerson();
       if (person.digital_id == null ||
           person.digital_id != this.user_digital_id!) {
         person = await fetchPerson(this.user_digital_id!);
