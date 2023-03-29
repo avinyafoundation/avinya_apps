@@ -216,26 +216,7 @@ class Person {
         'parent_students': [parent_students],
       };
 }
-
-Future<List<Person>> fetchPersons() async {
-  final response = await http.get(
-    Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/student_applicant'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAttendanceBffApiKey,
-    },
-  );
-
-  if (response.statusCode == 200) {
-    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    List<Person> persons =
-        await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
-    return persons;
-  } else {
-    throw Exception('Failed to load Person');
-  }
-}
+//-------- start of profile functions ---------------
 
 Future<Person> fetchPerson(String digital_id) async {
   final uri = Uri.parse(AppConfig.campusProfileBffApiUrl + '/person')
@@ -253,6 +234,30 @@ Future<Person> fetchPerson(String digital_id) async {
   if (response.statusCode == 200) {
     Person person = Person.fromJson(json.decode(response.body));
     return person;
+  } else {
+    throw Exception('Failed to load Person');
+  }
+}
+
+//-------- end of profile functions ---------------
+
+//-------- start of attendance functions ---------------
+
+Future<List<Person>> fetchPersons() async {
+  final response = await http.get(
+    Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/student_applicant'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusAttendanceBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<Person> persons =
+        await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
+    return persons;
   } else {
     throw Exception('Failed to load Person');
   }
@@ -308,6 +313,8 @@ Future<http.Response> deletePerson(String id) async {
     throw Exception('Failed to delete Person.');
   }
 }
+
+//-------- end of attendance functions ---------------
 
 //-------- start of pcti_notes_admin functions ---------------
 
