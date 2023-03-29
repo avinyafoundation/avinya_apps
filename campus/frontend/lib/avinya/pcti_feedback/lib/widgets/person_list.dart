@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gallery/avinya/pcti_notes/lib/data.dart';
 
 import '../data.dart';
 
@@ -17,14 +18,14 @@ class PersonListState extends State<PersonList> {
 
   PersonListState(this.onTap);
 
-   @override
+  @override
   void initState() {
     super.initState();
-    futurePersons = fetchStudentApplicants();
+    futurePersons = fetchStudentApplicantsFromPctiFeedback();
   }
 
   Future<List<Person>> refreshPersonState() async {
-    futurePersons = fetchStudentApplicants();
+    futurePersons = fetchStudentApplicantsFromPctiFeedback();
     return futurePersons;
   }
 

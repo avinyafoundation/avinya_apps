@@ -24,8 +24,6 @@ final campusAttendanceSystemInstance = CampusAttendanceSystem()
       authorName: 'Ursula K. Le Guin',
       isPopular: false,
       isNew: false)
-  ..setJWTSub('jwt-sub-id123')
-  ..setDigitalId('digital-id123')
   ..setUserPerson(
       Person(id: 2, jwt_sub_id: 'jwt-sub-id123', preferred_name: 'Nimal'))
   ..setCheckinActivityInstance(ActivityInstance(
@@ -78,33 +76,6 @@ class CampusAttendanceSystem {
     return this.application;
   }
 
-  void setJWTSub(String? jwt_sub) {
-    user_jwt_sub = jwt_sub;
-  }
-
-  String? getJWTSub() {
-    return user_jwt_sub;
-  }
-
-  void setDigitalId(String? jwt_sub) {
-    user_digital_id = jwt_sub;
-  }
-
-  String? getDigitalId() {
-    return user_digital_id;
-  }
-
-  void setJWTEmail(String? jwt_email) {
-    user_jwt_email = jwt_email;
-  }
-
-  String? getJWTEmail() {
-    return user_jwt_email;
-  }
-
-  // void addEmployee(Employee employee) {
-  //   allEmployees.add(employee);
-  // }
   void setPrecondisionsSubmitted(bool value) {
     precondisionsSubmitted = value;
   }
@@ -171,24 +142,6 @@ class CampusAttendanceSystem {
     List<ActivityInstance> activityInstances =
         await fetchActivityInstance(activityId!);
     return activityInstances[0];
-  }
-
-  void fetchPersonForUser() async {
-    // check if user is in Avinya database person table as a student
-    try {
-      Person person = campusAppsPortalInstance.getUserPerson();
-      if (person.digital_id == null ||
-          person.digital_id != this.user_digital_id!) {
-        person = await fetchPerson(this.user_digital_id!);
-        this.userPerson = person;
-        log('AdmissionSystem fetchPersonForUser: ' +
-            person.toJson().toString());
-      }
-    } catch (e) {
-      print(
-          'AdmissionSystem fetchPersonForUser :: Error fetching person for user');
-      print(e);
-    }
   }
 
   void addPerson(Person person) {

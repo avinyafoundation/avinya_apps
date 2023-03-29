@@ -77,7 +77,7 @@ class _CampusPctiSystemState extends State<CampusPctiSystem> {
 
   Future<ParsedRoute> _guard(ParsedRoute from) async {
     final signedIn = await _auth.getSignedIn();
-    String? jwt_sub = campusConfigSystemInstance.getJWTSub();
+    String? jwt_sub = campusAppsPortalInstance.getJWTSub();
 
     final signInRoute = ParsedRoute('/signin', '/signin', {}, {});
 

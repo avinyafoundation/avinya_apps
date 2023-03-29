@@ -74,25 +74,6 @@ class CampusConfigSystem {
     return this.application;
   }
 
-  void setJWTSub(String? jwt_sub) {
-    user_jwt_sub = jwt_sub;
-  }
-
-  String? getJWTSub() {
-    return user_jwt_sub;
-  }
-
-  void setJWTEmail(String? jwt_email) {
-    user_jwt_email = jwt_email;
-  }
-
-  String? getJWTEmail() {
-    return user_jwt_email;
-  }
-
-  // void addEmployee(Employee employee) {
-  //   allEmployees.add(employee);
-  // }
   void setPrecondisionsSubmitted(bool value) {
     precondisionsSubmitted = value;
   }
@@ -159,28 +140,6 @@ class CampusConfigSystem {
 
   void setResourceAllocations(List<ResourceAllocation>? resourceAllocations) {
     this.resourceAllocations = resourceAllocations;
-  }
-
-  // Future<List<Vacancy>>? getVacancies() {
-  //   return vacancies;
-  // }
-
-  void fetchPersonForUser() async {
-    // check if user is in Avinya database person table as a student
-    try {
-      Person person = campusConfigSystemInstance.getStudentPerson();
-      if (person.jwt_sub_id == null ||
-          person.jwt_sub_id != this.user_jwt_sub!) {
-        person = await fetchPerson(this.user_jwt_sub!);
-        this.studentPerson = person;
-        log('AdmissionSystem fetchPersonForUser: ' +
-            person.toJson().toString());
-      }
-    } catch (e) {
-      print(
-          'AdmissionSystem fetchPersonForUser :: Error fetching person for user');
-      print(e);
-    }
   }
 
   void addPerson(Person person) {

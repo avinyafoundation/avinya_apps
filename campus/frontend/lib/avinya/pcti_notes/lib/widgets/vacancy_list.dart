@@ -242,10 +242,7 @@ class VacancyListState extends State<VacancyList> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
-                                      'Some of the data you entred on this form ' +
-                                          'does not meet the eligibility criteria.\r\n' +
-                                          'The errors are shown inline on the form.\r\n' +
-                                          'Please check and correct the data and try again.',
+                                      'Some of the data you entred on this form does not meet the eligibility criteria.\r\nThe errors are shown inline on the form.\r\nPlease check and correct the data and try again.',
                                       style: TextStyle(
                                           color: Colors.red,
                                           fontStyle: FontStyle.italic,
@@ -279,10 +276,10 @@ class VacancyListState extends State<VacancyList> {
   Future<bool> addSudentApplicantEvaluation(BuildContext context) async {
     try {
       if (_formKey.currentState!.validate()) {
-        campusConfigSystemInstance
+        campusAppsPortalInstance
             .fetchPersonForUser(); // do a fetch to help cross check
-        Person person = campusConfigSystemInstance.getStudentPerson();
-        if (campusConfigSystemInstance.getJWTSub() != person.jwt_sub_id) {
+        Person person = campusAppsPortalInstance.getUserPerson();
+        if (campusAppsPortalInstance.getJWTSub() != person.jwt_sub_id) {
           // the person has not logged in to the system
           // we can record the test responses against that person
           return false;
@@ -302,9 +299,9 @@ class VacancyListState extends State<VacancyList> {
                 grade: -1));
           }
         });
-        log('vacancy list :' + evaluations.toString());
+        log('vacancy list :$evaluations');
         evaluations.forEach((element) {
-          log('vacancy list loop elements:' + element.toString());
+          log('vacancy list loop elements:$element');
           log(element.toJson().toString());
         });
 
@@ -711,5 +708,4 @@ class _EditVacancyPageState extends State<EditVacancyPage> {
   String? _mandatoryValidator(String? text) {
     return (text!.isEmpty) ? 'Required' : null;
   }
-
 }
