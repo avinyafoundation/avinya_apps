@@ -43,7 +43,7 @@ class _selectPctiSubstituteState extends State<selectPctiSubstitute> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         DropdownButton<Activity>(
-                          hint: Text("Select PCTI Activity"),
+                          hint: const Text("Select PCTI Activity"),
                           items: snapshot.data?.map((Activity value) {
                             return DropdownMenuItem<Activity>(
                               value: value,
@@ -60,7 +60,7 @@ class _selectPctiSubstituteState extends State<selectPctiSubstitute> {
                           width: 10,
                         ),
                         ElevatedButton(
-                          child: Text("Confirm"),
+                          child: const Text("Confirm"),
                           onPressed: () {
                             Navigator.of(context)
                                 .push<void>(MaterialPageRoute<void>(
@@ -76,7 +76,7 @@ class _selectPctiSubstituteState extends State<selectPctiSubstitute> {
                 ],
               );
             } else {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           },
         ),
@@ -138,7 +138,7 @@ class _selectActivityInstanceState extends State<selectActivityInstance> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           DropdownButton<ActivityInstance>(
-                            hint: Text("Select PCTI Activity Instance"),
+                            hint: const Text("Select PCTI Activity Instance"),
                             items: snapshot.data?.map((ActivityInstance value) {
                               return DropdownMenuItem<ActivityInstance>(
                                 value: value,
@@ -155,7 +155,7 @@ class _selectActivityInstanceState extends State<selectActivityInstance> {
                             width: 10,
                           ),
                           ElevatedButton(
-                            child: Text("Confirm"),
+                            child: const Text("Confirm"),
                             onPressed: () {
                               setState(() {
                                 // if (_selectedActivityInstance != null) {
@@ -179,7 +179,7 @@ class _selectActivityInstanceState extends State<selectActivityInstance> {
                   ],
                 );
               } else {
-                return Center(
+                return const Center(
                     child: Text(
                   "You have no classes scheduled for this activity",
                   style: TextStyle(fontSize: 20),
@@ -187,7 +187,7 @@ class _selectActivityInstanceState extends State<selectActivityInstance> {
                 ));
               }
             } else {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           },
         ),
@@ -246,7 +246,7 @@ class _selectAvailableTeacherState extends State<selectAvailableTeacher> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           DropdownButton<Person>(
-                            hint: Text("Select a substitute health"),
+                            hint: const Text("Select a substitute health"),
                             items: snapshot.data?.map((Person value) {
                               return DropdownMenuItem<Person>(
                                 value: value,
@@ -263,7 +263,7 @@ class _selectAvailableTeacherState extends State<selectAvailableTeacher> {
                             width: 10,
                           ),
                           ElevatedButton(
-                            child: Text("Confirm"),
+                            child: const Text("Confirm"),
                             onPressed: () async {
                               await _addTeacherParticipant(context,
                                   pctiActivityInstance!, _selectedTeacher!);
@@ -276,7 +276,7 @@ class _selectAvailableTeacherState extends State<selectAvailableTeacher> {
                   ],
                 );
               } else {
-                return Center(
+                return const Center(
                     child: Text(
                   "You have no classes scheduled for this activity",
                   style: TextStyle(fontSize: 20),
@@ -284,7 +284,7 @@ class _selectAvailableTeacherState extends State<selectAvailableTeacher> {
                 ));
               }
             } else {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           },
         ),

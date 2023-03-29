@@ -1,4 +1,7 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
+import 'package:gallery/avinya/attendance/lib/data.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 // import '../data.dart';
 // import '../data/activity_attendance.dart';
@@ -110,6 +113,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
   ];
 
   List<Map<String, bool>> attendanceList = [];
+  var _selectedValue;
 
   @override
   void initState() {
@@ -143,6 +147,52 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      for (var org in campusAppsPortalInstance
+                          .getUserPerson()
+                          .organization!
+                          .child_organizations)
+                        // create a text widget with some padding
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              // Text(org.name!.name_en == null
+                              //     ? 'N/A'
+                              //     : org.name!.name_en!),
+                              // Row(
+                              //   children: <Widget>[
+                              //     for (var suborg in org.child_organizations)
+                              //       Text(suborg.description == null
+                              //           ? 'N/A'
+                              //           : suborg.description!),
+                              //   ],
+                              // ),
+
+                              if (org.child_organizations.length > 0)
+                                Row(children: <Widget>[
+                                  Text('Select a class:'),
+                                  SizedBox(width: 10),
+                                  DropdownButton<Organization>(
+                                    value: _selectedValue,
+                                    onChanged: (Organization? newValue) {
+                                      setState(() {
+                                        _selectedValue = newValue!;
+                                      });
+                                    },
+                                    items: org.child_organizations
+                                        .map((Organization value) {
+                                      return DropdownMenuItem<Organization>(
+                                        value: value,
+                                        child: Text(value.description!),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ]),
+                            ]),
+                    ],
+                  ),
                   Text(
                       campusAppsPortalInstance.activityIds['school-day']
                           .toString(),

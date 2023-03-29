@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import '../data.dart';
 import '../data/address.dart';
 import '../routing.dart';
@@ -240,9 +240,9 @@ class _ApplyScreenState extends State<ApplyScreen> {
                         Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              SizedBox(height: 10.0),
-                              Text('Sex'),
-                              SizedBox(height: 10.0),
+                              const SizedBox(height: 10.0),
+                              const Text('Sex'),
+                              const SizedBox(height: 10.0),
                               Row(children: [
                                 Padding(
                                   padding: const EdgeInsets.all(8),
@@ -261,9 +261,9 @@ class _ApplyScreenState extends State<ApplyScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 10.0),
-                                Text('Male'),
-                                SizedBox(width: 10.0),
+                                const SizedBox(width: 10.0),
+                                const Text('Male'),
+                                const SizedBox(width: 10.0),
                                 //]),
                                 //Row(children: [
                                 Padding(
@@ -283,13 +283,13 @@ class _ApplyScreenState extends State<ApplyScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 10.0),
-                                Text('Female'),
+                                const SizedBox(width: 10.0),
+                                const Text('Female'),
                               ]),
                             ]),
                         TextFormField(
                           controller: _phone_Controller,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'Phone number *',
                             hintText: 'Enter your phone number',
                             helperText: 'e.g 077 123 4567',
@@ -309,7 +309,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
                         ),
                         TextFormField(
                           controller: _email_Controller,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'Email *',
                             hintText: 'Enter your email address',
                             helperText: 'e.g john@mail.com',
@@ -321,7 +321,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
                               ? null
                               : "Please enter a valid email",
                         ),
-                        SizedBox(height: 10.0),
+                        const SizedBox(height: 10.0),
                         TextFormField(
                           controller: _address_Controller,
                           decoration: const InputDecoration(
@@ -334,9 +334,9 @@ class _ApplyScreenState extends State<ApplyScreen> {
                           },
                           validator: _mandatoryValidator,
                         ),
-                        SizedBox(height: 10.0),
+                        const SizedBox(height: 10.0),
                         Container(
-                          padding: EdgeInsets.only(left: 5.0, right: 5.0),
+                          padding: const EdgeInsets.only(left: 5.0, right: 5.0),
                           decoration: BoxDecoration(
                               border: Border.all(color: Colors.grey),
                               borderRadius: BorderRadius.circular(3.0)),
@@ -344,8 +344,9 @@ class _ApplyScreenState extends State<ApplyScreen> {
                             hint: new Text("Select the city you live in"),
                             value: selectedcity,
                             // isExpanded: true,
-                            icon: Icon(Icons.keyboard_arrow_down, size: 22),
-                            decoration: InputDecoration(
+                            icon:
+                                const Icon(Icons.keyboard_arrow_down, size: 22),
+                            decoration: const InputDecoration(
                               constraints: BoxConstraints(
                                 maxWidth: 200.0,
                               ),
@@ -367,8 +368,8 @@ class _ApplyScreenState extends State<ApplyScreen> {
                                 : null,
                           ),
                         ),
-                        SizedBox(height: 10.0),
-                        SizedBox(width: 10.0, height: 10.0),
+                        const SizedBox(height: 10.0),
+                        const SizedBox(width: 10.0, height: 10.0),
                         ElevatedButton(
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
@@ -397,22 +398,22 @@ class _ApplyScreenState extends State<ApplyScreen> {
                                 }
                               }
                             },
-                            child: Text('Submit'))
+                            child: const Text('Submit'))
                       ],
                     ),
                   ),
                 ),
               ),
               persistentFooterButtons: [
-                new OutlinedButton(
-                    child: Text('About'),
+                OutlinedButton(
+                    child: const Text('About'),
                     onPressed: () {
                       showAboutDialog(
                           context: context,
                           applicationName: AppConfig.applicationName,
                           applicationVersion: AppConfig.applicationVersion);
                     }),
-                new Text("© 2022, Avinya Foundation."),
+                const Text("© 2022, Avinya Foundation."),
               ],
             );
           }
@@ -474,16 +475,16 @@ class _ApplyScreenState extends State<ApplyScreen> {
             phone: int.parse(phoneMaskTextInputFormatter.getUnmaskedText()),
             email: _email_Controller.text,
             mailing_address_id: studentAddress.id,
-            jwt_sub_id: campusConfigSystemInstance.getJWTSub(),
-            jwt_email: campusConfigSystemInstance.getJWTEmail(),
+            jwt_sub_id: campusAppsPortalInstance.getJWTSub(),
+            jwt_email: campusAppsPortalInstance.getJWTEmail(),
           );
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Processing Student Data')),
           );
-          studentPerson = await createPerson(person);
+          studentPerson = await createStudentApplicant(person);
 
-          campusConfigSystemInstance.setStudentPerson(studentPerson);
+          campusAppsPortalInstance.setUserPerson(studentPerson);
 
           final Application application = Application(
             person_id: studentPerson.id,

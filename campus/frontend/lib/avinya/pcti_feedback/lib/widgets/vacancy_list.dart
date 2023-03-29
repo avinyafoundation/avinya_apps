@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:pcti_feedback/data/evaluation.dart';
 import 'package:flutter/material.dart';
 
 import '../data.dart';
@@ -281,7 +280,7 @@ class VacancyListState extends State<VacancyList> {
   Future<bool> addSudentApplicantEvaluation(BuildContext context) async {
     try {
       if (_formKey.currentState!.validate()) {
-        campusFeedbackSystemInstance
+        campusAppsPortalInstance
             .fetchPersonForUser(); // do a fetch to help cross check
         Person person = campusFeedbackSystemInstance.getStudentPerson();
         if (campusFeedbackSystemInstance.getJWTSub() != person.jwt_sub_id) {

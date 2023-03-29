@@ -1,7 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import 'evaluation_criteria_answer_option.dart';
 
 class EvaluationCriteria {
@@ -60,7 +59,7 @@ Future<List<EvaluationCriteria>> fetchEvaluationCriterias() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 
@@ -83,7 +82,7 @@ Future<EvaluationCriteria> fetchEvaluationCriteria(
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 
@@ -104,7 +103,7 @@ Future<http.Response> createEvaluationCriteria(
         '/evaluation_criteria/evaluation_criterias'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
     body: jsonEncode(evaluationCriteria.toJson()),
   );
@@ -122,7 +121,7 @@ Future<http.Response> updateEvaluationCriteria(
         '/evaluation_criteria/evaluation_criterias'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
     body: jsonEncode(evaluationCriteria.toJson()),
   );
@@ -139,7 +138,7 @@ Future<http.Response> deleteEvaluationCriteria(String id) async {
         '/evaluation_criteria/evaluation_criterias/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 

@@ -1,8 +1,9 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:gallery/auth.dart';
 
-import 'auth.dart';
-import 'data.dart';
+
+
 import 'routing.dart';
 import 'screens/navigator.dart';
 
@@ -16,7 +17,7 @@ class CampusFeedbackSystem extends StatefulWidget {
 
 class _CampusFeedbackSystem
     extends State<CampusFeedbackSystem> {
-  final _auth = SMSAuth();
+  final _auth = CampusAppsPortalAuth();
   final _navigatorKey = GlobalKey<NavigatorState>();
   late final RouteState _routeState;
   late final SimpleRouterDelegate _routerDelegate;
@@ -83,7 +84,7 @@ class _CampusFeedbackSystem
 
   Future<ParsedRoute> _guard(ParsedRoute from) async {
     final signedIn = await _auth.getSignedIn();
-    String? jwt_sub = campusFeedbackSystemInstance.getJWTSub();
+    // String? jwt_sub = campusFeedbackSystemInstance.getJWTSub();
 
     final signInRoute = ParsedRoute('/signin', '/signin', {}, {});
 

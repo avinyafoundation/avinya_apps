@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 
-import 'auth.dart';
+import 'package:gallery/auth.dart';
 import 'data.dart';
 import 'routing.dart';
 import 'screens/navigator.dart';
@@ -10,13 +10,11 @@ class CampusPctiSystem extends StatefulWidget {
   const CampusPctiSystem({super.key});
 
   @override
-  State<CampusPctiSystem> createState() =>
-      _CampusPctiSystemState();
+  State<CampusPctiSystem> createState() => _CampusPctiSystemState();
 }
 
-class _CampusPctiSystemState
-    extends State<CampusPctiSystem> {
-  final _auth = SMSAuth();
+class _CampusPctiSystemState extends State<CampusPctiSystem> {
+  final _auth = CampusAppsPortalAuth();
   final _navigatorKey = GlobalKey<NavigatorState>();
   late final RouteState _routeState;
   late final SimpleRouterDelegate _routerDelegate;
@@ -79,14 +77,13 @@ class _CampusPctiSystemState
 
   Future<ParsedRoute> _guard(ParsedRoute from) async {
     final signedIn = await _auth.getSignedIn();
-    String? jwt_sub = campusConfigSystemInstance.getJWTSub();
+    String? jwt_sub = campusAppsPortalInstance.getJWTSub();
 
     final signInRoute = ParsedRoute('/signin', '/signin', {}, {});
 
     final pctiActivitiesRoute =
-      ParsedRoute('/pcti_activities', '/pcti_activities', {}, {});
+        ParsedRoute('/pcti_activities', '/pcti_activities', {}, {});
 
-    
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
     // log("_guard JWT sub ${jwt_sub}");
@@ -95,7 +92,7 @@ class _CampusPctiSystemState
     if (signedIn && from == pctiActivitiesRoute) {
       return pctiActivitiesRoute;
     }
-  
+
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {
       return ParsedRoute('/pcti_activities', '/pcti_activities', {}, {});

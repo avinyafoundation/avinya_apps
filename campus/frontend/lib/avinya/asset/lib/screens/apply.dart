@@ -11,7 +11,7 @@ import 'package:gallery/avinya/asset/lib/data.dart';
 import 'package:gallery/avinya/asset/lib/data/address.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import '../routing.dart';
 
 class CityNearBandaragama {
@@ -162,7 +162,8 @@ class _ApplyScreenState extends State<ApplyScreen> {
         future: fetchStudentPerson(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            campusConfigSystemInstance.setStudentPerson(snapshot.data!);
+            // campusConfigSystemInstance.setStudentPerson(snapshot.data!);
+            campusAppsPortalInstance.setUserPerson(snapshot.data!);
             routeState.go('/application');
           } else if (snapshot.hasError) {
             return Scaffold(
@@ -425,7 +426,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
   Future<Person> fetchStudentPerson() async {
     // check if user is in Avinya database person table as a student
     try {
-      this.futurePerson = fetchPerson(campusConfigSystemInstance.getJWTSub()!);
+      this.futurePerson = fetchPerson(campusAppsPortalInstance.getDigitalId()!);
     } catch (e) {
       print(
           'AdmissionSystem fetchPersonForUser :: Error fetching person for user');
@@ -476,8 +477,8 @@ class _ApplyScreenState extends State<ApplyScreen> {
             phone: int.parse(phoneMaskTextInputFormatter.getUnmaskedText()),
             email: _email_Controller.text,
             mailing_address_id: studentAddress.id,
-            jwt_sub_id: campusConfigSystemInstance.getJWTSub(),
-            jwt_email: campusConfigSystemInstance.getJWTEmail(),
+            jwt_sub_id: campusAppsPortalInstance.getJWTSub(),
+            jwt_email: campusAppsPortalInstance.getJWTEmail(),
           );
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -485,7 +486,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
           );
           studentPerson = await createPerson(person);
 
-          campusConfigSystemInstance.setStudentPerson(studentPerson);
+          campusAppsPortalInstance.setUserPerson(studentPerson);
 
           final Application application = Application(
             person_id: studentPerson.id,

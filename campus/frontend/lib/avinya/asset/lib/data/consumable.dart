@@ -1,7 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 
 class Consumable {
   int? id;
@@ -48,11 +47,11 @@ class Consumable {
 
 Future<List<Consumable>> fetchConsumables() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/consumables'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/consumables'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
   );
 
@@ -69,11 +68,11 @@ Future<List<Consumable>> fetchConsumables() async {
 
 Future<Consumable> fetchConsumable(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/consumable/$id'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/consumable/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
   );
 
@@ -89,10 +88,10 @@ Future<Consumable> fetchConsumable(int id) async {
 
 Future<http.Response> createConsumable(Consumable consumable) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/consumable'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/consumable'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
     body: jsonEncode(consumable.toJson()),
   );
@@ -105,10 +104,10 @@ Future<http.Response> createConsumable(Consumable consumable) async {
 
 Future<http.Response> updateConsumable(Consumable consumable) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/consumable'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/consumable'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
     body: jsonEncode(consumable.toJson()),
   );
@@ -121,10 +120,10 @@ Future<http.Response> updateConsumable(Consumable consumable) async {
 
 Future<http.Response> deleteConsumable(int id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/consumable/$id'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/consumable/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
     },
   );
 

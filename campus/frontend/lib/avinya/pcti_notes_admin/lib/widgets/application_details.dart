@@ -21,22 +21,22 @@ class ApplicationDetailsState extends State<ApplicationDetails> {
   @override
   void initState() {
     super.initState();
-    if (campusConfigSystemInstance.getStudentPerson().id == null) {
-      campusConfigSystemInstance.fetchPersonForUser();
+    if (campusAppsPortalInstance.getUserPerson().id == null) {
+      campusAppsPortalInstance.fetchPersonForUser();
     }
-    if (campusConfigSystemInstance.getStudentPerson().id != null) {
+    if (campusAppsPortalInstance.getUserPerson().id != null) {
       futureApplication =
-          fetchApplication(campusConfigSystemInstance.getStudentPerson().id!);
+          fetchApplication(campusAppsPortalInstance.getUserPerson().id!);
     }
   }
 
   Future<Application> refreshApplicationState() async {
-    if (campusConfigSystemInstance.getStudentPerson().id == null) {
-      campusConfigSystemInstance.fetchPersonForUser();
+    if (campusAppsPortalInstance.getUserPerson().id == null) {
+      campusAppsPortalInstance.fetchPersonForUser();
     }
-    if (campusConfigSystemInstance.getStudentPerson().id != null) {
+    if (campusAppsPortalInstance.getUserPerson().id != null) {
       futureApplication =
-          fetchApplication(campusConfigSystemInstance.getStudentPerson().id!);
+          fetchApplication(campusAppsPortalInstance.getUserPerson().id!);
     }
     return futureApplication;
   }
@@ -45,10 +45,10 @@ class ApplicationDetailsState extends State<ApplicationDetails> {
   Widget build(BuildContext context) {
     final routeState = RouteStateScope.of(context);
     try {
-      campusConfigSystemInstance
+      campusAppsPortalInstance
           .fetchPersonForUser(); // do a fetch to help cross check
-      Person person = campusConfigSystemInstance.getStudentPerson();
-      if (campusConfigSystemInstance.getJWTSub() != person.jwt_sub_id) {
+      Person person = campusAppsPortalInstance.getUserPerson();
+      if (campusAppsPortalInstance.getJWTSub() != person.jwt_sub_id) {
         // the person has not logged in
         routeState.go('/signin');
         return Container();
@@ -66,14 +66,10 @@ class ApplicationDetailsState extends State<ApplicationDetails> {
             itemCount: snapshot.data!.statuses.length,
             itemBuilder: (context, index) => ListTile(
               title: Text(
-                'Application submitted on ' + snapshot.data!.application_date!,
+                'Application submitted on ${snapshot.data!.application_date!}',
               ),
               subtitle: Text(
-                ' ' +
-                    snapshot.data!.statuses[index].status! +
-                    ' ' +
-                    snapshot.data!.statuses[index].updated! +
-                    ' ',
+                ' ${snapshot.data!.statuses[index].status!} ${snapshot.data!.statuses[index].updated!} ',
               ),
               onTap: onTap != null ? () => onTap!(snapshot.data!) : null,
             ),

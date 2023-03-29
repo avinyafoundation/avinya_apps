@@ -3,8 +3,7 @@ import 'dart:developer';
 import 'package:pcti_feedback/data/campus_feedback_system.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import 'avinya_type.dart';
 import 'evaluation_criteria.dart';
 
@@ -73,7 +72,7 @@ Future<List<Vacancy>> fetchVacancies() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
     },
   );
 
