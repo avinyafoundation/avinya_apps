@@ -143,6 +143,29 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      for (var org in campusAppsPortalInstance
+                          .getUserPerson()
+                          .organization!
+                          .child_organizations)
+                        // create a text widget with some padding
+                        Row(children: <Widget>[
+                          Text(org.name!.name_en == null
+                              ? 'N/A'
+                              : org.name!.name_en!),
+                          Row(
+                            children: <Widget>[
+                              for (var suborg in org.child_organizations)
+                                Text(suborg.description == null
+                                    ? 'N/A'
+                                    : suborg.description!),
+                            ],
+                          ),
+                        ]),
+                    ],
+                  ),
                   Text(
                       campusAppsPortalInstance.activityIds['school-day']
                           .toString(),
