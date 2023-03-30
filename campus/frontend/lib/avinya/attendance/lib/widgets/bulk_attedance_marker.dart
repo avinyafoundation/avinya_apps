@@ -114,6 +114,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
 
   List<Map<String, bool>> attendanceList = [];
   var _selectedValue;
+  Organization? _fetchedOrganization;
 
   @override
   void initState() {
@@ -176,10 +177,12 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                   SizedBox(width: 10),
                                   DropdownButton<Organization>(
                                     value: _selectedValue,
-                                    onChanged: (Organization? newValue) {
-                                      setState(() {
-                                        _selectedValue = newValue!;
-                                      });
+                                    onChanged: (Organization? newValue) async {
+                                      _selectedValue = newValue!;
+                                      print(newValue.id);
+                                      _fetchedOrganization =
+                                          await fetchOrganization(newValue.id!);
+                                      setState(() {});
                                     },
                                     items: org.child_organizations
                                         .map((Organization value) {
@@ -227,30 +230,49 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                   Table(
                     border: TableBorder.all(),
                     children: [
-                      TableRow(children: [
-                        TableCell(child: Text("Name")),
-                        ...classes
-                            .map((className) =>
-                                TableCell(child: Text(className)))
-                            .toList()
-                      ]),
-                      ...students.map((studentName) {
-                        return TableRow(children: [
-                          TableCell(child: Text(studentName)),
-                          ...classes
-                              .map((className) => TableCell(
-                                    child: Checkbox(
-                                      value: attendanceList[classes
-                                          .indexOf(className)][studentName],
-                                      onChanged: (bool? value) {
-                                        toggleAttendance(
-                                            className, studentName);
-                                      },
-                                    ),
-                                  ))
-                              .toList()
-                        ]);
-                      }).toList()
+                      // TableRow(children: [
+                      //   TableCell(child: Text("Name")),
+                      //   ...classes
+                      //       .map((className) =>
+                      //           TableCell(child: Text(className)))
+                      //       .toList()
+                      // ]),
+                      // ...students.map((studentName) {
+                      //   return TableRow(children: [
+                      //     TableCell(child: Text(studentName)),
+                      //     ...classes
+                      //         .map((className) => TableCell(
+                      //               child: Checkbox(
+                      //                 value: attendanceList[classes
+                      //                     .indexOf(className)][studentName],
+                      //                 onChanged: (bool? value) {
+                      //                   toggleAttendance(
+                      //                       className, studentName);
+                      //                 },
+                      //               ),
+                      //             ))
+                      //         .toList()
+                      //   ]);
+                      // }).toList(),
+                      if (_fetchedOrganization != null)
+                        if (_fetchedOrganization!.people.length > 0)
+                          ..._fetchedOrganization!.people.map((person) {
+                            return TableRow(children: [
+                              TableCell(child: Text(person.preferred_name!)),
+                              // ...classes
+                              //     .map((className) => TableCell(
+                              //           child: Checkbox(
+                              //             value: attendanceList[classes
+                              //                 .indexOf(className)][studentName],
+                              //             onChanged: (bool? value) {
+                              //               toggleAttendance(
+                              //                   className, studentName);
+                              //             },
+                              //           ),
+                              //         ))
+                              //     .toList()
+                            ]);
+                          }).toList()
                     ],
                   )
                 ],
