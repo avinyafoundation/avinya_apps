@@ -55,7 +55,7 @@ Future<List<Inventory>> fetchInventories() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -77,7 +77,7 @@ Future<Inventory> fetchInventory(int id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -93,7 +93,7 @@ Future<http.Response> createInventory(Inventory inventory) async {
     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/inventories'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(inventory.toJson()),
   );
@@ -111,7 +111,7 @@ Future<http.Response> updateInventory(Inventory inventory) async {
         inventory.id.toString()),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(inventory.toJson()),
   );
@@ -127,7 +127,7 @@ Future<http.Response> deleteInventory(int id) async {
     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/inventories/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
   if (response.statusCode == 200) {

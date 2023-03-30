@@ -97,7 +97,7 @@ Future<List<Evaluation>> fetchEvaluations() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -119,7 +119,7 @@ Future<Evaluation> fetchEvaluation(String id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -141,7 +141,7 @@ Future<http.Response> createEvaluation(List<Evaluation> evaluation) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/evaluations'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(
         evaluation.map((evaluation) => evaluation.toJson()).toList()),
@@ -158,7 +158,7 @@ Future<http.Response> updateEvaluation(Evaluation applicantConsent) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/evaluations'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(applicantConsent.toJson()),
   );
@@ -174,7 +174,7 @@ Future<http.Response> deleteEvaluation(String id) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/evaluations/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 

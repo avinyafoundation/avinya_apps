@@ -65,7 +65,7 @@ Future<List<Asset>> fetchAssets() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -85,7 +85,7 @@ Future<Asset> fetchAsset(int id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -103,7 +103,7 @@ Future<http.Response> createAsset(Asset asset) async {
     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/asset'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(asset.toJson()),
   );
@@ -119,7 +119,7 @@ Future<http.Response> updateAsset(Asset asset) async {
     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/asset'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(asset.toJson()),
   );
@@ -135,7 +135,7 @@ Future<http.Response> deleteAsset(int id) async {
     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/asset?assetId=$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 

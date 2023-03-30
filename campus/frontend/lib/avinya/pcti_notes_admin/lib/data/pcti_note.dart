@@ -12,7 +12,7 @@ Future<List<Activity>> fetchPctiParticipantActivities(int person_id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -33,7 +33,7 @@ Future<List<Activity>> fetchPctiActivities() async {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'accept': 'application/json',
-        'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+        'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
       });
 
   if (response.statusCode == 200) {
@@ -54,7 +54,7 @@ Future<List<Evaluation>> fetchPctiActivityNotes(int pcti_activity_id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -77,7 +77,7 @@ Future<List<ActivityInstance>> fetchPctiActivityInstancesToday(
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -100,7 +100,7 @@ Future<List<ActivityInstance>> fetchActivityInstancesFuture(
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -122,7 +122,7 @@ Future<List<Person>> fetchAvailableTeachers(int activity_instance_id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -141,7 +141,7 @@ Future<http.Response> createPctiNote(Evaluation pctiNote) async {
     Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/pcti_notes'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(pctiNote.toJson()),
   );
