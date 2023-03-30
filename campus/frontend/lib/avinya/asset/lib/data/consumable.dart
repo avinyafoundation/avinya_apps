@@ -51,7 +51,7 @@ Future<List<Consumable>> fetchConsumables() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -72,7 +72,7 @@ Future<Consumable> fetchConsumable(int id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -91,7 +91,7 @@ Future<http.Response> createConsumable(Consumable consumable) async {
     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/consumable'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(consumable.toJson()),
   );
@@ -107,7 +107,7 @@ Future<http.Response> updateConsumable(Consumable consumable) async {
     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/consumable'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(consumable.toJson()),
   );
@@ -123,7 +123,7 @@ Future<http.Response> deleteConsumable(int id) async {
     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/consumable/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 

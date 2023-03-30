@@ -72,7 +72,7 @@ Future<List<Vacancy>> fetchVacancies() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 

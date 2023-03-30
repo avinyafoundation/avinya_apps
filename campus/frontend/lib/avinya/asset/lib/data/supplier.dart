@@ -40,7 +40,7 @@ Future<List<Supplier>> fetchSuppliers() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -61,7 +61,7 @@ Future<Supplier> fetchSupplier(int id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -80,7 +80,7 @@ Future<http.Response> createSupplier(Supplier supplier) async {
     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/supplier'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(supplier.toJson()),
   );
@@ -96,7 +96,7 @@ Future<http.Response> updateSupplier(Supplier supplier) async {
     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/supplier'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(supplier.toJson()),
   );
@@ -112,7 +112,7 @@ Future<http.Response> deleteSupplier(int id) async {
     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/supplier/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 

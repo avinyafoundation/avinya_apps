@@ -148,7 +148,7 @@ Future<http.Response> updateApplicantConsent(
     Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/applicant_consent'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAttendanceBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(applicantConsent.toJson()),
   );

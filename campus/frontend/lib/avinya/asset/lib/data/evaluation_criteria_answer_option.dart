@@ -41,7 +41,7 @@ Future<List<EvaluationCriteriaAnswerOption>>
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -66,7 +66,7 @@ Future<EvaluationCriteriaAnswerOption> fetchEvaluationCriteriaAnswerOption(
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -88,7 +88,7 @@ Future<http.Response> createEvaluationCriteriaAnswerOption(
         '/evaluation_criteria_answer_option/evaluation_criteria_answer_options'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(evaluationCriteriaAnswerOption.toJson()),
   );
@@ -106,7 +106,7 @@ Future<http.Response> updateEvaluationCriteriaAnswerOption(
         '/evaluation_criteria_answer_option/evaluation_criteria_answer_options'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(evaluationCriteriaAnswerOption.toJson()),
   );
@@ -123,7 +123,7 @@ Future<http.Response> deleteEvaluationCriteriaAnswerOption(String id) async {
         '/evaluation_criteria_answer_option/evaluation_criteria_answer_options/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
