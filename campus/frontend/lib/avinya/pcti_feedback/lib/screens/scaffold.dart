@@ -10,7 +10,7 @@ import 'scaffold_body.dart';
 
 class SMSScaffold extends StatelessWidget {
   static const pageNames = [
-    '/pcti_activities',
+    '/pcti_feedback',
     '/evaluations',
     // '/pcti_notes/popular',
   ];

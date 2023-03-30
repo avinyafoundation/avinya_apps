@@ -17,10 +17,8 @@ import 'package:gallery/layout/image_placeholder.dart';
 import 'package:attendance/colors.dart';
 import 'package:attendance/routes.dart' as attendance_routes;
 import 'package:asset/routes.dart' as asset_routes;
-import 'package:gallery/avinya/pcti_notes/lib/routes.dart'
-    as campus_pcti_routes;
-import 'package:gallery/avinya/pcti_notes_admin/lib/routes.dart'
-    as campus_pcti_admin;
+import 'package:pcti_notes/routes.dart' as campus_pcti_routes;
+import 'package:pcti_notes_admin/routes.dart' as campus_pcti_admin;
 import 'package:pcti_feedback/routes.dart' as feedback_routes;
 
 const _horizontalPadding = 32.0;

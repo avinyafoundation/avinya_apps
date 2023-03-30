@@ -79,14 +79,14 @@ class VacancyListState extends State<VacancyList> {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(
+                        const Text(
                           'Please answer all questions below',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(width: 10.0, height: 10.0),
+                        const SizedBox(width: 10.0, height: 10.0),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: vacancies!
@@ -111,7 +111,8 @@ class VacancyListState extends State<VacancyList> {
                                                           overflow: TextOverflow
                                                               .visible,
                                                           // softWrap: true,
-                                                          style: TextStyle(
+                                                          style:
+                                                              const TextStyle(
                                                             fontSize: 15,
                                                             fontWeight:
                                                                 FontWeight.bold,
@@ -129,14 +130,14 @@ class VacancyListState extends State<VacancyList> {
                                                           width: 380,
                                                           height: 300,
                                                           padding:
-                                                              EdgeInsets.all(
-                                                                  8.0),
+                                                              const EdgeInsets
+                                                                  .all(8.0),
                                                           child: TextField(
                                                             controller:
                                                                 textController1,
                                                             autocorrect: true,
                                                             decoration:
-                                                                InputDecoration(
+                                                                const InputDecoration(
                                                                     hintText:
                                                                         'Type your essay here'),
                                                             onChanged:
@@ -154,14 +155,14 @@ class VacancyListState extends State<VacancyList> {
                                                           width: 380,
                                                           height: 300,
                                                           padding:
-                                                              EdgeInsets.all(
-                                                                  8.0),
+                                                              const EdgeInsets
+                                                                  .all(8.0),
                                                           child: TextField(
                                                             controller:
                                                                 textController2,
                                                             autocorrect: true,
                                                             decoration:
-                                                                InputDecoration(
+                                                                const InputDecoration(
                                                                     hintText:
                                                                         'Type your essay here'),
                                                             onChanged:
@@ -214,7 +215,7 @@ class VacancyListState extends State<VacancyList> {
                                                                             //),
                                                                           ]))
                                                                   .toList()),
-                                                          SizedBox(
+                                                          const SizedBox(
                                                               width: 10.0,
                                                               height: 10.0),
                                                         ]),
@@ -223,7 +224,7 @@ class VacancyListState extends State<VacancyList> {
                                       .toList()))
                               .toList(),
                         ),
-                        SizedBox(width: 10.0, height: 10.0),
+                        const SizedBox(width: 10.0, height: 10.0),
                         ElevatedButton(
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
@@ -259,7 +260,7 @@ class VacancyListState extends State<VacancyList> {
                                 );
                               }
                             },
-                            child: Text('Submit'))
+                            child: const Text('Submit'))
                       ]),
                 )),
           );
