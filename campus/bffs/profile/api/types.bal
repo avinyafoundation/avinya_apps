@@ -229,10 +229,10 @@ public type Inventory record {
 };
 
 public type Organization record {
-    int[]? parent_organizations?;
+    Organization[]? parent_organizations?;
     string? notes?;
     string? name_ta?;
-    int[]? child_organizations?;
+    Organization[]? child_organizations?;
     int? phone?;
     int? address_id?;
     string? name_si?;
@@ -566,4 +566,34 @@ public type GetPersonResponse record {|
         string? bank_account_name;
         int? academy_org_id;
     |}? person_by_digital_id;
+|};
+
+public type GetOrganizationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string name_en;
+        |} name;
+        string? description;
+        record {|
+            int? id;
+            record {|
+                string name_en;
+            |} name;
+            string? description;
+        |}[]? child_organizations;
+        record {|
+            int? id;
+            record {|
+                string name_en;
+            |} name;
+            string? description;
+        |}[]? parent_organizations;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? digital_id;
+        |}[]? people;
+    |}? organization;
 |};

@@ -40,12 +40,14 @@ class Organization {
   Name? name;
   String? description;
   var child_organizations = <Organization>[];
+  var people = <Person>[];
 
   Organization({
     this.id,
     this.name,
     this.description,
     this.child_organizations = const [],
+    this.people = const [],
   });
 
   factory Organization.fromJson(Map<String, dynamic> json) {
@@ -56,6 +58,9 @@ class Organization {
       child_organizations: json['child_organizations'] != null
           ? List<Organization>.from(
               json['child_organizations'].map((x) => Organization.fromJson(x)))
+          : [],
+      people: json['people'] != null
+          ? List<Person>.from(json['people'].map((x) => Person.fromJson(x)))
           : [],
     );
   }
@@ -68,8 +73,31 @@ class Organization {
         if (description != null) 'description': description,
         'child_organizations':
             List<dynamic>.from(child_organizations.map((x) => x.toJson())),
+        'people': List<dynamic>.from(people.map((x) => x.toJson())),
         // if (employees != null) 'employees': List<dynamic>.from(employees!.map((x) => x.toJson())),
       };
+}
+
+Future<Organization> fetchOrganization(int id) async {
+  final uri = Uri.parse(AppConfig.campusProfileBffApiUrl + '/organization')
+      .replace(queryParameters: {'id': id.toString()});
+
+  final response = await http.get(
+    uri,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusAttendanceBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    Organization organization =
+        Organization.fromJson(json.decode(response.body));
+    return organization;
+  } else {
+    throw Exception('Failed to load Person');
+  }
 }
 
 class Person {
@@ -181,9 +209,11 @@ class Person {
           json['avinya_type'] != null ? json['avinya_type'] : {}),
       created: json['created'],
       updated: json['updated'],
-      parent_students: json['parent_students']
-          .map<Person>((eval_json) => Person.fromJson(eval_json))
-          .toList(),
+      parent_students: json['parent_students'] != null
+          ? json['parent_students']
+              .map<Person>((eval_json) => Person.fromJson(eval_json))
+              .toList()
+          : [],
     );
   }
 

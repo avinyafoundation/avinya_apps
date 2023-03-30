@@ -192,3 +192,31 @@ query getPerson($id:String!){
   }
 }
 
+query getOrganization($id: Int!) {
+    organization(id:$id) {
+        id    
+        name{
+            name_en
+        }
+        description
+        child_organizations{   
+            id 
+            name{
+                name_en
+            }
+            description
+        }
+        parent_organizations{
+            id
+            name{
+                name_en
+            }
+            description
+        }
+        people {
+            id
+            preferred_name
+            digital_id
+        }
+    }       
+}
