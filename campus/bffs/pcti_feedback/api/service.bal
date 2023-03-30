@@ -28,7 +28,7 @@ final GraphqlClient globalDataClient = check new (GLOBAL_DATA_API_URL,
         allowOrigins: ["*"]
     }
 }
-service / on new http:Listener(9090) {
+service / on new http:Listener(9093) {
 
     # A resource for generating greetings
     # + name - the input string name

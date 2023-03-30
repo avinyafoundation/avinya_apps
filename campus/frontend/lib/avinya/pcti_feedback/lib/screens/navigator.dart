@@ -1,11 +1,11 @@
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
+import 'package:gallery/auth.dart';
 import 'package:pcti_feedback/screens/evaluation_details.dart';
 import 'package:pcti_feedback/screens/pcti_notes.dart';
 import 'package:flutter/material.dart';
 
-import '../auth.dart';
 import '../data.dart';
 import '../routing.dart';
 import '../screens/sign_in.dart';
@@ -41,7 +41,7 @@ class _SMSNavigatorState extends State<SMSNavigator> {
     final pathTemplate = routeState.route.pathTemplate;
 
     Activity? selectedPctiActivity;
-    if (pathTemplate == '/pcti_activities/:id') {
+    if (pathTemplate == '/pcti_feedback/:id') {
       selectedPctiActivity = campusFeedbackSystemInstance.activities
           ?.firstWhereOrNull(
               (at) => at.id.toString() == routeState.route.parameters['id']);
@@ -73,7 +73,7 @@ class _SMSNavigatorState extends State<SMSNavigator> {
         if (route.settings is Page &&
             (route.settings as Page).key == _pctiActivityDetailsKey) {
           // routeState.go('/pcti_notes/popular');
-          routeState.go('/pcti_activities');
+          routeState.go('/pcti_feedback');
         }
 
         // if (route.settings is Page &&
@@ -102,7 +102,7 @@ class _SMSNavigatorState extends State<SMSNavigator> {
                     credentials.username, credentials.password);
                 if (signedIn) {
                   // await routeState.go('/pcti_notes/popular');
-                  await routeState.go('/pcti_activities');
+                  await routeState.go('/pcti_feedback');
                 }
               },
             ),

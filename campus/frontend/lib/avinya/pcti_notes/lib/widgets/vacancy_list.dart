@@ -79,14 +79,14 @@ class VacancyListState extends State<VacancyList> {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(
+                        const Text(
                           'Please answer all questions below',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(width: 10.0, height: 10.0),
+                        const SizedBox(width: 10.0, height: 10.0),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: vacancies!
@@ -111,7 +111,8 @@ class VacancyListState extends State<VacancyList> {
                                                           overflow: TextOverflow
                                                               .visible,
                                                           // softWrap: true,
-                                                          style: TextStyle(
+                                                          style:
+                                                              const TextStyle(
                                                             fontSize: 15,
                                                             fontWeight:
                                                                 FontWeight.bold,
@@ -129,14 +130,14 @@ class VacancyListState extends State<VacancyList> {
                                                           width: 380,
                                                           height: 300,
                                                           padding:
-                                                              EdgeInsets.all(
-                                                                  8.0),
+                                                              const EdgeInsets
+                                                                  .all(8.0),
                                                           child: TextField(
                                                             controller:
                                                                 textController1,
                                                             autocorrect: true,
                                                             decoration:
-                                                                InputDecoration(
+                                                                const InputDecoration(
                                                                     hintText:
                                                                         'Type your essay here'),
                                                             onChanged:
@@ -154,14 +155,14 @@ class VacancyListState extends State<VacancyList> {
                                                           width: 380,
                                                           height: 300,
                                                           padding:
-                                                              EdgeInsets.all(
-                                                                  8.0),
+                                                              const EdgeInsets
+                                                                  .all(8.0),
                                                           child: TextField(
                                                             controller:
                                                                 textController2,
                                                             autocorrect: true,
                                                             decoration:
-                                                                InputDecoration(
+                                                                const InputDecoration(
                                                                     hintText:
                                                                         'Type your essay here'),
                                                             onChanged:
@@ -214,7 +215,7 @@ class VacancyListState extends State<VacancyList> {
                                                                             //),
                                                                           ]))
                                                                   .toList()),
-                                                          SizedBox(
+                                                          const SizedBox(
                                                               width: 10.0,
                                                               height: 10.0),
                                                         ]),
@@ -223,7 +224,7 @@ class VacancyListState extends State<VacancyList> {
                                       .toList()))
                               .toList(),
                         ),
-                        SizedBox(width: 10.0, height: 10.0),
+                        const SizedBox(width: 10.0, height: 10.0),
                         ElevatedButton(
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
@@ -242,10 +243,7 @@ class VacancyListState extends State<VacancyList> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
-                                      'Some of the data you entred on this form ' +
-                                          'does not meet the eligibility criteria.\r\n' +
-                                          'The errors are shown inline on the form.\r\n' +
-                                          'Please check and correct the data and try again.',
+                                      'Some of the data you entred on this form does not meet the eligibility criteria.\r\nThe errors are shown inline on the form.\r\nPlease check and correct the data and try again.',
                                       style: TextStyle(
                                           color: Colors.red,
                                           fontStyle: FontStyle.italic,
@@ -262,7 +260,7 @@ class VacancyListState extends State<VacancyList> {
                                 );
                               }
                             },
-                            child: Text('Submit'))
+                            child: const Text('Submit'))
                       ]),
                 )),
           );
@@ -279,10 +277,10 @@ class VacancyListState extends State<VacancyList> {
   Future<bool> addSudentApplicantEvaluation(BuildContext context) async {
     try {
       if (_formKey.currentState!.validate()) {
-        campusConfigSystemInstance
+        campusAppsPortalInstance
             .fetchPersonForUser(); // do a fetch to help cross check
-        Person person = campusConfigSystemInstance.getStudentPerson();
-        if (campusConfigSystemInstance.getJWTSub() != person.jwt_sub_id) {
+        Person person = campusAppsPortalInstance.getUserPerson();
+        if (campusAppsPortalInstance.getJWTSub() != person.jwt_sub_id) {
           // the person has not logged in to the system
           // we can record the test responses against that person
           return false;
@@ -302,9 +300,9 @@ class VacancyListState extends State<VacancyList> {
                 grade: -1));
           }
         });
-        log('vacancy list :' + evaluations.toString());
+        log('vacancy list :$evaluations');
         evaluations.forEach((element) {
-          log('vacancy list loop elements:' + element.toString());
+          log('vacancy list loop elements:$element');
           log(element.toJson().toString());
         });
 
@@ -711,5 +709,4 @@ class _EditVacancyPageState extends State<EditVacancyPage> {
   String? _mandatoryValidator(String? text) {
     return (text!.isEmpty) ? 'Required' : null;
   }
-
 }

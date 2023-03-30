@@ -14,13 +14,11 @@ import 'package:gallery/data/demos.dart';
 import 'package:gallery/data/gallery_options.dart';
 import 'package:gallery/layout/adaptive.dart';
 import 'package:gallery/layout/image_placeholder.dart';
-import 'package:gallery/pages/splash.dart';
 import 'package:attendance/colors.dart';
 import 'package:attendance/routes.dart' as attendance_routes;
-import 'package:gallery/avinya/pcti_notes/lib/routes.dart'
-    as campus_pcti_routes;
-import 'package:gallery/avinya/pcti_notes_admin/lib/routes.dart'
-    as campus_pcti_admin;
+import 'package:asset/routes.dart' as asset_routes;
+import 'package:pcti_notes/routes.dart' as campus_pcti_routes;
+import 'package:pcti_notes_admin/routes.dart' as campus_pcti_admin;
 import 'package:pcti_feedback/routes.dart' as feedback_routes;
 
 const _horizontalPadding = 32.0;
@@ -36,99 +34,164 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var carouselHeight = _carouselHeight(.7, context);
+    // var carouselHeight = _carouselHeight(.7, context);
     final isDesktop = isDisplayDesktop(context);
+    final isTab = isDisplayTab(context);
     final localizations = GalleryLocalizations.of(context)!;
     final studyDemos = Demos.studies(localizations);
     final carouselCards = <Widget>[
-      _CarouselCard(
-        demo: studyDemos['attendanceApp'],
-        asset: const AssetImage(
-          'assets/images/attendance.jpg',
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: _CarouselCard(
+          demo: studyDemos['attendanceApp'],
+          asset: const AssetImage(
+            'assets/images/attendance.jpg',
+            //package: 'flutter_gallery_assets',
+          ),
+          assetColor: const Color(0xFFFEDBD0),
+          assetDark: const AssetImage(
+            'assets/studies/shrine_card_dark.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetDarkColor: const Color(0xFF543B3C),
+          textColor: shrineBrown900,
+          studyRoute: attendance_routes.attendanceRoute,
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: _CarouselCard(
+          //2023-03-09 lahiru added for campus_pcti
+          demo: studyDemos['campuspctiApp'],
+          asset: const AssetImage(
+            'assets/images/pcti_notes.jpg',
            // package: 'flutter_gallery_assets',
+          ),
+          assetColor: const Color(0xFFD1F2E6),
+          assetDark: const AssetImage(
+            'assets/studies/rally_card_dark.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetDarkColor: const Color(0xFF253538),
+          textColor: shrineBrown900,
+          studyRoute: campus_pcti_routes.campuspctiRoute,
         ),
-        assetColor: const Color(0xFFFEDBD0),
-        // assetDark: const AssetImage(
-        //   'assets/studies/shrine_card_dark.png',
-        //   package: 'flutter_gallery_assets',
-        // ),
-        assetDarkColor: const Color(0xFF543B3C),
-        textColor: shrineBrown900,
-        studyRoute: attendance_routes.attendanceRoute,
       ),
-      _CarouselCard(
-        //2023-03-09 lahiru added for campus_pcti
-        demo: studyDemos['campuspctiApp'],
-        asset: const AssetImage(
-          'assets/images/pcti_notes.jpg',
-          // package: 'flutter_gallery_assets',
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: _CarouselCard(
+          //2023-03-09 lahiru added for campus_pcti_admin
+          demo: studyDemos['campuspctiadminApp'],
+          asset: const AssetImage(
+            'assets/images/pcti_admin.jpg',
+           // package: 'flutter_gallery_assets',
+          ),
+          assetColor: const Color(0xFFFEDBD0),
+          assetDark: const AssetImage(
+            'assets/studies/shrine_card_dark.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetDarkColor: const Color(0xFF543B3C),
+          textColor: shrineBrown900,
+          studyRoute: campus_pcti_admin.campuspctiadminRoute,
         ),
-        assetColor: const Color(0xFFFEDBD0),
-        // assetDark: const AssetImage(
-        //   'assets/studies/rally_card_dark.png',
-        //   package: 'flutter_gallery_assets',
-        // ),
-        assetDarkColor: const Color(0xFF543B3C),
-        textColor: shrineBrown900,
-        studyRoute: campus_pcti_routes.campuspctiRoute,
       ),
-      _CarouselCard(
-        //2023-03-09 lahiru added for campus_pcti_admin
-        demo: studyDemos['campuspctiadminApp'],
-        asset: const AssetImage(
-          'assets/images/pcti_admin.jpg',
-          // package: 'flutter_gallery_assets',
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: _CarouselCard(
+          //2023-03-09 lahiru added for campus_pcti_admin
+          demo: studyDemos['feedbackApp'],
+          asset: const AssetImage(
+            'assets/images/feedback.jpg',
+           // package: 'flutter_gallery_assets',
+          ),
+          assetColor: const Color(0xFFFEDBD0),
+          assetDark: const AssetImage(
+            'assets/studies/rally_card_dark.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetDarkColor: const Color(0xFF543B3C),
+          textColor: shrineBrown900,
+          studyRoute: feedback_routes.feedbackRoute,
         ),
-        assetColor: const Color(0xFFFEDBD0),
-        // assetDark: const AssetImage(
-        //   'assets/studies/shrine_card_dark.png',
-        //   package: 'flutter_gallery_assets',
-        // ),
-        assetDarkColor: const Color(0xFF543B3C),
-        textColor: shrineBrown900,
-        studyRoute: campus_pcti_admin.campuspctiadminRoute,
       ),
-      _CarouselCard(
-        //2023-03-09 lahiru added for campus_pcti_admin
-        demo: studyDemos['feedbackApp'],
-        asset: const AssetImage(
-          'assets/images/feedback.jpg',
-         //package: 'flutter_gallery_assets',
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: _CarouselCard(
+          demo: studyDemos['assetApp'],
+          asset: const AssetImage(
+            'assets/images/asset.jpg',
+           // package: 'flutter_gallery_assets',
+          ),
+          assetColor: const Color(0xFFFEDBD0),
+          assetDark: const AssetImage(
+            'assets/studies/shrine_card_dark.png',
+            package: 'flutter_gallery_assets',
+          ),
+          assetDarkColor: const Color(0xFF543B3C),
+          textColor: shrineBrown900,
+          studyRoute: asset_routes.assetRoute,
         ),
-        assetColor: const Color(0xFFFEDBD0),
-        // assetDark: const AssetImage(
-        //   'assets/studies/rally_card_dark.png',
-        //   package: 'flutter_gallery_assets',
-        // ),
-        assetDarkColor: const Color(0xFF543B3C),
-        textColor: shrineBrown900,
-        studyRoute: feedback_routes.feedbackRoute,
       ),
     ];
 
     if (isDesktop) {
+      // uncomment this if you want to use the animated home page
+      // return Scaffold(
+      //   body: ListView(
+      //     // Makes integration tests possible.
+      //     key: const ValueKey('HomeListView'),
+      //     primary: true,
+      //     padding: const EdgeInsetsDirectional.only(
+      //       top: firstHeaderDesktopTopPadding,
+      //     ),
+      //     children: [
+      //       _DesktopCarousel(height: carouselHeight, children: carouselCards),
+      //       const SizedBox(height: 109),
+      //     ],
+      //   ),
+      // );
       return Scaffold(
-        body:ListView(
-            // Makes integration tests possible.
-            key: const ValueKey('HomeListView'),
-            primary: true,
-            padding: const EdgeInsetsDirectional.only(
-              top: firstHeaderDesktopTopPadding,
-            ),
-            children: [
-              _DesktopCarousel(height: carouselHeight, children: carouselCards),
-              const SizedBox(height: 109),
-            ],
+        body: Container(
+          padding: EdgeInsets.symmetric(vertical: 70.0, horizontal: 70.0),
+          child: GridView.count(
+            crossAxisCount: 3,
+            childAspectRatio: 1.8,
+            children: carouselCards,
           ),
-       
+        ),
+      );
+    } else if (isTab) {
+      return Scaffold(
+        body: Container(
+          padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
+          child: GridView.count(
+            crossAxisCount: 2,
+            childAspectRatio:
+                1.5, // set a higher value to make the cards wider and shorter
+            children: carouselCards,
+          ),
+        ),
       );
     } else {
+      // uncomment this if you want to use the animated home page
+      // return Scaffold(
+      //   body: _AnimatedHomePage(
+      //     restorationId: 'animated_page',
+      //     isSplashPageAnimationFinished:
+      //         SplashPageAnimation.of(context)!.isFinished,
+      //     carouselCards: carouselCards,
+      //   ),
+      // );
       return Scaffold(
-        body: _AnimatedHomePage(
-          restorationId: 'animated_page',
-          isSplashPageAnimationFinished:
-              SplashPageAnimation.of(context)!.isFinished,
-          carouselCards: carouselCards,
+        body: Container(
+          padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
+          child: GridView.count(
+            crossAxisCount: 1,
+            childAspectRatio:
+                1.5, // set a higher value to make the cards wider and shorter
+            children: carouselCards,
+          ),
         ),
       );
     }
@@ -625,14 +688,15 @@ class _DesktopCarouselState extends State<_DesktopCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    var showPreviousButton = false;
-    var showNextButton = true;
-    // Only check this after the _controller has been attached to the ListView.
-    if (_controller.hasClients) {
-      showPreviousButton = _controller.offset > 0;
-      showNextButton =
-          _controller.offset < _controller.position.maxScrollExtent;
-    }
+    // uncomment this to show the previous and next buttons
+    // var showPreviousButton = false;
+    // var showNextButton = true;
+    // // Only check this after the _controller has been attached to the ListView.
+    // if (_controller.hasClients) {
+    //   showPreviousButton = _controller.offset > 0;
+    //   showNextButton =
+    //       _controller.offset < _controller.position.maxScrollExtent;
+    // }
     final totalWidth = MediaQuery.of(context).size.width -
         (_horizontalDesktopPadding - cardPadding) * 2;
     final itemWidth = totalWidth / _desktopCardsPerPage;
@@ -658,27 +722,27 @@ class _DesktopCarouselState extends State<_DesktopCarousel> {
                 itemBuilder: (context, index) => _builder(index),
               ),
             ),
-            if (showPreviousButton)
-              _DesktopPageButton(
-                onTap: () {
-                  _controller.animateTo(
-                    _controller.offset - itemWidth,
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeInOut,
-                  );
-                },
-              ),
-            if (showNextButton)
-              _DesktopPageButton(
-                isEnd: true,
-                onTap: () {
-                  _controller.animateTo(
-                    _controller.offset + itemWidth,
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeInOut,
-                  );
-                },
-              ),
+            // if (showPreviousButton)
+            //   _DesktopPageButton(
+            //     onTap: () {
+            //       _controller.animateTo(
+            //         _controller.offset - itemWidth,
+            //         duration: const Duration(milliseconds: 200),
+            //         curve: Curves.easeInOut,
+            //       );
+            //     },
+            //   ),
+            // if (showNextButton)
+            //   _DesktopPageButton(
+            //     isEnd: true,
+            //     onTap: () {
+            //       _controller.animateTo(
+            //         _controller.offset + itemWidth,
+            //         duration: const Duration(milliseconds: 200),
+            //         curve: Curves.easeInOut,
+            //       );
+            //     },
+            //   ),
           ],
         ),
       ),
@@ -740,54 +804,54 @@ class _SnappingScrollPhysics extends ScrollPhysics {
   @override
   bool get allowImplicitScrolling => true;
 }
+// uncomment this to show the page buttons
+// class _DesktopPageButton extends StatelessWidget {
+//   const _DesktopPageButton({
+//     this.isEnd = false,
+//     this.onTap,
+//   });
 
-class _DesktopPageButton extends StatelessWidget {
-  const _DesktopPageButton({
-    this.isEnd = false,
-    this.onTap,
-  });
+//   final bool isEnd;
+//   final GestureTapCallback? onTap;
 
-  final bool isEnd;
-  final GestureTapCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    const buttonSize = 58.0;
-    const padding = _horizontalDesktopPadding - buttonSize / 2;
-    return ExcludeSemantics(
-      child: Align(
-        alignment: isEnd
-            ? AlignmentDirectional.centerEnd
-            : AlignmentDirectional.centerStart,
-        child: Container(
-          width: buttonSize,
-          height: buttonSize,
-          margin: EdgeInsetsDirectional.only(
-            start: isEnd ? 0 : padding,
-            end: isEnd ? padding : 0,
-          ),
-          child: Tooltip(
-            message: isEnd
-                ? MaterialLocalizations.of(context).nextPageTooltip
-                : MaterialLocalizations.of(context).previousPageTooltip,
-            child: Material(
-              color: Colors.black.withOpacity(0.5),
-              shape: const CircleBorder(),
-              clipBehavior: Clip.antiAlias,
-              child: InkWell(
-                onTap: onTap,
-                child: Icon(
-                  isEnd ? Icons.arrow_forward_ios : Icons.arrow_back_ios,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     const buttonSize = 58.0;
+//     const padding = _horizontalDesktopPadding - buttonSize / 2;
+//     return ExcludeSemantics(
+//       child: Align(
+//         alignment: isEnd
+//             ? AlignmentDirectional.centerEnd
+//             : AlignmentDirectional.centerStart,
+//         child: Container(
+//           width: buttonSize,
+//           height: buttonSize,
+//           margin: EdgeInsetsDirectional.only(
+//             start: isEnd ? 0 : padding,
+//             end: isEnd ? padding : 0,
+//           ),
+//           child: Tooltip(
+//             message: isEnd
+//                 ? MaterialLocalizations.of(context).nextPageTooltip
+//                 : MaterialLocalizations.of(context).previousPageTooltip,
+//             child: Material(
+//               color: Colors.black.withOpacity(0.5),
+//               shape: const CircleBorder(),
+//               clipBehavior: Clip.antiAlias,
+//               child: InkWell(
+//                 onTap: onTap,
+//                 child: Icon(
+//                   isEnd ? Icons.arrow_forward_ios : Icons.arrow_back_ios,
+//                   color: Colors.white,
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class _CarouselCard extends StatelessWidget {
   const _CarouselCard({
@@ -853,23 +917,13 @@ class _CarouselCard extends StatelessWidget {
                   children: [
                     Text(
                       demo!.title,
-                      // style: textTheme.bodyLarge!.apply(color: textColor), //commented by lahiru
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontStyle: FontStyle.normal,
-                        fontWeight: FontWeight.bold,
-                        color: textColor), //added by lahiru
+                      style: textTheme.bodySmall!.apply(color: textColor),
                       maxLines: 3,
                       overflow: TextOverflow.visible,
                     ),
                     Text(
                       demo!.subtitle,
-                      // style: textTheme.bodySmall!.apply(color: textColor),//commented by lahiru
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontStyle: FontStyle.normal,
-                        fontWeight: FontWeight.normal,
-                        color: textColor), 
+                      style: textTheme.labelSmall!.apply(color: textColor),
                       maxLines: 5,
                       overflow: TextOverflow.visible,
                     ),

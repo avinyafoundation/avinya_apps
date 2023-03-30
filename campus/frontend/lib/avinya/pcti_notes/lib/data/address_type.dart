@@ -1,7 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 
 class AddressType {
   int? id;
@@ -31,7 +30,7 @@ class AddressType {
 
 Future<List<AddressType>> fetchAddressTypes() async {
   final response =
-      await http.get(Uri.parse(AppConfig.apiUrl + '/sms/util/addresstypes'));
+      await http.get(Uri.parse('${AppConfig.apiUrl}/sms/util/addresstypes'));
 
   if (response.statusCode == 200) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
@@ -46,7 +45,7 @@ Future<List<AddressType>> fetchAddressTypes() async {
 
 Future<AddressType> fetchAddressType(String id) async {
   final response = await http
-      .get(Uri.parse(AppConfig.apiUrl + '/sms/util/addresstypes/$id'));
+      .get(Uri.parse('${AppConfig.apiUrl}/sms/util/addresstypes/$id'));
 
   if (response.statusCode == 200) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
@@ -60,7 +59,7 @@ Future<AddressType> fetchAddressType(String id) async {
 
 Future<http.Response> createAddressType(AddressType addressType) async {
   final response = await http.post(
-    Uri.parse(AppConfig.apiUrl + '/sms/util/addresstypes'),
+    Uri.parse('${AppConfig.apiUrl}/sms/util/addresstypes'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -75,7 +74,7 @@ Future<http.Response> createAddressType(AddressType addressType) async {
 
 Future<http.Response> updateAddressType(AddressType addressType) async {
   final response = await http.put(
-    Uri.parse(AppConfig.apiUrl + '/sms/util/addresstypes'),
+    Uri.parse('${AppConfig.apiUrl}/sms/util/addresstypes'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -90,7 +89,7 @@ Future<http.Response> updateAddressType(AddressType addressType) async {
 
 Future<http.Response> deleteAddressType(String id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.apiUrl + '/sms/util/addresstypes/$id'),
+    Uri.parse('${AppConfig.apiUrl}/sms/util/addresstypes/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },

@@ -21,22 +21,22 @@ class ApplicationDetailsState extends State<ApplicationDetails> {
   @override
   void initState() {
     super.initState();
-    if (campusFeedbackSystemInstance.getStudentPerson().id == null) {
-      campusFeedbackSystemInstance.fetchPersonForUser();
+    if (campusAppsPortalInstance.getUserPerson().id == null) {
+      campusAppsPortalInstance.fetchPersonForUser();
     }
-    if (campusFeedbackSystemInstance.getStudentPerson().id != null) {
+    if (campusAppsPortalInstance.getUserPerson().id != null) {
       futureApplication =
           fetchApplication(campusFeedbackSystemInstance.getStudentPerson().id!);
     }
   }
 
   Future<Application> refreshApplicationState() async {
-    if (campusFeedbackSystemInstance.getStudentPerson().id == null) {
-      campusFeedbackSystemInstance.fetchPersonForUser();
+    if (campusAppsPortalInstance.getUserPerson().id == null) {
+      campusAppsPortalInstance.fetchPersonForUser();
     }
-    if (campusFeedbackSystemInstance.getStudentPerson().id != null) {
+    if (campusAppsPortalInstance.getUserPerson().id != null) {
       futureApplication =
-          fetchApplication(campusFeedbackSystemInstance.getStudentPerson().id!);
+          fetchApplication(campusAppsPortalInstance.getUserPerson().id!);
     }
     return futureApplication;
   }
@@ -45,10 +45,10 @@ class ApplicationDetailsState extends State<ApplicationDetails> {
   Widget build(BuildContext context) {
     final routeState = RouteStateScope.of(context);
     try {
-      campusFeedbackSystemInstance
+      campusAppsPortalInstance
           .fetchPersonForUser(); // do a fetch to help cross check
-      Person person = campusFeedbackSystemInstance.getStudentPerson();
-      if (campusFeedbackSystemInstance.getJWTSub() != person.jwt_sub_id) {
+      Person person = campusAppsPortalInstance.getUserPerson();
+      if (campusAppsPortalInstance.getJWTSub() != person.jwt_sub_id) {
         // the person has not logged in
         routeState.go('/signin');
         return Container();

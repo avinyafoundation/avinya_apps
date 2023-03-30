@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../data.dart';
 
 class PctiNoteDetail extends StatefulWidget {
@@ -18,34 +17,34 @@ class _PctiNoteDetailState extends State<PctiNoteDetail> {
   @override
   void initState() {
     super.initState();
-    futureEvaluator = fetchPerson(pctiNote!.evaluator_id!);
+    futureEvaluator = fetchPersonFromPctiNoteAdmin(pctiNote!.evaluator_id!);
 
     //fetchPctiActivityNotes(pctiActivity!.id!); // for now get notes for activity id 1
   }
 
   Future<Person> refreshEvaluatorState() async {
-    futureEvaluator = fetchPerson(pctiNote!.evaluator_id!);
+    futureEvaluator = fetchPersonFromPctiNoteAdmin(pctiNote!.evaluator_id!);
     return futureEvaluator;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('PCTI Note Details'),
-      ),
-      body: FutureBuilder<Person>(
-        future: refreshEvaluatorState(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData){
-            return Center(
-              child: Column(
+        appBar: AppBar(
+          title: const Text('PCTI Note Details'),
+        ),
+        body: FutureBuilder<Person>(
+          future: refreshEvaluatorState(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Center(
+                  child: Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       pctiNote!.updated!.toString(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 24,
@@ -55,31 +54,31 @@ class _PctiNoteDetailState extends State<PctiNoteDetail> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ListTile(
-                      tileColor: Colors.black12,
-                      title: Text("Evaluator Name"),
-                      subtitle: Text(snapshot.data!.preferred_name.toString(),)
-                    ),
+                        tileColor: Colors.black12,
+                        title: const Text("Evaluator Name"),
+                        subtitle: Text(
+                          snapshot.data!.preferred_name.toString(),
+                        )),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ListTile(
-                      tileColor: Colors.black12,
-                      title: Text("Note"),
-                      subtitle: Text(pctiNote!.notes.toString(),)
-                    ),
+                        tileColor: Colors.black12,
+                        title: const Text("Note"),
+                        subtitle: Text(
+                          pctiNote!.notes.toString(),
+                        )),
                   ),
                 ],
-              )
-            );
-          } else if (snapshot.hasError) {
+              ));
+            } else if (snapshot.hasError) {
               return Text('${snapshot.error}');
-          }
-          // By default, show a loading spinner.
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      )
-    );
+            }
+            // By default, show a loading spinner.
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ));
   }
 }

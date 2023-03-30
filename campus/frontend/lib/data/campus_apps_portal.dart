@@ -188,7 +188,7 @@ class CampusAppsPortal {
               .contains('Janitor');
           this.isTeacher = campusAppsPortalPersonMetaDataInstance
               .getGroups()
-              .contains('Teacher');
+              .contains('Educator');
           this.isFoundation = campusAppsPortalPersonMetaDataInstance
               .getGroups()
               .contains('Foundation');

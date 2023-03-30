@@ -59,7 +59,7 @@ class _LogInScreenState extends State<LoginPage> {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/home_3.jpg'),
+            image: AssetImage('assets/images/initial.jpg'),
             fit: BoxFit.cover,
             
           ),
@@ -73,7 +73,7 @@ class _LogInScreenState extends State<LoginPage> {
                 child: SingleChildScrollView(
                   child: Container(
                     width: 400,
-                    color: Colors.yellowAccent,
+                    color: Colors.blue[200],
                    // margin: EdgeInsets.only(left:400.0),
                     alignment: Alignment.center,
                     child: Wrap(children: [
@@ -112,7 +112,7 @@ class _LogInScreenState extends State<LoginPage> {
                 child: ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all(Colors.yellowAccent),
+                        MaterialStateProperty.all(Colors.blue[200]),
                     shadowColor: MaterialStateProperty.all(Colors.lightBlue),
                   ),
                   child: Column(

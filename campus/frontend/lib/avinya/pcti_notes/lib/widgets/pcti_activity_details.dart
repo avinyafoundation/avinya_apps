@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 
 import '../data.dart';
 
-class SelectPctiActivityPage extends StatefulWidget{
+class SelectPctiActivityPage extends StatefulWidget {
   static const String route = '/pcti_activities';
-  const SelectPctiActivityPage({super.key,this.onTap});
+  const SelectPctiActivityPage({super.key, this.onTap});
   final ValueChanged<Activity>? onTap;
 
   @override
-  _SelectPctiActivityPageState createState() => _SelectPctiActivityPageState(onTap);
+  _SelectPctiActivityPageState createState() =>
+      _SelectPctiActivityPageState(onTap);
 }
 
-class _SelectPctiActivityPageState extends State<SelectPctiActivityPage>{
-  
+class _SelectPctiActivityPageState extends State<SelectPctiActivityPage> {
   late Future<List<Activity>> futureActivities;
   final ValueChanged<Activity>? onTap;
 
   _SelectPctiActivityPageState(this.onTap);
-  
+
   late TextEditingController activity_Controller;
   late FocusNode activity_FocusNode;
   late Activity selectedActivity;
@@ -27,7 +27,6 @@ class _SelectPctiActivityPageState extends State<SelectPctiActivityPage>{
     super.initState();
     activity_Controller = TextEditingController();
     activity_FocusNode = FocusNode();
-    
     futureActivities = _getActivities();
   }
 
@@ -90,10 +89,7 @@ class _SelectPctiActivityPageState extends State<SelectPctiActivityPage>{
   }
 }
 
-  Future<List<Activity>> _getActivities() async{
-    return fetchPctiParticipantActivities(421);
+Future<List<Activity>> _getActivities() async {
+  return fetchPctiParticipantActivities(
+      campusAppsPortalInstance.getUserPerson().id!);
 }
-
-
-
-

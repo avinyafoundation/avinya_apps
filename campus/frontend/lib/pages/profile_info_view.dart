@@ -81,10 +81,14 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               .subtitle1!
                               .copyWith(
                                 color: kTextBlackColor,
-                                fontSize:
-                                    SizerUtil.deviceType == DeviceType.tablet
-                                        ? 4.sp
-                                        : 5.sp,
+                                fontSize: SizerUtil.deviceType ==
+                                        DeviceType.mobile
+                                    ? 16.sp
+                                    : SizerUtil.deviceType == DeviceType.tablet
+                                        ? 15.sp
+                                        : SizerUtil.deviceType == DeviceType.web
+                                            ? 7.sp
+                                            : 12.sp,
                               ),
                         ),
                         Text(
@@ -94,10 +98,14 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                               .subtitle1!
                               .copyWith(
                                 color: kTextBlackColor,
-                                fontSize:
-                                    SizerUtil.deviceType == DeviceType.tablet
-                                        ? 3.sp
-                                        : 4.sp,
+                                fontSize: SizerUtil.deviceType ==
+                                        DeviceType.mobile
+                                    ? 15.sp
+                                    : SizerUtil.deviceType == DeviceType.tablet
+                                        ? 14.sp
+                                        : SizerUtil.deviceType == DeviceType.web
+                                            ? 6.sp
+                                            : 11.sp,
                               ),
                         ),
                       ],
@@ -151,9 +159,13 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 style: Theme.of(context).textTheme.subtitle1!.copyWith(
                       color: kTextBlackColor,
                       fontWeight: FontWeight.bold,
-                      fontSize: SizerUtil.deviceType == DeviceType.tablet
-                          ? 4.sp
-                          : 5.sp,
+                      fontSize: SizerUtil.deviceType == DeviceType.mobile
+                          ? 15.sp
+                          : SizerUtil.deviceType == DeviceType.tablet
+                              ? 14.sp
+                              : SizerUtil.deviceType == DeviceType.web
+                                  ? 6.sp
+                                  : 11.sp,
                     ),
               ),
               sizedBox,
@@ -194,9 +206,13 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 style: Theme.of(context).textTheme.subtitle1!.copyWith(
                       color: kTextBlackColor,
                       fontWeight: FontWeight.bold,
-                      fontSize: SizerUtil.deviceType == DeviceType.tablet
-                          ? 4.sp
-                          : 5.sp,
+                      fontSize: SizerUtil.deviceType == DeviceType.mobile
+                          ? 15.sp
+                          : SizerUtil.deviceType == DeviceType.tablet
+                              ? 14.sp
+                              : SizerUtil.deviceType == DeviceType.web
+                                  ? 6.sp
+                                  : 11.sp,
                     ),
               ),
               sizedBox,
@@ -231,9 +247,13 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 style: Theme.of(context).textTheme.subtitle1!.copyWith(
                       color: kTextBlackColor,
                       fontWeight: FontWeight.bold,
-                      fontSize: SizerUtil.deviceType == DeviceType.tablet
-                          ? 4.sp
-                          : 5.sp,
+                      fontSize: SizerUtil.deviceType == DeviceType.mobile
+                          ? 15.sp
+                          : SizerUtil.deviceType == DeviceType.tablet
+                              ? 14.sp
+                              : SizerUtil.deviceType == DeviceType.web
+                                  ? 6.sp
+                                  : 11.sp,
                     ),
               ),
               sizedBox,
@@ -260,9 +280,13 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 style: Theme.of(context).textTheme.subtitle1!.copyWith(
                       color: kTextBlackColor,
                       fontWeight: FontWeight.bold,
-                      fontSize: SizerUtil.deviceType == DeviceType.tablet
-                          ? 4.sp
-                          : 5.sp,
+                      fontSize: SizerUtil.deviceType == DeviceType.mobile
+                          ? 15.sp
+                          : SizerUtil.deviceType == DeviceType.tablet
+                              ? 14.sp
+                              : SizerUtil.deviceType == DeviceType.web
+                                  ? 6.sp
+                                  : 11.sp,
                     ),
               ),
               sizedBox,
@@ -317,9 +341,13 @@ class ProfileDetailRow extends StatelessWidget {
                 title,
                 style: Theme.of(context).textTheme.subtitle1!.copyWith(
                       color: kTextBlackColor,
-                      fontSize: SizerUtil.deviceType == DeviceType.tablet
-                          ? 4.sp
-                          : 5.sp,
+                      fontSize: SizerUtil.deviceType == DeviceType.mobile
+                          ? 15.sp
+                          : SizerUtil.deviceType == DeviceType.tablet
+                              ? 14.sp
+                              : SizerUtil.deviceType == DeviceType.web
+                                  ? 6.sp
+                                  : 11.sp,
                     ),
               ),
               kHalfSizedBox,
@@ -327,9 +355,13 @@ class ProfileDetailRow extends StatelessWidget {
                 value,
                 style: Theme.of(context).textTheme.subtitle1!.copyWith(
                       color: kTextBlackColor,
-                      fontSize: SizerUtil.deviceType == DeviceType.tablet
-                          ? 3.sp
-                          : 4.sp,
+                      fontSize: SizerUtil.deviceType == DeviceType.mobile
+                          ? 15.sp
+                          : SizerUtil.deviceType == DeviceType.tablet
+                              ? 14.sp
+                              : SizerUtil.deviceType == DeviceType.web
+                                  ? 6.sp
+                                  : 11.sp,
                     ),
               ),
               kHalfSizedBox,
@@ -373,9 +405,13 @@ class ProfileDetailColumn extends StatelessWidget {
                 title,
                 style: Theme.of(context).textTheme.subtitle1!.copyWith(
                       color: kTextBlackColor,
-                      fontSize: SizerUtil.deviceType == DeviceType.tablet
-                          ? 4.sp
-                          : 5.sp,
+                      fontSize: SizerUtil.deviceType == DeviceType.mobile
+                          ? 15.sp
+                          : SizerUtil.deviceType == DeviceType.tablet
+                              ? 14.sp
+                              : SizerUtil.deviceType == DeviceType.web
+                                  ? 6.sp
+                                  : 11.sp,
                     ),
               ),
               kHalfSizedBox,
@@ -383,9 +419,13 @@ class ProfileDetailColumn extends StatelessWidget {
                 value,
                 style: Theme.of(context).textTheme.subtitle1!.copyWith(
                       color: kTextBlackColor,
-                      fontSize: SizerUtil.deviceType == DeviceType.tablet
-                          ? 3.sp
-                          : 4.sp,
+                      fontSize: SizerUtil.deviceType == DeviceType.mobile
+                          ? 15.sp
+                          : SizerUtil.deviceType == DeviceType.tablet
+                              ? 14.sp
+                              : SizerUtil.deviceType == DeviceType.web
+                                  ? 6.sp
+                                  : 11.sp,
                     ),
               ),
               kHalfSizedBox,

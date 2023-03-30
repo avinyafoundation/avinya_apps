@@ -1,22 +1,20 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:gallery/auth.dart';
 
-import 'auth.dart';
-import 'data.dart';
-import 'routing.dart';
+// import 'routing.dart';
+import 'package:pcti_feedback/routing.dart';
 import 'screens/navigator.dart';
 
 class CampusFeedbackSystem extends StatefulWidget {
   const CampusFeedbackSystem({super.key});
 
   @override
-  State<CampusFeedbackSystem> createState() =>
-      _CampusFeedbackSystem();
+  State<CampusFeedbackSystem> createState() => _CampusFeedbackSystem();
 }
 
-class _CampusFeedbackSystem
-    extends State<CampusFeedbackSystem> {
-  final _auth = SMSAuth();
+class _CampusFeedbackSystem extends State<CampusFeedbackSystem> {
+  final _auth = CampusAppsPortalAuth();
   final _navigatorKey = GlobalKey<NavigatorState>();
   late final RouteState _routeState;
   late final SimpleRouterDelegate _routerDelegate;
@@ -29,15 +27,13 @@ class _CampusFeedbackSystem
       allowedPaths: [
         '/signin',
         '/#access_token',
-        '/pcti_activities',
-        '/pcti_activities/:id',
+        '/pcti_feedback',
+        '/pcti_feedback/:id',
         '/evaluations',
         '/evaluation/:id',
-      
-
       ],
       guard: _guard,
-      initialRoute: '/pcti_activities',
+      initialRoute: '/pcti_feedback',
     );
 
     _routeState = RouteState(_routeParser);
@@ -83,15 +79,14 @@ class _CampusFeedbackSystem
 
   Future<ParsedRoute> _guard(ParsedRoute from) async {
     final signedIn = await _auth.getSignedIn();
-    String? jwt_sub = campusFeedbackSystemInstance.getJWTSub();
+    // String? jwt_sub = campusFeedbackSystemInstance.getJWTSub();
 
     final signInRoute = ParsedRoute('/signin', '/signin', {}, {});
 
     final pctiActivitiesRoute =
-      ParsedRoute('/pcti_activities', '/pcti_activities', {}, {});
+        ParsedRoute('/pcti_feedback', '/pcti_feedback', {}, {});
 
-    final evaluationRoute =
-      ParsedRoute('/evaluations', '/evaluations', {}, {});
+    final evaluationRoute = ParsedRoute('/evaluations', '/evaluations', {}, {});
 
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
@@ -103,10 +98,10 @@ class _CampusFeedbackSystem
     } else if (signedIn && from == evaluationRoute) {
       return evaluationRoute;
     }
-   
+
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {
-      return ParsedRoute('/pcti_activities', '/pcti_activities', {}, {});
+      return ParsedRoute('/pcti_feedback', '/pcti_feedback', {}, {});
     }
     return from;
   }
@@ -114,7 +109,7 @@ class _CampusFeedbackSystem
   void _handleAuthStateChanged() async {
     bool signedIn = await _auth.getSignedIn();
     if (!signedIn) {
-      _routeState.go('/pcti_activities');
+      _routeState.go('/pcti_feedback');
     }
   }
 

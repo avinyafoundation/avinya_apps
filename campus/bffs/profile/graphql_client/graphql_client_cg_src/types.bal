@@ -45,9 +45,11 @@ public type ActivityParticipant record {
 
 public type ActivityParticipantAttendance record {
     int? activity_instance_id?;
+    string? in_marked_by?;
     string? created?;
     string? sign_in_time?;
     int? id?;
+    string? out_marked_by?;
     string? updated?;
     string? record_type?;
     int? person_id?;
@@ -381,10 +383,17 @@ public type GetPersonResponse record {|
         string? sex;
         string? asgardeo_id;
         string? jwt_sub_id;
+        string? created;
+        string? updated;
         string? jwt_email;
         record {|
             record {|
                 int? id;
+                record {|
+                    string name_en;
+                    string? name_si;
+                    string? name_ta;
+                |} name;
             |} city;
             string street_address;
             int? phone;
@@ -393,6 +402,11 @@ public type GetPersonResponse record {|
         record {|
             record {|
                 int? id;
+                record {|
+                    string name_en;
+                    string? name_si;
+                    string? name_ta;
+                |} name;
             |} city;
             string street_address;
             int? phone;
@@ -417,6 +431,28 @@ public type GetPersonResponse record {|
             |} name;
             record {|
                 int? id;
+                record {|
+                    string name_en;
+                |} name;
+                string? description;
+                record {|
+                    int? id;
+                    record {|
+                        string name_en;
+                    |} name;
+                    string? description;
+                    record {|
+                        int? id;
+                        record {|
+                            string name_en;
+                        |} name;
+                        string? description;
+                        record {|
+                            int? id;
+                            string? digital_id;
+                        |}[]? people;
+                    |}[]? child_organizations;
+                |}[]? child_organizations;
             |}[]? child_organizations;
             record {|
                 int? id;
@@ -530,4 +566,34 @@ public type GetPersonResponse record {|
         string? bank_account_name;
         int? academy_org_id;
     |}? person_by_digital_id;
+|};
+
+public type GetOrganizationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string name_en;
+        |} name;
+        string? description;
+        record {|
+            int? id;
+            record {|
+                string name_en;
+            |} name;
+            string? description;
+        |}[]? child_organizations;
+        record {|
+            int? id;
+            record {|
+                string name_en;
+            |} name;
+            string? description;
+        |}[]? parent_organizations;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? digital_id;
+        |}[]? people;
+    |}? organization;
 |};

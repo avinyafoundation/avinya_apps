@@ -26,6 +26,7 @@
             "request": "launch",
             "type": "dart",
             "args": ["-d", "chrome","--web-port", "64005"],
+            "program": "lib/main.dart"
         }
     ]
 }

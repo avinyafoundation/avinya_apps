@@ -102,7 +102,7 @@ class CampusAppsPortalAuth extends ChangeNotifier {
             _api_tokens
               ..forEach((key, value) =>
                   print("API tokens Key : $key, Value : $value"));
-            AppConfig.campusAttendanceBffApiKey = _api_tokens["access_token"];
+            AppConfig.campusBffApiKey = _api_tokens["access_token"];
             print('Fetch API tokens success');
           } else {
             print('Failed to fetch API key');

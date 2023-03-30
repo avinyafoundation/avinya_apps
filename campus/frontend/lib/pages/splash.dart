@@ -147,6 +147,16 @@ class _SplashPageState extends State<SplashPage>
                   child: frontLayer,
                 ),
               );
+            } else {
+              frontLayer = Padding(
+                padding: const EdgeInsets.only(top: 65),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(40),
+                  ),
+                  child: frontLayer,
+                ),
+              );
             }
 
             if (isDisplayFoldable(context)) {

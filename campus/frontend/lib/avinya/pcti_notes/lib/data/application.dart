@@ -1,7 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 
 class ApplicationStatus {
   int? id;
@@ -76,11 +75,11 @@ class Application {
 
 Future<List<Application>> fetchApplications() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/application'),
+    Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/application'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -97,11 +96,11 @@ Future<List<Application>> fetchApplications() async {
 
 Future<Application> fetchApplication(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/application/$id'),
+    Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/application/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -116,10 +115,10 @@ Future<Application> fetchApplication(int id) async {
 
 Future<Application> createApplication(Application applicantConsent) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/application'),
+    Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/application'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(applicantConsent.toJson()),
   );
@@ -134,10 +133,10 @@ Future<Application> createApplication(Application applicantConsent) async {
 
 Future<http.Response> updateApplication(Application applicantConsent) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/application'),
+    Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/application'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(applicantConsent.toJson()),
   );
@@ -150,10 +149,10 @@ Future<http.Response> updateApplication(Application applicantConsent) async {
 
 Future<http.Response> deleteApplication(String id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusPctiNotesBffApiUrl + '/application/$id'),
+    Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/application/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 

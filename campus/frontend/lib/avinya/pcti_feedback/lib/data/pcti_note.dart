@@ -2,8 +2,7 @@ import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
+import 'package:gallery/config/app_config.dart';
 import '../data.dart';
 
 Future<List<Activity>> fetchPctiParticipantActivities(int person_id) async {
@@ -13,7 +12,7 @@ Future<List<Activity>> fetchPctiParticipantActivities(int person_id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -35,7 +34,7 @@ Future<List<Evaluation>> fetchPctiActivityNotes(int pcti_activity_id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -58,7 +57,7 @@ Future<List<ActivityInstance>> fetchPctiActivityInstancesToday(
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -78,7 +77,7 @@ Future<http.Response> createPctiNote(Evaluation pctiNote) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/pcti_notes'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(pctiNote.toJson()),
   );
