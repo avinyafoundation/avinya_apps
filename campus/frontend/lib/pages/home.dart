@@ -44,14 +44,14 @@ class HomePage extends StatelessWidget {
       _CarouselCard(
         demo: studyDemos['attendanceApp'],
         asset: const AssetImage(
-          'assets/studies/shrine_card.png',
-          package: 'flutter_gallery_assets',
+          'assets/images/attendance.jpg',
+           // package: 'flutter_gallery_assets',
         ),
         assetColor: const Color(0xFFFEDBD0),
-        assetDark: const AssetImage(
-          'assets/studies/shrine_card_dark.png',
-          package: 'flutter_gallery_assets',
-        ),
+        // assetDark: const AssetImage(
+        //   'assets/studies/shrine_card_dark.png',
+        //   package: 'flutter_gallery_assets',
+        // ),
         assetDarkColor: const Color(0xFF543B3C),
         textColor: shrineBrown900,
         studyRoute: attendance_routes.attendanceRoute,
@@ -60,15 +60,15 @@ class HomePage extends StatelessWidget {
         //2023-03-09 lahiru added for campus_pcti
         demo: studyDemos['campuspctiApp'],
         asset: const AssetImage(
-          'assets/studies/rally_card.png',
-          package: 'flutter_gallery_assets',
+          'assets/images/pcti_notes.jpg',
+          // package: 'flutter_gallery_assets',
         ),
-        assetColor: const Color(0xFFD1F2E6),
-        assetDark: const AssetImage(
-          'assets/studies/rally_card_dark.png',
-          package: 'flutter_gallery_assets',
-        ),
-        assetDarkColor: const Color(0xFF253538),
+        assetColor: const Color(0xFFFEDBD0),
+        // assetDark: const AssetImage(
+        //   'assets/studies/rally_card_dark.png',
+        //   package: 'flutter_gallery_assets',
+        // ),
+        assetDarkColor: const Color(0xFF543B3C),
         textColor: shrineBrown900,
         studyRoute: campus_pcti_routes.campuspctiRoute,
       ),
@@ -76,14 +76,14 @@ class HomePage extends StatelessWidget {
         //2023-03-09 lahiru added for campus_pcti_admin
         demo: studyDemos['campuspctiadminApp'],
         asset: const AssetImage(
-          'assets/studies/shrine_card.png',
-          package: 'flutter_gallery_assets',
+          'assets/images/pcti_admin.jpg',
+          // package: 'flutter_gallery_assets',
         ),
         assetColor: const Color(0xFFFEDBD0),
-        assetDark: const AssetImage(
-          'assets/studies/shrine_card_dark.png',
-          package: 'flutter_gallery_assets',
-        ),
+        // assetDark: const AssetImage(
+        //   'assets/studies/shrine_card_dark.png',
+        //   package: 'flutter_gallery_assets',
+        // ),
         assetDarkColor: const Color(0xFF543B3C),
         textColor: shrineBrown900,
         studyRoute: campus_pcti_admin.campuspctiadminRoute,
@@ -92,14 +92,14 @@ class HomePage extends StatelessWidget {
         //2023-03-09 lahiru added for campus_pcti_admin
         demo: studyDemos['feedbackApp'],
         asset: const AssetImage(
-          'assets/studies/rally_card.png',
-          package: 'flutter_gallery_assets',
+          'assets/images/feedback.jpg',
+         //package: 'flutter_gallery_assets',
         ),
         assetColor: const Color(0xFFFEDBD0),
-        assetDark: const AssetImage(
-          'assets/studies/rally_card_dark.png',
-          package: 'flutter_gallery_assets',
-        ),
+        // assetDark: const AssetImage(
+        //   'assets/studies/rally_card_dark.png',
+        //   package: 'flutter_gallery_assets',
+        // ),
         assetDarkColor: const Color(0xFF543B3C),
         textColor: shrineBrown900,
         studyRoute: feedback_routes.feedbackRoute,
@@ -108,18 +108,19 @@ class HomePage extends StatelessWidget {
 
     if (isDesktop) {
       return Scaffold(
-        body: ListView(
-          // Makes integration tests possible.
-          key: const ValueKey('HomeListView'),
-          primary: true,
-          padding: const EdgeInsetsDirectional.only(
-            top: firstHeaderDesktopTopPadding,
+        body:ListView(
+            // Makes integration tests possible.
+            key: const ValueKey('HomeListView'),
+            primary: true,
+            padding: const EdgeInsetsDirectional.only(
+              top: firstHeaderDesktopTopPadding,
+            ),
+            children: [
+              _DesktopCarousel(height: carouselHeight, children: carouselCards),
+              const SizedBox(height: 109),
+            ],
           ),
-          children: [
-            _DesktopCarousel(height: carouselHeight, children: carouselCards),
-            const SizedBox(height: 109),
-          ],
-        ),
+       
       );
     } else {
       return Scaffold(
@@ -852,13 +853,23 @@ class _CarouselCard extends StatelessWidget {
                   children: [
                     Text(
                       demo!.title,
-                      style: textTheme.bodySmall!.apply(color: textColor),
+                      // style: textTheme.bodyLarge!.apply(color: textColor), //commented by lahiru
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontStyle: FontStyle.normal,
+                        fontWeight: FontWeight.bold,
+                        color: textColor), //added by lahiru
                       maxLines: 3,
                       overflow: TextOverflow.visible,
                     ),
                     Text(
                       demo!.subtitle,
-                      style: textTheme.labelSmall!.apply(color: textColor),
+                      // style: textTheme.bodySmall!.apply(color: textColor),//commented by lahiru
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontStyle: FontStyle.normal,
+                        fontWeight: FontWeight.normal,
+                        color: textColor), 
                       maxLines: 5,
                       overflow: TextOverflow.visible,
                     ),
