@@ -5,7 +5,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../auth.dart';
 import 'package:gallery/config/app_config.dart';
 import '../routing.dart';
-// import '../auth.dart';
 import 'scaffold_body.dart';
 
 class SMSScaffold extends StatelessWidget {

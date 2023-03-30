@@ -1,9 +1,8 @@
 import 'package:pcti_feedback/screens/pcti_note_details.dart';
 import 'package:pcti_feedback/widgets/pcti_note_list.dart';
 import 'package:flutter/material.dart';
-
 import '../data.dart';
-import '../routing.dart';
+import 'package:pcti_feedback/routing.dart';
 
 class PctiNoteScreen extends StatefulWidget {
   final Activity? pctiActivity;

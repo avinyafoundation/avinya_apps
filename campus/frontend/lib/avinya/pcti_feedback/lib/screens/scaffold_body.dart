@@ -24,10 +24,10 @@ class SMSScaffoldBody extends StatelessWidget {
       key: navigatorKey,
       onPopPage: (route, dynamic result) => route.didPop(result),
       pages: [
-        if (currentRoute.pathTemplate.startsWith('/pcti_activities') ||
+        if (currentRoute.pathTemplate.startsWith('/pcti_feedback') ||
             currentRoute.pathTemplate == '/')
           const FadeTransitionPage<void>(
-            key: ValueKey('pcti_activities'),
+            key: ValueKey('pcti_feedback'),
             child: PctiActivitiesScreen(),
           )
         else if (currentRoute.pathTemplate.startsWith('/evaluations') ||

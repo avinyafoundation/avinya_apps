@@ -40,7 +40,7 @@ class _AssetUserSystemState extends State<AssetUserSystem> {
         '/#access_token',
       ],
       guard: _guard,
-      initialRoute: '/signin',
+      initialRoute: '/resource_allocations',
     );
 
     _routeState = RouteState(_routeParser);
@@ -116,7 +116,7 @@ class _AssetUserSystemState extends State<AssetUserSystem> {
   void _handleAuthStateChanged() async {
     bool signedIn = await _auth.getSignedIn();
     if (!signedIn) {
-      _routeState.go('/signin');
+      _routeState.go('/resource_allocations');
     }
   }
 

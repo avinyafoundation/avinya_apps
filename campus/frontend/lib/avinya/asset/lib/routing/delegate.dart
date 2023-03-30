@@ -37,7 +37,7 @@ class SimpleRouterDelegate extends RouterDelegate<ParsedRoute>
   @override
   void dispose() {
     routeState.removeListener(notifyListeners);
-    routeState.dispose();
+    // routeState.dispose();
     super.dispose();
   }
 }
