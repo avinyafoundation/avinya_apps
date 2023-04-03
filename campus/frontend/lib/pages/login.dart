@@ -72,8 +72,7 @@ class _LogInScreenState extends State<LoginPage> {
               Center(
                 child: SingleChildScrollView(
                   child: Container(
-                    width: 400,
-                    color: Colors.blue[200],
+                    //width: 400,
                    // margin: EdgeInsets.only(left:400.0),
                     alignment: Alignment.center,
                     child: Wrap(children: [
@@ -115,7 +114,7 @@ class _LogInScreenState extends State<LoginPage> {
                 child: ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all(Colors.blue[200]),
+                        MaterialStateProperty.all(Colors.yellowAccent),
                     shadowColor: MaterialStateProperty.all(Colors.lightBlue),
                   ),
                   child: Column(
