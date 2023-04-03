@@ -22,6 +22,8 @@ import 'package:attendance/routes.dart' as routes;
 import 'package:gallery/pages/profile.dart' as profile;
 import 'package:pcti_feedback/app.dart' deferred as feedback;
 import 'package:pcti_feedback/routes.dart' as feedback_routes;
+import 'package:consumable/app.dart' deferred as consumable;
+import 'package:consumable/routes.dart' as consumable_routes;
 
 typedef PathWidgetBuilder = Widget Function(BuildContext, String?);
 
@@ -109,6 +111,16 @@ class RouteConfiguration {
       (context, match) => StudyWrapper(
         study: DeferredWidget(attendance.loadLibrary,
             () => profile.ProfileScreen()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),
+    Path(
+      r'^' + consumable_routes.consumableRoute,
+      (context, match) => StudyWrapper(
+        study: DeferredWidget(
+            consumable.loadLibrary,
+            () => consumable
+                .ConsumableSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),
