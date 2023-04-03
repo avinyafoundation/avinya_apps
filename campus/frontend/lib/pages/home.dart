@@ -20,6 +20,7 @@ import 'package:asset/routes.dart' as asset_routes;
 import 'package:pcti_notes/routes.dart' as campus_pcti_routes;
 import 'package:pcti_notes_admin/routes.dart' as campus_pcti_admin;
 import 'package:pcti_feedback/routes.dart' as feedback_routes;
+import 'package:consumable/routes.dart' as consumable_routes;
 
 const _horizontalPadding = 32.0;
 const _carouselItemMargin = 8.0;
@@ -45,16 +46,16 @@ class HomePage extends StatelessWidget {
         child: _CarouselCard(
           demo: studyDemos['attendanceApp'],
           asset: const AssetImage(
-            'assets/images/attendance.jpg',
+            'assets/images/attendance_.png',
             //package: 'flutter_gallery_assets',
           ),
-          assetColor: const Color(0xFFFEDBD0),
-          assetDark: const AssetImage(
-            'assets/studies/shrine_card_dark.png',
-            package: 'flutter_gallery_assets',
-          ),
-          assetDarkColor: const Color(0xFF543B3C),
-          textColor: shrineBrown900,
+          assetColor: const Color(0xFFFFFFFF),
+          // assetDark: const AssetImage(
+          //   'assets/studies/shrine_card_dark.png',
+          //   package: 'flutter_gallery_assets',
+          // ),
+          //assetDarkColor: const Color(0xFF543B3C),
+          textColor: Colors.black,
           studyRoute: attendance_routes.attendanceRoute,
         ),
       ),
@@ -64,16 +65,16 @@ class HomePage extends StatelessWidget {
           //2023-03-09 lahiru added for campus_pcti
           demo: studyDemos['campuspctiApp'],
           asset: const AssetImage(
-            'assets/images/pcti_notes.jpg',
+            'assets/images/pcti_notes.png',
            // package: 'flutter_gallery_assets',
           ),
-          assetColor: const Color(0xFFD1F2E6),
-          assetDark: const AssetImage(
-            'assets/studies/rally_card_dark.png',
-            package: 'flutter_gallery_assets',
-          ),
-          assetDarkColor: const Color(0xFF253538),
-          textColor: shrineBrown900,
+          assetColor: const Color(0xFFFFFFFF),
+          // assetDark: const AssetImage(
+          //   'assets/studies/rally_card_dark.png',
+          //   package: 'flutter_gallery_assets',
+          // ),
+          //assetDarkColor: const Color(0xFF253538),
+          textColor: Colors.black,
           studyRoute: campus_pcti_routes.campuspctiRoute,
         ),
       ),
@@ -83,16 +84,16 @@ class HomePage extends StatelessWidget {
           //2023-03-09 lahiru added for campus_pcti_admin
           demo: studyDemos['campuspctiadminApp'],
           asset: const AssetImage(
-            'assets/images/pcti_admin.jpg',
+            'assets/images/pcti_admin.png',
            // package: 'flutter_gallery_assets',
           ),
-          assetColor: const Color(0xFFFEDBD0),
-          assetDark: const AssetImage(
-            'assets/studies/shrine_card_dark.png',
-            package: 'flutter_gallery_assets',
-          ),
-          assetDarkColor: const Color(0xFF543B3C),
-          textColor: shrineBrown900,
+          assetColor: const Color(0xFFFFFFFF),
+          // assetDark: const AssetImage(
+          //   'assets/studies/shrine_card_dark.png',
+          //   package: 'flutter_gallery_assets',
+          // ),
+         // assetDarkColor: const Color(0xFF543B3C),
+          textColor: Colors.black,
           studyRoute: campus_pcti_admin.campuspctiadminRoute,
         ),
       ),
@@ -102,16 +103,16 @@ class HomePage extends StatelessWidget {
           //2023-03-09 lahiru added for campus_pcti_admin
           demo: studyDemos['feedbackApp'],
           asset: const AssetImage(
-            'assets/images/feedback.jpg',
+            'assets/images/feedback.png',
            // package: 'flutter_gallery_assets',
           ),
-          assetColor: const Color(0xFFFEDBD0),
-          assetDark: const AssetImage(
-            'assets/studies/rally_card_dark.png',
-            package: 'flutter_gallery_assets',
-          ),
-          assetDarkColor: const Color(0xFF543B3C),
-          textColor: shrineBrown900,
+          assetColor: const Color(0xFFFFFFFF),
+          // assetDark: const AssetImage(
+          //   'assets/studies/rally_card_dark.png',
+          //   package: 'flutter_gallery_assets',
+          // ),
+         // assetDarkColor: const Color(0xFF543B3C),
+          textColor: Colors.black,
           studyRoute: feedback_routes.feedbackRoute,
         ),
       ),
@@ -120,8 +121,26 @@ class HomePage extends StatelessWidget {
         child: _CarouselCard(
           demo: studyDemos['assetApp'],
           asset: const AssetImage(
-            'assets/images/asset.jpg',
+            'assets/images/asset.png',
            // package: 'flutter_gallery_assets',
+          ),
+          assetColor: const Color(0xFFFFFFFF),
+          // assetDark: const AssetImage(
+          //   'assets/studies/shrine_card_dark.png',
+          //   package: 'flutter_gallery_assets',
+          // ),
+          //assetDarkColor: const Color(0xFF543B3C),
+          textColor: Colors.black,
+          studyRoute: asset_routes.assetRoute,
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: _CarouselCard(
+          demo: studyDemos['consumableApp'],
+          asset: const AssetImage(
+            'assets/studies/shrine_card.png',
+            package: 'flutter_gallery_assets',
           ),
           assetColor: const Color(0xFFFEDBD0),
           assetDark: const AssetImage(
@@ -130,7 +149,7 @@ class HomePage extends StatelessWidget {
           ),
           assetDarkColor: const Color(0xFF543B3C),
           textColor: shrineBrown900,
-          studyRoute: asset_routes.assetRoute,
+          studyRoute: consumable_routes.consumableRoute,
         ),
       ),
     ];
@@ -153,6 +172,7 @@ class HomePage extends StatelessWidget {
       // );
       return Scaffold(
         body: Container(
+          color: Colors.white,
           padding: EdgeInsets.symmetric(vertical: 70.0, horizontal: 70.0),
           child: GridView.count(
             crossAxisCount: 3,
@@ -164,6 +184,7 @@ class HomePage extends StatelessWidget {
     } else if (isTab) {
       return Scaffold(
         body: Container(
+          color: Colors.white,
           padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
           child: GridView.count(
             crossAxisCount: 2,
@@ -185,6 +206,7 @@ class HomePage extends StatelessWidget {
       // );
       return Scaffold(
         body: Container(
+          color: Colors.white,
           padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
           child: GridView.count(
             crossAxisCount: 1,
@@ -882,6 +904,7 @@ class _CarouselCard extends StatelessWidget {
 
     return Container(
       // Makes integration tests possible.
+      color: Colors.white,
       key: ValueKey(demo!.describe),
       margin:
           EdgeInsets.all(isDisplayDesktop(context) ? 0 : _carouselItemMargin),
@@ -899,31 +922,43 @@ class _CarouselCard extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               if (asset != null)
-                FadeInImagePlaceholder(
+             Positioned(
+                left: 50,
+                top: 40,
+                bottom: 60,
+                right: 50,
+                child: FadeInImagePlaceholder(
                   image: asset,
                   placeholder: Container(
                     color: assetColor,
                   ),
                   child: Ink.image(
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    height: MediaQuery.of(context).size.height  * 0.3,
                     image: asset,
-                    fit: BoxFit.cover,
                   ),
                 ),
+             ),
               Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 16),
+                padding: const EdgeInsetsDirectional.fromSTEB(16,0, 16, 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    
+                    Divider(
+                      thickness: 1,
+                    ),
                     Text(
+                      
                       demo!.title,
-                      style: textTheme.bodySmall!.apply(color: textColor),
+                      style: textTheme.bodyMedium!.apply(color: textColor),
                       maxLines: 3,
                       overflow: TextOverflow.visible,
                     ),
                     Text(
                       demo!.subtitle,
-                      style: textTheme.labelSmall!.apply(color: textColor),
+                      style: textTheme.labelMedium!.apply(color: textColor),
                       maxLines: 5,
                       overflow: TextOverflow.visible,
                     ),

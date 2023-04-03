@@ -52,16 +52,16 @@ class _LogInScreenState extends State<LoginPage> {
       _clientId = AppConfig.asgardeoClientId;
     }
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Sign in"),
-      ),
+      // appBar: AppBar(
+      //   title: Text("Sign in"),
+      // ),
       body: Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/initial.jpg'),
+            image: AssetImage('assets/images/dark.jpg'),
             fit: BoxFit.cover,
-            
+            alignment: Alignment.topCenter,
           ),
         ),
         child: Center(
@@ -82,6 +82,7 @@ class _LogInScreenState extends State<LoginPage> {
                           "Avinya Academy Apps Portal",
                           style: TextStyle(
                             fontSize: 20,
+                            color: Colors.black,
                             fontWeight: FontWeight.bold,
                             fontFamily: "Google Sans",
                           ),
@@ -91,6 +92,7 @@ class _LogInScreenState extends State<LoginPage> {
                           """To proceed to the Apps Portal, please sign in.""",
                           style: TextStyle(
                             fontFamily: "Google Sans",
+                            color: Colors.black,
                           ),
                         ),
                         SizedBox(height: 10.0),
@@ -98,6 +100,7 @@ class _LogInScreenState extends State<LoginPage> {
                           "Once you sign in, you will be directed to the Apps Portal",
                           style: TextStyle(
                             fontFamily: "Google Sans",
+                            color: Colors.black,
                           ),
                         ),
                         SizedBox(height: 10.0),
