@@ -78,7 +78,7 @@ class SMSScaffold extends StatelessWidget {
         },
         destinations: const [
           AdaptiveScaffoldDestination(
-            title: 'Assets',
+            title: 'Create Menu',
             icon: Icons.type_specimen,
           ),
           // AdaptiveScaffoldDestination(
