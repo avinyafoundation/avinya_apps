@@ -355,6 +355,7 @@ public type GetClassAttendanceTodayResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
+        int? person_id;
         record {|
             int? id;
         |}? person;
