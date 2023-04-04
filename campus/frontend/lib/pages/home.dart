@@ -139,16 +139,17 @@ class HomePage extends StatelessWidget {
         child: _CarouselCard(
           demo: studyDemos['consumableApp'],
           asset: const AssetImage(
-            'assets/studies/shrine_card.png',
-            package: 'flutter_gallery_assets',
+            'assets/images/consumable.png',
+           // package: 'flutter_gallery_assets',
           ),
-          assetColor: const Color(0xFFFEDBD0),
-          assetDark: const AssetImage(
-            'assets/studies/shrine_card_dark.png',
-            package: 'flutter_gallery_assets',
-          ),
-          assetDarkColor: const Color(0xFF543B3C),
-          textColor: shrineBrown900,
+          assetColor: const Color(0xFFFFFFFF),
+          // assetDark: const AssetImage(
+          //   'assets/studies/shrine_card_dark.png',
+          //   package: 'flutter_gallery_assets',
+          // ),
+         // assetDarkColor: const Color(0xFF543B3C),
+          //textColor: shrineBrown900,
+          textColor: Colors.black,
           studyRoute: consumable_routes.consumableRoute,
         ),
       ),
@@ -172,7 +173,6 @@ class HomePage extends StatelessWidget {
       // );
       return Scaffold(
         body: Container(
-          color: Colors.white,
           padding: EdgeInsets.symmetric(vertical: 70.0, horizontal: 70.0),
           child: GridView.count(
             crossAxisCount: 3,
@@ -184,7 +184,6 @@ class HomePage extends StatelessWidget {
     } else if (isTab) {
       return Scaffold(
         body: Container(
-          color: Colors.white,
           padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
           child: GridView.count(
             crossAxisCount: 2,
@@ -206,7 +205,6 @@ class HomePage extends StatelessWidget {
       // );
       return Scaffold(
         body: Container(
-          color: Colors.white,
           padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
           child: GridView.count(
             crossAxisCount: 1,
@@ -898,13 +896,12 @@ class _CarouselCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final isDark = Theme.of(context).colorScheme.brightness == Brightness.dark;
-    final asset = isDark ? assetDark : this.asset;
+    final asset = isDark ? this.asset : this.asset;
     final assetColor = isDark ? assetDarkColor : this.assetColor;
     final textColor = isDark ? Colors.white.withOpacity(0.87) : this.textColor;
 
     return Container(
       // Makes integration tests possible.
-      color: Colors.white,
       key: ValueKey(demo!.describe),
       margin:
           EdgeInsets.all(isDisplayDesktop(context) ? 0 : _carouselItemMargin),
