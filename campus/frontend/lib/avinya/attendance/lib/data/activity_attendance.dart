@@ -58,11 +58,12 @@ class ActivityAttendance {
 
 Future<ActivityAttendance> createActivityAttendance(
     ActivityAttendance activityAttendance) async {
-  log(activityAttendance.toString());
   final response = await http.post(
     Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/activity_attendance'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(activityAttendance.toJson()),
   );
@@ -70,5 +71,36 @@ Future<ActivityAttendance> createActivityAttendance(
     return ActivityAttendance.fromJson(jsonDecode(response.body));
   } else {
     throw Exception('Failed to create Activity Participant Attendance.');
+  }
+}
+
+Future<List<ActivityAttendance>> getClassActivityAttendanceToday(
+    int organization_id, int activity_id) async {
+  final response = await http.post(
+    Uri.parse(AppConfig.campusAttendanceBffApiUrl +
+        '/class_attendance_today/' +
+        organization_id.toString() +
+        '/' +
+        activity_id.toString()),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Activity Participant Attendance for calss org ID ' +
+            organization_id.toString() +
+            ' and activity ' +
+            activity_id.toString() +
+            ' for today.');
   }
 }

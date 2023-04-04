@@ -16,7 +16,7 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
         await campusAttendanceSystemInstance.getCheckinActivityInstance(
             campusAppsPortalInstance.activityIds['school-day']);
     // call the API to check-in
-    createActivityAttendance(ActivityAttendance(
+    (ActivityAttendance(
       activity_instance_id: activityInstance.id,
       person_id: campusAppsPortalInstance.getUserPerson().id,
       sign_in_time: DateTime.now().toString(),

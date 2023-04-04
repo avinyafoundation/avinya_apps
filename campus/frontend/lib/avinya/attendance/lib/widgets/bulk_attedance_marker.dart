@@ -2,6 +2,7 @@ import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:gallery/avinya/attendance/lib/data.dart';
+import 'package:gallery/avinya/attendance/lib/data/activity_attendance.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 // import '../data.dart';
 // import '../data/activity_attendance.dart';
@@ -115,6 +116,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
   List<Map<String, bool>> attendanceList = [];
   var _selectedValue;
   Organization? _fetchedOrganization;
+  List<ActivityAttendance> _fetchedAttendance = [];
 
   @override
   void initState() {
@@ -134,6 +136,16 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
           !attendanceList[classIndex][studentName]!;
     });
   }
+
+  // get the state of attenance for the set of students in a given class
+  // void getAttendance(int classId) {
+  //   int activityId = 0;
+  //   if (campusAppsPortalInstance.isTeacher)
+  //     activityId = campusAppsPortalInstance.activityIds['homeroom']!;
+  //   else if (campusAppsPortalInstance.isSecurity)
+  //     activityId = campusAppsPortalInstance.activityIds['arrival']!;
+  //   // fetch attendance data for the given class
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -182,6 +194,18 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                       print(newValue.id);
                                       _fetchedOrganization =
                                           await fetchOrganization(newValue.id!);
+                                      var activityId = 0;
+                                      if (campusAppsPortalInstance.isTeacher)
+                                        activityId = campusAppsPortalInstance
+                                            .activityIds['homeroom']!;
+                                      else if (campusAppsPortalInstance
+                                          .isSecurity)
+                                        activityId = campusAppsPortalInstance
+                                            .activityIds['arrival']!;
+                                      _fetchedAttendance =
+                                          await getClassActivityAttendanceToday(
+                                              _fetchedOrganization!.id!,
+                                              activityId);
                                       setState(() {});
                                     },
                                     items: org.child_organizations
@@ -259,6 +283,28 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                           ..._fetchedOrganization!.people.map((person) {
                             return TableRow(children: [
                               TableCell(child: Text(person.preferred_name!)),
+                              TableCell(child: Text(person.digital_id!)),
+
+                              if (_fetchedAttendance.length > 0)
+                                if (_fetchedAttendance.firstWhere(
+                                        (attendance) =>
+                                            attendance.person_id ==
+                                            person.id) !=
+                                    Null)
+                                  TableCell(
+                                    child: Checkbox(
+                                      value: _fetchedAttendance
+                                              .firstWhere((attendance) =>
+                                                  attendance.person_id ==
+                                                  person.id)
+                                              .sign_in_time !=
+                                          null,
+                                      onChanged: (bool? value) {},
+                                    ),
+                                  )
+                                else
+                                  TableCell(child: Text('Absent')),
+
                               // ...classes
                               //     .map((className) => TableCell(
                               //           child: Checkbox(
