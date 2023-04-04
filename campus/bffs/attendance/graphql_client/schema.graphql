@@ -82,6 +82,8 @@ input ActivityParticipantAttendance {
   activity_instance_id: Int
   sign_in_time: String
   sign_out_time: String
+  in_marked_by: String
+  out_marked_by: String
   created: String
   updated: String
 }
@@ -94,6 +96,8 @@ type ActivityParticipantAttendanceData {
   sign_out_time: String
   created: String
   updated: String
+  in_marked_by: String
+  out_marked_by: String
 }
 
 type ActivityParticipantData {
@@ -575,6 +579,7 @@ input Person {
   bank_name: String
   bank_account_number: String
   bank_account_name: String
+  academy_org_id: Int
 }
 
 type PersonData {
@@ -582,6 +587,8 @@ type PersonData {
   preferred_name: String
   full_name: String
   date_of_birth: String
+  created: String
+  updated: String
   sex: String
   asgardeo_id: String
   jwt_sub_id: String
@@ -605,6 +612,7 @@ type PersonData {
   bank_name: String
   bank_account_number: String
   bank_account_name: String
+  academy_org_id: Int
 }
 
 type PlaceData {
@@ -699,11 +707,13 @@ type Query {
   work_experience(id: Int): WorkExperienceData
   work_experience_ByPerson(person_id: Int): [WorkExperienceData!]
   activity(name: String, id: Int): ActivityData
+  class_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
   supplier(id: Int!): SupplierData
   suppliers: [SupplierData!]!
   consumable(id: Int!): ConsumableData
+  consumableByUpdate(updated: String, avinya_type_id: Int): [ConsumableData!]
   consumables: [ConsumableData!]!
   resource_property(id: Int!): ResourcePropertyData
   resource_properties: [ResourcePropertyData!]!

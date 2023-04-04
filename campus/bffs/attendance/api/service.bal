@@ -161,4 +161,28 @@ service / on new http:Listener(9091) {
                 ":: Detail: " + getActivityInstancesTodayResponse.detail().toString());
         }
     }
+
+    resource function get class_attendance_today/[int organization_id]/[int activity_id]() returns ActivityParticipantAttendance[]|error {
+        GetClassAttendanceTodayResponse|graphql:ClientError getClassAttendanceTodayResponse = globalDataClient->getClassAttendanceToday(organization_id, activity_id);
+        if(getClassAttendanceTodayResponse is GetClassAttendanceTodayResponse) {
+            ActivityParticipantAttendance[] activityParticipantAttendances = [];
+            foreach var attendace_record in getClassAttendanceTodayResponse.class_attendance_today {
+                ActivityParticipantAttendance|error activityParticipantAttendance = attendace_record.cloneWithType(ActivityParticipantAttendance);
+                if(activityParticipantAttendance is ActivityParticipantAttendance) {
+                    activityParticipantAttendances.push(activityParticipantAttendance);
+                } else {
+                    log:printError("Error while processing Application record received", activityParticipantAttendance);
+                    return error("Error while processing Application record received: " + activityParticipantAttendance.message() + 
+                        ":: Detail: " + activityParticipantAttendance.detail().toString());
+                }
+            }
+
+            return activityParticipantAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getClassAttendanceTodayResponse);
+            return error("Error while creating application: " + getClassAttendanceTodayResponse.message() + 
+                ":: Detail: " + getClassAttendanceTodayResponse.detail().toString());
+        }
+    }
 }
