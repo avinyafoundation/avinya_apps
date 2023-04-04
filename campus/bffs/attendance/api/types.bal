@@ -350,3 +350,18 @@ public type GetActivityInstancesTodayResponse record {|
         |}? organization;
     |}[] activity_instances_today;
 |};
+
+public type GetClassAttendanceTodayResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+        |}? person;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+    |}[] class_attendance_today;
+|};
