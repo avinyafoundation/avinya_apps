@@ -35,17 +35,17 @@ class ResourceAllocationListState extends State<ResourceAllocationList> {
       future: refreshResourceAllocationState(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          campusConfigSystemInstance.setResourceAllocations(snapshot.data);
+          // campusConfigSystemInstance.setResourceAllocations(snapshot.data);
           if (snapshot.data!.length > 0) {
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) => ListTile(
-                  title: Text(
-                    (snapshot.data![index].asset!.model!.toString()),
-                  ),
+                  // title: Text(
+                  //   (snapshot.data![index].asset!.model!.toString()),
+                  // ),
                   subtitle: Text(
                     ' ' +
-                        (snapshot.data![index].asset!.name!.toString()) +
+                        // (snapshot.data![index].asset!.name!.toString()) +
                         ' | ' +
                         snapshot.data![index].quantity!.toString() +
                         ' | ' +
@@ -214,7 +214,7 @@ class _AddResourceAllocationPageState extends State<AddResourceAllocationPage> {
     try {
       if (_formKey.currentState!.validate()) {
         final ResourceAllocation resourceAllocation = ResourceAllocation(
-          asset: Asset(id: int.parse(asset_Controller.text)),
+          // asset: Asset(id: int.parse(asset_Controller.text)),
           quantity: int.parse(quantity_Controller.text),
           startDate: DateTime.parse(startDate_Controller.text),
           endDate: DateTime.parse(endDate_Controller.text),

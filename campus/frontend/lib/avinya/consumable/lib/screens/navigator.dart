@@ -11,7 +11,6 @@ import 'package:consumable/screens/resource_allocation_details.dart';
 import 'package:gallery/auth.dart';
 import '../data.dart';
 import '../routing.dart';
-import '../screens/sign_in.dart';
 import '../widgets/fade_transition_page.dart';
 import 'scaffold.dart';
 
@@ -91,44 +90,29 @@ class _SMSNavigatorState extends State<SMSNavigator> {
         //     child: ApplyScreen(
         //         ),
         //   )
-        if (routeState.route.pathTemplate == '/signin')
-          // Display the sign in screen.
-          FadeTransitionPage<void>(
-            key: _signInKey,
-            child: SignInScreen(
-              onSignIn: (credentials) async {
-                var signedIn = await authState.signIn(
-                    credentials.username, credentials.password);
-                if (signedIn) {
-                  await routeState.go('/consumable_feedback_breakfast');
-                }
-              },
+
+        // Display the app
+        FadeTransitionPage<void>(
+          key: _scaffoldKey,
+          child: const SMSScaffold(),
+        ),
+        // Add an additional page to the stack if the user is viewing a book
+        // or an author
+        if (selectedResourceAllocation != null)
+          MaterialPage<void>(
+            key: _consumableDetailsKey,
+            child: ResourceAllocationDetailsScreen(
+              resourceAllocation: selectedResourceAllocation,
             ),
           )
-        else ...[
-          // Display the app
-          FadeTransitionPage<void>(
-            key: _scaffoldKey,
-            child: const SMSScaffold(),
-          ),
-          // Add an additional page to the stack if the user is viewing a book
-          // or an author
-          if (selectedResourceAllocation != null)
-            MaterialPage<void>(
-              key: _consumableDetailsKey,
-              child: ResourceAllocationDetailsScreen(
-                resourceAllocation: selectedResourceAllocation,
-              ),
-            )
 
-          // else if (selectedEmployee != null)
-          //   MaterialPage<void>(
-          //     key: _employeeDetailsKey,
-          //     child: EmployeeDetailsScreen(
-          //       employee: selectedEmployee,
-          //     ),
-          //   )
-        ],
+        // else if (selectedEmployee != null)
+        //   MaterialPage<void>(
+        //     key: _employeeDetailsKey,
+        //     child: EmployeeDetailsScreen(
+        //       employee: selectedEmployee,
+        //     ),
+        //   )
       ],
     );
   }
