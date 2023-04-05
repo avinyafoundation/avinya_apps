@@ -76,7 +76,7 @@ Future<ActivityAttendance> createActivityAttendance(
 
 Future<List<ActivityAttendance>> getClassActivityAttendanceToday(
     int organization_id, int activity_id) async {
-  final response = await http.post(
+  final response = await http.get(
     Uri.parse(AppConfig.campusAttendanceBffApiUrl +
         '/class_attendance_today/' +
         organization_id.toString() +
@@ -85,7 +85,6 @@ Future<List<ActivityAttendance>> getClassActivityAttendanceToday(
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Access-Control-Allow-Origin': '*',
       'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
