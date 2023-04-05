@@ -286,24 +286,24 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                               TableCell(child: Text(person.digital_id!)),
 
                               if (_fetchedAttendance.length > 0)
-                                if (_fetchedAttendance.firstWhere(
-                                        (attendance) =>
-                                            attendance.person_id ==
-                                            person.id) !=
-                                    Null)
-                                  TableCell(
-                                    child: Checkbox(
-                                      value: _fetchedAttendance
-                                              .firstWhere((attendance) =>
-                                                  attendance.person_id ==
-                                                  person.id)
-                                              .sign_in_time !=
-                                          null,
-                                      onChanged: (bool? value) {},
-                                    ),
-                                  )
-                                else
-                                  TableCell(child: Text('Absent')),
+                                TableCell(
+                                  child: Checkbox(
+                                    value: _fetchedAttendance
+                                            .firstWhere((attendance) =>
+                                                attendance.person_id ==
+                                                person.id)
+                                            .sign_in_time !=
+                                        null,
+                                    onChanged: (bool? value) {},
+                                  ),
+                                )
+                              else
+                                TableCell(
+                                  child: Checkbox(
+                                    value: false,
+                                    onChanged: (bool? value) {},
+                                  ),
+                                ),
 
                               // ...classes
                               //     .map((className) => TableCell(
