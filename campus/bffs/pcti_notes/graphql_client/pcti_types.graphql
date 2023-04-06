@@ -527,8 +527,8 @@ query getPctiParticipantActivities($pcti_participant_id: Int!){
     }
 }
 
-query getPctiActivityInstancesToday($pcti_activity_id: Int!){
-    pcti_activity_instances_today(activity_id: $pcti_activity_id){
+query getActivityInstancesToday($pcti_activity_id: Int!){
+    activity_instances_today(activity_id: $pcti_activity_id){
         id
         name
         description
