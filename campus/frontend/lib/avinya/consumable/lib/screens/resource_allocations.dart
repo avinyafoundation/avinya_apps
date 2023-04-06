@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import '../data.dart';
 import '../routing.dart';
 import '../widgets/resource_allocation_list.dart';
+import 'package:consumable/screens/favorite_list.dart';
+import 'package:consumable/widgets/favorite_list_models.dart';
+import 'package:consumable/widgets/favorite_page_models.dart';
+import 'package:provider/provider.dart';
 
 class ResourceAllocationsScreen extends StatefulWidget {
   const ResourceAllocationsScreen({
@@ -42,6 +46,24 @@ class _ResourceAllocationsScreenState extends State<ResourceAllocationsScreen>
     super.dispose();
   }
 
+  static List<String> menuItems = [
+    'Admob Ads',
+    'Android Studio',
+    'Angularjs',
+    'Bootstrap',
+    'C-sharp',
+    'Flutter Apps',
+    'intellij-idea',
+    'java-coffee',
+    'json',
+    'kotlin',
+    'PHP Designer',
+    'python',
+    'React Native',
+    'Stack over flow',
+    'Unity 5',
+  ];
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -50,16 +72,129 @@ class _ResourceAllocationsScreenState extends State<ResourceAllocationsScreen>
             controller: _tabController,
             tabs: const [
               Tab(
-                text: 'Create Menu',
+                text: 'Add to Menu',
                 icon: Icon(Icons.restaurant_menu),
               ),
             ],
           ),
         ),
-        body: TabBarView(
-          controller: _tabController,
+        body: Column(
           children: [
-            ResourceAllocationList(onTap: _handleResourceAllocationTapped),
+            Center(
+              child: Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Breakfast Menu',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                          SizedBox(height: 8.0),
+                          SizedBox(
+                            height: 200,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                  padding: EdgeInsets.all(8.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey,
+                                        blurRadius: 10.0,
+                                        offset: Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Wrap(
+                                    spacing:
+                                        8.0, // set the spacing between chips
+                                    runSpacing:
+                                        4.0, // set the spacing between rows of chips
+                                    children: List.generate(menuItems.length,
+                                        (index) {
+                                      return Chip(
+                                        backgroundColor: Colors.green.shade400,
+                                        padding: EdgeInsets.all(10),
+                                        label: Text(menuItems[index]),
+                                        labelStyle:
+                                            TextStyle(color: Colors.white),
+                                      );
+                                    }),
+                                  )),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Lunch Menu',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                          SizedBox(height: 8.0),
+                          SizedBox(
+                            height: 200,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                  padding: EdgeInsets.all(8.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey,
+                                        blurRadius: 10.0,
+                                        offset: Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Wrap(
+                                    spacing:
+                                        8.0, // set the spacing between chips
+                                    runSpacing:
+                                        4.0, // set the spacing between rows of chips
+                                    children: List.generate(menuItems.length,
+                                        (index) {
+                                      return Chip(
+                                        backgroundColor: Colors.blue.shade400,
+                                        padding: EdgeInsets.all(10),
+                                        label: Text(menuItems[index]),
+                                        labelStyle:
+                                            TextStyle(color: Colors.white),
+                                      );
+                                    }),
+                                  )),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [FavoriteList(context: context)],
+              ),
+            ),
           ],
         ),
         floatingActionButton: FloatingActionButton(

@@ -43,6 +43,11 @@ class SMSScaffoldBody extends StatelessWidget {
             key: ValueKey('Consumable lunch details screen'),
             child: BulkAttendanceMarkerScreen(),
           )
+        else if (currentRoute.pathTemplate.startsWith('/create_menu'))
+          const FadeTransitionPage<void>(
+            key: ValueKey('Create Menu screen'),
+            child: BulkAttendanceMarkerScreen(),
+          )
 
         // Avoid building a Navigator with an empty `pages` list when the
         // RouteState is set to an unexpected path, such as /signin.
