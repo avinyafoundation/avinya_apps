@@ -39,17 +39,21 @@ jobs:
       - name: Install web dependencies
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
-
+          node-version: "16.x"
       - run: npm install -g firebase-tools@11.0.1
-      
+          
+      - name: Get choreo_sts_client_id from Azure
+        id: env
+        run: |
+          echo "::set-output name=choreo_sts_client_id::${{ env.CHOREO_STS_CLIENT_ID }}"
+
       # Get dependencies and build Flutter web app
       - name: Get Flutter dependencies
         run: flutter pub get
       - name: Build Flutter web app
         run: |
           cd campus/frontend  
-          flutter build -v web --release
+          flutter/bin/flutter build web --release --dart-define=choreo_sts_client_id=${{ steps.env.outputs.choreo_sts_client_id }}
         
       # Upload artifact for deployment job
       - name: Upload artifact for deployment job
