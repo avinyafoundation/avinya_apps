@@ -79,5 +79,5 @@ jobs:
           app-name: 'avinyawebapp-staging'
           slot-name: 'staging'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_083379278BAD49CFBD446176B7438761 }}
-          
           package: .
+            logLevel:'verbose'
