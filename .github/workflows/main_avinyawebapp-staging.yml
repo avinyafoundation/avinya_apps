@@ -44,7 +44,9 @@ jobs:
 
       # Get dependencies and build Flutter web app
       - name: Get Flutter dependencies
-        run: flutter pub get
+        run: |
+          cd campus/frontend
+          flutter pub get
       - name: Build Flutter web app
         run: |
           cd campus/frontend  
