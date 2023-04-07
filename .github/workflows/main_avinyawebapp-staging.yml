@@ -77,7 +77,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'avinyawebapp-staging'
-          slot-name: 'staging'
+          slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_083379278BAD49CFBD446176B7438761 }}
           package: .
-            logLevel:'verbose'
