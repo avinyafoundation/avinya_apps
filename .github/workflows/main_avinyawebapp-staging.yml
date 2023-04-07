@@ -27,7 +27,7 @@ jobs:
 
     steps:
       # Checkout the repository
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
       # Set up Flutter environment
       - name: Set up Flutter
@@ -37,7 +37,7 @@ jobs:
       - run: flutter doctor -v
       
       - name: Install web dependencies
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "16"
 
@@ -53,7 +53,7 @@ jobs:
         
       # Upload artifact for deployment job
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: flutter-app
           path: build/web  
@@ -67,7 +67,7 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: flutter-app
 
