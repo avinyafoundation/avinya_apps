@@ -57,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: flutter-app
-          path: build/web  
+          path: campus/frontend/build/web  
 
   deploy:
     runs-on: ubuntu-latest
