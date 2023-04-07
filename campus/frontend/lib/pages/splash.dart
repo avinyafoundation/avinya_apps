@@ -223,7 +223,7 @@ class _SplashBackLayer extends StatelessWidget {
     if (isSplashCollapsed) {
       if (isDisplayDesktop(context)) {
         child = Padding(
-          padding: const EdgeInsets.only(top: 50),
+          padding: const EdgeInsets.only(top: 30),
           child: Align(
             alignment: Alignment.topCenter,
             child: MouseRegion(
