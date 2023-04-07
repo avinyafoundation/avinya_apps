@@ -56,7 +56,7 @@ jobs:
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
-          name: flutter-app
+          name: avinyawebapp-staging
           path: campus/frontend/build/web  
 
   deploy:
