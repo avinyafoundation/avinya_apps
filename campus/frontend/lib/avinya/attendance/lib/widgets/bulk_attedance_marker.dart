@@ -206,6 +206,12 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                           await getClassActivityAttendanceToday(
                                               _fetchedOrganization!.id!,
                                               activityId);
+                                      if (_fetchedAttendance.length == 0)
+                                        _fetchedAttendance = new List.filled(
+                                            _fetchedOrganization!.people.length,
+                                            new ActivityAttendance(
+                                                person_id: -1));
+
                                       setState(() {});
                                     },
                                     items: org.child_organizations
@@ -286,24 +292,54 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                               TableCell(child: Text(person.digital_id!)),
 
                               if (_fetchedAttendance.length > 0)
-                                TableCell(
-                                  child: Checkbox(
-                                    value: _fetchedAttendance
-                                            .firstWhere((attendance) =>
+                                if (_fetchedAttendance
+                                        .firstWhere(
+                                            (attendance) =>
                                                 attendance.person_id ==
-                                                person.id)
-                                            .sign_in_time !=
-                                        null,
-                                    onChanged: (bool? value) {},
+                                                person.id,
+                                            orElse: () =>
+                                                new ActivityAttendance(
+                                                    person_id: -1))
+                                        .person_id !=
+                                    -1)
+                                  TableCell(
+                                    child: Checkbox(
+                                      value: _fetchedAttendance
+                                              .firstWhere((attendance) =>
+                                                  attendance.person_id ==
+                                                  person.id)
+                                              .sign_in_time !=
+                                          null,
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          _fetchedAttendance
+                                                  .firstWhere((attendance) =>
+                                                      attendance.person_id ==
+                                                      person.id)
+                                                  .sign_in_time =
+                                              DateTime.now().toString();
+                                        });
+                                      },
+                                    ),
+                                  )
+                                else
+                                  TableCell(
+                                    child: Checkbox(
+                                      value: false,
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          int index = _fetchedAttendance
+                                              .indexWhere((attendance) =>
+                                                  attendance.person_id == -1);
+                                          _fetchedAttendance[index] =
+                                              ActivityAttendance(
+                                                  person_id: person.id!,
+                                                  sign_in_time: DateTime.now()
+                                                      .toString());
+                                        });
+                                      },
+                                    ),
                                   ),
-                                )
-                              else
-                                TableCell(
-                                  child: Checkbox(
-                                    value: false,
-                                    onChanged: (bool? value) {},
-                                  ),
-                                ),
 
                               // ...classes
                               //     .map((className) => TableCell(
