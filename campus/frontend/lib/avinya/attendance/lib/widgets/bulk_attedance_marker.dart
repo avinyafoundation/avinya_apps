@@ -129,12 +129,20 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
     }
   }
 
-  void toggleAttendance(String? className, String? studentName) {
-    int classIndex = classes.indexOf(className!);
-    setState(() {
-      attendanceList[classIndex][studentName!] =
-          !attendanceList[classIndex][studentName]!;
-    });
+  void toggleAttendance(int person_id, bool value) {
+    int index = _fetchedAttendance
+        .indexWhere((attendance) => attendance.person_id == person_id);
+
+    if (index == -1)
+      index = _fetchedAttendance
+          .indexWhere((attendance) => attendance.person_id == -1);
+
+    if (value == false)
+      _fetchedAttendance[index] =
+          ActivityAttendance(person_id: -1, sign_in_time: null);
+    else
+      _fetchedAttendance[index] = ActivityAttendance(
+          person_id: person_id, sign_in_time: DateTime.now().toString());
   }
 
   // get the state of attenance for the set of students in a given class
@@ -312,12 +320,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                           null,
                                       onChanged: (bool? value) {
                                         setState(() {
-                                          _fetchedAttendance
-                                                  .firstWhere((attendance) =>
-                                                      attendance.person_id ==
-                                                      person.id)
-                                                  .sign_in_time =
-                                              DateTime.now().toString();
+                                          toggleAttendance(person.id!, value!);
                                         });
                                       },
                                     ),
@@ -328,14 +331,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                       value: false,
                                       onChanged: (bool? value) {
                                         setState(() {
-                                          int index = _fetchedAttendance
-                                              .indexWhere((attendance) =>
-                                                  attendance.person_id == -1);
-                                          _fetchedAttendance[index] =
-                                              ActivityAttendance(
-                                                  person_id: person.id!,
-                                                  sign_in_time: DateTime.now()
-                                                      .toString());
+                                          toggleAttendance(person.id!, value!);
                                         });
                                       },
                                     ),
