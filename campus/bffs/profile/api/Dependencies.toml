@@ -9,7 +9,7 @@ dependencies-toml-version = "2"
 [[package]]
 org = "avinyafoundation"
 name = "profile_bff"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
 	{org = "ballerina", name = "graphql"},
 	{org = "ballerina", name = "http"},
@@ -300,7 +300,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "task"
-version = "2.3.0"
+version = "2.3.1"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "time"}

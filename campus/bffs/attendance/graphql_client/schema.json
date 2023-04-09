@@ -57,6 +57,28 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "created",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "updated",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "sex",
                             "args": [],
                             "type": {
@@ -320,6 +342,17 @@
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "academy_org_id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
                                 "ofType": null
                             },
                             "isDeprecated": false,
@@ -1357,6 +1390,44 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "class_attendance_today",
+                            "args": [
+                                {
+                                    "name": "organization_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "activity_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "ActivityParticipantAttendanceData",
+                                        "ofType": null
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "asset",
                             "args": [
                                 {
@@ -1486,6 +1557,44 @@
                                 "kind": "OBJECT",
                                 "name": "ConsumableData",
                                 "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "consumableByUpdate",
+                            "args": [
+                                {
+                                    "name": "updated",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "avinya_type_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "ConsumableData",
+                                        "ofType": null
+                                    }
+                                }
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
@@ -6603,6 +6712,15 @@
                                 "ofType": null
                             },
                             "defaultValue": null
+                        },
+                        {
+                            "name": "academy_org_id",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
                         }
                     ],
                     "interfaces": null,
@@ -6834,6 +6952,24 @@
                         },
                         {
                             "name": "sign_out_time",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "in_marked_by",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "out_marked_by",
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "String",
@@ -9748,6 +9884,28 @@
                         },
                         {
                             "name": "updated",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "in_marked_by",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "out_marked_by",
                             "args": [],
                             "type": {
                                 "kind": "SCALAR",

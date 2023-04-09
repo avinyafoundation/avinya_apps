@@ -213,8 +213,10 @@ class _SplashBackLayer extends StatelessWidget {
   Widget build(BuildContext context) {
     var effectAsset = 'splash_effects/splash_effect_$effect.gif';
     final flutterLogo = Image.asset(
-      'assets/logo/flutter_logo.png',
-      package: 'flutter_gallery_assets',
+      'assets/images/foundation_icon.png',
+      width: MediaQuery.of(context).size.width * 0.1,
+      height: MediaQuery.of(context).size.height * 0.1 ,
+      // package: 'flutter_gallery_assets',
     );
 
     Widget? child;

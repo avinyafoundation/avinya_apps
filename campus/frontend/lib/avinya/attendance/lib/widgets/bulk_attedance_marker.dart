@@ -2,6 +2,7 @@ import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:gallery/avinya/attendance/lib/data.dart';
+import 'package:gallery/avinya/attendance/lib/data/activity_attendance.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 // import '../data.dart';
 // import '../data/activity_attendance.dart';
@@ -114,6 +115,8 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
 
   List<Map<String, bool>> attendanceList = [];
   var _selectedValue;
+  Organization? _fetchedOrganization;
+  List<ActivityAttendance> _fetchedAttendance = [];
 
   @override
   void initState() {
@@ -126,13 +129,31 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
     }
   }
 
-  void toggleAttendance(String? className, String? studentName) {
-    int classIndex = classes.indexOf(className!);
-    setState(() {
-      attendanceList[classIndex][studentName!] =
-          !attendanceList[classIndex][studentName]!;
-    });
+  void toggleAttendance(int person_id, bool value) {
+    int index = _fetchedAttendance
+        .indexWhere((attendance) => attendance.person_id == person_id);
+
+    if (index == -1)
+      index = _fetchedAttendance
+          .indexWhere((attendance) => attendance.person_id == -1);
+
+    if (value == false)
+      _fetchedAttendance[index] =
+          ActivityAttendance(person_id: -1, sign_in_time: null);
+    else
+      _fetchedAttendance[index] = ActivityAttendance(
+          person_id: person_id, sign_in_time: DateTime.now().toString());
   }
+
+  // get the state of attenance for the set of students in a given class
+  // void getAttendance(int classId) {
+  //   int activityId = 0;
+  //   if (campusAppsPortalInstance.isTeacher)
+  //     activityId = campusAppsPortalInstance.activityIds['homeroom']!;
+  //   else if (campusAppsPortalInstance.isSecurity)
+  //     activityId = campusAppsPortalInstance.activityIds['arrival']!;
+  //   // fetch attendance data for the given class
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -176,10 +197,30 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                   SizedBox(width: 10),
                                   DropdownButton<Organization>(
                                     value: _selectedValue,
-                                    onChanged: (Organization? newValue) {
-                                      setState(() {
-                                        _selectedValue = newValue!;
-                                      });
+                                    onChanged: (Organization? newValue) async {
+                                      _selectedValue = newValue!;
+                                      print(newValue.id);
+                                      _fetchedOrganization =
+                                          await fetchOrganization(newValue.id!);
+                                      var activityId = 0;
+                                      if (campusAppsPortalInstance.isTeacher)
+                                        activityId = campusAppsPortalInstance
+                                            .activityIds['homeroom']!;
+                                      else if (campusAppsPortalInstance
+                                          .isSecurity)
+                                        activityId = campusAppsPortalInstance
+                                            .activityIds['arrival']!;
+                                      _fetchedAttendance =
+                                          await getClassActivityAttendanceToday(
+                                              _fetchedOrganization!.id!,
+                                              activityId);
+                                      if (_fetchedAttendance.length == 0)
+                                        _fetchedAttendance = new List.filled(
+                                            _fetchedOrganization!.people.length,
+                                            new ActivityAttendance(
+                                                person_id: -1));
+
+                                      setState(() {});
                                     },
                                     items: org.child_organizations
                                         .map((Organization value) {
@@ -227,30 +268,89 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                   Table(
                     border: TableBorder.all(),
                     children: [
-                      TableRow(children: [
-                        TableCell(child: Text("Name")),
-                        ...classes
-                            .map((className) =>
-                                TableCell(child: Text(className)))
-                            .toList()
-                      ]),
-                      ...students.map((studentName) {
-                        return TableRow(children: [
-                          TableCell(child: Text(studentName)),
-                          ...classes
-                              .map((className) => TableCell(
+                      // TableRow(children: [
+                      //   TableCell(child: Text("Name")),
+                      //   ...classes
+                      //       .map((className) =>
+                      //           TableCell(child: Text(className)))
+                      //       .toList()
+                      // ]),
+                      // ...students.map((studentName) {
+                      //   return TableRow(children: [
+                      //     TableCell(child: Text(studentName)),
+                      //     ...classes
+                      //         .map((className) => TableCell(
+                      //               child: Checkbox(
+                      //                 value: attendanceList[classes
+                      //                     .indexOf(className)][studentName],
+                      //                 onChanged: (bool? value) {
+                      //                   toggleAttendance(
+                      //                       className, studentName);
+                      //                 },
+                      //               ),
+                      //             ))
+                      //         .toList()
+                      //   ]);
+                      // }).toList(),
+                      if (_fetchedOrganization != null)
+                        if (_fetchedOrganization!.people.length > 0)
+                          ..._fetchedOrganization!.people.map((person) {
+                            return TableRow(children: [
+                              TableCell(child: Text(person.preferred_name!)),
+                              TableCell(child: Text(person.digital_id!)),
+
+                              if (_fetchedAttendance.length > 0)
+                                if (_fetchedAttendance
+                                        .firstWhere(
+                                            (attendance) =>
+                                                attendance.person_id ==
+                                                person.id,
+                                            orElse: () =>
+                                                new ActivityAttendance(
+                                                    person_id: -1))
+                                        .person_id !=
+                                    -1)
+                                  TableCell(
                                     child: Checkbox(
-                                      value: attendanceList[classes
-                                          .indexOf(className)][studentName],
+                                      value: _fetchedAttendance
+                                              .firstWhere((attendance) =>
+                                                  attendance.person_id ==
+                                                  person.id)
+                                              .sign_in_time !=
+                                          null,
                                       onChanged: (bool? value) {
-                                        toggleAttendance(
-                                            className, studentName);
+                                        setState(() {
+                                          toggleAttendance(person.id!, value!);
+                                        });
                                       },
                                     ),
-                                  ))
-                              .toList()
-                        ]);
-                      }).toList()
+                                  )
+                                else
+                                  TableCell(
+                                    child: Checkbox(
+                                      value: false,
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          toggleAttendance(person.id!, value!);
+                                        });
+                                      },
+                                    ),
+                                  ),
+
+                              // ...classes
+                              //     .map((className) => TableCell(
+                              //           child: Checkbox(
+                              //             value: attendanceList[classes
+                              //                 .indexOf(className)][studentName],
+                              //             onChanged: (bool? value) {
+                              //               toggleAttendance(
+                              //                   className, studentName);
+                              //             },
+                              //           ),
+                              //         ))
+                              //     .toList()
+                            ]);
+                          }).toList()
                     ],
                   )
                 ],

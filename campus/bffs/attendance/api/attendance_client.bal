@@ -63,4 +63,10 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetActivityInstancesTodayResponse> check performDataBinding(graphqlResponse, GetActivityInstancesTodayResponse);
     }
+    remote isolated function getClassAttendanceToday(int organization_id, int activity_id) returns GetClassAttendanceTodayResponse|graphql:ClientError {
+        string query = string `query getClassAttendanceToday($organization_id:Int!,$activity_id:Int!) {class_attendance_today(organization_id:$organization_id,activity_id:$activity_id) {id person_id person {id} activity_instance_id sign_in_time sign_out_time in_marked_by out_marked_by}}`;
+        map<anydata> variables = {"organization_id": organization_id, "activity_id": activity_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetClassAttendanceTodayResponse> check performDataBinding(graphqlResponse, GetClassAttendanceTodayResponse);
+    }
 }

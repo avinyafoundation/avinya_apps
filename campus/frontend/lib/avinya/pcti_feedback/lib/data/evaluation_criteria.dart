@@ -59,7 +59,7 @@ Future<List<EvaluationCriteria>> fetchEvaluationCriterias() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -82,7 +82,7 @@ Future<EvaluationCriteria> fetchEvaluationCriteria(
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -103,7 +103,7 @@ Future<http.Response> createEvaluationCriteria(
         '/evaluation_criteria/evaluation_criterias'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(evaluationCriteria.toJson()),
   );
@@ -121,7 +121,7 @@ Future<http.Response> updateEvaluationCriteria(
         '/evaluation_criteria/evaluation_criterias'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(evaluationCriteria.toJson()),
   );
@@ -138,7 +138,7 @@ Future<http.Response> deleteEvaluationCriteria(String id) async {
         '/evaluation_criteria/evaluation_criterias/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 

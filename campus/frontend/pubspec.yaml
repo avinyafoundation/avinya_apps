@@ -50,6 +50,8 @@ dependencies:
     path: ./lib/avinya/asset
   asset_admin:
     path: ./lib/avinya/asset_admin
+  consumable:
+    path: ./lib/avinya/consumable
   route_observer_mixin: ^1.7.0
   sizer: ^2.0.15
 

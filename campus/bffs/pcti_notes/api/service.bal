@@ -205,8 +205,8 @@ service / on new http:Listener(9092) {
     }
 
     resource function get activity_instances_today(int activity_id) returns ActivityInstance[]|error {
-        GetPctiActivityInstancesTodayResponse|graphql:ClientError getPctiActivityInstancesTodayResponse = globalDataClient->getPctiActivityInstancesToday(activity_id);
-        if (getPctiActivityInstancesTodayResponse is GetPctiActivityInstancesTodayResponse) {
+        GetActivityInstancesTodayResponse|graphql:ClientError getPctiActivityInstancesTodayResponse = globalDataClient->getActivityInstancesToday(activity_id);
+        if (getPctiActivityInstancesTodayResponse is GetActivityInstancesTodayResponse) {
             ActivityInstance[] activityInstances = [];
             foreach var pctiActivityInstance in getPctiActivityInstancesTodayResponse.activity_instances_today {
                 ActivityInstance|error activityInstance = pctiActivityInstance.cloneWithType(ActivityInstance);

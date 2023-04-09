@@ -1,0 +1,82 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy Node.js app to Azure Web App - avinyawebapp-staging
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy web build"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - staging
+          - prod
+          
+# Declare default permissions as read only.
+permissions: read-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - uses: actions/checkout@v3
+      
+      # Set up Flutter environment
+      - name: Set up Flutter
+        uses: subosito/flutter-action@dbf1fa04f4d2e52c33185153d06cdb5443aa189d
+        with:
+          channel: master
+      - run: flutter doctor -v
+      
+      - name: Install web dependencies
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+      - run: npm install -g firebase-tools@11.0.1
+
+      # Get dependencies and build Flutter web app
+      - name: Get Flutter dependencies
+        run: |
+          cd campus/frontend
+          flutter pub get
+      - name: Build Flutter web app
+        run: |
+          cd campus/frontend  
+          flutter build web --release --dart-define=choreo_sts_client_id=${{ secrets.CHOREO_STS_CLIENT_ID }}
+        
+      # Upload artifact for deployment job
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v3
+        with:
+          name: avinyawebapp-staging
+          path: campus/frontend/build/web  
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: ${{ github.event.inputs.environment || 'staging' }}
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: avinyawebapp-staging
+
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'avinyawebapp-staging'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_083379278BAD49CFBD446176B7438761 }}
+          package: .

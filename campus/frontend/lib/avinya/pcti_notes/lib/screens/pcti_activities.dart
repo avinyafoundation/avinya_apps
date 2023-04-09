@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:pcti_notes/data/activity.dart';
 
@@ -17,12 +19,20 @@ class PctiActivitiesScreen extends StatefulWidget {
 class _PctiActivitiesScreenState extends State<PctiActivitiesScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late Future<List<Activity>> futureActivities;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 1, vsync: this)
       ..addListener(_handleTabIndexChanged);
+    try {
+      int userPersonId = (campusAppsPortalInstance.getUserPerson()).id!;
+
+      futureActivities = fetchPctiParticipantActivities(userPersonId);
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   @override

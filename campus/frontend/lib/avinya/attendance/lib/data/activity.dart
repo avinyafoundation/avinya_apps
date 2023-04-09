@@ -93,7 +93,7 @@ Future<Activity> fetchActivity(String name) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAttendanceBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 

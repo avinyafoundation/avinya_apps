@@ -40,12 +40,14 @@ class Organization {
   Name? name;
   String? description;
   var child_organizations = <Organization>[];
+  var people = <Person>[];
 
   Organization({
     this.id,
     this.name,
     this.description,
     this.child_organizations = const [],
+    this.people = const [],
   });
 
   factory Organization.fromJson(Map<String, dynamic> json) {
@@ -56,6 +58,9 @@ class Organization {
       child_organizations: json['child_organizations'] != null
           ? List<Organization>.from(
               json['child_organizations'].map((x) => Organization.fromJson(x)))
+          : [],
+      people: json['people'] != null
+          ? List<Person>.from(json['people'].map((x) => Person.fromJson(x)))
           : [],
     );
   }
@@ -68,8 +73,31 @@ class Organization {
         if (description != null) 'description': description,
         'child_organizations':
             List<dynamic>.from(child_organizations.map((x) => x.toJson())),
+        'people': List<dynamic>.from(people.map((x) => x.toJson())),
         // if (employees != null) 'employees': List<dynamic>.from(employees!.map((x) => x.toJson())),
       };
+}
+
+Future<Organization> fetchOrganization(int id) async {
+  final uri = Uri.parse(AppConfig.campusProfileBffApiUrl + '/organization')
+      .replace(queryParameters: {'id': id.toString()});
+
+  final response = await http.get(
+    uri,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    Organization organization =
+        Organization.fromJson(json.decode(response.body));
+    return organization;
+  } else {
+    throw Exception('Failed to load Person');
+  }
 }
 
 class Person {
@@ -181,9 +209,11 @@ class Person {
           json['avinya_type'] != null ? json['avinya_type'] : {}),
       created: json['created'],
       updated: json['updated'],
-      parent_students: json['parent_students']
-          .map<Person>((eval_json) => Person.fromJson(eval_json))
-          .toList(),
+      parent_students: json['parent_students'] != null
+          ? json['parent_students']
+              .map<Person>((eval_json) => Person.fromJson(eval_json))
+              .toList()
+          : [],
     );
   }
 
@@ -239,7 +269,7 @@ Future<Person> fetchPerson(String digital_id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAttendanceBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -261,7 +291,7 @@ Future<List<Person>> fetchPersons() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAttendanceBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -280,7 +310,7 @@ Future<Person> createPerson(Person person) async {
     Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAttendanceBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(person.toJson()),
   );
@@ -299,7 +329,7 @@ Future<http.Response> updatePerson(Person person) async {
     Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAttendanceBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(person.toJson()),
   );
@@ -315,7 +345,7 @@ Future<http.Response> deletePerson(String id) async {
     Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/student_applicant/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAttendanceBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -336,7 +366,7 @@ Future<List<Person>> fetchStudentApplicants() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -355,7 +385,7 @@ Future<http.Response> deleteStudentApplicant(String id) async {
     Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/student_applicant/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -371,7 +401,7 @@ Future<Person> createStudentApplicant(Person person) async {
     Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(person.toJson()),
   );
@@ -390,7 +420,7 @@ Future<http.Response> updateStudentApplicant(Person person) async {
     Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(person.toJson()),
   );
@@ -407,7 +437,7 @@ Future<Person> fetchPersonFromPctiNoteAdmin(int person_id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -426,7 +456,7 @@ Future<Person> fetchStudentApplicant(String jwt_sub_id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -448,7 +478,7 @@ Future<List<Person>> fetchPersonsFromAsset() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -469,7 +499,7 @@ Future<Person> fetchPersonFromAsset(String jwt_sub_id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -486,7 +516,7 @@ Future<Person> createPersonFromAsset(Person person) async {
     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(person.toJson()),
   );
@@ -505,7 +535,7 @@ Future<http.Response> updatePersonFromAsset(Person person) async {
     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(person.toJson()),
   );
@@ -521,7 +551,7 @@ Future<http.Response> deletePersonFromAsset(String id) async {
     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusAssetsBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -542,7 +572,7 @@ Future<Person> fetchPersonFromPctiFeedback(int person_id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -568,7 +598,7 @@ Future<List<Person>> fetchStudentApplicantsFromPctiFeedback() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -589,7 +619,7 @@ Future<Person> fetchStudentApplicantFromPctiFeedback(String jwt_sub_id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -606,7 +636,7 @@ Future<Person> createStudentApplicantFromPctiFeedback(Person person) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(person.toJson()),
   );
@@ -626,7 +656,7 @@ Future<http.Response> updateStudentApplicantFromPctiFeedback(
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(person.toJson()),
   );
@@ -642,7 +672,7 @@ Future<http.Response> deleteStudentApplicantFromPctiFeedback(String id) async {
     Uri.parse(AppConfig.campusPctiFeedbackBffApiUrl + '/student_applicant/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusPctiFeedbackBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 

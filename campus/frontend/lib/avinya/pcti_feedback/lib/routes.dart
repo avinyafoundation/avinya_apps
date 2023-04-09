@@ -4,4 +4,4 @@
 
 const String loginRoute = '/shrine/login';
 const String homeRoute = '/shrine';
-const String feedbackRoute = '/pcti_activities';
+const String feedbackRoute = '/pcti_feedback';

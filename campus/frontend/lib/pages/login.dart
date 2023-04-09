@@ -52,11 +52,18 @@ class _LogInScreenState extends State<LoginPage> {
       _clientId = AppConfig.asgardeoClientId;
     }
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Sign in"),
-      ),
+      // appBar: AppBar(
+      //   title: Text("Sign in"),
+      // ),
       body: Container(
         alignment: Alignment.center,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/dark.jpg'),
+            fit: BoxFit.cover,
+            alignment: Alignment.topCenter,
+          ),
+        ),
         child: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -65,6 +72,8 @@ class _LogInScreenState extends State<LoginPage> {
               Center(
                 child: SingleChildScrollView(
                   child: Container(
+                    //width: 400,
+                   // margin: EdgeInsets.only(left:400.0),
                     alignment: Alignment.center,
                     child: Wrap(children: [
                       Column(children: [
@@ -72,6 +81,7 @@ class _LogInScreenState extends State<LoginPage> {
                           "Avinya Academy Apps Portal",
                           style: TextStyle(
                             fontSize: 20,
+                            color: Colors.black,
                             fontWeight: FontWeight.bold,
                             fontFamily: "Google Sans",
                           ),
@@ -81,6 +91,7 @@ class _LogInScreenState extends State<LoginPage> {
                           """To proceed to the Apps Portal, please sign in.""",
                           style: TextStyle(
                             fontFamily: "Google Sans",
+                            color: Colors.black,
                           ),
                         ),
                         SizedBox(height: 10.0),
@@ -88,6 +99,7 @@ class _LogInScreenState extends State<LoginPage> {
                           "Once you sign in, you will be directed to the Apps Portal",
                           style: TextStyle(
                             fontFamily: "Google Sans",
+                            color: Colors.black,
                           ),
                         ),
                         SizedBox(height: 10.0),
@@ -97,6 +109,7 @@ class _LogInScreenState extends State<LoginPage> {
                 ),
               ),
               Container(
+              //  margin: EdgeInsets.only(top: 20.0,left: 380.0),
                 margin: EdgeInsets.only(top: 20.0),
                 child: ElevatedButton(
                   style: ButtonStyle(

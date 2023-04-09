@@ -48,7 +48,7 @@ Future<List<Address>> fetchAddresss() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -70,7 +70,7 @@ Future<Address> fetchAddress(String id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -87,7 +87,7 @@ Future<Address> createAddress(Address address) async {
     Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/address'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(address.toJson()),
   );
@@ -107,7 +107,7 @@ Future<http.Response> updateAddress(Address address) async {
     Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/address'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(address.toJson()),
   );
@@ -123,7 +123,7 @@ Future<http.Response> deleteAddress(String id) async {
     Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/address/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 

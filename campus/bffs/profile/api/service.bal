@@ -64,26 +64,22 @@ service / on new http:Listener(9090) {
         }
     }
 
-//         resource function get person (string id) returns Person|error { 
-//         GetPersonResponse|graphql:ClientError getPersonResponse = globalDataClient->getPerson(id); 
-//          if(getPersonResponse is GetPersonResponse) {) { 
-//  Person|error person_record = getPersonResponse.person_by_jwt.cloneWithType(Person);
-//              if(person_record is Person) {
-//                 return person_record;
-//             } else {
-//                 log:printError("Error while processing Application record received1", person_record);
-//                 return error("Error while processing Application record received2: " + person_record.message() + 
-//                     ":: Detail: " + person_record.detail().toString());
-//             }
-//          }  else {
-//             log:printError("Error while creating application3", getPersonResponse);
-//             return error("Error while creating application4: " + getPersonResponse.message() + 
-//                 ":: Detail: " + getPersonResponse.detail().toString());
-//         }
-//      }
-
- 
- 
-
+    resource function get organization(int id) returns Organization|error {
+        GetOrganizationResponse|graphql:ClientError getOrganizationResponse = globalDataClient->getOrganization(id);
+        if(getOrganizationResponse is GetOrganizationResponse) {
+            Organization|error organization_record = getOrganizationResponse.organization.cloneWithType(Organization);
+            if(organization_record is Organization) {
+                return organization_record;
+            } else {
+                log:printError("Error while processing Application record received1", organization_record);
+                return error("Error while processing Organization record received2: " + organization_record.message() + 
+                    ":: Detail: " + organization_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while fetching organization records application3", getOrganizationResponse);
+            return error("Error while fetching organization records application4: " + getOrganizationResponse.message() + 
+                ":: Detail: " + getOrganizationResponse.detail().toString());
+        }
+    }
     
 }

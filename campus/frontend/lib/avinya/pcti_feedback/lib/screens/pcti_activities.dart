@@ -29,9 +29,9 @@ class _PctiActivitiesScreenState extends State<PctiActivitiesScreen>
     super.didChangeDependencies();
 
     final newPath = _routeState.route.pathTemplate;
-    if (newPath.startsWith('/pcti_activities')) {
+    if (newPath.startsWith('/pcti_feedback')) {
       _tabController.index = 0;
-    } 
+    }
   }
 
   @override
@@ -66,19 +66,16 @@ class _PctiActivitiesScreenState extends State<PctiActivitiesScreen>
 
   RouteState get _routeState => RouteStateScope.of(context);
 
-
   void _handleTabIndexChanged() {
     switch (_tabController.index) {
       case 0:
       default:
-        _routeState.go('/pcti_activities');
+        _routeState.go('/pcti_feedback');
         break;
     }
   }
 
   void _handleActivitySelected(Activity activity) {
-    _routeState.go('/pcti_activities/${activity.id}');
+    _routeState.go('/pcti_feedback/${activity.id}');
   }
 }
-
-

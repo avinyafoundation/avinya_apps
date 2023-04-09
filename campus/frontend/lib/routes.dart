@@ -6,27 +6,24 @@ import 'dart:developer';
 import 'package:dual_screen/dual_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery/avinya/asset/lib/app.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:gallery/deferred_widget.dart';
 import 'package:gallery/main.dart';
 import 'package:gallery/pages/home.dart';
 import 'package:gallery/pages/login.dart';
 import 'package:attendance/app.dart' deferred as attendance;
-import 'package:gallery/avinya/pcti_notes/lib/app.dart' deferred as campus_pcti;
-import 'package:gallery/avinya/pcti_notes/lib/routes.dart'
-    as campus_pcti_routes;
-import 'package:gallery/avinya/pcti_notes_admin/lib/app.dart'
-    deferred as campus_pcti_admin;
-import 'package:gallery/avinya/pcti_notes_admin/lib/routes.dart'
-    as campus_pcti_admin_routes;
+import 'package:pcti_notes_admin/app.dart' deferred as pcti_notes_admin;
+import 'package:pcti_notes_admin/routes.dart' as pcti_notes_admin_routes;
+import 'package:pcti_notes/app.dart' deferred as pcti_notes;
+import 'package:pcti_notes/routes.dart' as pcti_notes_routes;
 import 'package:gallery/avinya/asset/lib/app.dart' deferred as asset;
 import 'package:gallery/avinya/asset/lib/routes.dart' as asset_routes;
 import 'package:attendance/routes.dart' as routes;
 import 'package:gallery/pages/profile.dart' as profile;
-
 import 'package:pcti_feedback/app.dart' deferred as feedback;
 import 'package:pcti_feedback/routes.dart' as feedback_routes;
+import 'package:consumable/app.dart' deferred as consumable;
+import 'package:consumable/routes.dart' as consumable_routes;
 
 typedef PathWidgetBuilder = Widget Function(BuildContext, String?);
 
@@ -71,22 +68,22 @@ class RouteConfiguration {
     ),
     Path(
       //block added lahiru-2023-03-10
-      r'^' + campus_pcti_routes.campuspctiRoute,
+      r'^' + pcti_notes_routes.campuspctiRoute,
       (context, match) => StudyWrapper(
         study: DeferredWidget(
-            campus_pcti.loadLibrary,
-            () => campus_pcti
+            pcti_notes.loadLibrary,
+            () => pcti_notes
                 .CampusPctiSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),
     Path(
       //block added lahiru-2023-03-10
-      r'^' + campus_pcti_admin_routes.campuspctiadminRoute,
+      r'^' + pcti_notes_admin_routes.campuspctiadminRoute,
       (context, match) => StudyWrapper(
         study: DeferredWidget(
-            campus_pcti_admin.loadLibrary,
-            () => campus_pcti_admin
+            pcti_notes_admin.loadLibrary,
+            () => pcti_notes_admin
                 .CampusPctiSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
@@ -114,6 +111,16 @@ class RouteConfiguration {
       (context, match) => StudyWrapper(
         study: DeferredWidget(attendance.loadLibrary,
             () => profile.ProfileScreen()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),
+    Path(
+      r'^' + consumable_routes.consumableRoute,
+      (context, match) => StudyWrapper(
+        study: DeferredWidget(
+            consumable.loadLibrary,
+            () => consumable
+                .ConsumableSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),

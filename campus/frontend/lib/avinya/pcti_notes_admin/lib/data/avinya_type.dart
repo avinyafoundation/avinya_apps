@@ -55,7 +55,7 @@ Future<List<AvinyaType>> fetchAvinyaTypes() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -76,7 +76,7 @@ Future<AvinyaType> fetchAvinyaType(String id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -95,7 +95,7 @@ Future<http.Response> createAvinyaType(AvinyaType avinyaType) async {
     Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/avinya_types'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(avinyaType.toJson()),
   );
@@ -111,7 +111,7 @@ Future<http.Response> updateAvinyaType(AvinyaType avinyaType) async {
     Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/avinya_types'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(avinyaType.toJson()),
   );
@@ -127,7 +127,7 @@ Future<http.Response> deleteAvinyaType(String id) async {
     Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/avinya_types/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 

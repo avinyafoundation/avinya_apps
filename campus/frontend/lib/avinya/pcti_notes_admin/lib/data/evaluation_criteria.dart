@@ -60,7 +60,7 @@ Future<List<EvaluationCriteria>> fetchEvaluationCriterias() async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -82,7 +82,7 @@ Future<EvaluationCriteria> fetchEvaluationCriteria(String id) async {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -103,7 +103,7 @@ Future<http.Response> createEvaluationCriteria(
         '${AppConfig.campusPctiNotesBffApiUrl}/evaluation_criteria/evaluation_criterias'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(evaluationCriteria.toJson()),
   );
@@ -121,7 +121,7 @@ Future<http.Response> updateEvaluationCriteria(
         '${AppConfig.campusPctiNotesBffApiUrl}/evaluation_criteria/evaluation_criterias'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(evaluationCriteria.toJson()),
   );
@@ -138,7 +138,7 @@ Future<http.Response> deleteEvaluationCriteria(String id) async {
         '${AppConfig.campusPctiNotesBffApiUrl}/evaluation_criteria/evaluation_criterias/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ${AppConfig.campusPctiNotesBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
