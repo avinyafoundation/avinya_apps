@@ -44,8 +44,11 @@ jobs:
 
       # Get dependencies and build Flutter web app
       - name: Get Flutter dependencies
-        run: flutter pub get
+        run: |
+          cd campus/frontend
+          flutter pub get
       - name: Build Flutter web app
+          cd campus/frontend
         run: flutter build web --release --dart-define=choreo_sts_client_id=${{ secrets.CHOREO_STS_CLIENT_ID }}
         
       # Upload artifact for deployment job
@@ -53,7 +56,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: avinyawebapp-staging
-          path: build/web  
+          path: campus/frontend/build/web  
 
   deploy:
     runs-on: ubuntu-latest
