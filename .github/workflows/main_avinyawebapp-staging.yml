@@ -48,8 +48,9 @@ jobs:
           cd campus/frontend
           flutter pub get
       - name: Build Flutter web app
+        run: |
           cd campus/frontend
-        run: flutter build web --release --dart-define=choreo_sts_client_id=${{ secrets.CHOREO_STS_CLIENT_ID }}
+          flutter build web --release --dart-define=choreo_sts_client_id=${{ secrets.CHOREO_STS_CLIENT_ID }}
         
       # Upload artifact for deployment job
       - name: Upload artifact for deployment job
