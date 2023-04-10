@@ -44,13 +44,9 @@ jobs:
 
       # Get dependencies and build Flutter web app
       - name: Get Flutter dependencies
-        run: |
-          cd campus/frontend
-          flutter pub get
+        run: flutter pub get
       - name: Build Flutter web app
-        run: |
-          cd campus/frontend  
-          flutter build web --release --dart-define=choreo_sts_client_id=${{ secrets.CHOREO_STS_CLIENT_ID }}
+        run: flutter build web --release --dart-define=choreo_sts_client_id=${{ secrets.CHOREO_STS_CLIENT_ID }}
         
       # Upload artifact for deployment job
       - name: Upload artifact for deployment job
