@@ -57,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: avinyawebapp-staging
-          path: campus/frontend/build/web  
+          path: build/web  
 
   deploy:
     runs-on: ubuntu-latest
