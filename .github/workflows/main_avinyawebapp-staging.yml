@@ -51,6 +51,7 @@ jobs:
         run: |
           cd campus/frontend
           flutter build web --release --dart-define=choreo_sts_client_id=${{ secrets.CHOREO_STS_CLIENT_ID }}
+          flutter config --enable-web
         
       # Upload artifact for deployment job
       - name: Upload artifact for deployment job
@@ -63,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: ${{ github.event.inputs.environment || 'staging' }}
+      name: ${{ github.event.inputs.environment || 'Production' }}
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
