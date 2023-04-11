@@ -73,9 +73,15 @@ class ActivityInstance {
 }
 
 Future<List<ActivityInstance>> fetchActivityInstance(int activityID) async {
-  final response = await http.get(Uri.parse(
-      AppConfig.campusAttendanceBffApiUrl +
-          '/activity_instances_today/$activityID'));
+  final response = await http.get(
+    Uri.parse(AppConfig.campusAttendanceBffApiUrl +
+        '/activity_instances_today/$activityID'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
 
   if (response.statusCode == 200) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
