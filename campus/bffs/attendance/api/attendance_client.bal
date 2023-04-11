@@ -52,10 +52,19 @@ public isolated client class GraphqlClient {
         return <GetActivityResponse> check performDataBinding(graphqlResponse, GetActivityResponse);
     }
     remote isolated function addActivityAttendance(ActivityParticipantAttendance attendance) returns AddActivityAttendanceResponse|graphql:ClientError {
-        string query = string `mutation addActivityAttendance($attendance:ActivityParticipantAttendance!) {add_attendance(attendance:$attendance) {id activity_instance_id sign_in_time sign_out_time in_marked_by out_marked_by created updated}}`;
+        string query = string `mutation addActivityAttendance($attendance:ActivityParticipantAttendance!) {add_attendance(attendance:$attendance) {id activity_instance_id person_id sign_in_time sign_out_time in_marked_by out_marked_by created updated}}`;
         map<anydata> variables = {"attendance": attendance};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <AddActivityAttendanceResponse> check performDataBinding(graphqlResponse, AddActivityAttendanceResponse);
+    }
+    remote isolated function deleteActivityAttendance(int id) returns json|error {
+        string query = string `mutation deleteActivityAttendance($id:Int!) {delete_attendance(id:$id)}`;
+        map<anydata> variables = {"id": id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        map<json> responseMap = <map<json>>graphqlResponse;
+        json responseData = responseMap.get("data");
+        json|error row_count = check responseData.delete_attendance;
+        return row_count;
     }
     remote isolated function getActivityInstancesToday(int id) returns GetActivityInstancesTodayResponse|graphql:ClientError {
         string query = string `query getActivityInstancesToday($id:Int!) {activity_instances_today(activity_id:$id) {id activity_id name daily_sequence weekly_sequence monthly_sequence description notes start_time end_time created updated place {id} organization {id}}}`;

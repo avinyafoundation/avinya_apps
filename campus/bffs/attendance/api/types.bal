@@ -317,6 +317,7 @@ public type AddActivityAttendanceResponse record {|
     record {|
         int? id;
         int? activity_instance_id;
+        int? person_id;
         string? sign_in_time;
         string? sign_out_time;
         string? created;
