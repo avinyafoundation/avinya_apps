@@ -50,18 +50,19 @@ jobs:
       - name: Move Flutter build contents to node-app artifact
         run: |
           cp -R campus/frontend/build/web/* campus/deployment/node-app/public-flutter
+          
+      - name: npm install, build, and test
+        run: |
+          cd campus/deployment/node-app
+          npm install
+          npm run build --if-present
+          npm run test --if-present
 
       - name: Upload artifact for node app
         uses: actions/upload-artifact@v2
         with:
           name: node-app
           path: campus/deployment/node-app
-          
-      - name: npm install, build, and test
-        run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
 
   deploy:
     runs-on: ubuntu-latest
