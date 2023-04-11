@@ -2,6 +2,7 @@
 
 import 'package:consumable/widgets/bulk_attedance_marker.dart';
 import 'package:flutter/material.dart';
+import 'package:consumable/screens/consumable_feedback.dart';
 import '../routing.dart';
 
 class BulkAttendanceMarkerScreen extends StatefulWidget {
@@ -56,7 +57,7 @@ class _BulkAttendanceMarkerScreenState extends State<BulkAttendanceMarkerScreen>
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text('HOW WAS YOUR MEAL?'),
+          title: Text('Food Feedback'),
           bottom: TabBar(
             controller: _tabController,
             tabs: const [
@@ -74,7 +75,7 @@ class _BulkAttendanceMarkerScreenState extends State<BulkAttendanceMarkerScreen>
         body: TabBarView(
           controller: _tabController,
           children: [
-            BulkAttendanceMarker(),
+            ConsumableFeedbackScreen(),
             BulkAttendanceMarker(),
           ],
         ),

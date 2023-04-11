@@ -21,35 +21,35 @@ class ResourceAllocationDetailsScreen extends StatelessWidget {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text(resourceAllocation!.asset!.model!.toString()),
-      ),
+          // title: Text(resourceAllocation!.asset!.model!.toString()),
+          ),
       body: Center(
         child: Row(
           children: [
-            Text(
-              resourceAllocation!.asset!.name!.toString(),
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            Text(
-              resourceAllocation!.asset!.manufacturer!.toString(),
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            Text(
-              resourceAllocation!.asset!.model!.toString(),
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            Text(
-              resourceAllocation!.asset!.serialNumber!.toString(),
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            Text(
-              resourceAllocation!.asset!.registrationNumber!.toString(),
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            Text(
-              resourceAllocation!.asset!.description!.toString(),
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            // Text(
+            //   resourceAllocation!.asset!.name!.toString(),
+            //   style: Theme.of(context).textTheme.headline4,
+            // ),
+            // Text(
+            //   resourceAllocation!.asset!.manufacturer!.toString(),
+            //   style: Theme.of(context).textTheme.headline4,
+            // ),
+            // Text(
+            //   resourceAllocation!.asset!.model!.toString(),
+            //   style: Theme.of(context).textTheme.headline4,
+            // ),
+            // Text(
+            //   resourceAllocation!.asset!.serialNumber!.toString(),
+            //   style: Theme.of(context).textTheme.headline4,
+            // ),
+            // Text(
+            //   resourceAllocation!.asset!.registrationNumber!.toString(),
+            //   style: Theme.of(context).textTheme.headline4,
+            // ),
+            // Text(
+            //   resourceAllocation!.asset!.description!.toString(),
+            //   style: Theme.of(context).textTheme.headline4,
+            // ),
             // Text(
             //   resourceAllocation!.asset!.avinya_type!.id!.toString(),
             //   style: Theme.of(context).textTheme.headline4,
