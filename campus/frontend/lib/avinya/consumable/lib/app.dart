@@ -4,10 +4,13 @@ import 'dart:developer';
 //import 'package:ShoolManagementSystem/src/data/resource_allocation.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery/auth.dart';
+import 'package:consumable/widgets/favorite_list_models.dart';
+import 'package:consumable/widgets/favorite_page_models.dart';
 
 //import 'auth.dart';
 import 'routing.dart';
 import 'screens/navigator.dart';
+import 'package:provider/provider.dart';
 
 class ConsumableSystem extends StatefulWidget {
   const ConsumableSystem({super.key});
@@ -32,6 +35,7 @@ class _ConsumableSystemState extends State<ConsumableSystem> {
         '/consumables',
         '/consumable_feedback_breakfast',
         '/consumable_feedback_lunch',
+        '/favoritepage',
         '/#access_token',
       ],
       guard: _guard,
@@ -55,24 +59,70 @@ class _ConsumableSystemState extends State<ConsumableSystem> {
   }
 
   @override
-  Widget build(BuildContext context) => RouteStateScope(
-        notifier: _routeState,
-        child: SMSAuthScope(
-          notifier: _auth,
-          child: MaterialApp.router(
-            routerDelegate: _routerDelegate,
-            routeInformationParser: _routeParser,
-            // Revert back to pre-Flutter-2.5 transition behavior:
-            // https://github.com/flutter/flutter/issues/82053
-            theme: ThemeData(
-              pageTransitionsTheme: const PageTransitionsTheme(
-                builders: {
-                  TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-                  TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-                  TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
-                  TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-                  TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
-                },
+  // Widget build(BuildContext context) => RouteStateScope(
+  //       notifier: _routeState,
+  //       child: SMSAuthScope(
+  //         notifier: _auth,
+  //         child: MaterialApp.router(
+  //           routerDelegate: _routerDelegate,
+  //           routeInformationParser: _routeParser,
+  //           // Revert back to pre-Flutter-2.5 transition behavior:
+  //           // https://github.com/flutter/flutter/issues/82053
+  //           theme: ThemeData(
+  //             pageTransitionsTheme: const PageTransitionsTheme(
+  //               builders: {
+  //                 TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+  //                 TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+  //                 TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+  //                 TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+  //                 TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+  //               },
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     );
+  Widget build(BuildContext context) => MultiProvider(
+        // providers: [
+        //   ChangeNotifierProvider(create: (_) => _routeState),
+        //   ChangeNotifierProvider(create: (_) => _auth),
+        // ],
+        providers: [
+          // In this sample app, FavoriteListModel never changes, so a simple Provider
+          // is sufficient.
+          Provider(create: (context) => FavoriteListModel()),
+          // FavoritePageModel is implemented as a ChangeNotifier, which calls for the use
+          // of ChangeNotifierProvider. Moreover, FavoritePageModel depends
+          // on FavoriteListModel, so a ProxyProvider is needed.
+          ChangeNotifierProxyProvider<FavoriteListModel, FavoritePageModel>(
+            create: (context) => FavoritePageModel(),
+            update: (context, favoritelist, favoritepage) {
+              if (favoritepage == null)
+                throw ArgumentError.notNull('favoritepage');
+              favoritepage.favoritelist = favoritelist;
+              return favoritepage;
+            },
+          ),
+        ],
+        child: RouteStateScope(
+          notifier: _routeState,
+          child: SMSAuthScope(
+            notifier: _auth,
+            child: MaterialApp.router(
+              routerDelegate: _routerDelegate,
+              routeInformationParser: _routeParser,
+              // Revert back to pre-Flutter-2.5 transition behavior:
+              // https://github.com/flutter/flutter/issues/82053
+              theme: ThemeData(
+                pageTransitionsTheme: const PageTransitionsTheme(
+                  builders: {
+                    TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+                    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+                    TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+                    TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+                    TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+                  },
+                ),
               ),
             ),
           ),
@@ -90,6 +140,8 @@ class _ConsumableSystemState extends State<ConsumableSystem> {
         'consumable_feedback_breakfast', {}, {});
     final consumableBreakfastRoute = ParsedRoute(
         'consumable_feedback_lunch', 'consumable_feedback_lunch', {}, {});
+    final favoritepageRoute =
+        ParsedRoute('favoritepage', 'favoritepage', {}, {});
 
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
@@ -102,6 +154,8 @@ class _ConsumableSystemState extends State<ConsumableSystem> {
       return consumableLunchRoute;
     } else if (signedIn && from == consumableBreakfastRoute) {
       return consumableBreakfastRoute;
+    } else if (signedIn && from == favoritepageRoute) {
+      return favoritepageRoute;
     }
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {

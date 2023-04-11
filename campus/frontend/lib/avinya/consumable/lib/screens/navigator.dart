@@ -8,10 +8,11 @@ import 'dart:developer';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:consumable/screens/resource_allocation_details.dart';
+import 'package:consumable/screens/favorite_page.dart';
 import 'package:gallery/auth.dart';
+import 'package:consumable/app.dart';
 import '../data.dart';
 import '../routing.dart';
-import '../screens/sign_in.dart';
 import '../widgets/fade_transition_page.dart';
 import 'scaffold.dart';
 
@@ -37,6 +38,7 @@ class _SMSNavigatorState extends State<SMSNavigator> {
       const ValueKey('Consumable breakfast details screen');
   final _consumableLunchDetailsKey =
       const ValueKey('Consumable lunch details screen');
+  final _createMenuDetailsKey = const ValueKey('Create Menu screen');
 
   @override
   Widget build(BuildContext context) {
@@ -65,9 +67,6 @@ class _SMSNavigatorState extends State<SMSNavigator> {
     return Navigator(
       key: widget.navigatorKey,
       onPopPage: (route, dynamic result) {
-        // When a page that is stacked on top of the scaffold is popped, display
-        // the /avinya_types tab in SMSScaffold.
-
         if (route.settings is Page &&
             (route.settings as Page).key == _consumableDetailsKey) {
           routeState.go('/consumables');
@@ -80,55 +79,43 @@ class _SMSNavigatorState extends State<SMSNavigator> {
             (route.settings as Page).key == _consumableLunchDetailsKey) {
           routeState.go('/consumable_feedback_lunch');
         }
+        if (route.settings is Page &&
+            (route.settings as Page).key == _createMenuDetailsKey) {
+          routeState.go('/favoritepage');
+        }
 
         return route.didPop(result);
       },
       pages: [
-        // if (routeState.route.pathTemplate == '/apply')
+        // if (routeState.route.pathTemplate == '/favoritepage')
         //   // Display the sign in screen.
         //   FadeTransitionPage<void>(
-        //     key: _applyKey,
-        //     child: ApplyScreen(
-        //         ),
-        //   )
-        if (routeState.route.pathTemplate == '/signin')
-          // Display the sign in screen.
-          FadeTransitionPage<void>(
-            key: _signInKey,
-            child: SignInScreen(
-              onSignIn: (credentials) async {
-                var signedIn = await authState.signIn(
-                    credentials.username, credentials.password);
-                if (signedIn) {
-                  await routeState.go('/consumable_feedback_breakfast');
-                }
-              },
+        //     key: _createMenuDetailsKey,
+        //     child: FavoritePage(),
+        //   ),
+
+        // Display the app
+        FadeTransitionPage<void>(
+          key: _scaffoldKey,
+          child: const SMSScaffold(),
+        ),
+        // Add an additional page to the stack if the user is viewing a book
+        // or an author
+        if (selectedResourceAllocation != null)
+          MaterialPage<void>(
+            key: _consumableDetailsKey,
+            child: ResourceAllocationDetailsScreen(
+              resourceAllocation: selectedResourceAllocation,
             ),
           )
-        else ...[
-          // Display the app
-          FadeTransitionPage<void>(
-            key: _scaffoldKey,
-            child: const SMSScaffold(),
-          ),
-          // Add an additional page to the stack if the user is viewing a book
-          // or an author
-          if (selectedResourceAllocation != null)
-            MaterialPage<void>(
-              key: _consumableDetailsKey,
-              child: ResourceAllocationDetailsScreen(
-                resourceAllocation: selectedResourceAllocation,
-              ),
-            )
 
-          // else if (selectedEmployee != null)
-          //   MaterialPage<void>(
-          //     key: _employeeDetailsKey,
-          //     child: EmployeeDetailsScreen(
-          //       employee: selectedEmployee,
-          //     ),
-          //   )
-        ],
+        // else if (selectedEmployee != null)
+        //   MaterialPage<void>(
+        //     key: _employeeDetailsKey,
+        //     child: EmployeeDetailsScreen(
+        //       employee: selectedEmployee,
+        //     ),
+        //   )
       ],
     );
   }
