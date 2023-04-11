@@ -56,6 +56,12 @@ jobs:
         with:
           name: node-app
           path: campus/deployment/node-app
+          
+      - name: npm install, build, and test
+        run: |
+          npm install
+          npm run build --if-present
+          npm run test --if-present
 
   deploy:
     runs-on: ubuntu-latest
