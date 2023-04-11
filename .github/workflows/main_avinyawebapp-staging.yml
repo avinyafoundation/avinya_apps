@@ -49,7 +49,7 @@ jobs:
 
       - name: Move Flutter build contents to node-app artifact
         run: |
-          cp -R flutter-build/* campus/deployment/node-app/public-flutter
+          cp -R campus/frontend/build/web/* campus/deployment/node-app/public-flutter
 
       - name: Upload artifact for node app
         uses: actions/upload-artifact@v2
