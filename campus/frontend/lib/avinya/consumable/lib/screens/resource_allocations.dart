@@ -67,7 +67,7 @@ class _ResourceAllocationsScreenState extends State<ResourceAllocationsScreen>
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: const Text("Today's Menu"),
+          title: const Text("Today's Menu3"),
           bottom: TabBar(
             controller: _tabController,
             tabs: const [
