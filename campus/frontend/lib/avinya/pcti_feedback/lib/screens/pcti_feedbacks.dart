@@ -1,28 +1,30 @@
-import 'package:pcti_feedback/screens/pcti_note_details.dart';
-import 'package:pcti_feedback/widgets/pcti_note_list.dart';
 import 'package:flutter/material.dart';
-import '../data.dart';
+
+import 'package:pcti_feedback/screens/feedbacks.dart';
 import 'package:pcti_feedback/routing.dart';
 
-class PctiNoteScreen extends StatefulWidget {
+import 'package:pcti_feedback/data.dart';
+import '../widgets/pcti_feedbacks_list.dart';
+
+class PctiFeedbackScreen extends StatefulWidget {
   final Activity? pctiActivity;
 
-  const PctiNoteScreen({
+  const PctiFeedbackScreen({
     super.key,
     this.pctiActivity,
   });
 
   @override
-  State<PctiNoteScreen> createState() =>
-      _PctiNoteScreenState(this.pctiActivity);
+  State<PctiFeedbackScreen> createState() =>
+      _PctiFeedbackScreenState(this.pctiActivity);
 }
 
-class _PctiNoteScreenState extends State<PctiNoteScreen>
+class _PctiFeedbackScreenState extends State<PctiFeedbackScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final Activity? pctiActivity;
 
-  _PctiNoteScreenState(this.pctiActivity);
+  _PctiFeedbackScreenState(this.pctiActivity);
 
   @override
   void initState() {
@@ -58,12 +60,12 @@ class _PctiNoteScreenState extends State<PctiNoteScreen>
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('PCTI Notes'),
+        title: const Text('PCTI Feedbacks'),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
             Tab(
-              text: 'All PCTI Notes',
+              text: 'All PCTI Feedbacks',
               icon: Icon(Icons.list_alt),
             ),
           ],
@@ -72,7 +74,7 @@ class _PctiNoteScreenState extends State<PctiNoteScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          PctiNoteList(
+          PctiFeedbackList(
             onTap: _handlePctiNoteTapped,
             pctiActivity: pctiActivity,
           ),
@@ -99,8 +101,8 @@ class _PctiNoteScreenState extends State<PctiNoteScreen>
   void _handlePctiNoteTapped(dynamic pctiNote) {
     // _routeState.go('/pcti_notes/${pctiNote.id}');
     Navigator.of(context).push<void>(MaterialPageRoute<void>(
-      builder: (context) => PctiNoteDetail(
-        pctiNote: pctiNote,
+      builder: (context) => FeedbackTabPageScreen(
+        pctiFeedback: pctiNote,
       ),
     ));
   }

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/src/material/data_table.dart';
 import 'package:gallery/avinya/attendance/lib/data.dart';
 import 'package:gallery/data/address.dart';
 import 'package:http/http.dart' as http;
@@ -257,6 +258,8 @@ class Person {
         if (updated != null) 'updated': updated,
         'parent_students': [parent_students],
       };
+
+  map(DataRow Function(dynamic evaluation) param0) {}
 }
 //-------- start of profile functions ---------------
 
