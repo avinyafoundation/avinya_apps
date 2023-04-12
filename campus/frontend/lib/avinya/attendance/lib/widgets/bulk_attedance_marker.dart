@@ -125,6 +125,8 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
           attendance.person_id == person_id &&
           attendance.sign_out_time != null);
 
+    print('index: $index  person_id: $person_id  value: $value');
+
     if (index == -1)
       index = _fetchedAttendance
           .indexWhere((attendance) => attendance.person_id == -1);
@@ -253,10 +255,18 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                     border: TableBorder.all(),
                     children: [
                       TableRow(children: [
-                        TableCell(child: Text("Name")),
-                        TableCell(child: Text("Digital ID")),
-                        TableCell(child: Text("Sign in")),
-                        TableCell(child: Text("Sign out")),
+                        TableCell(
+                            child: Text("Name",
+                                style: TextStyle(fontWeight: FontWeight.bold))),
+                        TableCell(
+                            child: Text("Digital ID",
+                                style: TextStyle(fontWeight: FontWeight.bold))),
+                        TableCell(
+                            child: Text("Sign in",
+                                style: TextStyle(fontWeight: FontWeight.bold))),
+                        TableCell(
+                            child: Text("Sign out",
+                                style: TextStyle(fontWeight: FontWeight.bold))),
                       ]),
                       //   ...classes
                       //       .map((className) =>
@@ -293,7 +303,8 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                         .firstWhere(
                                             (attendance) =>
                                                 attendance.person_id ==
-                                                person.id,
+                                                    person.id &&
+                                                attendance.sign_in_time != null,
                                             orElse: () =>
                                                 new ActivityAttendance(
                                                     person_id: -1))
@@ -302,9 +313,13 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                   TableCell(
                                     child: Checkbox(
                                       value: _fetchedAttendance
-                                              .firstWhere((attendance) =>
-                                                  attendance.person_id ==
-                                                  person.id)
+                                              .firstWhere(
+                                                (attendance) =>
+                                                    attendance.person_id ==
+                                                        person.id &&
+                                                    attendance.sign_in_time !=
+                                                        null,
+                                              )
                                               .sign_in_time !=
                                           null,
                                       onChanged: (bool? value) async {
@@ -331,7 +346,9 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                         .firstWhere(
                                             (attendance) =>
                                                 attendance.person_id ==
-                                                person.id,
+                                                    person.id &&
+                                                attendance.sign_out_time !=
+                                                    null,
                                             orElse: () =>
                                                 new ActivityAttendance(
                                                     person_id: -1))
@@ -340,9 +357,13 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                   TableCell(
                                     child: Checkbox(
                                       value: _fetchedAttendance
-                                              .firstWhere((attendance) =>
-                                                  attendance.person_id ==
-                                                  person.id)
+                                              .firstWhere(
+                                                (attendance) =>
+                                                    attendance.person_id ==
+                                                        person.id &&
+                                                    attendance.sign_out_time !=
+                                                        null,
+                                              )
                                               .sign_out_time !=
                                           null,
                                       onChanged: (bool? value) async {
