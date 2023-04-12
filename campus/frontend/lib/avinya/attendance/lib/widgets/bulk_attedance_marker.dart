@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:gallery/avinya/attendance/lib/data.dart';
 import 'package:gallery/avinya/attendance/lib/data/activity_attendance.dart';
@@ -96,25 +94,6 @@ class BulkAttendanceMarker extends StatefulWidget {
 }
 
 class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
-  List<String> classes = [
-    "Class A",
-    "Class B",
-    "Class C",
-  ];
-
-  List<String> students = [
-    "Alice",
-    "Bob",
-    "Charlie",
-    "Dave",
-    "Eve",
-    "Frank",
-    "Grace",
-    "Henry",
-    "Ivy",
-    "Jane",
-  ];
-
   List<Map<String, bool>> attendanceList = [];
   var _selectedValue;
   var activityId = 0;
@@ -129,22 +108,22 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
       activityId = campusAppsPortalInstance.activityIds['homeroom']!;
     else if (campusAppsPortalInstance.isSecurity)
       activityId = campusAppsPortalInstance.activityIds['arrival']!;
-
-    for (int i = 0; i < classes.length; i++) {
-      attendanceList.add({});
-      for (int j = 0; j < students.length; j++) {
-        attendanceList[i][students[j]] = false;
-      }
-    }
   }
 
-  Future<void> toggleAttendance(int person_id, bool value) async {
+  Future<void> toggleAttendance(int person_id, bool value, bool sign_in) async {
     if (activityInstance.id == -1) {
       activityInstance = await campusAttendanceSystemInstance
           .getCheckinActivityInstance(activityId);
     }
-    int index = _fetchedAttendance
-        .indexWhere((attendance) => attendance.person_id == person_id);
+    int index = -1;
+
+    if (sign_in)
+      index = _fetchedAttendance.indexWhere((attendance) =>
+          attendance.person_id == person_id && attendance.sign_in_time != null);
+    else
+      index = _fetchedAttendance.indexWhere((attendance) =>
+          attendance.person_id == person_id &&
+          attendance.sign_out_time != null);
 
     if (index == -1)
       index = _fetchedAttendance
@@ -154,30 +133,35 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
       if (index != -1) {
         await deleteActivityAttendance(_fetchedAttendance[index].id!);
       }
-      _fetchedAttendance[index] =
-          ActivityAttendance(person_id: -1, sign_in_time: null);
+      if (sign_in)
+        _fetchedAttendance[index] =
+            ActivityAttendance(person_id: -1, sign_in_time: null);
+      else
+        _fetchedAttendance[index] =
+            ActivityAttendance(person_id: -1, sign_out_time: null);
     } else {
-      ActivityAttendance activityAttendance =
-          await createActivityAttendance(ActivityAttendance(
-        activity_instance_id: activityInstance.id,
-        person_id: person_id,
-        sign_in_time: DateTime.now().toString(),
-        in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
-      ));
+      ActivityAttendance activityAttendance = ActivityAttendance(
+          person_id: -1, sign_in_time: null, sign_out_time: null);
+      ;
+      if (sign_in)
+        activityAttendance = await createActivityAttendance(ActivityAttendance(
+          activity_instance_id: activityInstance.id,
+          person_id: person_id,
+          sign_in_time: DateTime.now().toString(),
+          in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
+        ));
+      else {
+        activityAttendance = await createActivityAttendance(ActivityAttendance(
+          activity_instance_id: activityInstance.id,
+          person_id: person_id,
+          sign_out_time: DateTime.now().toString(),
+          out_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
+        ));
+      }
 
       _fetchedAttendance[index] = activityAttendance;
     }
   }
-
-  // get the state of attenance for the set of students in a given class
-  // void getAttendance(int classId) {
-  //   int activityId = 0;
-  //   if (campusAppsPortalInstance.isTeacher)
-  //     activityId = campusAppsPortalInstance.activityIds['homeroom']!;
-  //   else if (campusAppsPortalInstance.isSecurity)
-  //     activityId = campusAppsPortalInstance.activityIds['arrival']!;
-  //   // fetch attendance data for the given class
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -203,18 +187,6 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                         Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              // Text(org.name!.name_en == null
-                              //     ? 'N/A'
-                              //     : org.name!.name_en!),
-                              // Row(
-                              //   children: <Widget>[
-                              //     for (var suborg in org.child_organizations)
-                              //       Text(suborg.description == null
-                              //           ? 'N/A'
-                              //           : suborg.description!),
-                              //   ],
-                              // ),
-
                               if (org.child_organizations.length > 0)
                                 Row(children: <Widget>[
                                   Text('Select a class:'),
@@ -269,30 +241,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                             ]),
                     ],
                   ),
-                  Text(
-                      campusAppsPortalInstance.activityIds['school-day']
-                          .toString(),
-                      style: TextStyle(
-                          fontSize: 24.0, fontWeight: FontWeight.bold)),
-                  Text(campusAppsPortalInstance.getUserPerson().preferred_name!,
-                      style: TextStyle(
-                          fontSize: 24.0, fontWeight: FontWeight.bold)),
-                  Text(
-                    "Classes",
-                    style:
-                        TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-                  ),
                   SizedBox(height: 16.0),
-                  Wrap(
-                    spacing: 16.0,
-                    children: classes
-                        .map((className) => ChoiceChip(
-                              label: Text(className),
-                              selected: classes.indexOf(className) == 0,
-                              onSelected: (bool selected) {},
-                            ))
-                        .toList(),
-                  ),
                   SizedBox(height: 32.0),
                   Text(
                     "Students",
@@ -303,8 +252,12 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                   Table(
                     border: TableBorder.all(),
                     children: [
-                      // TableRow(children: [
-                      //   TableCell(child: Text("Name")),
+                      TableRow(children: [
+                        TableCell(child: Text("Name")),
+                        TableCell(child: Text("Digital ID")),
+                        TableCell(child: Text("Sign in")),
+                        TableCell(child: Text("Sign out")),
+                      ]),
                       //   ...classes
                       //       .map((className) =>
                       //           TableCell(child: Text(className)))
@@ -327,13 +280,14 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                       //         .toList()
                       //   ]);
                       // }).toList(),
+
                       if (_fetchedOrganization != null)
                         if (_fetchedOrganization!.people.length > 0)
                           ..._fetchedOrganization!.people.map((person) {
                             return TableRow(children: [
                               TableCell(child: Text(person.preferred_name!)),
                               TableCell(child: Text(person.digital_id!)),
-
+                              // sign in
                               if (_fetchedAttendance.length > 0)
                                 if (_fetchedAttendance
                                         .firstWhere(
@@ -355,7 +309,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                           null,
                                       onChanged: (bool? value) async {
                                         await toggleAttendance(
-                                            person.id!, value!);
+                                            person.id!, value!, true);
                                         setState(() {});
                                       },
                                     ),
@@ -366,7 +320,45 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                       value: false,
                                       onChanged: (bool? value) async {
                                         await toggleAttendance(
-                                            person.id!, value!);
+                                            person.id!, value!, true);
+                                        setState(() {});
+                                      },
+                                    ),
+                                  ),
+                              // sign out
+                              if (_fetchedAttendance.length > 0)
+                                if (_fetchedAttendance
+                                        .firstWhere(
+                                            (attendance) =>
+                                                attendance.person_id ==
+                                                person.id,
+                                            orElse: () =>
+                                                new ActivityAttendance(
+                                                    person_id: -1))
+                                        .person_id !=
+                                    -1)
+                                  TableCell(
+                                    child: Checkbox(
+                                      value: _fetchedAttendance
+                                              .firstWhere((attendance) =>
+                                                  attendance.person_id ==
+                                                  person.id)
+                                              .sign_out_time !=
+                                          null,
+                                      onChanged: (bool? value) async {
+                                        await toggleAttendance(
+                                            person.id!, value!, false);
+                                        setState(() {});
+                                      },
+                                    ),
+                                  )
+                                else
+                                  TableCell(
+                                    child: Checkbox(
+                                      value: false,
+                                      onChanged: (bool? value) async {
+                                        await toggleAttendance(
+                                            person.id!, value!, false);
                                         setState(() {});
                                       },
                                     ),
