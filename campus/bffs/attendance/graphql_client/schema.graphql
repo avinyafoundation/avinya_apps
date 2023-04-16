@@ -710,6 +710,8 @@ type Query {
   work_experience_ByPerson(person_id: Int): [WorkExperienceData!]
   activity(name: String, id: Int): ActivityData
   class_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
+  person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int): [ActivityParticipantAttendanceData!]
+  class_attendance_report(organization_id: Int, activity_id: Int, result_limit: Int): [ActivityParticipantAttendanceData!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
   supplier(id: Int!): SupplierData
