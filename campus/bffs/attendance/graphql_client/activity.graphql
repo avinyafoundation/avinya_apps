@@ -125,3 +125,17 @@ query getPersonAttendanceReport($person_id: Int!, $activity_id: Int!, $result_li
         out_marked_by
     }      
 }
+
+query getPersonAttendanceToday($person_id: Int!, $activity_id: Int!) {
+    person_attendance_today(person_id:$person_id, activity_id: $activity_id) {
+        id
+        person {
+            id
+        }
+        activity_instance_id
+        sign_in_time
+        sign_out_time
+        in_marked_by
+        out_marked_by
+    }      
+}
