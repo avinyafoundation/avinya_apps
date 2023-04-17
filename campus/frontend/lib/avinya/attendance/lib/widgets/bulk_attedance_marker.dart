@@ -1,91 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gallery/avinya/attendance/lib/data.dart';
 import 'package:gallery/avinya/attendance/lib/data/activity_attendance.dart';
-import 'package:gallery/data/campus_apps_portal.dart';
 
 import '../data/activity_instance.dart';
-// import '../data.dart';
-// import '../data/activity_attendance.dart';
-
-// class BulkAttendanceMarker extends StatefulWidget {
-//   @override
-//   _BulkAttendanceMarkerState createState() => _BulkAttendanceMarkerState();
-// }
-
-// class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
-//   bool _isCheckedIn = false;
-//   bool _isCheckedOut = false;
-
-//   void _handleCheckIn() {
-//     // call the API to check-in
-//     createActivityAttendance(ActivityAttendance(
-//       activity_instance_id:
-//           campusAttendanceSystemInstance.getCheckinActivityInstance().id,
-//       person_id: campusAppsPortalInstance.getUserPerson().id,
-//       sign_in_time: DateTime.now().toString(),
-//     ));
-//     setState(() {
-//       _isCheckedIn = true;
-//     });
-//     print('Checked in for today.');
-//   }
-
-//   void _handleCheckOut() {
-//     // call the API to check-out
-//     createActivityAttendance(ActivityAttendance(
-//       activity_instance_id:
-//           campusAttendanceSystemInstance.getCheckoutActivityInstance().id,
-//       person_id: campusAppsPortalInstance.getUserPerson().id,
-//       sign_out_time: DateTime.now().toString(),
-//     ));
-//     setState(() {
-//       _isCheckedOut = true;
-//     });
-//     print('Checked out for today.');
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: [
-//         if (!_isCheckedIn)
-//           ElevatedButton(
-//             child: Text('Check-In'),
-//             onPressed: _handleCheckIn,
-//             style: ButtonStyle(
-//               // increase the fontSize
-//               textStyle: MaterialStateProperty.all(
-//                 TextStyle(fontSize: 20),
-//               ),
-//               elevation:
-//                   MaterialStateProperty.all(20), // increase the elevation
-//               // Add outline around button
-//               backgroundColor: MaterialStateProperty.all(Colors.greenAccent),
-//               foregroundColor: MaterialStateProperty.all(Colors.black),
-//             ),
-//           )
-//         else if (_isCheckedIn && !_isCheckedOut)
-//           ElevatedButton(
-//             child: Text('Check-Out'),
-//             onPressed: _handleCheckOut,
-//             style: ButtonStyle(
-//               // increase the fontSize
-//               textStyle: MaterialStateProperty.all(
-//                 TextStyle(fontSize: 20),
-//               ),
-//               elevation:
-//                   MaterialStateProperty.all(20), // increase the elevation
-//               // Add outline around button
-//               backgroundColor: MaterialStateProperty.all(Colors.orangeAccent),
-//               foregroundColor: MaterialStateProperty.all(Colors.black),
-//             ),
-//           )
-//         else if (_isCheckedOut)
-//           Text('Attendance marked for today.'),
-//       ],
-//     );
-//   }
-// }
 
 class BulkAttendanceMarker extends StatefulWidget {
   const BulkAttendanceMarker({super.key});
@@ -268,29 +185,6 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                             child: Text("Sign out",
                                 style: TextStyle(fontWeight: FontWeight.bold))),
                       ]),
-                      //   ...classes
-                      //       .map((className) =>
-                      //           TableCell(child: Text(className)))
-                      //       .toList()
-                      // ]),
-                      // ...students.map((studentName) {
-                      //   return TableRow(children: [
-                      //     TableCell(child: Text(studentName)),
-                      //     ...classes
-                      //         .map((className) => TableCell(
-                      //               child: Checkbox(
-                      //                 value: attendanceList[classes
-                      //                     .indexOf(className)][studentName],
-                      //                 onChanged: (bool? value) {
-                      //                   toggleAttendance(
-                      //                       className, studentName);
-                      //                 },
-                      //               ),
-                      //             ))
-                      //         .toList()
-                      //   ]);
-                      // }).toList(),
-
                       if (_fetchedOrganization != null)
                         if (_fetchedOrganization!.people.length > 0)
                           ..._fetchedOrganization!.people.map((person) {
@@ -384,19 +278,6 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                       },
                                     ),
                                   ),
-
-                              // ...classes
-                              //     .map((className) => TableCell(
-                              //           child: Checkbox(
-                              //             value: attendanceList[classes
-                              //                 .indexOf(className)][studentName],
-                              //             onChanged: (bool? value) {
-                              //               toggleAttendance(
-                              //                   className, studentName);
-                              //             },
-                              //           ),
-                              //         ))
-                              //     .toList()
                             ]);
                           }).toList()
                     ],

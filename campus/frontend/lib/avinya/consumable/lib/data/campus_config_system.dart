@@ -1,10 +1,4 @@
-import 'dart:developer';
-
 import 'package:consumable/data.dart';
-
-//import 'package:ShoolManagementSystem/src/data.dart';
-
-// final campusConfigSystemInstance = CampusConfigSystem()
 
 class CampusConfigSystem {
   List<Person>? persons = [];
