@@ -12,6 +12,7 @@ class SMSScaffold extends StatelessWidget {
   static const pageNames = [
     '/pcti_feedback',
     '/evaluations',
+    // '/feedbacks'
     // '/pcti_notes/popular',
   ];
 
@@ -86,6 +87,10 @@ class SMSScaffold extends StatelessWidget {
             title: 'Evaluations',
             icon: Icons.feedback,
           ),
+          // AdaptiveScaffoldDestination(
+          //   title: 'Feedbacks',
+          //   icon: Icons.note,
+          // ),
         ],
       ),
       persistentFooterButtons: [

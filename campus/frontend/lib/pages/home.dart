@@ -66,7 +66,7 @@ class HomePage extends StatelessWidget {
           demo: studyDemos['campuspctiApp'],
           asset: const AssetImage(
             'assets/images/pcti_notes.png',
-           // package: 'flutter_gallery_assets',
+            // package: 'flutter_gallery_assets',
           ),
           assetColor: const Color(0xFFFFFFFF),
           // assetDark: const AssetImage(
@@ -85,14 +85,14 @@ class HomePage extends StatelessWidget {
           demo: studyDemos['campuspctiadminApp'],
           asset: const AssetImage(
             'assets/images/pcti_admin.png',
-           // package: 'flutter_gallery_assets',
+            // package: 'flutter_gallery_assets',
           ),
           assetColor: const Color(0xFFFFFFFF),
           // assetDark: const AssetImage(
           //   'assets/studies/shrine_card_dark.png',
           //   package: 'flutter_gallery_assets',
           // ),
-         // assetDarkColor: const Color(0xFF543B3C),
+          // assetDarkColor: const Color(0xFF543B3C),
           textColor: Colors.black,
           studyRoute: campus_pcti_admin.campuspctiadminRoute,
         ),
@@ -104,14 +104,14 @@ class HomePage extends StatelessWidget {
           demo: studyDemos['feedbackApp'],
           asset: const AssetImage(
             'assets/images/feedback.png',
-           // package: 'flutter_gallery_assets',
+            // package: 'flutter_gallery_assets',
           ),
           assetColor: const Color(0xFFFFFFFF),
           // assetDark: const AssetImage(
           //   'assets/studies/rally_card_dark.png',
           //   package: 'flutter_gallery_assets',
           // ),
-         // assetDarkColor: const Color(0xFF543B3C),
+          // assetDarkColor: const Color(0xFF543B3C),
           textColor: Colors.black,
           studyRoute: feedback_routes.feedbackRoute,
         ),
@@ -122,7 +122,7 @@ class HomePage extends StatelessWidget {
           demo: studyDemos['assetApp'],
           asset: const AssetImage(
             'assets/images/asset.png',
-           // package: 'flutter_gallery_assets',
+            // package: 'flutter_gallery_assets',
           ),
           assetColor: const Color(0xFFFFFFFF),
           // assetDark: const AssetImage(
@@ -140,14 +140,14 @@ class HomePage extends StatelessWidget {
           demo: studyDemos['consumableApp'],
           asset: const AssetImage(
             'assets/images/consumable.png',
-           // package: 'flutter_gallery_assets',
+            // package: 'flutter_gallery_assets',
           ),
           assetColor: const Color(0xFFFFFFFF),
           // assetDark: const AssetImage(
           //   'assets/studies/shrine_card_dark.png',
           //   package: 'flutter_gallery_assets',
           // ),
-         // assetDarkColor: const Color(0xFF543B3C),
+          // assetDarkColor: const Color(0xFF543B3C),
           //textColor: shrineBrown900,
           textColor: Colors.black,
           studyRoute: consumable_routes.consumableRoute,
@@ -920,35 +920,33 @@ class _CarouselCard extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               if (asset != null)
-             Positioned(
-                left: 50,
-                top: 40,
-                bottom: 60,
-                right: 50,
-                child: FadeInImagePlaceholder(
-                  image: asset,
-                  placeholder: Container(
-                    color: assetColor,
-                  ),
-                  child: Ink.image(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    height: MediaQuery.of(context).size.height  * 0.3,
+                Positioned(
+                  left: 50,
+                  top: 40,
+                  bottom: 60,
+                  right: 50,
+                  child: FadeInImagePlaceholder(
                     image: asset,
+                    placeholder: Container(
+                      color: assetColor,
+                    ),
+                    child: Ink.image(
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.height * 0.3,
+                      image: asset,
+                    ),
                   ),
                 ),
-             ),
               Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(16,0, 16, 16),
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    
                     Divider(
                       thickness: 1,
                     ),
                     Text(
-                      
                       demo!.title,
                       style: textTheme.bodyMedium!.apply(color: textColor),
                       maxLines: 3,

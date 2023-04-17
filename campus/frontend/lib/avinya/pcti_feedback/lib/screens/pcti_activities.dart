@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:pcti_feedback/widgets/pcti_feedback_activity_details.dart';
 import '../data.dart';
 import '../routing.dart';
-import '../widgets/pcti_activity_details.dart';
+
 
 class PctiActivitiesScreen extends StatefulWidget {
   const PctiActivitiesScreen({

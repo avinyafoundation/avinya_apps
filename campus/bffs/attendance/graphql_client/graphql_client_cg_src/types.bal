@@ -45,9 +45,11 @@ public type ActivityParticipant record {
 
 public type ActivityParticipantAttendance record {
     int? activity_instance_id?;
+    string? in_marked_by?;
     string? created?;
     string? sign_in_time?;
     int? id?;
+    string? out_marked_by?;
     string? updated?;
     string? record_type?;
     int? person_id?;
@@ -273,6 +275,7 @@ public type Person record {
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
+    int? academy_org_id?;
 };
 
 public type Prospect record {
@@ -494,4 +497,65 @@ public type GetActivityInstancesTodayResponse record {|
             int? id;
         |}? organization;
     |}[]? activity_instances_today;
+|};
+
+public type GetClassAttendanceTodayResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        record {|
+            int? id;
+        |}? person;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+    |}[]? class_attendance_today;
+|};
+
+public type GetClassAttendanceReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+        |}? person;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+    |}[]? class_attendance_report;
+|};
+
+public type GetPersonAttendanceReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+        |}? person;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+    |}[]? person_attendance_report;
+|};
+
+public type GetPersonAttendanceTodayResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+        |}? person;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+    |}[]? person_attendance_today;
 |};
