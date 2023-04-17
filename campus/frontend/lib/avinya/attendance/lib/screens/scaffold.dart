@@ -9,10 +9,8 @@ import 'scaffold_body.dart';
 
 class SMSScaffold extends StatelessWidget {
   static const pageNames = [
-    '/avinya_types/popular',
-    '/activities/popular',
     '/attendance_marker',
-    '/bulk_attendance_marker/class1',
+    '/bulk_attendance_marker/classes',
   ];
 
   const SMSScaffold({
@@ -79,24 +77,12 @@ class SMSScaffold extends StatelessWidget {
         },
         destinations: const [
           AdaptiveScaffoldDestination(
-            title: 'Avinya Types',
-            icon: Icons.type_specimen,
-          ),
-          AdaptiveScaffoldDestination(
-            title: 'Activities',
-            icon: Icons.list_alt,
-          ),
-          AdaptiveScaffoldDestination(
             title: 'Attendance Marker',
-            icon: Icons.qr_code_scanner,
+            icon: Icons.person_outline,
           ),
           AdaptiveScaffoldDestination(
             title: 'Bulk Attendance Marker',
-            icon: Icons.qr_code_scanner_outlined,
-          ),
-          AdaptiveScaffoldDestination(
-            title: 'Tests',
-            icon: Icons.text_snippet,
+            icon: Icons.people,
           ),
         ],
       ),

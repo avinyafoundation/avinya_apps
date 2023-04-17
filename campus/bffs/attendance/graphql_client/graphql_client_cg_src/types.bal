@@ -514,3 +514,48 @@ public type GetClassAttendanceTodayResponse record {|
         string? out_marked_by;
     |}[]? class_attendance_today;
 |};
+
+public type GetClassAttendanceReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+        |}? person;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+    |}[]? class_attendance_report;
+|};
+
+public type GetPersonAttendanceReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+        |}? person;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+    |}[]? person_attendance_report;
+|};
+
+public type GetPersonAttendanceTodayResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+        |}? person;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+    |}[]? person_attendance_today;
+|};

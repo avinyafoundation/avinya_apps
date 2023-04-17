@@ -906,7 +906,8 @@ class _CarouselCard extends StatelessWidget {
       margin:
           EdgeInsets.all(isDisplayDesktop(context) ? 0 : _carouselItemMargin),
       child: Material(
-        elevation: 4,
+        elevation: 8,
+        shadowColor: Colors.grey,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
