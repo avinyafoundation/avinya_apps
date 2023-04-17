@@ -19,7 +19,7 @@ class _BulkAttendanceMarkerScreenState extends State<BulkAttendanceMarkerScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this)
+    _tabController = TabController(length: 1, vsync: this)
       ..addListener(_handleTabIndexChanged);
   }
 
@@ -28,11 +28,12 @@ class _BulkAttendanceMarkerScreenState extends State<BulkAttendanceMarkerScreen>
     super.didChangeDependencies();
 
     final newPath = _routeState.route.pathTemplate;
-    if (newPath.startsWith('/bulk_attendance_marker/class1')) {
+    if (newPath.startsWith('/bulk_attendance_marker/classes')) {
       _tabController.index = 0;
-    } else if (newPath.startsWith('/bulk_attendance_marker/class2')) {
-      _tabController.index = 1;
     }
+    // else if (newPath.startsWith('/bulk_attendance_marker/class2')) {
+    //   _tabController.index = 1;
+    // }
   }
 
   @override
@@ -43,12 +44,12 @@ class _BulkAttendanceMarkerScreenState extends State<BulkAttendanceMarkerScreen>
 
   void _handleTabIndexChanged() {
     switch (_tabController.index) {
-      case 1:
-        _routeState.go('/bulk_attendance_marker/class2');
-        break;
+      // case 1:
+      //   _routeState.go('/bulk_attendance_marker/class2');
+      //   break;
       case 0:
       default:
-        _routeState.go('/bulk_attendance_marker/class1');
+        _routeState.go('/bulk_attendance_marker/classes');
         break;
     }
   }
@@ -56,16 +57,12 @@ class _BulkAttendanceMarkerScreenState extends State<BulkAttendanceMarkerScreen>
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text('Bulk Attendance Marker'),
+          title: Text('Class Attendance Marker'),
           bottom: TabBar(
             controller: _tabController,
             tabs: const [
               Tab(
-                text: 'Class 1',
-                icon: Icon(Icons.list_alt),
-              ),
-              Tab(
-                text: 'Class 2',
+                text: '',
                 icon: Icon(Icons.list_alt),
               ),
             ],
@@ -74,7 +71,6 @@ class _BulkAttendanceMarkerScreenState extends State<BulkAttendanceMarkerScreen>
         body: TabBarView(
           controller: _tabController,
           children: [
-            BulkAttendanceMarker(),
             BulkAttendanceMarker(),
           ],
         ),
