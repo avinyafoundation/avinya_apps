@@ -10,6 +10,8 @@ class AttendanceMarker extends StatefulWidget {
 class _AttendanceMarkerState extends State<AttendanceMarker> {
   bool _isCheckedIn = false;
   bool _isCheckedOut = false;
+  List<ActivityAttendance> _personAttendanceToday = [];
+  List<ActivityAttendance> _personAttendanceReport = [];
 
   Future<void> _handleCheckIn() async {
     var activityInstance =
@@ -47,6 +49,7 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
 
   @override
   Widget build(BuildContext context) {
+    //_personAttendanceToday = await getPersonActivityAttendanceToday(campusAppsPortalInstance.getUserPerson().id!, campusAppsPortalInstance.activityIds['school-day']!);
     return Column(
       children: [
         if (!_isCheckedIn)
