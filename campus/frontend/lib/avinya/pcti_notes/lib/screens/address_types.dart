@@ -66,7 +66,7 @@ class _AddressTypeScreenState extends State<AddressTypeScreen>
           onPressed: () async {
             Navigator.of(context).push<void>(
               MaterialPageRoute<void>(
-                builder: (context) => AddAddressTypePage(),
+                builder: (context) => const AddAddressTypePage(),
               ),
             )
             .then((value) => setState(() {}));

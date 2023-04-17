@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 
 import 'package:gallery/auth.dart';
-import 'data.dart';
 import 'routing.dart';
 import 'screens/navigator.dart';
 
@@ -77,7 +76,7 @@ class _CampusPctiSystemState extends State<CampusPctiSystem> {
 
   Future<ParsedRoute> _guard(ParsedRoute from) async {
     final signedIn = await _auth.getSignedIn();
-    String? jwt_sub = campusAppsPortalInstance.getJWTSub();
+    //String? jwt_sub = campusAppsPortalInstance.getJWTSub();
 
     final signInRoute = ParsedRoute('/signin', '/signin', {}, {});
 

@@ -57,7 +57,7 @@ class PctiNoteListState extends State<PctiNoteList> {
               ),
             );
           } else {
-            return Center(
+            return const Center(
               child: Text("No PCTI Notes",
               style: TextStyle(fontSize: 20),
               textAlign: TextAlign.center,

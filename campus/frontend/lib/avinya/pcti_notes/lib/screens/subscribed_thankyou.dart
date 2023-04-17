@@ -48,27 +48,27 @@ class _SubscribedThankyouScreenState extends State<SubscribedThankyouScreen> {
                     child: Container(
                       child: Wrap(children: [
                         Column(children: [
-                          Text(
+                          const Text(
                             "Avinya Academy - Prospective Student Subscription",
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(height: 20.0),
-                          Text(
+                          const SizedBox(height: 20.0),
+                          const Text(
                               """ You have successfully subscribed to our prospective student list.
                             We will contact you shortly.."""),
                           // SizedBox(height: 10.0),
                           // Text(
                           //     "Thank you for your interest in Avinya Academy."),
-                          SizedBox(height: 10.0),
-                          Text(
+                          const SizedBox(height: 10.0),
+                          const Text(
                               "If you would like to proceed to fill in the application forms, please click below."),
-                          SizedBox(height: 10.0),
+                          const SizedBox(height: 10.0),
                           ElevatedButton(
                             onPressed: () async {
                               await routeState.go('/preconditions');
                             },
-                            child: Text('Fill in Application Forms'),
+                            child: const Text('Fill in Application Forms'),
                           ),
                         ]),
                       ]),
