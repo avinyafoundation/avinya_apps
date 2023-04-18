@@ -162,7 +162,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                             child: Wrap(children: [
                               Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
+                                  children: const [
                                     Text(
                                       "Avinya Academy Student Admissions",
                                       style: TextStyle(
@@ -229,7 +229,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                   },
                   validator: _mandatoryValidator,
                 ),
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
                       'Date of birth: ${dateOfBirth.year}/${dateOfBirth.month}/${dateOfBirth.day}'),
@@ -455,7 +455,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                           },
                         ),
                       ),
-                      SizedBox(width: 10.0),
+                      const SizedBox(width: 10.0),
                       Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
