@@ -26,7 +26,7 @@ class _selectPctiSubstituteState extends State<selectPctiSubstitute> {
 
   @override
   Widget build(BuildContext context) {
-    Widget selectActivityInstanceWidget;
+   // Widget selectActivityInstanceWidget;//2023-04-18 commented by lahiru
     return Scaffold(
       body: Center(
         child: FutureBuilder<List<Activity>>(
@@ -117,7 +117,7 @@ class _selectActivityInstanceState extends State<selectActivityInstance> {
 
   @override
   Widget build(BuildContext context) {
-    Widget selectTeacherWidget;
+    //Widget selectTeacherWidget; //2023-04-18 commented by lahiru
     return Scaffold(
       appBar: AppBar(
         title: const Text('PCTI Activity Instances'),

@@ -48,7 +48,7 @@ class _SelectPctiActivityPageState extends State<SelectPctiActivityPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   DropdownButton(
-                    hint: Text("Select PCTI Activity"),
+                    hint: const Text("Select PCTI Activity"),
                     items: snapshot.data?.map((Activity value) {
                       return DropdownMenuItem<Activity>(
                         value: value,
@@ -73,7 +73,7 @@ class _SelectPctiActivityPageState extends State<SelectPctiActivityPage> {
                         onTap!(selectedActivity);
                         // onTap != null ? () => onTap!(selectedActivity) : null;
                       },
-                      child: Text("View Notes"),
+                      child: const Text("View Notes"),
                     ),
                   )
                 ],
@@ -81,7 +81,7 @@ class _SelectPctiActivityPageState extends State<SelectPctiActivityPage> {
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");
             }
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           },
         ),
       ),

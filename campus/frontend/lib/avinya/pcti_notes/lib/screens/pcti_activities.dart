@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:pcti_notes/data/activity.dart';
 
 import '../data.dart';
 import '../routing.dart';
