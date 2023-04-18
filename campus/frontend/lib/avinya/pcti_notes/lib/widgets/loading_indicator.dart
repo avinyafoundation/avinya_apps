@@ -31,9 +31,9 @@ class LoadingIndicatorDialog {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Padding(
+                      const Padding(
                         padding:
-                            const EdgeInsets.only(left: 16, top: 16, right: 16),
+                            EdgeInsets.only(left: 16, top: 16, right: 16),
                         child: CircularProgressIndicator(),
                       ),
                       Padding(

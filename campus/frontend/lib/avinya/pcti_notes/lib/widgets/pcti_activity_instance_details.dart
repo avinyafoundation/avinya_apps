@@ -13,7 +13,7 @@ class SelectPctiActivityInstancePage extends StatefulWidget{
 }
 
 class _SelectPctiActivityInstancePageState extends State<SelectPctiActivityInstancePage>{
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();//formkey isn't used that's why commented it
   final Activity? pctiActivity;
 
   late Future<List<ActivityInstance>> futureActivityInstances;
@@ -55,7 +55,7 @@ class _SelectPctiActivityInstancePageState extends State<SelectPctiActivityInsta
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     DropdownButton(
-                      hint: Text("Select PCTI Activity Instance"),
+                      hint: const Text("Select PCTI Activity Instance"),
                       items: snapshot.data?.map((ActivityInstance value) {
                         return DropdownMenuItem<ActivityInstance>(
                           value: value,
@@ -84,13 +84,13 @@ class _SelectPctiActivityInstancePageState extends State<SelectPctiActivityInsta
                 )
                 .then((value) => setState(() {}));
               },
-                        child: Text("Select"),
+                        child: const Text("Select"),
                       ),
                     )
                   ],
                 );
             } else {
-                return Center(
+                return const Center(
                   child: Text("You have no classes for today",
                   style: TextStyle(fontSize: 20),
                   textAlign: TextAlign.center,
@@ -101,7 +101,7 @@ class _SelectPctiActivityInstancePageState extends State<SelectPctiActivityInsta
             else if (snapshot.hasError) {
               return Text("${snapshot.error}");
             } 
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           },
         ),
       ),

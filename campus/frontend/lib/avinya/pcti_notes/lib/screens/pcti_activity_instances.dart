@@ -53,7 +53,7 @@ class _PctiActivityInstancesScreenState extends State<PctiActivityInstancesScree
         ),
         body: TabBarView(
           controller: _tabController,
-          children: [
+          children: const [
             SelectPctiActivityInstancePage(),
           ],
         ),
