@@ -26,7 +26,7 @@ linter:
     # unnecessary_new : false
     # prefer_const_constructors : false
     # prefer_interpolation_to_compose_strings: false
-      non_constant_identifier_names: false
+    non_constant_identifier_names: false
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
     # prefer_single_quotes: false  # Uncomment to enable the `prefer_single_quotes` rule
 
