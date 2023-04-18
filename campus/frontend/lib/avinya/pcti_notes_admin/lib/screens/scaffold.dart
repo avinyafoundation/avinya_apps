@@ -104,9 +104,10 @@ class SMSScaffold extends StatelessWidget {
 
   int _getSelectedIndex(String pathTemplate) {
     int index = pageNames.indexOf(pathTemplate);
-    if (index >= 0)
+    if (index >= 0) {
       return index;
-    else
+    } else {
       return 0;
+    }
   }
 }

@@ -39,11 +39,10 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
   bool checkbox2 = false;
   DateTime olYear = DateTime(2021);
 
-  MaskTextInputFormatter phoneMaskTextInputFormatter =
-      MaskTextInputFormatter(
-          mask: '###-###-####',
-          filter: {"#": RegExp(r'[0-9]')},
-          type: MaskAutoCompletionType.eager);
+  MaskTextInputFormatter phoneMaskTextInputFormatter = MaskTextInputFormatter(
+      mask: '###-###-####',
+      filter: {"#": RegExp(r'[0-9]')},
+      type: MaskAutoCompletionType.eager);
   String gender = 'Not Specified';
   bool doneOL = false;
 
@@ -412,7 +411,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                             Text(
                               state.errorText ?? '',
                               style: TextStyle(
-                                color: Theme.of(context).errorColor,
+                                color: Theme.of(context).colorScheme.error,
                               ),
                             ),
                             const SizedBox(width: 10.0),
@@ -463,7 +462,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                             Text(
                               state.errorText ?? '',
                               style: TextStyle(
-                                color: Theme.of(context).errorColor,
+                                color: Theme.of(context).colorScheme.error,
                               ),
                             ),
                             const SizedBox(width: 10.0),

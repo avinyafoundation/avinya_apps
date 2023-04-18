@@ -3,8 +3,6 @@ import 'package:consumable/widgets/favorite_page_models.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../routing.dart';
-
 class FavoriteList extends StatelessWidget {
   final BuildContext context;
 
@@ -47,7 +45,7 @@ class _MyListItem extends StatelessWidget {
       // about any other change.
       (favoritelist) => favoritelist.getByPosition(index),
     );
-    var textTheme = Theme.of(context).textTheme.headline6;
+    var textTheme = Theme.of(context).textTheme.headlineMedium;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

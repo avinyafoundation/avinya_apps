@@ -412,7 +412,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                             Text(
                               state.errorText ?? '',
                               style: TextStyle(
-                                color: Theme.of(context).errorColor,
+                                color: Theme.of(context).colorScheme.error,
                               ),
                             ),
                             SizedBox(width: 10.0),
@@ -463,7 +463,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                             Text(
                               state.errorText ?? '',
                               style: TextStyle(
-                                color: Theme.of(context).errorColor,
+                                color: Theme.of(context).colorScheme.error,
                               ),
                             ),
                             SizedBox(width: 10.0),
