@@ -285,7 +285,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
                 //             Text(
                 //               state.errorText ?? '',
                 //               style: TextStyle(
-                //                 color: Theme.of(context).errorColor,
+                //                 color: Theme.of(context).colorScheme.error,
                 //               ),
                 //             ),
                 //             SizedBox(width: 10.0),
@@ -333,7 +333,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
                 //             Text(
                 //               state.errorText ?? '',
                 //               style: TextStyle(
-                //                 color: Theme.of(context).errorColor,
+                //                 color: Theme.of(context).colorScheme.error,
                 //               ),
                 //             ),
                 //             SizedBox(width: 10.0),

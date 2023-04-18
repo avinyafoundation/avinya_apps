@@ -2,7 +2,6 @@ import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:gallery/avinya/consumable/lib/data.dart';
-import 'package:gallery/data/campus_apps_portal.dart';
 // import '../data.dart';
 // import '../data/activity_attendance.dart';
 

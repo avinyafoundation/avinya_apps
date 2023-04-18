@@ -76,9 +76,7 @@ Future<List<Vacancy>> fetchVacancies() async {
   );
 
   if (response.statusCode == 200) {
-    print(response.body);
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    print(resultsJson);
     List<Vacancy> vacancys = await resultsJson
         .map<Vacancy>((json) => Vacancy.fromJson(json))
         .toList();

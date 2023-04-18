@@ -131,35 +131,35 @@
 //       //     children: [
 //       //       Text(
 //       //         pcti_evaluation!.evaluatee_id!.toString(),
-//       //         style: Theme.of(context).textTheme.headline4,
+//       //         style: Theme.of(context).textTheme.headlineMedium,
 //       //       ),
 //       //       Text(
 //       //         pcti_evaluation!.evaluator_id!.toString(),
-//       //         style: Theme.of(context).textTheme.headline4,
+//       //         style: Theme.of(context).textTheme.headlineMedium,
 //       //       ),
 //       //       Text(
 //       //         pcti_evaluation!.evaluation_criteria_id!.toString(),
-//       //         style: Theme.of(context).textTheme.headline4,
+//       //         style: Theme.of(context).textTheme.headlineMedium,
 //       //       ),
 //       //       Text(
 //       //         pcti_evaluation!.activity_instance_id!.toString(),
-//       //         style: Theme.of(context).textTheme.headline4,
+//       //         style: Theme.of(context).textTheme.headlineMedium,
 //       //       ),
 //       //       Text(
 //       //         pcti_evaluation!.grade!.toString(),
-//       //         style: Theme.of(context).textTheme.headline4,
+//       //         style: Theme.of(context).textTheme.headlineMedium,
 //       //       ),
 //       //       Text(
 //       //         pcti_evaluation!.response!.toString(),
-//       //         style: Theme.of(context).textTheme.headline4,
+//       //         style: Theme.of(context).textTheme.headlineMedium,
 //       //       ),
 //       //       Text(
 //       //         pcti_evaluation!.notes!.toString(),
-//       //         style: Theme.of(context).textTheme.headline4,
+//       //         style: Theme.of(context).textTheme.headlineMedium,
 //       //       ),
 //       //       Text(
 //       //         pcti_evaluation!.updated!.toString(),
-//       //         style: Theme.of(context).textTheme.headline4,
+//       //         style: Theme.of(context).textTheme.headlineMedium,
 //       //       ),
 //       //     ],
 //       //   ),

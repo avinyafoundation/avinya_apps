@@ -289,7 +289,7 @@ class VacancyListState extends State<VacancyList> {
         log(answers.toString());
         log(criteriaIds.toString());
         List<Evaluation> evaluations = [];
-        answers.forEach((element) {
+        for (var element in answers) {
           if (element != '') {
             evaluations.add(Evaluation(
                 evaluation_criteria_id: criteriaIds[answers.indexOf(element)],
@@ -299,12 +299,12 @@ class VacancyListState extends State<VacancyList> {
                 notes: 'Student Test Evaluation',
                 grade: -1));
           }
-        });
+        }
         log('vacancy list :$evaluations');
-        evaluations.forEach((element) {
+        for (var element in evaluations) {
           log('vacancy list loop elements:$element');
           log(element.toJson().toString());
-        });
+        }
 
         final createEvaluationsResponse = await createEvaluation(evaluations);
 

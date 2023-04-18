@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:attendance/data.dart';
 import 'package:attendance/data/activity_instance.dart';
 
@@ -73,7 +71,7 @@ class CampusAttendanceSystem {
   }
 
   Application getApplication() {
-    return this.application;
+    return application;
   }
 
   void setPrecondisionsSubmitted(bool value) {
@@ -100,8 +98,8 @@ class CampusAttendanceSystem {
     allEmployees = employees;
   }
 
-  void setAddressTypes(List<AddressType>? addressTyples) {
-    this.addressTypes = addressTyples;
+  void setAddressTypes(List<AddressType>? addressTypes) {
+    this.addressTypes = addressTypes;
   }
 
   void setPersons(List<Person>? persons) {
@@ -125,11 +123,11 @@ class CampusAttendanceSystem {
   }
 
   void setCheckinActivityInstance(ActivityInstance? activityInstance) {
-    this.checkinActivityInstance = activityInstance!;
+    checkinActivityInstance = activityInstance!;
   }
 
   void setCheckoutActivityInstance(ActivityInstance? activityInstance) {
-    this.checkoutActivityInstance = activityInstance!;
+    checkoutActivityInstance = activityInstance!;
   }
 
   Future<ActivityInstance> getCheckinActivityInstance(int? activityId) async {

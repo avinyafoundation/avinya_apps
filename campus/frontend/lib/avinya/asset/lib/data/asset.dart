@@ -46,26 +46,25 @@ class Asset {
   get avinya_type => null;
 
   Map<String, dynamic> toJson() => {
-        "id": id == null ? null : id,
-        "name": name == null ? null : name,
-        "manufacturer": manufacturer == null ? null : manufacturer,
-        "model": model == null ? null : model,
-        "serial_number": serialNumber == null ? null : serialNumber,
-        "registration_number":
-            registrationNumber == null ? null : registrationNumber,
-        "description": description == null ? null : description,
-        "avinya_type_id": avinya_type_id == null ? null : avinya_type_id,
+        "id": id,
+        "name": name,
+        "manufacturer": manufacturer,
+        "model": model,
+        "serial_number": serialNumber,
+        "registration_number": registrationNumber,
+        "description": description,
+        "avinya_type_id": avinya_type_id,
         // "avinya_type_id": avinyaTypeId == null ? null : avinyaTypeId,
       };
 }
 
 Future<List<Asset>> fetchAssets() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/assets'),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/assets'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -81,11 +80,11 @@ Future<List<Asset>> fetchAssets() async {
 
 Future<Asset> fetchAsset(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/asset?assetId=$id'),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/asset?assetId=$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -100,10 +99,10 @@ Future<Asset> fetchAsset(int id) async {
 
 Future<http.Response> createAsset(Asset asset) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/asset'),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/asset'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(asset.toJson()),
   );
@@ -116,10 +115,10 @@ Future<http.Response> createAsset(Asset asset) async {
 
 Future<http.Response> updateAsset(Asset asset) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/asset'),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/asset'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(asset.toJson()),
   );
@@ -132,10 +131,10 @@ Future<http.Response> updateAsset(Asset asset) async {
 
 Future<http.Response> deleteAsset(int id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/asset?assetId=$id'),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/asset?assetId=$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 

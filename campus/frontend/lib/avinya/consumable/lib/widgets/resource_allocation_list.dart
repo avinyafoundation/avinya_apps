@@ -236,7 +236,7 @@ class _AddResourceAllocationPageState extends State<AddResourceAllocationPage> {
 class _FavoritePageList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var itemNameStyle = Theme.of(context).textTheme.headline6;
+    var itemNameStyle = Theme.of(context).textTheme.headlineMedium;
     // This gets the current state of FavoritePageModel and also tells Flutter
     // to rebuild this widget when FavoritePageModel notifies listeners (in other words,
     // when it changes).

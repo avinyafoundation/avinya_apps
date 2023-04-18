@@ -1,4 +1,3 @@
-
 import 'package:pcti_feedback/data/evaluation_criteria.dart';
 import 'package:flutter/material.dart';
 
@@ -29,36 +28,36 @@ class EvaluationCriteriaDetailsScreen extends StatelessWidget {
           children: [
             Text(
               evaluation_criteria!.evaluation_type.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
               evaluation_criteria!.id!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text("eee")
             // Text(
             //   evaluation!.evaluation_criteria_id!.toString(),
-            //   style: Theme.of(context).textTheme.headline4,
+            //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
             // Text(
             //   evaluation!.activity_instance_id!.toString(),
-            //   style: Theme.of(context).textTheme.headline4,
+            //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
             // Text(
             //   evaluation!.grade!.toString(),
-            //   style: Theme.of(context).textTheme.headline4,
+            //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
             // Text(
             //   evaluation!.response!.toString(),
-            //   style: Theme.of(context).textTheme.headline4,
+            //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
             // Text(
             //   evaluation!.notes!.toString(),
-            //   style: Theme.of(context).textTheme.headline4,
+            //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
             // Text(
             //   evaluation!.updated!.toString(),
-            //   style: Theme.of(context).textTheme.headline4,
+            //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
           ],
         ),
