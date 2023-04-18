@@ -319,7 +319,6 @@ class _EditInventoryPageState extends State<EditInventoryPage> {
   @override
   void initState() {
     super.initState();
-    final Inventory inventory = widget.inventory;
     _asset_id_Controller = TextEditingController();
     _asset_id_FocusNode = FocusNode();
     _consumable_id_Controller = TextEditingController();

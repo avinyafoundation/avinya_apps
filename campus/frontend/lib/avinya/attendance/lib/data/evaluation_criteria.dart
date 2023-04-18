@@ -56,12 +56,12 @@ class EvaluationCriteria {
 
 Future<List<EvaluationCriteria>> fetchEvaluationCriterias() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAttendanceBffApiUrl +
-        '/student_vacancies/evaluation_criterias'),
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/student_vacancies/evaluation_criterias'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -78,12 +78,12 @@ Future<List<EvaluationCriteria>> fetchEvaluationCriterias() async {
 
 Future<EvaluationCriteria> fetchEvaluationCriteria(String id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAttendanceBffApiUrl +
-        '/evaluation_criteria/evaluation_criterias/$id'),
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/evaluation_criteria/evaluation_criterias/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -100,11 +100,11 @@ Future<EvaluationCriteria> fetchEvaluationCriteria(String id) async {
 Future<http.Response> createEvaluationCriteria(
     EvaluationCriteria evaluationCriteria) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAttendanceBffApiUrl +
-        '/evaluation_criteria/evaluation_criterias'),
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/evaluation_criteria/evaluation_criterias'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(evaluationCriteria.toJson()),
   );
@@ -118,11 +118,11 @@ Future<http.Response> createEvaluationCriteria(
 Future<http.Response> updateEvaluationCriteria(
     EvaluationCriteria evaluationCriteria) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusAttendanceBffApiUrl +
-        '/evaluation_criteria/evaluation_criterias'),
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/evaluation_criteria/evaluation_criterias'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(evaluationCriteria.toJson()),
   );
@@ -135,11 +135,11 @@ Future<http.Response> updateEvaluationCriteria(
 
 Future<http.Response> deleteEvaluationCriteria(String id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusAttendanceBffApiUrl +
-        '/evaluation_criteria/evaluation_criterias/$id'),
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/evaluation_criteria/evaluation_criterias/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 

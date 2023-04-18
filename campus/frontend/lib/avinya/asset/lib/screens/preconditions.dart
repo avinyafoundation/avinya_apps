@@ -132,23 +132,23 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   'If you are a student applicant who has already registered, please go to the sign in page and login to your account.',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 ElevatedButton(
                   onPressed: () async {
                     // Navigator.pushNamed(context, '/signin');
                     await routeState.go('/signin');
                   },
-                  child: Text('Sign in'),
+                  child: const Text('Sign in'),
                 ),
-                SizedBox(height: 20.0),
-                Text(
+                const SizedBox(height: 20.0),
+                const Text(
                   'If you are a new student applicant, please fill out the form below.',
                   style: TextStyle(
                     fontSize: 20,
@@ -166,20 +166,20 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                               Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
+                                    const Text(
                                       "Avinya Academy Student Admissions",
                                       style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    SizedBox(height: 10.0),
-                                    Text(
+                                    const SizedBox(height: 10.0),
+                                    const Text(
                                         "Avinya Academy is a school that is dedicated to providing a high quality education to students from all backgrounds."),
-                                    Text(
+                                    const Text(
                                         "We are currently accepting applications for the 2022/2023 academic year. "),
-                                    Text(
+                                    const Text(
                                         "Please fill out the form below to apply for admission to Avinya Academy. "),
-                                    SizedBox(height: 20.0),
+                                    const SizedBox(height: 20.0),
                                     // Text(
                                     //   "Application Eligibility Criteria",
                                     //   style: TextStyle(
@@ -232,7 +232,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                   },
                   validator: _mandatoryValidator,
                 ),
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
                       'Date of birth: ${dateOfBirth.year}/${dateOfBirth.month}/${dateOfBirth.day}'),
@@ -258,11 +258,11 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                     return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          SizedBox(height: 10.0),
-                          Text('Have you done your GCE O/L Exam?'),
-                          SizedBox(height: 10.0),
+                          const SizedBox(height: 10.0),
+                          const Text('Have you done your GCE O/L Exam?'),
+                          const SizedBox(height: 10.0),
                           Row(children: [
-                            SizedBox(width: 10.0),
+                            const SizedBox(width: 10.0),
                             SizedBox(
                               width: 10,
                               child: Radio(
@@ -277,9 +277,9 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                                 },
                               ),
                             ),
-                            SizedBox(width: 10.0),
-                            Text('Yes'),
-                            SizedBox(width: 10.0),
+                            const SizedBox(width: 10.0),
+                            const Text('Yes'),
+                            const SizedBox(width: 10.0),
                             //]),
                             //Row(children: [
                             SizedBox(
@@ -296,13 +296,13 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                                 },
                               ),
                             ),
-                            SizedBox(width: 10.0),
-                            Text('No'),
+                            const SizedBox(width: 10.0),
+                            const Text('No'),
                           ]),
                           state.hasError
                               ? Text(
                                   state.errorText!,
-                                  style: TextStyle(color: Colors.red),
+                                  style: const TextStyle(color: Colors.red),
                                 )
                               : Container(),
                         ]);
@@ -314,8 +314,8 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 10.0),
-                Text("Select the year you did GCE O/L"),
+                const SizedBox(height: 10.0),
+                const Text("Select the year you did GCE O/L"),
                 Container(
                   // Need to use container to add size constraint.
                   width: 300,
@@ -333,7 +333,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                     },
                   ),
                 ),
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 // TextFormField(
                 //   controller: _distance_Controller,
                 //   decoration: InputDecoration(
@@ -357,7 +357,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                 // ),
                 TextFormField(
                   controller: _phone_Controller,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Phone number *',
                     hintText: 'Enter your phone number',
                     helperText: 'e.g 077 123 4567',
@@ -376,7 +376,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                 ),
                 TextFormField(
                   controller: _email_Controller,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email *',
                     hintText: 'Enter your email address',
                     helperText: 'e.g john@mail.com',
@@ -388,11 +388,11 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                       ? null
                       : "Please enter a valid email",
                 ),
-                SizedBox(width: 10.0, height: 10.0),
+                const SizedBox(width: 10.0, height: 10.0),
                 FormField<bool>(
                   builder: (state) {
                     return Row(children: [
-                      SizedBox(width: 10.0),
+                      const SizedBox(width: 10.0),
                       SizedBox(
                         width: 10,
                         child: Checkbox(
@@ -407,7 +407,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                           },
                         ),
                       ),
-                      SizedBox(width: 10.0),
+                      const SizedBox(width: 10.0),
                       Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -417,10 +417,10 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                                 color: Theme.of(context).errorColor,
                               ),
                             ),
-                            SizedBox(width: 10.0),
+                            const SizedBox(width: 10.0),
                             Container(
                               width: c_width,
-                              child: Text(
+                              child: const Text(
                                 'By checking this box, I confirm that the information provided herein' +
                                     ' on the student applicant is accurate, correct and complete and that' +
                                     ' it would lead to the rejection of the application in the event' +
@@ -439,11 +439,11 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                     }
                   },
                 ),
-                SizedBox(width: 10.0, height: 10.0),
+                const SizedBox(width: 10.0, height: 10.0),
                 FormField<bool>(
                   builder: (state) {
                     return Row(children: [
-                      SizedBox(width: 10.0),
+                      const SizedBox(width: 10.0),
                       SizedBox(
                         width: 10,
                         child: Checkbox(
@@ -458,7 +458,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                           },
                         ),
                       ),
-                      SizedBox(width: 10.0),
+                      const SizedBox(width: 10.0),
                       Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -468,10 +468,10 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                                 color: Theme.of(context).errorColor,
                               ),
                             ),
-                            SizedBox(width: 10.0),
+                            const SizedBox(width: 10.0),
                             Container(
                               width: c_width,
-                              child: Text(
+                              child: const Text(
                                 'By checking this box, I agree to the Terms of Use and Privacy Policy' +
                                     ' (unless I am under the age of 18, in which case,' +
                                     ' I represent that my parent or legal guardian also agrees' +
@@ -490,7 +490,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                     }
                   },
                 ),
-                SizedBox(width: 10.0, height: 10.0),
+                const SizedBox(width: 10.0, height: 10.0),
                 ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
@@ -534,7 +534,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                         );
                       }
                     },
-                    child: Text('Submit'))
+                    child: const Text('Submit'))
               ],
             ),
           ),
@@ -542,7 +542,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
       ),
       persistentFooterButtons: [
         new OutlinedButton(
-            child: Text('About'),
+            child: const Text('About'),
             onPressed: () {
               showAboutDialog(
                   context: context,

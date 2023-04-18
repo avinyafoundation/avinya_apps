@@ -2,7 +2,6 @@ import 'package:consumable/widgets/favorite_list_models.dart';
 import 'package:consumable/widgets/favorite_page_models.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:consumable/screens/favorite_page.dart';
 
 import '../routing.dart';
 
@@ -10,8 +9,6 @@ class FavoriteList extends StatelessWidget {
   final BuildContext context;
 
   const FavoriteList({Key? key, required this.context}) : super(key: key);
-
-  RouteState get _routeState => RouteStateScope.of(context);
 
   @override
   Widget build(BuildContext context) {
