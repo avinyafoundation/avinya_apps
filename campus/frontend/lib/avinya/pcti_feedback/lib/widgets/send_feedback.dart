@@ -199,7 +199,7 @@ class _SendFeedbackScreenState extends State<SendFeedbackScreen> {
           context: context,
           builder: (_) => AlertDialog(
                 title: const Text('Error'),
-                content: const Text('There was an error Send Feedbacks'),
+                content: const Text('There was an error Send a Feedback'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
