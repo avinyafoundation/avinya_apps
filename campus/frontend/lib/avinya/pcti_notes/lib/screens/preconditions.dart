@@ -233,7 +233,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
                       'Date of birth: ${dateOfBirth.year}/${dateOfBirth.month}/${dateOfBirth.day}'),
-                  Container(
+                  SizedBox(
                     // Need to use container to add size constraint.
                     width: 300,
                     height: 400,
@@ -313,7 +313,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                 ),
                 const SizedBox(height: 10.0),
                 const Text("Select the year you did GCE O/L"),
-                Container(
+                SizedBox(
                   // Need to use container to add size constraint.
                   width: 300,
                   height: 400,
@@ -415,13 +415,10 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                               ),
                             ),
                             const SizedBox(width: 10.0),
-                            Container(
+                            SizedBox(
                               width: c_width,
                               child: const Text(
-                                'By checking this box, I confirm that the information provided herein' +
-                                    ' on the student applicant is accurate, correct and complete and that' +
-                                    ' it would lead to the rejection of the application in the event' +
-                                    ' of any false information being provided.',
+                                'By checking this box, I confirm that the information provided herein on the student applicant is accurate, correct and complete and that it would lead to the rejection of the application in the event of any false information being provided.',
                                 softWrap: true,
                               ),
                             ),
@@ -466,13 +463,10 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                               ),
                             ),
                             const SizedBox(width: 10.0),
-                            Container(
+                            SizedBox(
                               width: c_width,
                               child: const Text(
-                                'By checking this box, I agree to the Terms of Use and Privacy Policy' +
-                                    ' (unless I am under the age of 18, in which case,' +
-                                    ' I represent that my parent or legal guardian also agrees' +
-                                    ' to the Terms of Use on my behalf)',
+                                'By checking this box, I agree to the Terms of Use and Privacy Policy (unless I am under the age of 18, in which case, I represent that my parent or legal guardian also agrees to the Terms of Use on my behalf)',
                                 softWrap: true,
                               ),
                             ),
@@ -513,10 +507,7 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(
-                              'Some of the data you entred on this form ' +
-                                  'does not meet the eligibility criteria.\r\n' +
-                                  'The errors are shown inline on the form.\r\n' +
-                                  'Please check and correct the data and try again.',
+                              'Some of the data you entred on this form does not meet the eligibility criteria.\r\nThe errors are shown inline on the form.\r\nPlease check and correct the data and try again.',
                               style: TextStyle(
                                   color: Colors.red,
                                   fontStyle: FontStyle.italic,

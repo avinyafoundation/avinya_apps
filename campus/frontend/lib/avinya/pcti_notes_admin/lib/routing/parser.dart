@@ -44,7 +44,7 @@ class TemplateRouteParser extends RouteInformationParser<ParsedRoute> {
       log("mypath :  $mypath");
       log(window.location.href);
       var uri = Uri.dataFromString(window.location.href);
-      log('query params ' + uri.queryParameters.toString());
+      log('query params ${uri.queryParameters}');
       log(_pathTemplates.toString());
     }
 

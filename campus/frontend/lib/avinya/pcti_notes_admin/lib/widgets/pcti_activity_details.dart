@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 
 import '../data.dart';
 
-class SelectPctiActivityPage extends StatefulWidget{
+class SelectPctiActivityPage extends StatefulWidget {
   static const String route = 'admin/pcti_activities';
-  const SelectPctiActivityPage({super.key,this.onTap});
+  const SelectPctiActivityPage({super.key, this.onTap});
   final ValueChanged<Activity>? onTap;
 
   @override
-  _SelectPctiActivityPageState createState() => _SelectPctiActivityPageState(onTap);
+  _SelectPctiActivityPageState createState() =>
+      _SelectPctiActivityPageState(onTap);
 }
 
-class _SelectPctiActivityPageState extends State<SelectPctiActivityPage>{
-  
+class _SelectPctiActivityPageState extends State<SelectPctiActivityPage> {
   late Future<List<Activity>> futureActivities;
   final ValueChanged<Activity>? onTap;
 
   _SelectPctiActivityPageState(this.onTap);
-  
+
   late TextEditingController activity_Controller;
   late FocusNode activity_FocusNode;
   late Activity selectedActivity;
@@ -27,7 +27,7 @@ class _SelectPctiActivityPageState extends State<SelectPctiActivityPage>{
     super.initState();
     activity_Controller = TextEditingController();
     activity_FocusNode = FocusNode();
-    
+
     futureActivities = _getActivities();
   }
 
@@ -44,12 +44,13 @@ class _SelectPctiActivityPageState extends State<SelectPctiActivityPage>{
           future: refreshActivitiesState(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              campusConfigSystemInstance.setPctiParticipantActivities(snapshot.data);
+              campusConfigSystemInstance
+                  .setPctiParticipantActivities(snapshot.data);
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   DropdownButton(
-                    hint: Text("Select PCTI Activity"),
+                    hint: const Text("Select PCTI Activity"),
                     items: snapshot.data?.map((Activity value) {
                       return DropdownMenuItem<Activity>(
                         value: value,
@@ -74,7 +75,7 @@ class _SelectPctiActivityPageState extends State<SelectPctiActivityPage>{
                         onTap!(selectedActivity);
                         // onTap != null ? () => onTap!(selectedActivity) : null;
                       },
-                      child: Text("View Notes"),
+                      child: const Text("View Notes"),
                     ),
                   )
                 ],
@@ -82,7 +83,7 @@ class _SelectPctiActivityPageState extends State<SelectPctiActivityPage>{
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");
             }
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           },
         ),
       ),
@@ -90,6 +91,6 @@ class _SelectPctiActivityPageState extends State<SelectPctiActivityPage>{
   }
 }
 
-  Future<List<Activity>> _getActivities() async{
-    return fetchPctiActivities();
+Future<List<Activity>> _getActivities() async {
+  return fetchPctiActivities();
 }

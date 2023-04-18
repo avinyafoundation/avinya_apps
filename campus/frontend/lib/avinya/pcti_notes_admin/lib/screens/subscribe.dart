@@ -36,11 +36,10 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
 
   DateTime dateOfBirth = DateTime.utc(2005, 1, 1);
 
-  MaskTextInputFormatter phoneMaskTextInputFormatter =
-      new MaskTextInputFormatter(
-          mask: '###-###-####',
-          filter: {"#": RegExp(r'[0-9]')},
-          type: MaskAutoCompletionType.eager);
+  MaskTextInputFormatter phoneMaskTextInputFormatter = MaskTextInputFormatter(
+      mask: '###-###-####',
+      filter: {"#": RegExp(r'[0-9]')},
+      type: MaskAutoCompletionType.eager);
 
   @override
   void initState() {
@@ -94,8 +93,8 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
                         TextSpan(
                           text:
                               "If you need help, write to us at admissions-help@avinyafoundation.org",
-                          style: new TextStyle(color: Colors.blue),
-                          recognizer: new TapGestureRecognizer()
+                          style: const TextStyle(color: Colors.blue),
+                          recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               launchUrl(Uri(
                                 scheme: 'mailto',
@@ -105,7 +104,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
                               ));
                             },
                         ),
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -133,31 +132,31 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
                         Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              const Text(
                                 "Avinya Academy - Prospective Student Subscription Form",
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold),
                               ),
-                              SizedBox(height: 20.0),
-                              Text(
+                              const SizedBox(height: 20.0),
+                              const Text(
                                   "Thank you for your interest in Avinya Academy"),
-                              SizedBox(height: 10.0),
-                              Text(
+                              const SizedBox(height: 10.0),
+                              const Text(
                                   "Please fill in the form if you are interested in applying for a place at Avinya Academy. We will contact you with further information."),
-                              Text(
+                              const Text(
                                   "Please note that we are currently only accepting applications for Avinya Academy Bandaragama."),
-                              SizedBox(height: 10.0),
-                              Text(
+                              const SizedBox(height: 10.0),
+                              const Text(
                                   "Avinya Academy හි ස්ථානයක් සඳහා අයදුම් කිරීමට ඔබ කැමති නම් කරුණාකර පෝරමය පුරවන්න. වැඩිදුර තොරතුරු සමඟ අපි ඔබව සම්බන්ධ කර ගන්නෙමු."),
-                              Text(
+                              const Text(
                                   "දැනට අප අයදුම්පත් භාර ගන්නේ අවින්‍යා ඇකඩමිය බණ්ඩාරගම ශාඛාව සඳහා පමණක් බව කරුණාවෙන් සලකන්න."),
-                              SizedBox(height: 10.0),
-                              SelectableText(''),
+                              const SizedBox(height: 10.0),
+                              const SelectableText(''),
                               SelectableText.rich(TextSpan(
                                 text:
                                     "ඔබට උදව් අවශ්‍ය නම්, admissions-help@avinyafoundation.org වෙත විද්‍යුත් තැපෑලක් එවන්න.",
-                                style: new TextStyle(color: Colors.blue),
-                                recognizer: new TapGestureRecognizer()
+                                style: const TextStyle(color: Colors.blue),
+                                recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     launchUrl(Uri(
                                       scheme: 'mailto',
@@ -172,7 +171,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
                               //     "By completing this form, your name and contact information will be added to our prospects database,"),
                               // Text(
                               //     "so that you can receive emails and notifications about Avinya Academy and student admissions related information."),
-                              SizedBox(height: 10.0),
+                              const SizedBox(height: 10.0),
                             ]),
                       ]),
                     ),
@@ -190,10 +189,10 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
                   },
                   validator: _mandatoryValidator,
                 ),
-                SizedBox(height: 5.0),
+                const SizedBox(height: 5.0),
                 TextFormField(
                   controller: _phone_Controller,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Phone number *',
                     hintText: 'Enter your phone number',
                     helperText: 'e.g 077 123 4567',
@@ -212,7 +211,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
                 ),
                 TextFormField(
                   controller: _email_Controller,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email *',
                     hintText: 'Enter your email address',
                     helperText: 'e.g john@mail.com',
@@ -224,7 +223,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
                       ? null
                       : "Please enter a valid email",
                 ),
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 TextFormField(
                   controller: _address_Controller,
                   decoration: const InputDecoration(
@@ -237,7 +236,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
                   },
                   //validator: _mandatoryValidator,
                 ),
-                SizedBox(width: 10.0, height: 5.0),
+                const SizedBox(width: 10.0, height: 5.0),
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
                       'Date of birth: ${dateOfBirth.year}/${dateOfBirth.month}/${dateOfBirth.day}'),
@@ -258,7 +257,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
                     ),
                   ),
                 ]),
-                SizedBox(width: 10.0, height: 5.0),
+                const SizedBox(width: 10.0, height: 5.0),
                 ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
@@ -302,22 +301,22 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
                         );
                       }
                     },
-                    child: Text('Submit'))
+                    child: const Text('Submit'))
               ],
             ),
           ),
         ),
       ),
       persistentFooterButtons: [
-        new OutlinedButton(
-            child: Text('About'),
+        OutlinedButton(
+            child: const Text('About'),
             onPressed: () {
               showAboutDialog(
                   context: context,
                   applicationName: AppConfig.applicationName,
                   applicationVersion: AppConfig.applicationVersion);
             }),
-        new Text("© 2022, Avinya Foundation."),
+        const Text("© 2022, Avinya Foundation."),
       ],
     );
   }
@@ -352,7 +351,7 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
         var createProspectResponse = null;
         try {
           createProspectResponse = await await createProspect(prospect)
-              .timeout(Duration(seconds: 10));
+              .timeout(const Duration(seconds: 10));
         } catch (e) {
           log(e.toString());
           ScaffoldMessenger.of(context).showSnackBar(

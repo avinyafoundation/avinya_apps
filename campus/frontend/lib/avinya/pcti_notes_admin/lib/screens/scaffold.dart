@@ -54,8 +54,8 @@ class SMSScaffold extends StatelessWidget {
                         child: SelectableText.rich(TextSpan(
                           text:
                               "If you need help, write to us at admissions-help@avinyafoundation.org",
-                          style: new TextStyle(color: Colors.blue),
-                          recognizer: new TapGestureRecognizer()
+                          style: const TextStyle(color: Colors.blue),
+                          recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               launchUrl(Uri(
                                 scheme: 'mailto',
@@ -89,15 +89,15 @@ class SMSScaffold extends StatelessWidget {
         ],
       ),
       persistentFooterButtons: [
-        new OutlinedButton(
-            child: Text('About'),
+        OutlinedButton(
+            child: const Text('About'),
             onPressed: () {
               showAboutDialog(
                   context: context,
                   applicationName: AppConfig.applicationName,
                   applicationVersion: AppConfig.applicationVersion);
             }),
-        new Text("© 2022, Avinya Foundation."),
+        const Text("© 2022, Avinya Foundation."),
       ],
     );
   }
