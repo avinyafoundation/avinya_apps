@@ -101,8 +101,7 @@ Future<Evaluation> fetchEvaluation(String id) async {
 }
 
 Future<http.Response> createEvaluation(List<Evaluation> evaluations) async {
-  print(evaluations);
-  print(evaluations.map((evaluation) => evaluation.toJson()).toList());
+
   // log(evaluations.map((evaluation) => evaluation.toJson()).toString());
   final response = await http.post(
     Uri.parse('${AppConfig.campusPctiNotesBffApiUrl}/evaluations'),

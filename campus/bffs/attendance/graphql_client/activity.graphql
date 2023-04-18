@@ -97,3 +97,45 @@ query getClassAttendanceToday($organization_id: Int!, $activity_id: Int!) {
         out_marked_by
     }      
 }
+
+query getClassAttendanceReport($organization_id: Int!, $activity_id: Int!, $result_limit: Int!) {
+    class_attendance_report(organization_id:$organization_id, activity_id: $activity_id, result_limit: $result_limit) {
+        id
+        person {
+            id
+        }
+        activity_instance_id
+        sign_in_time
+        sign_out_time
+        in_marked_by
+        out_marked_by
+    }      
+}
+
+query getPersonAttendanceReport($person_id: Int!, $activity_id: Int!, $result_limit: Int!) {
+    person_attendance_report(person_id:$person_id, activity_id: $activity_id, result_limit: $result_limit) {
+        id
+        person {
+            id
+        }
+        activity_instance_id
+        sign_in_time
+        sign_out_time
+        in_marked_by
+        out_marked_by
+    }      
+}
+
+query getPersonAttendanceToday($person_id: Int!, $activity_id: Int!) {
+    person_attendance_today(person_id:$person_id, activity_id: $activity_id) {
+        id
+        person {
+            id
+        }
+        activity_instance_id
+        sign_in_time
+        sign_out_time
+        in_marked_by
+        out_marked_by
+    }      
+}

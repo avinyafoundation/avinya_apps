@@ -74,6 +74,24 @@ Future<ActivityAttendance> createActivityAttendance(
   }
 }
 
+Future<int> deleteActivityAttendance(int id) async {
+  final response = await http.delete(
+    Uri.parse(AppConfig.campusAttendanceBffApiUrl +
+        '/activity_attendance/' +
+        id.toString()),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    return int.parse(response.body);
+  } else {
+    throw Exception('Failed to create Activity Participant Attendance.');
+  }
+}
+
 Future<List<ActivityAttendance>> getClassActivityAttendanceToday(
     int organization_id, int activity_id) async {
   final response = await http.get(
@@ -101,5 +119,101 @@ Future<List<ActivityAttendance>> getClassActivityAttendanceToday(
             ' and activity ' +
             activity_id.toString() +
             ' for today.');
+  }
+}
+
+Future<List<ActivityAttendance>> getPersonActivityAttendanceToday(
+    int person_id, int activity_id) async {
+  final response = await http.get(
+    Uri.parse(AppConfig.campusAttendanceBffApiUrl +
+        '/person_attendance_today/' +
+        person_id.toString() +
+        '/' +
+        activity_id.toString()),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Activity Participant Attendance for calss person ID ' +
+            person_id.toString() +
+            ' and activity ' +
+            activity_id.toString() +
+            ' for today.');
+  }
+}
+
+Future<List<ActivityAttendance>> getPersonActivityAttendanceReport(
+    int person_id, int activity_id, int result_limit) async {
+  final response = await http.get(
+    Uri.parse(AppConfig.campusAttendanceBffApiUrl +
+        '/person_attendance_report/' +
+        person_id.toString() +
+        '/' +
+        activity_id.toString() +
+        '/' +
+        result_limit.toString()),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Activity Participant Attendance report for person ID ' +
+            person_id.toString() +
+            ' and activity ' +
+            activity_id.toString() +
+            ' for result limit.' +
+            result_limit.toString());
+  }
+}
+
+Future<List<ActivityAttendance>> getClassActivityAttendanceReport(
+    int organization_id, int activity_id, int result_limit) async {
+  final response = await http.get(
+    Uri.parse(AppConfig.campusAttendanceBffApiUrl +
+        '/class_attendance_report/' +
+        organization_id.toString() +
+        '/' +
+        activity_id.toString() +
+        '/' +
+        result_limit.toString()),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Activity Participant Attendance report for organization ID ' +
+            organization_id.toString() +
+            ' and activity ' +
+            activity_id.toString() +
+            ' for result limit.' +
+            result_limit.toString());
   }
 }

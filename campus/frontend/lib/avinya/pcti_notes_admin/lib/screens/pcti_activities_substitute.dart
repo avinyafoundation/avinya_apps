@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../data.dart';
 import '../routing.dart';
-import '../widgets/pcti_activity_details.dart';
 import '../widgets/pcti_activity_substitute.dart';
 
 class PctiActivitiesSubstituteScreen extends StatefulWidget {

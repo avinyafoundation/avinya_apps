@@ -1,4 +1,4 @@
-import 'dart:developer';
+
 
 import 'package:pcti_notes_admin/data.dart';
 
@@ -68,7 +68,7 @@ class CampusConfigSystem {
   }
 
   Application getApplication() {
-    return this.application;
+    return application;
   }
 
   void setJWTSub(String? jwt_sub) {
@@ -115,7 +115,7 @@ class CampusConfigSystem {
   }
 
   void setAddressTypes(List<AddressType>? addressTyples) {
-    this.addressTypes = addressTyples;
+    addressTypes = addressTyples;
   }
 
   void setPersons(List<Person>? persons) {

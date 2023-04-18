@@ -91,6 +91,7 @@ input ActivityParticipantAttendance {
 type ActivityParticipantAttendanceData {
   id: Int
   activity_instance_id: Int
+  person_id: Int
   person: PersonData
   sign_in_time: String
   sign_out_time: String
@@ -486,6 +487,7 @@ type Mutation {
   add_prospect(prospect: Prospect!): ProspectData
   add_organization(org: Organization!): OrganizationData
   add_attendance(attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
+  delete_attendance(id: Int!): Int
   add_empower_parent(person: Person!): PersonData
   update_application_status(applicationStatus: String!, applicationId: Int!): ApplicationStatusData
   update_person_avinya_type(personId: Int!, newAvinyaId: Int!, transitionDate: String!): PersonData
@@ -708,6 +710,9 @@ type Query {
   work_experience_ByPerson(person_id: Int): [WorkExperienceData!]
   activity(name: String, id: Int): ActivityData
   class_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
+  person_attendance_today(person_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
+  person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int): [ActivityParticipantAttendanceData!]
+  class_attendance_report(organization_id: Int, activity_id: Int, result_limit: Int): [ActivityParticipantAttendanceData!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
   supplier(id: Int!): SupplierData

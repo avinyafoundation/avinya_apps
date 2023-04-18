@@ -12,6 +12,7 @@ class SMSScaffold extends StatelessWidget {
     '/consumables',
     '/consumable_feedback_breakfast',
     '/consumable_feedback_lunch',
+    '/favoritepage',
   ];
 
   const SMSScaffold({
@@ -27,7 +28,7 @@ class SMSScaffold extends StatelessWidget {
       body: AdaptiveNavigationScaffold(
         selectedIndex: selectedIndex,
         appBar: AppBar(
-          title: const Text('Avinya Academy - Assets Portal'),
+          title: const Text('Avinya Academy - Consumable Portal'),
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.logout),
@@ -78,7 +79,7 @@ class SMSScaffold extends StatelessWidget {
         },
         destinations: const [
           AdaptiveScaffoldDestination(
-            title: 'Assets',
+            title: 'Create Menu',
             icon: Icons.type_specimen,
           ),
           // AdaptiveScaffoldDestination(

@@ -11,7 +11,7 @@ class ResourceAllocation {
   int? id;
   bool? allocated;
   DateTime? startDate;
-  Asset? asset;
+  // Asset? asset;
   dynamic consumable;
   Organization? organization;
   Person? person;
@@ -24,7 +24,7 @@ class ResourceAllocation {
     this.id,
     this.allocated,
     this.startDate,
-    this.asset,
+    // this.asset,
     this.consumable,
     this.organization,
     this.person,
@@ -42,7 +42,7 @@ class ResourceAllocation {
       requested: json['requested'],
       approved: json['approved'],
       allocated: json['allocated'],
-      asset: json['asset'] != null ? Asset.fromJson(json['asset']) : null,
+      // asset: json['asset'] != null ? Asset.fromJson(json['asset']) : null,
       consumable: json['consumable'],
       organization: json['organization'] != null
           ? Organization.fromJson(json['organization'])
@@ -59,7 +59,7 @@ class ResourceAllocation {
         if (requested != null) 'requested': requested,
         if (approved != null) 'approved': approved,
         if (allocated != null) 'allocated': allocated,
-        if (asset != null) 'asset': asset,
+        // if (asset != null) 'asset': asset,
         if (consumable != null) 'consumable': consumable,
         if (organization != null) 'organization': organization,
         if (person != null) 'person': person,
@@ -124,47 +124,6 @@ Future<http.Response> createResourceAllocation(
     return response;
   } else {
     throw Exception('Failed to create ResourceAllocation');
-  }
-}
-
-Future<List<AvinyaType>> fetchAvinyaTypesByAsset() async {
-  final response = await http.get(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/avinyaTypesByAsset'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
-    },
-  );
-
-  if (response.statusCode == 200) {
-    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    List<AvinyaType> avinyaTypes = await resultsJson
-        .map<AvinyaType>((json) => AvinyaType.fromJson(json))
-        .toList();
-    return avinyaTypes;
-  } else {
-    throw Exception('Failed to load AvinyaType');
-  }
-}
-
-Future<Asset> fetchAssetByAvinyaType(int id) async {
-  final response = await http.get(
-    Uri.parse(
-        AppConfig.campusAssetsBffApiUrl + '/assetByAvinyaType?avinyaType=$id'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
-    },
-  );
-
-  if (response.statusCode == 200) {
-    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    Asset asset = await resultsJson.map<Asset>((json) => Asset.fromJson(json));
-    return asset;
-  } else {
-    throw Exception('Failed to load Asset');
   }
 }
 

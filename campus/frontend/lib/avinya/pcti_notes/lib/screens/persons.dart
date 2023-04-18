@@ -66,7 +66,7 @@ class _PersonScreenState extends State<PersonScreen>
           onPressed: () async {
             Navigator.of(context).push<void>(
               MaterialPageRoute<void>(
-                builder: (context) => AddPersonPage(),
+                builder: (context) => const AddPersonPage(),
               ),
             )
             .then((value) => setState(() {}));

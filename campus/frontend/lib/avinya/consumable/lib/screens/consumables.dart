@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../data.dart';
 import '../routing.dart';
-import '../widgets/consumable_list.dart';
+// import '../widgets/consumable_list.dart';
 
 class ConsumableScreen extends StatefulWidget {
   const ConsumableScreen({
@@ -56,26 +56,26 @@ class _ConsumableScreenState extends State<ConsumableScreen>
             ],
           ),
         ),
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            ConsumableList(
-              onTap: _handleConsumableTapped,
-            ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            Navigator.of(context)
-                .push<void>(
-                  MaterialPageRoute<void>(
-                    builder: (context) => AddConsumablePage(),
-                  ),
-                )
-                .then((value) => setState(() {}));
-          },
-          child: const Icon(Icons.add),
-        ),
+        // body: TabBarView(
+        //   controller: _tabController,
+        //   children: [
+        //     ConsumableList(
+        //       onTap: _handleConsumableTapped,
+        //     ),
+        //   ],
+        // ),
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () async {
+        //     Navigator.of(context)
+        //         .push<void>(
+        //           MaterialPageRoute<void>(
+        //             builder: (context) => AddConsumablePage(),
+        //           ),
+        //         )
+        //         .then((value) => setState(() {}));
+        //   },
+        //   child: const Icon(Icons.add),
+        // ),
       );
 
   RouteState get _routeState => RouteStateScope.of(context);

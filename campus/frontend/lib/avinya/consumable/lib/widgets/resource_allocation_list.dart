@@ -1,4 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:consumable/screens/favorite_list.dart';
+import 'package:consumable/widgets/favorite_list_models.dart';
+import 'package:consumable/widgets/favorite_page_models.dart';
+import 'package:provider/provider.dart';
 
 import '../data.dart';
 
@@ -35,17 +41,17 @@ class ResourceAllocationListState extends State<ResourceAllocationList> {
       future: refreshResourceAllocationState(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          campusConfigSystemInstance.setResourceAllocations(snapshot.data);
+          // campusConfigSystemInstance.setResourceAllocations(snapshot.data);
           if (snapshot.data!.length > 0) {
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) => ListTile(
-                  title: Text(
-                    (snapshot.data![index].asset!.model!.toString()),
-                  ),
+                  // title: Text(
+                  //   (snapshot.data![index].asset!.model!.toString()),
+                  // ),
                   subtitle: Text(
                     ' ' +
-                        (snapshot.data![index].asset!.name!.toString()) +
+                        // (snapshot.data![index].asset!.name!.toString()) +
                         ' | ' +
                         snapshot.data![index].quantity!.toString() +
                         ' | ' +
@@ -63,8 +69,31 @@ class ResourceAllocationListState extends State<ResourceAllocationList> {
                   ),
             );
           } else {
-            return const Center(
-              child: Text('No Resource Allocations'),
+            // return Center(
+            // MultiProvider(
+            //   providers: [
+            //     // In this sample app, FavoriteListModel never changes, so a simple Provider
+            //     // is sufficient.
+            //     Provider(create: (context) => FavoriteListModel()),
+            //     // FavoritePageModel is implemented as a ChangeNotifier, which calls for the use
+            //     // of ChangeNotifierProvider. Moreover, FavoritePageModel depends
+            //     // on FavoriteListModel, so a ProxyProvider is needed.
+            //     ChangeNotifierProxyProvider<FavoriteListModel,
+            //         FavoritePageModel>(
+            //       create: (context) => FavoritePageModel(),
+            //       update: (context, favoritelist, favoritepage) {
+            //         if (favoritepage == null)
+            //           throw ArgumentError.notNull('favoritepage');
+            //         favoritepage.favoritelist = favoritelist;
+            //         return favoritepage;
+            //       },
+            //     ),
+            //   ],
+            //   child: FavoriteList(),
+            // );
+            // );
+            return Center(
+              child: FavoriteList(context: context),
             );
           }
         } else if (snapshot.hasError) {
@@ -142,7 +171,7 @@ class _AddResourceAllocationPageState extends State<AddResourceAllocationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Resource Allocation'),
+        title: const Text("Create Today's Menu"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -150,50 +179,7 @@ class _AddResourceAllocationPageState extends State<AddResourceAllocationPage> {
           key: _formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
-            children: <Widget>[
-              const Text(
-                  'Fill in the details of the AvinyaType you want to add'),
-              TextFormField(
-                controller: asset_Controller,
-                decoration: const InputDecoration(labelText: 'asset'),
-                onFieldSubmitted: (_) {
-                  asset_FocusNode.requestFocus();
-                },
-                validator: _mandatoryValidator,
-              ),
-              TextFormField(
-                controller: quantity_Controller,
-                decoration: const InputDecoration(labelText: 'quantity'),
-                onFieldSubmitted: (_) {
-                  quantity_FocusNode.requestFocus();
-                },
-                validator: _mandatoryValidator,
-              ),
-              TextFormField(
-                controller: startDate_Controller,
-                decoration: const InputDecoration(labelText: 'start date'),
-                onFieldSubmitted: (_) {
-                  startDate_FocusNode.requestFocus();
-                },
-                validator: _mandatoryValidator,
-              ),
-              TextFormField(
-                controller: endDate_Controller,
-                decoration: const InputDecoration(labelText: 'end date'),
-                onFieldSubmitted: (_) {
-                  endDate_FocusNode.requestFocus();
-                },
-                validator: _mandatoryValidator,
-              ),
-              // TextFormField(
-              //   controller: purpose_Controller,
-              //   decoration: const InputDecoration(labelText: 'purpose'),
-              //   onFieldSubmitted: (_) {
-              //     purpose_FocusNode.requestFocus();
-              //   },
-              //   validator: _mandatoryValidator,
-              // ),
-            ],
+            children: [Expanded(child: _FavoritePageList())],
           ),
         ),
       ),
@@ -214,7 +200,7 @@ class _AddResourceAllocationPageState extends State<AddResourceAllocationPage> {
     try {
       if (_formKey.currentState!.validate()) {
         final ResourceAllocation resourceAllocation = ResourceAllocation(
-          asset: Asset(id: int.parse(asset_Controller.text)),
+          // asset: Asset(id: int.parse(asset_Controller.text)),
           quantity: int.parse(quantity_Controller.text),
           startDate: DateTime.parse(startDate_Controller.text),
           endDate: DateTime.parse(endDate_Controller.text),
@@ -231,7 +217,7 @@ class _AddResourceAllocationPageState extends State<AddResourceAllocationPage> {
       await showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          content: const Text('Failed to add Resource Allocation'),
+          content: const Text('Failed to add Todays Menu'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -243,6 +229,41 @@ class _AddResourceAllocationPageState extends State<AddResourceAllocationPage> {
         ),
       );
     }
+  }
+}
+
+// UI of FavoritePageList //
+class _FavoritePageList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var itemNameStyle = Theme.of(context).textTheme.headline6;
+    // This gets the current state of FavoritePageModel and also tells Flutter
+    // to rebuild this widget when FavoritePageModel notifies listeners (in other words,
+    // when it changes).
+    var favoritepage = context.watch<FavoritePageModel>();
+    log('message: ${favoritepage.items.toString()}');
+
+    return ListView.builder(
+      itemCount: favoritepage.items.length,
+      itemBuilder: (context, index) => ListTile(
+        leading: Image.asset(favoritepage.items[index].image),
+        trailing: IconButton(
+          icon: const Icon(Icons.delete),
+          // code to remove the favorite list //
+          onPressed: () {
+            favoritepage.remove(favoritepage.items[index]);
+          },
+        ),
+        title: Text(
+          favoritepage.items[index].name,
+          style: itemNameStyle,
+        ),
+        subtitle: Text(
+          favoritepage.items[index].subtitle,
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      ),
+    );
   }
 }
   
