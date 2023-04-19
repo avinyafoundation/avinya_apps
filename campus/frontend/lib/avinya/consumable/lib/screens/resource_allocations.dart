@@ -5,9 +5,6 @@ import '../data.dart';
 import '../routing.dart';
 import '../widgets/resource_allocation_list.dart';
 import 'package:consumable/screens/favorite_list.dart';
-import 'package:consumable/widgets/favorite_list_models.dart';
-import 'package:consumable/widgets/favorite_page_models.dart';
-import 'package:provider/provider.dart';
 
 class ResourceAllocationsScreen extends StatefulWidget {
   const ResourceAllocationsScreen({

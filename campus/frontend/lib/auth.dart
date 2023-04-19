@@ -132,7 +132,7 @@ class CampusAppsPortalAuth extends ChangeNotifier {
     } else {
       throw 'Could not launch $logoutUrl';
     }
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 3));
   }
 
   Future<void> signOut() async {

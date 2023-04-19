@@ -44,7 +44,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Sign in', style: Theme.of(context).textTheme.headlineMedium),
+                  Text('Sign in',
+                      style: Theme.of(context).textTheme.headlineMedium),
                   TextField(
                     decoration: const InputDecoration(labelText: 'Username'),
                     controller: _usernameController,
@@ -72,15 +73,14 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
       );
 
-
   authenticate(Uri uri, String clientId, List<String> scopes) async {
-    log("signin authenticate - Client ID :: " + clientId);
+    log("signin authenticate - Client ID :: $clientId");
     // create the client
     var issuer = await Issuer.discover(uri);
-    var client = new Client(issuer, clientId);
+    var client = Client(issuer, clientId);
 
     // create an authenticator
-    var authenticator = new Authenticator(client, scopes: scopes);
+    var authenticator = Authenticator(client, scopes: scopes);
 
     // starts the authentication
     authenticator.authorize();

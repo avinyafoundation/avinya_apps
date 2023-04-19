@@ -341,7 +341,6 @@ class _EditSupplyPageState extends State<EditSupplyPage> {
   @override
   void initState() {
     super.initState();
-    final Supply supply = widget.supply;
     _asset_id_Controller =
         TextEditingController(text: widget.supply.asset_id.toString());
     _asset_id_FocusNode = FocusNode();

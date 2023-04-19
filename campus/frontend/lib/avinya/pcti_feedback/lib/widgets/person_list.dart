@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 import '../data.dart';
 
 class PersonList extends StatefulWidget {

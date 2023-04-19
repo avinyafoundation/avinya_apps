@@ -24,38 +24,35 @@ class Inventory {
   });
 
   factory Inventory.fromJson(Map<String, dynamic> json) => Inventory(
-        id: json["id"] == null ? null : json["id"],
-        asset_id: json["asset_id"] == null ? null : json["asset_id"],
-        consumable_id:
-            json["consumable_id"] == null ? null : json["consumable_id"],
-        organization_id:
-            json["organization_id"] == null ? null : json["organization_id"],
-        person_id: json["person_id"] == null ? null : json["person_id"],
-        quantity: json["quantity"] == null ? null : json["quantity"],
-        quantity_in: json["quantity_in"] == null ? null : json["quantity_in"],
-        quantity_out:
-            json["quantity_out"] == null ? null : json["quantity_out"],
+        id: json["id"],
+        asset_id: json["asset_id"],
+        consumable_id: json["consumable_id"],
+        organization_id: json["organization_id"],
+        person_id: json["person_id"],
+        quantity: json["quantity"],
+        quantity_in: json["quantity_in"],
+        quantity_out: json["quantity_out"],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id == null ? null : id,
-        "asset_id": asset_id == null ? null : asset_id,
-        "consumable_id": consumable_id == null ? null : consumable_id,
-        "organization_id": organization_id == null ? null : organization_id,
-        "person_id": person_id == null ? null : person_id,
-        "quantity": quantity == null ? null : quantity,
-        "quantity_in": quantity_in == null ? null : quantity_in,
-        "quantity_out": quantity_out == null ? null : quantity_out,
+        "id": id,
+        "asset_id": asset_id,
+        "consumable_id": consumable_id,
+        "organization_id": organization_id,
+        "person_id": person_id,
+        "quantity": quantity,
+        "quantity_in": quantity_in,
+        "quantity_out": quantity_out,
       };
 }
 
 Future<List<Inventory>> fetchInventories() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/inventories'),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/inventories'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -72,12 +69,11 @@ Future<List<Inventory>> fetchInventories() async {
 
 Future<Inventory> fetchInventory(int id) async {
   final response = await http.get(
-    Uri.parse(
-        AppConfig.campusAssetsBffApiUrl + '/inventories/' + id.toString()),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/inventories/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -90,10 +86,10 @@ Future<Inventory> fetchInventory(int id) async {
 
 Future<http.Response> createInventory(Inventory inventory) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/inventories'),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/inventories'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(inventory.toJson()),
   );
@@ -106,12 +102,10 @@ Future<http.Response> createInventory(Inventory inventory) async {
 
 Future<http.Response> updateInventory(Inventory inventory) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl +
-        '/inventories/' +
-        inventory.id.toString()),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/inventories/${inventory.id}'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(inventory.toJson()),
   );
@@ -124,10 +118,10 @@ Future<http.Response> updateInventory(Inventory inventory) async {
 
 Future<http.Response> deleteInventory(int id) async {
   final response = await http.delete(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/inventories/$id'),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/inventories/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
   if (response.statusCode == 200) {

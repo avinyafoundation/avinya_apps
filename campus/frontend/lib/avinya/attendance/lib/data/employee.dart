@@ -40,7 +40,7 @@ class Employee {
 
 Future<List<Employee>> fetchEmployees() async {
   final response =
-      await http.get(Uri.parse(AppConfig.apiUrl + '/sms/hrm/employees'));
+      await http.get(Uri.parse('${AppConfig.apiUrl}/sms/hrm/employees'));
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,

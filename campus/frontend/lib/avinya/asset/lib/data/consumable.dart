@@ -22,36 +22,33 @@ class Consumable {
   });
 
   factory Consumable.fromJson(Map<String, dynamic> json) => Consumable(
-        id: json["id"] == null ? null : json["id"],
-        name: json["name"] == null ? null : json["name"],
-        description: json["description"] == null ? null : json["description"],
-        avinyaTypeId:
-            json["avinya_type_id"] == null ? null : json["avinya_type_id"],
-        manufacturer:
-            json["manufacturer"] == null ? null : json["manufacturer"],
-        model: json["model"] == null ? null : json["model"],
-        serialNumber:
-            json["serial_number"] == null ? null : json["serial_number"],
+        id: json["id"],
+        name: json["name"],
+        description: json["description"],
+        avinyaTypeId: json["avinya_type_id"],
+        manufacturer: json["manufacturer"],
+        model: json["model"],
+        serialNumber: json["serial_number"],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id == null ? null : id,
-        "name": name == null ? null : name,
-        "description": description == null ? null : description,
-        "avinya_type_id": avinyaTypeId == null ? null : avinyaTypeId,
-        "manufacturer": manufacturer == null ? null : manufacturer,
-        "model": model == null ? null : model,
-        "serial_number": serialNumber == null ? null : serialNumber,
+        "id": id,
+        "name": name,
+        "description": description,
+        "avinya_type_id": avinyaTypeId,
+        "manufacturer": manufacturer,
+        "model": model,
+        "serial_number": serialNumber,
       };
 }
 
 Future<List<Consumable>> fetchConsumables() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/consumables'),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/consumables'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -68,11 +65,11 @@ Future<List<Consumable>> fetchConsumables() async {
 
 Future<Consumable> fetchConsumable(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/consumable/$id'),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/consumable/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
@@ -88,10 +85,10 @@ Future<Consumable> fetchConsumable(int id) async {
 
 Future<http.Response> createConsumable(Consumable consumable) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/consumable'),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/consumable'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(consumable.toJson()),
   );
@@ -104,10 +101,10 @@ Future<http.Response> createConsumable(Consumable consumable) async {
 
 Future<http.Response> updateConsumable(Consumable consumable) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/consumable'),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/consumable'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(consumable.toJson()),
   );
@@ -120,10 +117,10 @@ Future<http.Response> updateConsumable(Consumable consumable) async {
 
 Future<http.Response> deleteConsumable(int id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/consumable/$id'),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/consumable/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 

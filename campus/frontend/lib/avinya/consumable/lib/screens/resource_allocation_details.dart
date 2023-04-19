@@ -28,31 +28,31 @@ class ResourceAllocationDetailsScreen extends StatelessWidget {
           children: [
             // Text(
             //   resourceAllocation!.asset!.name!.toString(),
-            //   style: Theme.of(context).textTheme.headline4,
+            //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
             // Text(
             //   resourceAllocation!.asset!.manufacturer!.toString(),
-            //   style: Theme.of(context).textTheme.headline4,
+            //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
             // Text(
             //   resourceAllocation!.asset!.model!.toString(),
-            //   style: Theme.of(context).textTheme.headline4,
+            //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
             // Text(
             //   resourceAllocation!.asset!.serialNumber!.toString(),
-            //   style: Theme.of(context).textTheme.headline4,
+            //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
             // Text(
             //   resourceAllocation!.asset!.registrationNumber!.toString(),
-            //   style: Theme.of(context).textTheme.headline4,
+            //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
             // Text(
             //   resourceAllocation!.asset!.description!.toString(),
-            //   style: Theme.of(context).textTheme.headline4,
+            //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
             // Text(
             //   resourceAllocation!.asset!.avinya_type!.id!.toString(),
-            //   style: Theme.of(context).textTheme.headline4,
+            //   style: Theme.of(context).textTheme.headlineMedium,
             // ),
           ],
         ),

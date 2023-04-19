@@ -45,7 +45,7 @@ class _PctiNoteDetailState extends State<PctiNoteDetail> {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       pctiNote!.updated!.toString(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 24,
@@ -56,7 +56,7 @@ class _PctiNoteDetailState extends State<PctiNoteDetail> {
                     padding: const EdgeInsets.all(8.0),
                     child: ListTile(
                         tileColor: Colors.black12,
-                        title: Text("Evaluator Name"),
+                        title: const Text("Evaluator Name"),
                         subtitle: Text(
                           snapshot.data!.preferred_name.toString(),
                         )),
@@ -65,7 +65,7 @@ class _PctiNoteDetailState extends State<PctiNoteDetail> {
                     padding: const EdgeInsets.all(8.0),
                     child: ListTile(
                         tileColor: Colors.black12,
-                        title: Text("Note"),
+                        title: const Text("Note"),
                         subtitle: Text(
                           pctiNote!.notes.toString(),
                         )),
@@ -76,7 +76,7 @@ class _PctiNoteDetailState extends State<PctiNoteDetail> {
               return Text('${snapshot.error}');
             }
             // By default, show a loading spinner.
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           },

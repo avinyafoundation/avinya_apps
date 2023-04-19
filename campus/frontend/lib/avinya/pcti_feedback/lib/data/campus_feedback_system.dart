@@ -1,4 +1,3 @@
-
 import 'package:pcti_feedback/data.dart';
 
 final campusFeedbackSystemInstance = CampusFeedbackSystem()

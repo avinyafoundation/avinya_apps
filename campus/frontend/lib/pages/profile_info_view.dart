@@ -78,7 +78,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           '${userPerson.full_name == null ? 'N/A' : userPerson.full_name!}',
                           style: Theme.of(context)
                               .textTheme
-                              .subtitle1!
+                              .titleMedium!
                               .copyWith(
                                 color: kTextBlackColor,
                                 fontSize: SizerUtil.deviceType ==
@@ -95,7 +95,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                           '${userPerson.organization == null ? 'N/A' : userPerson.organization!.name == null ? 'N/A' : userPerson.organization!.name!.name_en == null ? 'N/A' : userPerson.organization!.name!.name_en!}',
                           style: Theme.of(context)
                               .textTheme
-                              .subtitle1!
+                              .titleMedium!
                               .copyWith(
                                 color: kTextBlackColor,
                                 fontSize: SizerUtil.deviceType ==
@@ -156,7 +156,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               sizedBox,
               Text(
                 'Student Information',
-                style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       color: kTextBlackColor,
                       fontWeight: FontWeight.bold,
                       fontSize: SizerUtil.deviceType == DeviceType.mobile
@@ -203,7 +203,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               sizedBox,
               Text(
                 'Student Contact Information',
-                style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       color: kTextBlackColor,
                       fontWeight: FontWeight.bold,
                       fontSize: SizerUtil.deviceType == DeviceType.mobile
@@ -244,7 +244,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               sizedBox,
               Text(
                 'Student Bank Information',
-                style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       color: kTextBlackColor,
                       fontWeight: FontWeight.bold,
                       fontSize: SizerUtil.deviceType == DeviceType.mobile
@@ -277,7 +277,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               sizedBox,
               Text(
                 'Parent/Guardian Information',
-                style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       color: kTextBlackColor,
                       fontWeight: FontWeight.bold,
                       fontSize: SizerUtil.deviceType == DeviceType.mobile
@@ -339,7 +339,7 @@ class ProfileDetailRow extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       color: kTextBlackColor,
                       fontSize: SizerUtil.deviceType == DeviceType.mobile
                           ? 15.sp
@@ -353,7 +353,7 @@ class ProfileDetailRow extends StatelessWidget {
               kHalfSizedBox,
               Text(
                 value,
-                style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       color: kTextBlackColor,
                       fontSize: SizerUtil.deviceType == DeviceType.mobile
                           ? 15.sp
@@ -403,7 +403,7 @@ class ProfileDetailColumn extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       color: kTextBlackColor,
                       fontSize: SizerUtil.deviceType == DeviceType.mobile
                           ? 15.sp
@@ -417,7 +417,7 @@ class ProfileDetailColumn extends StatelessWidget {
               kHalfSizedBox,
               Text(
                 value,
-                style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       color: kTextBlackColor,
                       fontSize: SizerUtil.deviceType == DeviceType.mobile
                           ? 15.sp
