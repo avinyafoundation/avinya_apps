@@ -34,9 +34,28 @@ void main() async {
   setHashUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (kReleaseMode) {
+  // Define environment constants
+  const bool kProductionMode = bool.fromEnvironment('dart.vm.product');
+  const bool kStagingMode = bool.fromEnvironment('dart.vm.staging');
+  const bool kDevelopmentMode = bool.fromEnvironment('dart.vm.development');
+
+  if (kProductionMode) {
     // get variables from prod environment config.json
     await AppConfig.forEnvironment('prod');
+    AppConfig.choreoSTSClientID = await const String.fromEnvironment(
+        'choreo_sts_client_id',
+        defaultValue: 'undefined');
+    // ignore: dead_code
+  } else if (kStagingMode) {
+    // get variables from prod environment config.json
+    await AppConfig.forEnvironment('stag');
+    AppConfig.choreoSTSClientID = await const String.fromEnvironment(
+        'choreo_sts_client_id',
+        defaultValue: 'undefined');
+    // ignore: dead_code
+  } else if (kDevelopmentMode) {
+    // get variables from prod environment config.json
+    await AppConfig.forEnvironment('dev-cloud');
     AppConfig.choreoSTSClientID = await const String.fromEnvironment(
         'choreo_sts_client_id',
         defaultValue: 'undefined');
