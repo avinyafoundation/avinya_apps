@@ -6,7 +6,6 @@ name: Build and deploy Node.js app to Azure Web App - avinyawebapp-staging
 on:
   push:
     branches:
-      - main
       - frontend-0.9.0
   workflow_dispatch:
 
