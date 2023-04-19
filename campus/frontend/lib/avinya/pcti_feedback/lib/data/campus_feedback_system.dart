@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:pcti_feedback/data.dart';
 
