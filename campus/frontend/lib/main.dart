@@ -39,29 +39,33 @@ void main() async {
   const bool kStagingMode = bool.fromEnvironment('dart.vm.staging');
   const bool kDevelopmentMode = bool.fromEnvironment('dart.vm.development');
 
-  if (kProductionMode) {
-    // get variables from prod environment config.json
-    await AppConfig.forEnvironment('prod');
-    AppConfig.choreoSTSClientID = await const String.fromEnvironment(
-        'choreo_sts_client_id',
-        defaultValue: 'undefined');
-    // ignore: dead_code
-  } else if (kStagingMode) {
-    // get variables from prod environment config.json
-    await AppConfig.forEnvironment('stag');
-    AppConfig.choreoSTSClientID = await const String.fromEnvironment(
-        'choreo_sts_client_id',
-        defaultValue: 'undefined');
-    // ignore: dead_code
-  } else if (kDevelopmentMode) {
-    // get variables from prod environment config.json
-    await AppConfig.forEnvironment('dev-cloud');
-    AppConfig.choreoSTSClientID = await const String.fromEnvironment(
-        'choreo_sts_client_id',
-        defaultValue: 'undefined');
-  } else {
-    await AppConfig.forEnvironment('dev');
+  Future<void> initializeAppConfig() async {
+    if (kProductionMode) {
+      // get variables from prod environment config.json
+      await AppConfig.forEnvironment('prod');
+      AppConfig.choreoSTSClientID = await String.fromEnvironment(
+          'choreo_sts_client_id',
+          defaultValue: 'undefined');
+    } else if (kStagingMode) {
+      // get variables from stag environment config.json
+      await AppConfig.forEnvironment('stag');
+      AppConfig.choreoSTSClientID = await String.fromEnvironment(
+          'choreo_sts_client_id',
+          defaultValue: 'undefined');
+    } else if (kDevelopmentMode) {
+      // get variables from dev-cloud environment config.json
+      await AppConfig.forEnvironment('dev-cloud');
+      AppConfig.choreoSTSClientID = await String.fromEnvironment(
+          'choreo_sts_client_id',
+          defaultValue: 'undefined');
+    } else {
+      // get variables from dev environment config.json
+      await AppConfig.forEnvironment('dev');
+    }
   }
+
+  // Call initializeAppConfig() before using AppConfig variables
+  await initializeAppConfig();
 
   // google_fonts.GoogleFonts.config.allowRuntimeFetching = false;
   GalleryApp galleryApp = GalleryApp();
