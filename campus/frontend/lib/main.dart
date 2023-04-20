@@ -34,60 +34,23 @@ void main() async {
   setHashUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Define environment constants
-  // var kProductionMode = String.fromEnvironment('productionMode');
-  // var kStagingMode = String.fromEnvironment('stagingMode');
-  // var kDevelopmentMode = String.fromEnvironment('developmentMode');
-
-  // Future<void> initializeAppConfig() async {
-  //   if (kProductionMode == 'true') {
-  //     // get variables from prod environment config.json
-  //     await AppConfig.forEnvironment('prod');
-  //     AppConfig.choreoSTSClientID = await String.fromEnvironment(
-  //         'choreo_sts_client_id',
-  //         defaultValue: 'undefined');
-  //   } else if (kStagingMode == 'true') {
-  //     // get variables from stag environment config.json
-  //     await AppConfig.forEnvironment('stag');
-  //     AppConfig.choreoSTSClientID = await String.fromEnvironment(
-  //         'choreo_sts_client_id',
-  //         defaultValue: 'undefined');
-  //   } else if (kDevelopmentMode == 'true') {
-  //     // get variables from dev-cloud environment config.json
-  //     await AppConfig.forEnvironment('dev-cloud');
-  //     AppConfig.choreoSTSClientID = await String.fromEnvironment(
-  //         'choreo_sts_client_id',
-  //         defaultValue: 'undefined');
-  //   } else {
-  //     // get variables from dev environment config.json
-  //     await AppConfig.forEnvironment('dev');
-  //   }
-  // }
-
-  // // Call initializeAppConfig() before using AppConfig variables
-  // await initializeAppConfig();
-
-  const String kEnvironment = String.fromEnvironment('ENV', defaultValue: '');
-
+  String kEnvironment = EnvironmentConfig.kEnvironment;
+  if (kReleaseMode) {
+    // get variables from prod environment config.json
+    AppConfig.choreoSTSClientID = await String.fromEnvironment(
+        'choreo_sts_client_id',
+        defaultValue: 'undefined');
+  }
   // Check for environment values
   if (kEnvironment == 'prod') {
     // get variables from prod environment config.json
     await AppConfig.forEnvironment('prod');
-    AppConfig.choreoSTSClientID = await String.fromEnvironment(
-        'choreo_sts_client_id',
-        defaultValue: 'undefined');
   } else if (kEnvironment == 'stag') {
     // get variables from stag environment config.json
     await AppConfig.forEnvironment('stag');
-    AppConfig.choreoSTSClientID = await String.fromEnvironment(
-        'choreo_sts_client_id',
-        defaultValue: 'undefined');
-  } else if (kEnvironment == 'dev') {
+  } else if (kEnvironment == 'dev-cloud') {
     // get variables from dev-cloud environment config.json
     await AppConfig.forEnvironment('dev-cloud');
-    AppConfig.choreoSTSClientID = await String.fromEnvironment(
-        'choreo_sts_client_id',
-        defaultValue: 'undefined');
   } else {
     // get variables from dev environment config.json
     await AppConfig.forEnvironment('dev');
@@ -101,6 +64,11 @@ void main() async {
   signedIn = await galleryApp._auth.getSignedIn();
   campusAppsPortalInstance.setSignedIn(signedIn);
   runApp(GalleryApp());
+}
+
+class EnvironmentConfig {
+  static const kEnvironment =
+      String.fromEnvironment('ENV', defaultValue: 'dev');
 }
 
 class GalleryApp extends StatefulWidget {
