@@ -17,6 +17,7 @@ class AppConfig {
   static String mainCampusActivity = 'school-day';
   static String campusPctiNotesBffApiUrl = '';
   static String campusAssetsBffApiUrl = '';
+  static String kEnvironment = '';
 
   static String campusPctiFeedbackBffApiUrl = '';
 
