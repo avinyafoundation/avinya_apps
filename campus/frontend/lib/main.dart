@@ -34,21 +34,22 @@ void main() async {
   setHashUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
 
-  String kEnvironment = EnvironmentConfig.kEnvironment;
   if (kReleaseMode) {
     // get variables from prod environment config.json
     AppConfig.choreoSTSClientID = await String.fromEnvironment(
         'choreo_sts_client_id',
         defaultValue: 'undefined');
+    AppConfig.kEnvironment =
+        await String.fromEnvironment('ENV', defaultValue: 'undefined');
   }
   // Check for environment values
-  if (kEnvironment == 'prod') {
+  if (AppConfig.kEnvironment == 'prod') {
     // get variables from prod environment config.json
     await AppConfig.forEnvironment('prod');
-  } else if (kEnvironment == 'stag') {
+  } else if (AppConfig.kEnvironment == 'stag') {
     // get variables from stag environment config.json
     await AppConfig.forEnvironment('stag');
-  } else if (kEnvironment == 'dev-cloud') {
+  } else if (AppConfig.kEnvironment == 'dev-cloud') {
     // get variables from dev-cloud environment config.json
     await AppConfig.forEnvironment('dev-cloud');
   } else {
@@ -64,11 +65,6 @@ void main() async {
   signedIn = await galleryApp._auth.getSignedIn();
   campusAppsPortalInstance.setSignedIn(signedIn);
   runApp(GalleryApp());
-}
-
-class EnvironmentConfig {
-  static const kEnvironment =
-      String.fromEnvironment('ENV', defaultValue: 'dev');
 }
 
 class GalleryApp extends StatefulWidget {
