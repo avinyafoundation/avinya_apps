@@ -274,6 +274,8 @@ flutter:
     - packages/shrine_images/37-0.jpg
     - assets/config/dev.json
     - assets/config/prod.json
+    - assets/config/dev-cloud.json
+    - assets/config/stag.json
     - assets/images/
 
   generate: true
