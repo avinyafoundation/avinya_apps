@@ -35,38 +35,63 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Define environment constants
-  const String kProductionMode = String.fromEnvironment('productionMode');
-  const String kStagingMode = String.fromEnvironment('stagingMode');
-  const String kDevelopmentMode = String.fromEnvironment('developmentMode');
+  // var kProductionMode = String.fromEnvironment('productionMode');
+  // var kStagingMode = String.fromEnvironment('stagingMode');
+  // var kDevelopmentMode = String.fromEnvironment('developmentMode');
 
-  Future<void> initializeAppConfig() async {
-    if (kProductionMode == 'true') {
-      // get variables from prod environment config.json
-      await AppConfig.forEnvironment('prod');
-      AppConfig.choreoSTSClientID = await String.fromEnvironment(
-          'choreo_sts_client_id',
-          defaultValue: 'undefined');
-    } else if (kStagingMode == 'true') {
-      // get variables from stag environment config.json
-      await AppConfig.forEnvironment('stag');
-      AppConfig.choreoSTSClientID = await String.fromEnvironment(
-          'choreo_sts_client_id',
-          defaultValue: 'undefined');
-    } else if (kDevelopmentMode == 'true') {
-      // get variables from dev-cloud environment config.json
-      await AppConfig.forEnvironment('dev-cloud');
-      AppConfig.choreoSTSClientID = await String.fromEnvironment(
-          'choreo_sts_client_id',
-          defaultValue: 'undefined');
-    } else {
-      // get variables from dev environment config.json
-      await AppConfig.forEnvironment('dev');
-    }
+  // Future<void> initializeAppConfig() async {
+  //   if (kProductionMode == 'true') {
+  //     // get variables from prod environment config.json
+  //     await AppConfig.forEnvironment('prod');
+  //     AppConfig.choreoSTSClientID = await String.fromEnvironment(
+  //         'choreo_sts_client_id',
+  //         defaultValue: 'undefined');
+  //   } else if (kStagingMode == 'true') {
+  //     // get variables from stag environment config.json
+  //     await AppConfig.forEnvironment('stag');
+  //     AppConfig.choreoSTSClientID = await String.fromEnvironment(
+  //         'choreo_sts_client_id',
+  //         defaultValue: 'undefined');
+  //   } else if (kDevelopmentMode == 'true') {
+  //     // get variables from dev-cloud environment config.json
+  //     await AppConfig.forEnvironment('dev-cloud');
+  //     AppConfig.choreoSTSClientID = await String.fromEnvironment(
+  //         'choreo_sts_client_id',
+  //         defaultValue: 'undefined');
+  //   } else {
+  //     // get variables from dev environment config.json
+  //     await AppConfig.forEnvironment('dev');
+  //   }
+  // }
+
+  // // Call initializeAppConfig() before using AppConfig variables
+  // await initializeAppConfig();
+
+  const String kEnvironment = String.fromEnvironment('ENV', defaultValue: '');
+
+  // Check for environment values
+  if (kEnvironment == 'prod') {
+    // get variables from prod environment config.json
+    await AppConfig.forEnvironment('prod');
+    AppConfig.choreoSTSClientID = await String.fromEnvironment(
+        'choreo_sts_client_id',
+        defaultValue: 'undefined');
+  } else if (kEnvironment == 'stag') {
+    // get variables from stag environment config.json
+    await AppConfig.forEnvironment('stag');
+    AppConfig.choreoSTSClientID = await String.fromEnvironment(
+        'choreo_sts_client_id',
+        defaultValue: 'undefined');
+  } else if (kEnvironment == 'dev') {
+    // get variables from dev-cloud environment config.json
+    await AppConfig.forEnvironment('dev-cloud');
+    AppConfig.choreoSTSClientID = await String.fromEnvironment(
+        'choreo_sts_client_id',
+        defaultValue: 'undefined');
+  } else {
+    // get variables from dev environment config.json
+    await AppConfig.forEnvironment('dev');
   }
-
-  // Call initializeAppConfig() before using AppConfig variables
-  await initializeAppConfig();
-
   // google_fonts.GoogleFonts.config.allowRuntimeFetching = false;
   GalleryApp galleryApp = GalleryApp();
   campusAppsPortalInstance.setAuth(galleryApp._auth);
