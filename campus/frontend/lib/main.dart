@@ -100,7 +100,7 @@ void main() async {
   //   await AppConfig.forEnvironment('dev');
   // }
 
-  String? currentEnvironment = html.window.localStorage['CURRENT_ENV'];
+  String? currentEnvironment = Constants.currentEnvironment;
   // if (kReleaseMode) {
   //   // get variables from prod environment config.json
   //   AppConfig.choreoSTSClientID = await String.fromEnvironment(
@@ -113,24 +113,15 @@ void main() async {
   if (currentEnvironment == 'prod') {
     // get variables from prod environment config.json
     await AppConfig.forEnvironment('prod');
-    AppConfig.choreoSTSClientID = String.fromEnvironment(
-      'choreo_sts_client_id',
-      defaultValue: 'undefined',
-    );
+    AppConfig.choreoSTSClientID = Constants.choreoSTSClientID;
   } else if (currentEnvironment == 'stag') {
     // get variables from stag environment config.json
     await AppConfig.forEnvironment('stag');
-    AppConfig.choreoSTSClientID = String.fromEnvironment(
-      'choreo_sts_client_id',
-      defaultValue: 'undefined',
-    );
+    AppConfig.choreoSTSClientID = Constants.choreoSTSClientID;
   } else if (currentEnvironment == 'dev-cloud') {
     // get variables from dev-cloud environment config.json
     await AppConfig.forEnvironment('dev-cloud');
-    AppConfig.choreoSTSClientID = String.fromEnvironment(
-      'choreo_sts_client_id',
-      defaultValue: 'undefined',
-    );
+    AppConfig.choreoSTSClientID = Constants.choreoSTSClientID;
   } else {
     await AppConfig.forEnvironment('dev');
   }
@@ -144,6 +135,19 @@ void main() async {
   signedIn = await galleryApp._auth.getSignedIn();
   campusAppsPortalInstance.setSignedIn(signedIn);
   runApp(GalleryApp());
+}
+
+/// Environment variables and shared app constants.
+abstract class Constants {
+  static const String currentEnvironment = String.fromEnvironment(
+    'ENV',
+    defaultValue: '',
+  );
+
+  static const String choreoSTSClientID = String.fromEnvironment(
+    'choreo_sts_client_id',
+    defaultValue: '',
+  );
 }
 
 class GalleryApp extends StatefulWidget {

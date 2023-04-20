@@ -38,7 +38,7 @@ jobs:
       - name: Build Flutter app
         run: |
           cd campus/frontend
-          flutter build web --release --dart-define=choreo_sts_client_id=${{ secrets.CHOREO_STS_CLIENT_ID }}
+          flutter build web --release --dart-define=choreo_sts_client_id=${{ secrets.CHOREO_STS_CLIENT_ID }} --dart-define=ENV=stag
           flutter config --enable-web
 
       - name: Upload Flutter build artifacts
