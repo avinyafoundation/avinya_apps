@@ -22,6 +22,60 @@ import 'package:url_strategy/url_strategy.dart';
 
 import 'config/app_config.dart';
 
+// void main() async {
+//   // Use package:url_strategy until this pull request is released:
+//   // https://github.com/flutter/flutter/pull/77103
+
+//   // Use to setHashUrlStrategy() to use "/#/" in the address bar (default). Use
+//   // setPathUrlStrategy() to use the path. You may need to configure your web
+//   // server to redirect all paths to index.html.
+//   //
+//   // On mobile platforms, both functions are no-ops.
+//   setHashUrlStrategy();
+//   WidgetsFlutterBinding.ensureInitialized();
+
+//   if (kReleaseMode) {
+//     // get variables from prod environment config.json
+//     await AppConfig.forEnvironment('prod');
+//     AppConfig.choreoSTSClientID = await const String.fromEnvironment(
+//         'choreo_sts_client_id',
+//         defaultValue: 'undefined');
+//     AppConfig.kEnvironment =
+//         await String.fromEnvironment('ENV', defaultValue: 'undefined');
+//   } else {
+//     await AppConfig.forEnvironment('dev');
+//   }
+
+//   // if (kReleaseMode) {
+//   //   // get variables from prod environment config.json
+//   //   AppConfig.choreoSTSClientID = await String.fromEnvironment(
+//   //       'choreo_sts_client_id',
+//   //       defaultValue: 'undefined');
+//   //   AppConfig.kEnvironment =
+//   //       await String.fromEnvironment('ENV', defaultValue: 'undefined');
+//   // }
+//   // Check for environment values
+//   if (AppConfig.kEnvironment == 'prod') {
+//     // get variables from prod environment config.json
+//     await AppConfig.forEnvironment('prod');
+//   } else if (AppConfig.kEnvironment == 'stag') {
+//     // get variables from stag environment config.json
+//     await AppConfig.forEnvironment('stag');
+//   } else if (AppConfig.kEnvironment == 'dev-cloud') {
+//     // get variables from dev-cloud environment config.json
+//     await AppConfig.forEnvironment('dev-cloud');
+//   }
+
+//   // google_fonts.GoogleFonts.config.allowRuntimeFetching = false;
+//   GalleryApp galleryApp = GalleryApp();
+//   campusAppsPortalInstance.setAuth(galleryApp._auth);
+//   bool signedIn = await campusAppsPortalInstance.getSignedIn();
+//   log('signedIn 1: $signedIn! ');
+
+//   signedIn = await galleryApp._auth.getSignedIn();
+//   campusAppsPortalInstance.setSignedIn(signedIn);
+//   runApp(GalleryApp());
+// }
 void main() async {
   // Use package:url_strategy until this pull request is released:
   // https://github.com/flutter/flutter/pull/77103
@@ -37,11 +91,14 @@ void main() async {
   if (kReleaseMode) {
     // get variables from prod environment config.json
     await AppConfig.forEnvironment('prod');
-    AppConfig.choreoSTSClientID = await const String.fromEnvironment(
-        'choreo_sts_client_id',
-        defaultValue: 'undefined');
-    AppConfig.kEnvironment =
-        await String.fromEnvironment('ENV', defaultValue: 'undefined');
+    AppConfig.choreoSTSClientID = String.fromEnvironment(
+      'choreo_sts_client_id',
+      defaultValue: 'undefined',
+    );
+    AppConfig.kEnvironment = String.fromEnvironment(
+      'ENV',
+      defaultValue: 'undefined',
+    );
   } else {
     await AppConfig.forEnvironment('dev');
   }
@@ -75,6 +132,12 @@ void main() async {
   signedIn = await galleryApp._auth.getSignedIn();
   campusAppsPortalInstance.setSignedIn(signedIn);
   runApp(GalleryApp());
+}
+
+class getConfig {
+  static String getChoreoSTSClientID() {
+    return AppConfig.choreoSTSClientID;
+  }
 }
 
 class GalleryApp extends StatefulWidget {
