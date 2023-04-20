@@ -40,6 +40,8 @@ void main() async {
     AppConfig.choreoSTSClientID = await const String.fromEnvironment(
         'choreo_sts_client_id',
         defaultValue: 'undefined');
+    AppConfig.kEnvironment =
+        await String.fromEnvironment('ENV', defaultValue: 'undefined');
   } else {
     await AppConfig.forEnvironment('dev');
   }
@@ -52,20 +54,17 @@ void main() async {
   //   AppConfig.kEnvironment =
   //       await String.fromEnvironment('ENV', defaultValue: 'undefined');
   // }
-  // // Check for environment values
-  // if (AppConfig.kEnvironment == 'prod') {
-  //   // get variables from prod environment config.json
-  //   await AppConfig.forEnvironment('prod');
-  // } else if (AppConfig.kEnvironment == 'stag') {
-  //   // get variables from stag environment config.json
-  //   await AppConfig.forEnvironment('stag');
-  // } else if (AppConfig.kEnvironment == 'dev-cloud') {
-  //   // get variables from dev-cloud environment config.json
-  //   await AppConfig.forEnvironment('dev-cloud');
-  // } else {
-  //   // get variables from dev environment config.json
-  //   await AppConfig.forEnvironment('dev');
-  // }
+  // Check for environment values
+  if (AppConfig.kEnvironment == 'prod') {
+    // get variables from prod environment config.json
+    await AppConfig.forEnvironment('prod');
+  } else if (AppConfig.kEnvironment == 'stag') {
+    // get variables from stag environment config.json
+    await AppConfig.forEnvironment('stag');
+  } else if (AppConfig.kEnvironment == 'dev-cloud') {
+    // get variables from dev-cloud environment config.json
+    await AppConfig.forEnvironment('dev-cloud');
+  }
 
   // google_fonts.GoogleFonts.config.allowRuntimeFetching = false;
   GalleryApp galleryApp = GalleryApp();
