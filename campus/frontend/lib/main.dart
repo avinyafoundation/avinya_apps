@@ -35,24 +35,22 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Define environment constants
-  const bool kProductionMode = bool.fromEnvironment('dart.vm.product');
-  const bool kStagingMode = bool.fromEnvironment('dart.vm.staging');
-  const bool kDevelopmentMode = bool.fromEnvironment('dart.vm.development');
+  const String kEnvironment = String.fromEnvironment('ENV', defaultValue: '');
 
   Future<void> initializeAppConfig() async {
-    if (kProductionMode) {
+    if (kEnvironment == "prod") {
       // get variables from prod environment config.json
       await AppConfig.forEnvironment('prod');
       AppConfig.choreoSTSClientID = await String.fromEnvironment(
           'choreo_sts_client_id',
           defaultValue: 'undefined');
-    } else if (kStagingMode) {
+    } else if (kEnvironment == "stag") {
       // get variables from stag environment config.json
       await AppConfig.forEnvironment('stag');
       AppConfig.choreoSTSClientID = await String.fromEnvironment(
           'choreo_sts_client_id',
           defaultValue: 'undefined');
-    } else if (kDevelopmentMode) {
+    } else if (kEnvironment == "dev-cloud") {
       // get variables from dev-cloud environment config.json
       await AppConfig.forEnvironment('dev-cloud');
       AppConfig.choreoSTSClientID = await String.fromEnvironment(
