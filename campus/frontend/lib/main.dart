@@ -19,6 +19,7 @@ import 'package:gallery/themes/gallery_theme_data.dart';
 // import 'package:google_fonts/google_fonts.dart' as google_fonts;
 import 'package:sizer/sizer.dart';
 import 'package:url_strategy/url_strategy.dart';
+import 'dart:html' as html;
 
 import 'config/app_config.dart';
 
@@ -88,21 +89,18 @@ void main() async {
   setHashUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (kReleaseMode) {
-    // get variables from prod environment config.json
-    await AppConfig.forEnvironment('prod');
-    AppConfig.choreoSTSClientID = String.fromEnvironment(
-      'choreo_sts_client_id',
-      defaultValue: 'undefined',
-    );
-    AppConfig.kEnvironment = String.fromEnvironment(
-      'ENV',
-      defaultValue: 'undefined',
-    );
-  } else {
-    await AppConfig.forEnvironment('dev');
-  }
+  // if (kReleaseMode) {
+  //   // get variables from prod environment config.json
+  //   await AppConfig.forEnvironment('prod');
+  //   AppConfig.choreoSTSClientID = String.fromEnvironment(
+  //     'choreo_sts_client_id',
+  //     defaultValue: 'undefined',
+  //   );
+  // } else {
+  //   await AppConfig.forEnvironment('dev');
+  // }
 
+  String? currentEnvironment = html.window.localStorage['CURRENT_ENV'];
   // if (kReleaseMode) {
   //   // get variables from prod environment config.json
   //   AppConfig.choreoSTSClientID = await String.fromEnvironment(
@@ -112,15 +110,29 @@ void main() async {
   //       await String.fromEnvironment('ENV', defaultValue: 'undefined');
   // }
   // Check for environment values
-  if (AppConfig.kEnvironment == 'prod') {
+  if (currentEnvironment == 'prod') {
     // get variables from prod environment config.json
     await AppConfig.forEnvironment('prod');
-  } else if (AppConfig.kEnvironment == 'stag') {
+    AppConfig.choreoSTSClientID = String.fromEnvironment(
+      'choreo_sts_client_id',
+      defaultValue: 'undefined',
+    );
+  } else if (currentEnvironment == 'stag') {
     // get variables from stag environment config.json
     await AppConfig.forEnvironment('stag');
-  } else if (AppConfig.kEnvironment == 'dev-cloud') {
+    AppConfig.choreoSTSClientID = String.fromEnvironment(
+      'choreo_sts_client_id',
+      defaultValue: 'undefined',
+    );
+  } else if (currentEnvironment == 'dev-cloud') {
     // get variables from dev-cloud environment config.json
     await AppConfig.forEnvironment('dev-cloud');
+    AppConfig.choreoSTSClientID = String.fromEnvironment(
+      'choreo_sts_client_id',
+      defaultValue: 'undefined',
+    );
+  } else {
+    await AppConfig.forEnvironment('dev');
   }
 
   // google_fonts.GoogleFonts.config.allowRuntimeFetching = false;
@@ -132,12 +144,6 @@ void main() async {
   signedIn = await galleryApp._auth.getSignedIn();
   campusAppsPortalInstance.setSignedIn(signedIn);
   runApp(GalleryApp());
-}
-
-class getConfig {
-  static String getChoreoSTSClientID() {
-    return AppConfig.choreoSTSClientID;
-  }
 }
 
 class GalleryApp extends StatefulWidget {
