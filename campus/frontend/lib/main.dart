@@ -19,7 +19,7 @@ import 'package:gallery/themes/gallery_theme_data.dart';
 // import 'package:google_fonts/google_fonts.dart' as google_fonts;
 import 'package:sizer/sizer.dart';
 import 'package:url_strategy/url_strategy.dart';
-
+import 'dart:io';
 import 'config/app_config.dart';
 
 void main() async {
@@ -34,23 +34,20 @@ void main() async {
   setHashUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Define environment constants
-  const String kEnvironment = String.fromEnvironment('ENV', defaultValue: '');
-
   Future<void> initializeAppConfig() async {
-    if (kEnvironment == "prod") {
+    if (Platform.environment['ENV'] == "prod") {
       // get variables from prod environment config.json
       await AppConfig.forEnvironment('prod');
       AppConfig.choreoSTSClientID = await String.fromEnvironment(
           'choreo_sts_client_id',
           defaultValue: 'undefined');
-    } else if (kEnvironment == "stag") {
+    } else if (Platform.environment['ENV'] == "stag") {
       // get variables from stag environment config.json
       await AppConfig.forEnvironment('stag');
       AppConfig.choreoSTSClientID = await String.fromEnvironment(
           'choreo_sts_client_id',
           defaultValue: 'undefined');
-    } else if (kEnvironment == "dev-cloud") {
+    } else if (Platform.environment['ENV'] == "dev-cloud") {
       // get variables from dev-cloud environment config.json
       await AppConfig.forEnvironment('dev-cloud');
       AppConfig.choreoSTSClientID = await String.fromEnvironment(
