@@ -1,12 +1,12 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - avinyawebapp-staging
+name: Build and deploy Node.js app to Azure Web App - avinyawebapp-development
 
 on:
   push:
     branches:
-      - frontend-0.9.0-stag
+      - main
   workflow_dispatch:
 
 jobs:
@@ -38,7 +38,7 @@ jobs:
       - name: Build Flutter app
         run: |
           cd campus/frontend
-          flutter build web --release --dart-define=choreo_sts_client_id=${{ secrets.CHOREO_STS_CLIENT_ID }} --dart-define=ENV=stag
+          flutter build web --release --dart-define=choreo_sts_client_id=${{ secrets.CHOREO_STS_CLIENT_ID }} --dart-define=ENV=dev-cloud
           flutter config --enable-web
 
       - name: Upload Flutter build artifacts
@@ -81,7 +81,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'avinyawebapp-staging'
+          app-name: 'avinyawebapp-development'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_083379278BAD49CFBD446176B7438761 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_71272A1F3FC3413BB65CF53541A1FE76 }}
           package: .
