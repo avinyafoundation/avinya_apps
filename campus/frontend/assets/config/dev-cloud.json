@@ -5,7 +5,8 @@
     "campusPctiFeedbackBffApiUrl" : "https://3a907137-52a3-4196-9e0d-22d054ea5789-dev.e1-us-east-azure.choreoapis.dev/fieg/pcti-feedback-bff/1.0.0",
     "campusAssetsBffApiUrl" : "https://3a907137-52a3-4196-9e0d-22d054ea5789-dev.e1-us-east-azure.choreoapis.dev/fieg/asset-bff/1.0.0",
     "choreo_sts_endpoint" : "https://sts.choreo.dev/oauth2/token",
-    "asgardeo_token_endpoint" : "https://api.asgardeo.io/t/avinyatest/oauth2/token"
+    "asgardeo_token_endpoint" : "https://api.asgardeo.io/t/avinyatest/oauth2/token",
+    "logout_url" : "https://api.asgardeo.io/t/avinyatest/oidc/logout"
 }
 
 
