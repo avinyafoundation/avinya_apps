@@ -40,14 +40,17 @@ void main() async {
     // get variables from prod environment config.json
     await AppConfig.forEnvironment('prod');
     AppConfig.choreoSTSClientID = Constants.choreoSTSClientID;
+    AppConfig.asgardeoClientId = Constants.asgardeoClientId;
   } else if (currentEnvironment == 'stag') {
     // get variables from stag environment config.json
     await AppConfig.forEnvironment('stag');
     AppConfig.choreoSTSClientID = Constants.choreoSTSClientID;
+    AppConfig.asgardeoClientId = Constants.asgardeoClientId;
   } else if (currentEnvironment == 'dev-cloud') {
     // get variables from dev-cloud environment config.json
     await AppConfig.forEnvironment('dev-cloud');
     AppConfig.choreoSTSClientID = Constants.choreoSTSClientID;
+    AppConfig.asgardeoClientId = Constants.asgardeoClientId;
   } else {
     await AppConfig.forEnvironment('dev');
   }
@@ -72,6 +75,11 @@ abstract class Constants {
 
   static const String choreoSTSClientID = String.fromEnvironment(
     'choreo_sts_client_id',
+    defaultValue: '',
+  );
+
+  static const String asgardeoClientId = String.fromEnvironment(
+    'asgardeo_client_id',
     defaultValue: '',
   );
 }
