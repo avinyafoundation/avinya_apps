@@ -9,14 +9,14 @@ import 'package:gallery/auth.dart';
 import 'routing.dart';
 import 'screens/navigator.dart';
 
-class AssetUserSystem extends StatefulWidget {
-  const AssetUserSystem({super.key});
+class AssetAdminSystem extends StatefulWidget {
+  const AssetAdminSystem({super.key});
 
   @override
-  State<AssetUserSystem> createState() => _AssetUserSystemState();
+  State<AssetAdminSystem> createState() => _AssetAdminSystemState();
 }
 
-class _AssetUserSystemState extends State<AssetUserSystem> {
+class _AssetAdminSystemState extends State<AssetAdminSystem> {
   final _auth = CampusAppsPortalAuth();
   final _navigatorKey = GlobalKey<NavigatorState>();
   late final RouteState _routeState;
