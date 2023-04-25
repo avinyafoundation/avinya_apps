@@ -25,8 +25,6 @@ dependencies:
     path: ../../../
   url_launcher: ^6.1.1
   url_strategy: ^0.2.0
-  gallery:
-    path: ../../../
   window_size:
     git:
       url: https://github.com/google/flutter-desktop-embedding.git
