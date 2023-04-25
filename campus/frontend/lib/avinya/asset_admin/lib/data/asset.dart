@@ -1,5 +1,5 @@
 //import 'package:ShoolManagementSystem/src/data/avinya_type.dart';
-import 'package:gallery/avinya/asset/lib/data.dart';
+import 'package:gallery/avinya/asset_admin/lib/data.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
