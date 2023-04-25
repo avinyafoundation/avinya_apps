@@ -7,7 +7,7 @@ import 'dart:developer';
 // import 'package:asset/screens/avinya_type_details.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery/avinya/asset/lib/screens/resource_allocation_details.dart';
+import 'package:gallery/avinya/asset_admin/lib/screens/resource_allocation_details.dart';
 
 //import '../auth.dart';
 import '../../../../auth.dart';
