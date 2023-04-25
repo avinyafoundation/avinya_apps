@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:gallery/avinya/asset/lib/data.dart';
+import 'package:gallery/avinya/asset_admin/lib/data.dart';
 
 //import 'package:ShoolManagementSystem/src/data.dart';
 
