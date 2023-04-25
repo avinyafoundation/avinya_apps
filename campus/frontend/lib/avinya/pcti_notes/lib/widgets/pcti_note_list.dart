@@ -57,7 +57,7 @@ class PctiNoteListState extends State<PctiNoteList> {
               ),
             );
           } else {
-            return Center(
+            return const Center(
               child: Text("No PCTI Notes",
               style: TextStyle(fontSize: 20),
               textAlign: TextAlign.center,
@@ -149,6 +149,7 @@ class _AddPctiNotePageState extends State<AddPctiNotePage> {
     try {
       if (_formKey.currentState!.validate()) {
         final Evaluation pctiNote = Evaluation(
+          evaluator_id: campusAppsPortalInstance.getUserPerson().id!,//added by @lahiru 2023-04-06
           notes: _note_Controller.text, //evaluator_id: 
           activity_instance_id: pctiActivityInstance!.id!
         );

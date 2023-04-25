@@ -45,68 +45,67 @@ class _ApplyScreenState extends State<ApplyScreen> {
   late TextEditingController _address_Controller;
   late FocusNode _address_FocusNode;
 
-  MaskTextInputFormatter phoneMaskTextInputFormatter =
-      new MaskTextInputFormatter(
-          mask: '###-###-####',
-          filter: {"#": RegExp(r'[0-9]')},
-          type: MaskAutoCompletionType.eager);
+  MaskTextInputFormatter phoneMaskTextInputFormatter = MaskTextInputFormatter(
+      mask: '###-###-####',
+      filter: {"#": RegExp(r'[0-9]')},
+      type: MaskAutoCompletionType.eager);
   String gender = 'Not Specified';
 
   var cities = <CityNearBandaragama>[
-    new CityNearBandaragama("Akarawita", 329),
-    new CityNearBandaragama("Alubomulla", 656),
-    new CityNearBandaragama("Ambalangoda", 330),
-    new CityNearBandaragama("Arawwala West", 1904),
-    new CityNearBandaragama("Bandaragama", 660),
-    new CityNearBandaragama("Batuwatta", 914),
-    new CityNearBandaragama("Bokundara", 1922),
-    new CityNearBandaragama("Boralesgamuwa", 337),
-    new CityNearBandaragama("Dampe", 1941),
-    new CityNearBandaragama("Deltara", 341),
-    new CityNearBandaragama("Egodauyana North", 1928),
-    new CityNearBandaragama("Egodauyana South", 1929),
-    new CityNearBandaragama("Galawilawaththa", 1901),
-    new CityNearBandaragama("Gonapola Junction", 678),
-    new CityNearBandaragama("Gorakapitiya", 1919),
-    new CityNearBandaragama("Haltota", 682),
-    new CityNearBandaragama("Hiripitya", 344),
-    new CityNearBandaragama("Homagama", 346),
-    new CityNearBandaragama("Homagama Town", 1898),
-    new CityNearBandaragama("Horagala", 347),
-    new CityNearBandaragama("Horana", 690),
-    new CityNearBandaragama("Indibedda", 1930),
-    new CityNearBandaragama("Kahathuduwa", 1923),
-    new CityNearBandaragama("Kananwila", 695),
-    new CityNearBandaragama("Kandanagama", 696),
-    new CityNearBandaragama("Katuwawala", 1917),
-    new CityNearBandaragama("Kesbewa", 1921),
-    new CityNearBandaragama("Kiriwattuduwa", 352),
-    new CityNearBandaragama("Kottawa", 1902),
-    new CityNearBandaragama("Kuda Uduwa", 700),
-    new CityNearBandaragama("Liyanwala", 1939),
-    new CityNearBandaragama("Madapatha", 355),
-    new CityNearBandaragama("Magammana-Dolekade", 1897),
-    new CityNearBandaragama("Maharagama", 356),
-    new CityNearBandaragama("Makandana", 1920),
-    new CityNearBandaragama("Malapalla", 1907),
-    new CityNearBandaragama("Mattegoda", 1908),
-    new CityNearBandaragama("Millaniya", 714),
-    new CityNearBandaragama("Millewa", 715),
-    new CityNearBandaragama("Miwanapalana", 716),
-    new CityNearBandaragama("Morontuduwa", 719),
-    new CityNearBandaragama("Pannipitiya", 364),
-    new CityNearBandaragama("Paragastota", 727),
-    new CityNearBandaragama("Pelenwatta", 1903),
-    new CityNearBandaragama("Piliyandala", 365),
-    new CityNearBandaragama("Pitipana Homagama", 366),
-    new CityNearBandaragama("Pokunuwita", 734),
-    new CityNearBandaragama("Polgasowita", 367),
-    new CityNearBandaragama("Poregedara", 1940),
-    new CityNearBandaragama("Siddamulla", 370),
-    new CityNearBandaragama("Siyambalagoda", 371),
-    new CityNearBandaragama("Suwarapola", 1918),
-    new CityNearBandaragama("Welmilla Junction", 749),
-    new CityNearBandaragama("Willorawatta", 1933),
+    CityNearBandaragama("Akarawita", 329),
+    CityNearBandaragama("Alubomulla", 656),
+    CityNearBandaragama("Ambalangoda", 330),
+    CityNearBandaragama("Arawwala West", 1904),
+    CityNearBandaragama("Bandaragama", 660),
+    CityNearBandaragama("Batuwatta", 914),
+    CityNearBandaragama("Bokundara", 1922),
+    CityNearBandaragama("Boralesgamuwa", 337),
+    CityNearBandaragama("Dampe", 1941),
+    CityNearBandaragama("Deltara", 341),
+    CityNearBandaragama("Egodauyana North", 1928),
+    CityNearBandaragama("Egodauyana South", 1929),
+    CityNearBandaragama("Galawilawaththa", 1901),
+    CityNearBandaragama("Gonapola Junction", 678),
+    CityNearBandaragama("Gorakapitiya", 1919),
+    CityNearBandaragama("Haltota", 682),
+    CityNearBandaragama("Hiripitya", 344),
+    CityNearBandaragama("Homagama", 346),
+    CityNearBandaragama("Homagama Town", 1898),
+    CityNearBandaragama("Horagala", 347),
+    CityNearBandaragama("Horana", 690),
+    CityNearBandaragama("Indibedda", 1930),
+    CityNearBandaragama("Kahathuduwa", 1923),
+    CityNearBandaragama("Kananwila", 695),
+    CityNearBandaragama("Kandanagama", 696),
+    CityNearBandaragama("Katuwawala", 1917),
+    CityNearBandaragama("Kesbewa", 1921),
+    CityNearBandaragama("Kiriwattuduwa", 352),
+    CityNearBandaragama("Kottawa", 1902),
+    CityNearBandaragama("Kuda Uduwa", 700),
+    CityNearBandaragama("Liyanwala", 1939),
+    CityNearBandaragama("Madapatha", 355),
+    CityNearBandaragama("Magammana-Dolekade", 1897),
+    CityNearBandaragama("Maharagama", 356),
+    CityNearBandaragama("Makandana", 1920),
+    CityNearBandaragama("Malapalla", 1907),
+    CityNearBandaragama("Mattegoda", 1908),
+    CityNearBandaragama("Millaniya", 714),
+    CityNearBandaragama("Millewa", 715),
+    CityNearBandaragama("Miwanapalana", 716),
+    CityNearBandaragama("Morontuduwa", 719),
+    CityNearBandaragama("Pannipitiya", 364),
+    CityNearBandaragama("Paragastota", 727),
+    CityNearBandaragama("Pelenwatta", 1903),
+    CityNearBandaragama("Piliyandala", 365),
+    CityNearBandaragama("Pitipana Homagama", 366),
+    CityNearBandaragama("Pokunuwita", 734),
+    CityNearBandaragama("Polgasowita", 367),
+    CityNearBandaragama("Poregedara", 1940),
+    CityNearBandaragama("Siddamulla", 370),
+    CityNearBandaragama("Siyambalagoda", 371),
+    CityNearBandaragama("Suwarapola", 1918),
+    CityNearBandaragama("Welmilla Junction", 749),
+    CityNearBandaragama("Willorawatta", 1933),
   ];
 
   var selectedcity = null;
@@ -182,8 +181,8 @@ class _ApplyScreenState extends State<ApplyScreen> {
                               child: SelectableText.rich(TextSpan(
                                 text:
                                     "If you need help, write to us at admissions-help@avinyafoundation.org",
-                                style: new TextStyle(color: Colors.blue),
-                                recognizer: new TapGestureRecognizer()
+                                style: TextStyle(color: Colors.blue),
+                                recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     launchUrl(Uri(
                                       scheme: 'mailto',
@@ -240,9 +239,9 @@ class _ApplyScreenState extends State<ApplyScreen> {
                         Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              SizedBox(height: 10.0),
-                              Text('Sex'),
-                              SizedBox(height: 10.0),
+                              const SizedBox(height: 10.0),
+                              const Text('Sex'),
+                              const SizedBox(height: 10.0),
                               Row(children: [
                                 Padding(
                                   padding: const EdgeInsets.all(8),
@@ -261,9 +260,9 @@ class _ApplyScreenState extends State<ApplyScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 10.0),
-                                Text('Male'),
-                                SizedBox(width: 10.0),
+                                const SizedBox(width: 10.0),
+                                const Text('Male'),
+                                const SizedBox(width: 10.0),
                                 //]),
                                 //Row(children: [
                                 Padding(
@@ -283,13 +282,13 @@ class _ApplyScreenState extends State<ApplyScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 10.0),
-                                Text('Female'),
+                                const SizedBox(width: 10.0),
+                                const Text('Female'),
                               ]),
                             ]),
                         TextFormField(
                           controller: _phone_Controller,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'Phone number *',
                             hintText: 'Enter your phone number',
                             helperText: 'e.g 077 123 4567',
@@ -309,7 +308,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
                         ),
                         TextFormField(
                           controller: _email_Controller,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'Email *',
                             hintText: 'Enter your email address',
                             helperText: 'e.g john@mail.com',
@@ -321,7 +320,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
                               ? null
                               : "Please enter a valid email",
                         ),
-                        SizedBox(height: 10.0),
+                        const SizedBox(height: 10.0),
                         TextFormField(
                           controller: _address_Controller,
                           decoration: const InputDecoration(
@@ -334,26 +333,27 @@ class _ApplyScreenState extends State<ApplyScreen> {
                           },
                           validator: _mandatoryValidator,
                         ),
-                        SizedBox(height: 10.0),
+                        const SizedBox(height: 10.0),
                         Container(
-                          padding: EdgeInsets.only(left: 5.0, right: 5.0),
+                          padding: const EdgeInsets.only(left: 5.0, right: 5.0),
                           decoration: BoxDecoration(
                               border: Border.all(color: Colors.grey),
                               borderRadius: BorderRadius.circular(3.0)),
                           child: DropdownButtonFormField<CityNearBandaragama>(
-                            hint: new Text("Select the city you live in"),
+                            hint: Text("Select the city you live in"),
                             value: selectedcity,
                             // isExpanded: true,
-                            icon: Icon(Icons.keyboard_arrow_down, size: 22),
-                            decoration: InputDecoration(
+                            icon:
+                                const Icon(Icons.keyboard_arrow_down, size: 22),
+                            decoration: const InputDecoration(
                               constraints: BoxConstraints(
                                 maxWidth: 200.0,
                               ),
                             ),
                             items: cities.map((CityNearBandaragama value) {
-                              return new DropdownMenuItem<CityNearBandaragama>(
+                              return DropdownMenuItem<CityNearBandaragama>(
                                 value: value,
-                                child: new Text(value.name!),
+                                child: Text(value.name!),
                               );
                             }).toList(),
                             onChanged: (value) {
@@ -367,8 +367,8 @@ class _ApplyScreenState extends State<ApplyScreen> {
                                 : null,
                           ),
                         ),
-                        SizedBox(height: 10.0),
-                        SizedBox(width: 10.0, height: 10.0),
+                        const SizedBox(height: 10.0),
+                        const SizedBox(width: 10.0, height: 10.0),
                         ElevatedButton(
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
@@ -397,22 +397,22 @@ class _ApplyScreenState extends State<ApplyScreen> {
                                 }
                               }
                             },
-                            child: Text('Submit'))
+                            child: const Text('Submit'))
                       ],
                     ),
                   ),
                 ),
               ),
               persistentFooterButtons: [
-                new OutlinedButton(
-                    child: Text('About'),
+                OutlinedButton(
+                    child: const Text('About'),
                     onPressed: () {
                       showAboutDialog(
                           context: context,
                           applicationName: AppConfig.applicationName,
                           applicationVersion: AppConfig.applicationVersion);
                     }),
-                new Text("© 2022, Avinya Foundation."),
+                Text("© 2022, Avinya Foundation."),
               ],
             );
           }

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -59,11 +57,11 @@ class ActivityAttendance {
 Future<ActivityAttendance> createActivityAttendance(
     ActivityAttendance activityAttendance) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/activity_attendance'),
+    Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/activity_attendance'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(activityAttendance.toJson()),
   );
@@ -74,18 +72,31 @@ Future<ActivityAttendance> createActivityAttendance(
   }
 }
 
-Future<List<ActivityAttendance>> getClassActivityAttendanceToday(
-    int organization_id, int activity_id) async {
-  final response = await http.get(
-    Uri.parse(AppConfig.campusAttendanceBffApiUrl +
-        '/class_attendance_today/' +
-        organization_id.toString() +
-        '/' +
-        activity_id.toString()),
+Future<int> deleteActivityAttendance(int id) async {
+  final response = await http.delete(
+    Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/activity_attendance/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    return int.parse(response.body);
+  } else {
+    throw Exception('Failed to create Activity Participant Attendance.');
+  }
+}
+
+Future<List<ActivityAttendance>> getClassActivityAttendanceToday(
+    int organization_id, int activity_id) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/class_attendance_today/$organization_id/$activity_id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
   if (response.statusCode > 199 && response.statusCode < 300) {
@@ -96,10 +107,75 @@ Future<List<ActivityAttendance>> getClassActivityAttendanceToday(
     return activityAttendances;
   } else {
     throw Exception(
-        'Failed to get Activity Participant Attendance for calss org ID ' +
-            organization_id.toString() +
-            ' and activity ' +
-            activity_id.toString() +
-            ' for today.');
+        'Failed to get Activity Participant Attendance for calss org ID $organization_id and activity $activity_id for today.');
+  }
+}
+
+Future<List<ActivityAttendance>> getPersonActivityAttendanceToday(
+    int person_id, int activity_id) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/person_attendance_today/$person_id/$activity_id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Activity Participant Attendance for calss person ID $person_id and activity $activity_id for today.');
+  }
+}
+
+Future<List<ActivityAttendance>> getPersonActivityAttendanceReport(
+    int person_id, int activity_id, int result_limit) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/person_attendance_report/$person_id/$activity_id/$result_limit'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Activity Participant Attendance report for person ID $person_id and activity $activity_id for result limit.$result_limit');
+  }
+}
+
+Future<List<ActivityAttendance>> getClassActivityAttendanceReport(
+    int organization_id, int activity_id, int result_limit) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/class_attendance_report/$organization_id/$activity_id/$result_limit'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Activity Participant Attendance report for organization ID $organization_id and activity $activity_id for result limit.$result_limit');
   }
 }

@@ -27,7 +27,7 @@ class EvaluationDetailsScreen extends StatelessWidget {
       //   child: Column(children: [
       //     Text(
       //       evaluation!.notes!.toString(),
-      //       style: Theme.of(context).textTheme.headline4,
+      //       style: Theme.of(context).textTheme.headlineMedium,
       //     ),
       //     Text("oook")
       //   ]),
@@ -140,35 +140,35 @@ class EvaluationDetailsScreen extends StatelessWidget {
       //     children: [
       //       Text(
       //         evaluation!.evaluatee_id!.toString(),
-      //         style: Theme.of(context).textTheme.headline4,
+      //         style: Theme.of(context).textTheme.headlineMedium,
       //       ),
       //       Text(
       //         evaluation!.evaluator_id!.toString(),
-      //         style: Theme.of(context).textTheme.headline4,
+      //         style: Theme.of(context).textTheme.headlineMedium,
       //       ),
       //       Text(
       //         evaluation!.evaluation_criteria_id!.toString(),
-      //         style: Theme.of(context).textTheme.headline4,
+      //         style: Theme.of(context).textTheme.headlineMedium,
       //       ),
       //       Text(
       //         evaluation!.activity_instance_id!.toString(),
-      //         style: Theme.of(context).textTheme.headline4,
+      //         style: Theme.of(context).textTheme.headlineMedium,
       //       ),
       //       Text(
       //         evaluation!.grade!.toString(),
-      //         style: Theme.of(context).textTheme.headline4,
+      //         style: Theme.of(context).textTheme.headlineMedium,
       //       ),
       //       Text(
       //         evaluation!.response!.toString(),
-      //         style: Theme.of(context).textTheme.headline4,
+      //         style: Theme.of(context).textTheme.headlineMedium,
       //       ),
       //       Text(
       //         evaluation!.notes!.toString(),
-      //         style: Theme.of(context).textTheme.headline4,
+      //         style: Theme.of(context).textTheme.headlineMedium,
       //       ),
       //       Text(
       //         evaluation!.updated!.toString(),
-      //         style: Theme.of(context).textTheme.headline4,
+      //         style: Theme.of(context).textTheme.headlineMedium,
       //       ),
       //     ],
       //   ),

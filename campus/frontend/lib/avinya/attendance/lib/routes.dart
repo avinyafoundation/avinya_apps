@@ -4,5 +4,5 @@
 
 const String loginRoute = '/shrine/login';
 const String homeRoute = '/shrine';
-const String attendanceRoute = '/avinya_types';
+const String attendanceRoute = '/attendance_marker';
 const String profileRoute = '/profile';

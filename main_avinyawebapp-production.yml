@@ -1,0 +1,87 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy Node.js app to Azure Web App - avinyawebapp-production
+
+on:
+  push:
+    branches:
+      - frontend-0.9.0
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # Set up Flutter environment
+      - name: Set up Flutter
+        uses: subosito/flutter-action@dbf1fa04f4d2e52c33185153d06cdb5443aa189d
+        with:
+          channel: master
+      - run: flutter doctor -v
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
+      - run: npm install -g firebase-tools@11.0.1
+
+      # Get dependencies and build Flutter web app
+      - name: Get Flutter dependencies
+        run: |
+          cd campus/frontend
+          flutter pub get
+          
+      - name: Build Flutter app
+        run: |
+          cd campus/frontend
+          flutter build web --release --dart-define=choreo_sts_client_id=${{ secrets.CHOREO_STS_CLIENT_ID }} --dart-define=ENV=prod
+          flutter config --enable-web
+
+      - name: Upload Flutter build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: flutter-build
+          path: campus/frontend/build/web
+
+      - name: Move Flutter build contents to node-app artifact
+        run: |
+          cp -R campus/frontend/build/web/* campus/deployment/node-app/public-flutter
+          
+      - name: npm install, build, and test
+        run: |
+          cd campus/deployment/node-app
+          npm install
+          npm run build --if-present
+          npm run test --if-present
+
+      - name: Upload artifact for node app
+        uses: actions/upload-artifact@v2
+        with:
+          name: node-app
+          path: campus/deployment/node-app
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: node-app
+
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'avinyawebapp-production'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A61C90006C5F4952A8540EFC0ABC99F3 }}
+          package: .

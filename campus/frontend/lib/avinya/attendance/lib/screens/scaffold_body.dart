@@ -27,8 +27,7 @@ class SMSScaffoldBody extends StatelessWidget {
       key: navigatorKey,
       onPopPage: (route, dynamic result) => route.didPop(result),
       pages: [
-        if (currentRoute.pathTemplate.startsWith('/avinya_types') ||
-            currentRoute.pathTemplate == '/')
+        if (currentRoute.pathTemplate.startsWith('/avinya_types'))
           const FadeTransitionPage<void>(
             key: ValueKey('avinya_types'),
             child: AvinyaTypeScreen(),
@@ -38,7 +37,8 @@ class SMSScaffoldBody extends StatelessWidget {
             key: ValueKey('activites'),
             child: ActivityScreen(),
           )
-        else if (currentRoute.pathTemplate.startsWith('/attendance_marker'))
+        else if (currentRoute.pathTemplate.startsWith('/attendance_marker') ||
+            currentRoute.pathTemplate == '/')
           const FadeTransitionPage<void>(
             key: ValueKey('attendance_marker'),
             child: AttendanceMarkerScreen(),

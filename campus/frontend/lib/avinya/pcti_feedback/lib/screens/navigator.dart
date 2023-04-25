@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:collection/collection.dart';
 import 'package:gallery/auth.dart';
 import 'package:pcti_feedback/screens/evaluation_details.dart';
-import 'package:pcti_feedback/screens/pcti_notes.dart';
+// import 'package:gallery/avinya/pcti_feedback/lib/screens/pcti_feedbacks.dart';
+import 'package:pcti_feedback/screens/pcti_feedbacks.dart';
+
 import 'package:flutter/material.dart';
 
 import '../data.dart';
@@ -118,7 +120,7 @@ class _SMSNavigatorState extends State<SMSNavigator> {
           if (selectedPctiActivity != null)
             MaterialPage<void>(
               key: _pctiActivityDetailsKey,
-              child: PctiNoteScreen(
+              child: PctiFeedbackScreen(
                 pctiActivity: selectedPctiActivity,
               ),
             )

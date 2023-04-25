@@ -1,0 +1,41 @@
+# Node.js
+node_modules/
+*.log
+*.lock
+*.swp
+*.tmp
+*.out
+*.pid
+*.gz
+*.md
+*.yml
+*.tgz
+*.map
+
+# Dependencies
+npm-debug.log
+yarn-error.log
+
+# Build output
+dist/
+build/
+*.js.map
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Editor/IDE files
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+*.code-workspace
+
+# OS generated files
+.DS_Store
+Thumbs.db

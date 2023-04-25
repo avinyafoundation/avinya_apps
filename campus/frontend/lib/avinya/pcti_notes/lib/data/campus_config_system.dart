@@ -61,7 +61,7 @@ class CampusConfigSystem {
   }
 
   Application getApplication() {
-    return this.application;
+    return application;
   }
 
   void setPrecondisionsSubmitted(bool value) {
@@ -89,7 +89,7 @@ class CampusConfigSystem {
   }
 
   void setAddressTypes(List<AddressType>? addressTyples) {
-    this.addressTypes = addressTyples;
+    addressTypes = addressTyples;
   }
 
   void setPersons(List<Person>? persons) {

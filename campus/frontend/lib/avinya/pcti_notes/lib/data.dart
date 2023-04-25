@@ -5,7 +5,6 @@ export 'data/campus_config_system.dart';
 export 'data/address_type.dart';
 export 'package:gallery/data/person.dart';
 export 'package:gallery/data/campus_apps_portal.dart';
-export 'data/campus_config_system.dart';
 export 'data/vacancy.dart';
 export 'data/application.dart';
 export 'data/avinya_type.dart';

@@ -1,8 +1,4 @@
-import 'dart:developer';
-
 import 'package:gallery/avinya/asset/lib/data.dart';
-
-//import 'package:ShoolManagementSystem/src/data.dart';
 
 final campusConfigSystemInstance = CampusConfigSystem()
   ..addBook(
@@ -71,7 +67,7 @@ class CampusConfigSystem {
   }
 
   Application getApplication() {
-    return this.application;
+    return application;
   }
 
   void setPrecondisionsSubmitted(bool value) {
@@ -98,8 +94,8 @@ class CampusConfigSystem {
     allEmployees = employees;
   }
 
-  void setAddressTypes(List<AddressType>? addressTyples) {
-    this.addressTypes = addressTyples;
+  void setAddressTypes(List<AddressType>? addressTypes) {
+    this.addressTypes = addressTypes;
   }
 
   void setPersons(List<Person>? persons) {

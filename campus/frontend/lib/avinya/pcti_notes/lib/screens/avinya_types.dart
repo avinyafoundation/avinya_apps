@@ -66,7 +66,7 @@ class _AvinyaTypeScreenState extends State<AvinyaTypeScreen>
           onPressed: () async {
             Navigator.of(context).push<void>(
               MaterialPageRoute<void>(
-                builder: (context) => AddAvinyaTypePage(),
+                builder: (context) => const AddAvinyaTypePage(),
               ),
             )
             .then((value) => setState(() {}));

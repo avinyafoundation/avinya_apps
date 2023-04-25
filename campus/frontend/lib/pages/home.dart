@@ -14,7 +14,6 @@ import 'package:gallery/data/demos.dart';
 import 'package:gallery/data/gallery_options.dart';
 import 'package:gallery/layout/adaptive.dart';
 import 'package:gallery/layout/image_placeholder.dart';
-import 'package:attendance/colors.dart';
 import 'package:attendance/routes.dart' as attendance_routes;
 import 'package:asset/routes.dart' as asset_routes;
 import 'package:pcti_notes/routes.dart' as campus_pcti_routes;
@@ -929,7 +928,8 @@ class _CarouselCard extends StatelessWidget {
       margin:
           EdgeInsets.all(isDisplayDesktop(context) ? 0 : _carouselItemMargin),
       child: Material(
-        elevation: 4,
+        elevation: 8,
+        shadowColor: Colors.grey,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         clipBehavior: Clip.antiAlias,
         child: InkWell(

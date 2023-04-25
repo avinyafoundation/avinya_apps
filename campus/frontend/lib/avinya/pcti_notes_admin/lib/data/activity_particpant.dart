@@ -66,7 +66,6 @@ Future<http.Response> createActivityParticipant(
     body: jsonEncode(activityParticipant.toJson()),
   );
 
-  print(response.body);
 
   if (response.statusCode == 201) {
     return response;

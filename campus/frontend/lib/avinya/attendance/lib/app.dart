@@ -44,13 +44,13 @@ class _CampusAttendanceManagementSystemState
         '/activity/edit',
         '/attendance_marker',
         '/bulk_attendance_marker',
-        '/bulk_attendance_marker/class1',
+        '/bulk_attendance_marker/classes',
         '/bulk_attendance_marker/class2',
         '/avinya_types',
         '/#access_token',
       ],
       guard: _guard,
-      initialRoute: '/avinya_types',
+      initialRoute: '/attendance_marker',
     );
 
     _routeState = RouteState(_routeParser);
@@ -122,7 +122,7 @@ class _CampusAttendanceManagementSystemState
     }
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {
-      return ParsedRoute('/avinya_types', '/avinya_types', {}, {});
+      return ParsedRoute('/attendance_marker', '/attendance_marker', {}, {});
     }
     log("_guard signed in2 $signedIn");
     // else if (signedIn && jwt_sub != null) {
@@ -135,7 +135,7 @@ class _CampusAttendanceManagementSystemState
     bool signedIn = await _auth.getSignedIn();
     log("_handleAuthStateChanged signed in $signedIn");
     if (!signedIn) {
-      _routeState.go('/avinya_types');
+      _routeState.go('/attendance_marker');
     }
   }
 
