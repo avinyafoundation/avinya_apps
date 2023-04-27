@@ -46,6 +46,7 @@ class CampusAppsPortal {
     'lunch-break': 10,
     'work': 11,
     'departure': 12,
+    'after-school': 13,
   };
 
   final todaysActivityInstanceIds = {
