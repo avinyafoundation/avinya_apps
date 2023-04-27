@@ -17,8 +17,8 @@ class AppConfig {
   static String mainCampusActivity = 'school-day';
   static String campusPctiNotesBffApiUrl = '';
   static String campusAssetsBffApiUrl = '';
-
   static String campusPctiFeedbackBffApiUrl = '';
+  static String asgardeoLogoutUrl = '';
 
   //AppConfig({required this.apiUrl});
 
@@ -43,6 +43,7 @@ class AppConfig {
     campusAssetsBffApiUrl = json['campusAssetsBffApiUrl'];
     choreoSTSEndpoint = json['choreo_sts_endpoint'];
     asgardeoTokenEndpoint = json['asgardeo_token_endpoint'];
+    asgardeoLogoutUrl = json['logout_url'];
 
     // convert our JSON into an instance of our AppConfig class
     return AppConfig();

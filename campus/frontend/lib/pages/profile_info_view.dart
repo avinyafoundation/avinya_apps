@@ -293,22 +293,22 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               ProfileDetailColumn(
                 title: 'Father Name',
                 value:
-                    '${userPerson.parent_students[0] == null ? 'N/A' : userPerson.parent_students[0].preferred_name == null ? 'N/A' : userPerson.parent_students[0].preferred_name}',
+                    '${userPerson.parent_students != null && userPerson.parent_students.isNotEmpty && userPerson.parent_students[0].preferred_name != null ? userPerson.parent_students[0].preferred_name : 'N/A'}',
               ),
               ProfileDetailColumn(
                 title: 'Mother Name',
                 value:
-                    '${userPerson.parent_students[1] == null ? 'N/A' : userPerson.parent_students[1].preferred_name == null ? 'N/A' : userPerson.parent_students[1].preferred_name}',
+                    '${userPerson.parent_students != null && userPerson.parent_students.isNotEmpty && userPerson.parent_students[1].preferred_name != null ? userPerson.parent_students[1].preferred_name : 'N/A'}',
               ),
               ProfileDetailColumn(
                 title: 'Father Phone Number',
                 value:
-                    '${userPerson.parent_students[0] == null ? 'N/A' : userPerson.parent_students[0].phone == null ? 'N/A' : userPerson.parent_students[0].phone}',
+                    '${userPerson.parent_students != null && userPerson.parent_students.isNotEmpty && userPerson.parent_students[0].phone != null ? userPerson.parent_students[0].phone : 'N/A'}',
               ),
               ProfileDetailColumn(
                 title: 'Mother Phone Number',
                 value:
-                    '${userPerson.parent_students[1] == null ? 'N/A' : userPerson.parent_students[1].phone == null ? 'N/A' : userPerson.parent_students[1].phone}',
+                    '${userPerson.parent_students != null && userPerson.parent_students.isNotEmpty && userPerson.parent_students[1].phone != null ? userPerson.parent_students[1].phone : 'N/A'}',
               ),
               sizedBox,
               sizedBox,
