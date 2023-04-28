@@ -11,6 +11,7 @@ class SMSScaffold extends StatelessWidget {
   static const pageNames = [
     '/attendance_marker',
     '/bulk_attendance_marker/classes',
+    '/daily_attendance_report'
   ];
 
   const SMSScaffold({
@@ -83,6 +84,10 @@ class SMSScaffold extends StatelessWidget {
           AdaptiveScaffoldDestination(
             title: 'Bulk Attendance Marker',
             icon: Icons.people,
+          ),
+          AdaptiveScaffoldDestination(
+            title: 'Daily Attendance Report',
+            icon: Icons.summarize,
           ),
         ],
       ),

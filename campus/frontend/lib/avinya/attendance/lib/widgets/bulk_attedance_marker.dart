@@ -14,20 +14,67 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
   List<Map<String, bool>> attendanceList = [];
   var _selectedValue;
   var activityId = 0;
+  var afterSchoolActivityId = 0;
   var activityInstance = ActivityInstance(id: -1);
+  var activityInstanceAfterSchool = ActivityInstance(id: -1);
   Organization? _fetchedOrganization;
   List<ActivityAttendance> _fetchedAttendance = [];
+  List<ActivityAttendance> _fetchedAttendanceAfterSchool = [];
 
   @override
   void initState() {
     super.initState();
-    if (campusAppsPortalInstance.isTeacher)
+    if (campusAppsPortalInstance.isTeacher) {
       activityId = campusAppsPortalInstance.activityIds['homeroom']!;
-    else if (campusAppsPortalInstance.isSecurity)
+      afterSchoolActivityId =
+          campusAppsPortalInstance.activityIds['after-school']!;
+    } else if (campusAppsPortalInstance.isSecurity)
       activityId = campusAppsPortalInstance.activityIds['arrival']!;
   }
 
-  Future<void> toggleAttendance(int person_id, bool value, bool sign_in) async {
+  Future<void> toggleAttendance(
+      int person_id, bool value, bool sign_in, bool after_school) async {
+    // handle after achool
+    if (after_school) {
+      if (activityInstanceAfterSchool.id == -1) {
+        activityInstanceAfterSchool = await campusAttendanceSystemInstance
+            .getCheckinActivityInstance(afterSchoolActivityId);
+      }
+      int index = -1;
+      index = _fetchedAttendanceAfterSchool.indexWhere((attendance) =>
+          attendance.person_id == person_id && attendance.sign_in_time != null);
+
+      if (index == -1)
+        index = _fetchedAttendanceAfterSchool
+            .indexWhere((attendance) => attendance.person_id == -1);
+      if (value == false) {
+        if (index != -1) {
+          await deleteActivityAttendance(
+              _fetchedAttendanceAfterSchool[index].id!);
+        }
+
+        _fetchedAttendanceAfterSchool[index] =
+            ActivityAttendance(person_id: -1, sign_in_time: null);
+      } else {
+        ActivityAttendance activityAttendance = ActivityAttendance(
+            person_id: -1, sign_in_time: null, sign_out_time: null);
+        ;
+
+        activityAttendance = await createActivityAttendance(ActivityAttendance(
+          activity_instance_id: activityInstanceAfterSchool.id,
+          person_id: person_id,
+          sign_in_time: DateTime.now().toString(),
+          in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
+        ));
+
+        _fetchedAttendanceAfterSchool[index] = activityAttendance;
+      }
+
+      return;
+    }
+
+    // handle normal attendance sing in and out
+
     if (activityInstance.id == -1) {
       activityInstance = await campusAttendanceSystemInstance
           .getCheckinActivityInstance(activityId);
@@ -145,6 +192,43 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                           }
                                         }
                                       }
+                                      if (campusAppsPortalInstance.isTeacher) {
+                                        _fetchedAttendanceAfterSchool =
+                                            await getClassActivityAttendanceToday(
+                                                _fetchedOrganization!.id!,
+                                                afterSchoolActivityId);
+                                        _fetchedAttendanceAfterSchool =
+                                            await getClassActivityAttendanceToday(
+                                                _fetchedOrganization!.id!,
+                                                afterSchoolActivityId);
+                                        if (_fetchedAttendanceAfterSchool
+                                                .length ==
+                                            0)
+                                          _fetchedAttendanceAfterSchool =
+                                              new List.filled(
+                                                  _fetchedOrganization!
+                                                      .people.length,
+                                                  new ActivityAttendance(
+                                                      person_id: -1));
+                                        else {
+                                          for (int i = 0;
+                                              i <
+                                                  _fetchedOrganization!
+                                                      .people.length;
+                                              i++) {
+                                            if (_fetchedAttendanceAfterSchool
+                                                    .indexWhere((attendance) =>
+                                                        attendance.person_id ==
+                                                        _fetchedOrganization!
+                                                            .people[i].id) ==
+                                                -1) {
+                                              _fetchedAttendanceAfterSchool.add(
+                                                  new ActivityAttendance(
+                                                      person_id: -1));
+                                            }
+                                          }
+                                        }
+                                      }
 
                                       setState(() {});
                                     },
@@ -184,6 +268,11 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                         TableCell(
                             child: Text("Sign out",
                                 style: TextStyle(fontWeight: FontWeight.bold))),
+                        if (campusAppsPortalInstance.isTeacher)
+                          TableCell(
+                              child: Text("After school",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold))),
                       ]),
                       if (_fetchedOrganization != null)
                         if (_fetchedOrganization!.people.length > 0)
@@ -218,7 +307,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                           null,
                                       onChanged: (bool? value) async {
                                         await toggleAttendance(
-                                            person.id!, value!, true);
+                                            person.id!, value!, true, false);
                                         setState(() {});
                                       },
                                     ),
@@ -229,7 +318,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                       value: false,
                                       onChanged: (bool? value) async {
                                         await toggleAttendance(
-                                            person.id!, value!, true);
+                                            person.id!, value!, true, false);
                                         setState(() {});
                                       },
                                     ),
@@ -262,7 +351,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                           null,
                                       onChanged: (bool? value) async {
                                         await toggleAttendance(
-                                            person.id!, value!, false);
+                                            person.id!, value!, false, false);
                                         setState(() {});
                                       },
                                     ),
@@ -273,11 +362,55 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                       value: false,
                                       onChanged: (bool? value) async {
                                         await toggleAttendance(
-                                            person.id!, value!, false);
+                                            person.id!, value!, false, false);
                                         setState(() {});
                                       },
                                     ),
                                   ),
+                              if (campusAppsPortalInstance.isTeacher)
+                                if (_fetchedAttendanceAfterSchool.length > 0)
+                                  if (_fetchedAttendanceAfterSchool
+                                          .firstWhere(
+                                              (attendance) =>
+                                                  attendance.person_id ==
+                                                      person.id &&
+                                                  attendance.sign_in_time !=
+                                                      null,
+                                              orElse: () =>
+                                                  new ActivityAttendance(
+                                                      person_id: -1))
+                                          .person_id !=
+                                      -1)
+                                    TableCell(
+                                      child: Checkbox(
+                                        value: _fetchedAttendanceAfterSchool
+                                                .firstWhere(
+                                                  (attendance) =>
+                                                      attendance.person_id ==
+                                                          person.id &&
+                                                      attendance.sign_in_time !=
+                                                          null,
+                                                )
+                                                .sign_in_time !=
+                                            null,
+                                        onChanged: (bool? value) async {
+                                          await toggleAttendance(
+                                              person.id!, value!, true, true);
+                                          setState(() {});
+                                        },
+                                      ),
+                                    )
+                                  else
+                                    TableCell(
+                                      child: Checkbox(
+                                        value: false,
+                                        onChanged: (bool? value) async {
+                                          await toggleAttendance(
+                                              person.id!, value!, true, true);
+                                          setState(() {});
+                                        },
+                                      ),
+                                    ),
                             ]);
                           }).toList()
                     ],
