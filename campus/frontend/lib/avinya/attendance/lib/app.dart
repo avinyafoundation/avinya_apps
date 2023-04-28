@@ -46,6 +46,7 @@ class _CampusAttendanceManagementSystemState
         '/bulk_attendance_marker',
         '/bulk_attendance_marker/classes',
         '/bulk_attendance_marker/class2',
+        '/daily_attendance_report',
         '/avinya_types',
         '/#access_token',
       ],
