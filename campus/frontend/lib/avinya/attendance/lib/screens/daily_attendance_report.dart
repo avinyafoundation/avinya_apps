@@ -155,6 +155,7 @@ class _DataTableDemoState extends State<DataTableDemo> with RestorationMixin {
           padding: const EdgeInsets.all(16),
           children: [
             PaginatedDataTable(
+              showCheckboxColumn: false,
               header: Text("dataTableHeader"),
               rowsPerPage: _rowsPerPage.value,
               onRowsPerPageChanged: (value) {
