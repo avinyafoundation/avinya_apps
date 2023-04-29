@@ -17,14 +17,15 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
         await campusAttendanceSystemInstance.getCheckinActivityInstance(
             campusAppsPortalInstance.activityIds['school-day']);
     // call the API to check-in
-    createActivityAttendance(ActivityAttendance(
+    await createActivityAttendance(ActivityAttendance(
       activity_instance_id: activityInstance.id,
       person_id: campusAppsPortalInstance.getUserPerson().id,
       sign_in_time: DateTime.now().toString(),
       in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
     ));
+    await refreshPersonActivityAttendanceToday();
     setState(() {
-      _isCheckedIn = true;
+      //_isCheckedIn = true;
     });
     print('Checked in for today.');
   }
@@ -34,14 +35,15 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
         await campusAttendanceSystemInstance.getCheckoutActivityInstance(
             campusAppsPortalInstance.activityIds['school-day']);
     // call the API to check-out
-    createActivityAttendance(ActivityAttendance(
+    await createActivityAttendance(ActivityAttendance(
       activity_instance_id: activityInstance.id,
       person_id: campusAppsPortalInstance.getUserPerson().id,
       sign_out_time: DateTime.now().toString(),
       out_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
     ));
+    await refreshPersonActivityAttendanceToday();
     setState(() {
-      _isCheckedOut = true;
+      //_isCheckedOut = true;
     });
     print('Checked out for today.');
   }
@@ -51,6 +53,12 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
     _personAttendanceToday = await getPersonActivityAttendanceToday(
         campusAppsPortalInstance.getUserPerson().id!,
         campusAppsPortalInstance.activityIds['school-day']!);
+    if (_personAttendanceToday.length > 0) {
+      _isCheckedIn = _personAttendanceToday[0].sign_in_time != null;
+    }
+    if (_personAttendanceToday.length > 1) {
+      _isCheckedOut = _personAttendanceToday[1].sign_out_time != null;
+    }
 
     return _personAttendanceToday;
   }
@@ -67,7 +75,8 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
           if (snapshot.data!.length > 1) {
             _isCheckedOut = snapshot.data![1].sign_out_time != null;
           }
-          return Column(
+          return SingleChildScrollView(
+              child: Column(
             children: [
               if (!_isCheckedIn)
                 ElevatedButton(
@@ -91,8 +100,12 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text('Attendance marked for today.'),
-                    Text('Checked in at ' + snapshot.data![0].sign_in_time!),
-                    Text('Checked out at ' + snapshot.data![1].sign_out_time!),
+                    if (_personAttendanceToday.length > 0)
+                      Text('Checked in at ' +
+                          _personAttendanceToday[0].sign_in_time!),
+                    if (_personAttendanceToday.length > 1)
+                      Text('Checked out at ' +
+                          _personAttendanceToday[1].sign_out_time!),
                     SizedBox(width: 20),
                   ],
                 )
@@ -100,8 +113,9 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Checked in for today at ' +
-                        snapshot.data![0].sign_in_time!),
+                    if (_personAttendanceToday.length > 0)
+                      Text('Checked in for today at ' +
+                          _personAttendanceToday[0].sign_in_time!),
                     SizedBox(width: 20),
                   ],
                 ),
@@ -123,7 +137,7 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
                   ),
                 ),
             ],
-          );
+          ));
         } else if (snapshot.hasError) {
           return Text('${snapshot.error}');
         }
