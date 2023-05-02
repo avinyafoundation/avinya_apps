@@ -96,4 +96,15 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetPersonAttendanceTodayResponse> check performDataBinding(graphqlResponse, GetPersonAttendanceTodayResponse);
     }
+    remote isolated function createEvaluations(Evaluation[] evaluations) returns json|graphql:ClientError {
+        string query = string `mutation createEvaluations($evaluations: [Evaluation!]!)
+                                {
+                                    add_evaluations(evaluations:$evaluations) 
+                                        
+                                }`;
+        map<anydata> variables = {"evaluations": evaluations};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        
+        return graphqlResponse;
+    }
 }

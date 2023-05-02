@@ -262,5 +262,17 @@ service / on new http:Listener(9091) {
                 ":: Detail: " + getPersonAttendanceReportResponse.detail().toString());
         }
     }
+
+    resource function post evaluations (@http:Payload Evaluation[] evaluations) returns json|error {
+        json|graphql:ClientError createEvaluationResponse = globalDataClient->createEvaluations(evaluations);
+        if(createEvaluationResponse is json) {
+            log:printInfo("Evaluations created successfully: " + createEvaluationResponse.toString());
+            return createEvaluationResponse;
+        } else {
+            log:printError("Error while creating evaluation", createEvaluationResponse);
+            return error("Error while creating evaluation: " + createEvaluationResponse.message() + 
+                ":: Detail: " + createEvaluationResponse.detail().toString());
+        }
+    }
     
 }
