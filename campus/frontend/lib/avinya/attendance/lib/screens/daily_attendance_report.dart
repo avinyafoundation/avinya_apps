@@ -91,18 +91,6 @@ class _DataTableDemoState extends State<DataTableDemo> with RestorationMixin {
       case 3:
         _dessertsDataSource!._sort<num>((d) => d.carbs, _sortAscending.value);
         break;
-      case 4:
-        _dessertsDataSource!._sort<num>((d) => d.protein, _sortAscending.value);
-        break;
-      case 5:
-        _dessertsDataSource!._sort<num>((d) => d.sodium, _sortAscending.value);
-        break;
-      case 6:
-        _dessertsDataSource!._sort<num>((d) => d.calcium, _sortAscending.value);
-        break;
-      case 7:
-        _dessertsDataSource!._sort<num>((d) => d.iron, _sortAscending.value);
-        break;
     }
     _dessertsDataSource!.updateSelectedDesserts(_dessertSelections);
     _dessertsDataSource!.addListener(_updateSelectedDessertRowListener);
@@ -157,6 +145,7 @@ class _DataTableDemoState extends State<DataTableDemo> with RestorationMixin {
             PaginatedDataTable(
               header: Text("dataTableHeader"),
               rowsPerPage: _rowsPerPage.value,
+              showCheckboxColumn: false,
               onRowsPerPageChanged: (value) {
                 setState(() {
                   _rowsPerPage.value = value!;
@@ -173,51 +162,27 @@ class _DataTableDemoState extends State<DataTableDemo> with RestorationMixin {
               onSelectAll: _dessertsDataSource!._selectAll,
               columns: [
                 DataColumn(
-                  label: Text("dataTableHeader"),
+                  label: Text("Student Name"),
                   onSort: (columnIndex, ascending) =>
                       _sort<String>((d) => d.name, columnIndex, ascending),
                 ),
                 DataColumn(
-                  label: Text("dataTableHeader"),
+                  label: Text("Sign In"),
                   numeric: true,
                   onSort: (columnIndex, ascending) =>
                       _sort<num>((d) => d.calories, columnIndex, ascending),
                 ),
                 DataColumn(
-                  label: Text("dataTableHeader"),
+                  label: Text("Sign Out"),
                   numeric: true,
                   onSort: (columnIndex, ascending) =>
                       _sort<num>((d) => d.fat, columnIndex, ascending),
                 ),
                 DataColumn(
-                  label: Text("dataTableHeader"),
+                  label: Text("After School"),
                   numeric: true,
                   onSort: (columnIndex, ascending) =>
                       _sort<num>((d) => d.carbs, columnIndex, ascending),
-                ),
-                DataColumn(
-                  label: Text("dataTableHeader"),
-                  numeric: true,
-                  onSort: (columnIndex, ascending) =>
-                      _sort<num>((d) => d.protein, columnIndex, ascending),
-                ),
-                DataColumn(
-                  label: Text("dataTableHeader"),
-                  numeric: true,
-                  onSort: (columnIndex, ascending) =>
-                      _sort<num>((d) => d.sodium, columnIndex, ascending),
-                ),
-                DataColumn(
-                  label: Text("dataTableHeader"),
-                  numeric: true,
-                  onSort: (columnIndex, ascending) =>
-                      _sort<num>((d) => d.calcium, columnIndex, ascending),
-                ),
-                DataColumn(
-                  label: Text("dataTableHeader"),
-                  numeric: true,
-                  onSort: (columnIndex, ascending) =>
-                      _sort<num>((d) => d.iron, columnIndex, ascending),
                 ),
               ],
               source: _dessertsDataSource!,
@@ -235,20 +200,12 @@ class _Dessert {
     this.calories,
     this.fat,
     this.carbs,
-    this.protein,
-    this.sodium,
-    this.calcium,
-    this.iron,
   );
 
   final String name;
   final int calories;
   final double fat;
   final int carbs;
-  final double protein;
-  final int sodium;
-  final int calcium;
-  final int iron;
   bool selected = false;
 }
 
@@ -261,40 +218,18 @@ class _DessertDataSource extends DataTableSource {
         159,
         6.0,
         24,
-        4.0,
-        87,
-        14,
-        1,
       ),
       _Dessert(
         "dataTableRowFrozenYogurt",
         237,
         9.0,
         37,
-        4.3,
-        129,
-        8,
-        1,
       ),
       _Dessert(
         "dataTableRowFrozenYogurt",
         262,
         16.0,
         24,
-        6.0,
-        337,
-        6,
-        7,
-      ),
-      _Dessert(
-        "dataTableRowFrozenYogurt",
-        305,
-        3.7,
-        67,
-        4.3,
-        413,
-        3,
-        8,
       ),
     ];
   }
@@ -354,10 +289,6 @@ class _DessertDataSource extends DataTableSource {
         DataCell(Text('${dessert.calories}')),
         DataCell(Text(dessert.fat.toStringAsFixed(1))),
         DataCell(Text('${dessert.carbs}')),
-        DataCell(Text(dessert.protein.toStringAsFixed(1))),
-        DataCell(Text('${dessert.sodium}')),
-        DataCell(Text(format.format(dessert.calcium / 100))),
-        DataCell(Text(format.format(dessert.iron / 100))),
       ],
     );
   }

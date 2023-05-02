@@ -31,6 +31,8 @@ class _AttendanceMarkerScreenState extends State<AttendanceMarkerScreen> {
             children: [
               SizedBox(height: 40),
               AttendanceMarker(),
+              SizedBox(height: 40),
+              Text('Person attendance report will be shown here'),
             ],
           ),
         ),
