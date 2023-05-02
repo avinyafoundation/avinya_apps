@@ -2,6 +2,7 @@ import 'package:attendance/screens/activities.dart';
 import 'package:attendance/screens/avinya_types.dart';
 import 'package:attendance/screens/attendance_marker.dart';
 import 'package:attendance/screens/bulk_attendance_marker.dart';
+import 'package:attendance/screens/daily_attendance_report.dart';
 
 import 'package:flutter/material.dart';
 
@@ -48,6 +49,12 @@ class SMSScaffoldBody extends StatelessWidget {
           const FadeTransitionPage<void>(
             key: ValueKey('bulk_attendance_marker'),
             child: BulkAttendanceMarkerScreen(),
+          )
+        else if (currentRoute.pathTemplate
+            .startsWith('/daily_attendance_report'))
+          const FadeTransitionPage<void>(
+            key: ValueKey('daily_attendance_report'),
+            child: DataTableDemo(),
           )
 
         // Avoid building a Navigator with an empty `pages` list when the

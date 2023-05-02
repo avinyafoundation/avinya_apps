@@ -34,12 +34,23 @@ void main() async {
   setHashUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (kReleaseMode) {
+  String? currentEnvironment = Constants.currentEnvironment;
+
+  if (currentEnvironment == 'prod') {
     // get variables from prod environment config.json
     await AppConfig.forEnvironment('prod');
-    AppConfig.choreoSTSClientID = await const String.fromEnvironment(
-        'choreo_sts_client_id',
-        defaultValue: 'undefined');
+    AppConfig.choreoSTSClientID = Constants.choreoSTSClientID;
+    AppConfig.asgardeoClientId = Constants.asgardeoClientId;
+  } else if (currentEnvironment == 'stag') {
+    // get variables from stag environment config.json
+    await AppConfig.forEnvironment('stag');
+    AppConfig.choreoSTSClientID = Constants.choreoSTSClientID;
+    AppConfig.asgardeoClientId = Constants.asgardeoClientId;
+  } else if (currentEnvironment == 'dev-cloud') {
+    // get variables from dev-cloud environment config.json
+    await AppConfig.forEnvironment('dev-cloud');
+    AppConfig.choreoSTSClientID = Constants.choreoSTSClientID;
+    AppConfig.asgardeoClientId = Constants.asgardeoClientId;
   } else {
     await AppConfig.forEnvironment('dev');
   }
@@ -53,6 +64,24 @@ void main() async {
   signedIn = await galleryApp._auth.getSignedIn();
   campusAppsPortalInstance.setSignedIn(signedIn);
   runApp(GalleryApp());
+}
+
+/// Environment variables and shared app constants.
+abstract class Constants {
+  static const String currentEnvironment = String.fromEnvironment(
+    'ENV',
+    defaultValue: '',
+  );
+
+  static const String choreoSTSClientID = String.fromEnvironment(
+    'choreo_sts_client_id',
+    defaultValue: '',
+  );
+
+  static const String asgardeoClientId = String.fromEnvironment(
+    'asgardeo_client_id',
+    defaultValue: '',
+  );
 }
 
 class GalleryApp extends StatefulWidget {
