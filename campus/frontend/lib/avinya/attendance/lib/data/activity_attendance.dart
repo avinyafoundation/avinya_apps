@@ -13,6 +13,7 @@ class ActivityAttendance {
   String? sign_out_time;
   String? in_marked_by;
   String? out_marked_by;
+  bool? selected = false;
 
   ActivityAttendance({
     this.id,
