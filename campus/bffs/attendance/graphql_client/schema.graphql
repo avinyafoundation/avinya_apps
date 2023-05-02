@@ -328,6 +328,7 @@ input Evaluation {
   evaluation_criteria_id: Int
   activity_instance_id: Int
   updated: String
+  created: String
   response: String
   notes: String
   grade: Int
@@ -394,6 +395,7 @@ type EvaluationData {
   activity_instance_id: Int
   evaluation_criteria_id: Int
   updated: String
+  created: String
   notes: String
   grade: Int
   response: String
@@ -701,6 +703,8 @@ type Query {
   project_tasks(activity_id: Int!): [ActivityData!]
   student_applicant(jwt_sub_id: String): PersonData
   all_evaluations: [EvaluationData!]!
+  activity_evaluations(activity_id: Int!): [EvaluationData!]
+  activity_instance_evaluations(activity_instance_id: Int!): [EvaluationData!]
   evaluation_meta_data(meta_evaluation_id: Int!): EvaluationMetadataData
   evaluationCriteria(prompt: String, id: Int): EvaluationCriteriaData!
   evaluation_cycle(name: String, id: Int): EvaluationCycleData!

@@ -274,5 +274,53 @@ service / on new http:Listener(9091) {
                 ":: Detail: " + createEvaluationResponse.detail().toString());
         }
     }
+
+    resource function get activity_evaluations/[int activity_id]() returns Evaluation[]|error {
+        GetActivityEvaluationsResponse|graphql:ClientError getActivityEvaluationsResponse = globalDataClient->getActivityEvaluations(activity_id);
+        if(getActivityEvaluationsResponse is GetActivityEvaluationsResponse) {
+            Evaluation[] evaluations = [];
+            foreach var evaluation_record in getActivityEvaluationsResponse.activity_evaluations {
+                Evaluation|error evaluation = evaluation_record.cloneWithType(Evaluation);
+                if(evaluation is Evaluation) {
+                    evaluations.push(evaluation);
+                } else {
+                    log:printError("Error while processing Application record received", evaluation);
+                    return error("Error while processing Application record received: " + evaluation.message() + 
+                        ":: Detail: " + evaluation.detail().toString());
+                }
+            }
+
+            return evaluations;
+            
+        } else {
+            log:printError("Error while getting evaluations", getActivityEvaluationsResponse);
+            return error("Error while getting evaluations: " + getActivityEvaluationsResponse.message() + 
+                ":: Detail: " + getActivityEvaluationsResponse.detail().toString());
+        }
+    }
+
+    resource function get activity_instance_evaluations/[int activity_instancce_id]() returns Evaluation[]|error {
+        GetActivityInstanceEvaluationsResponse|graphql:ClientError getActivityInstanceEvaluationsResponse = globalDataClient->getActivityInstanceEvaluations(activity_instancce_id);
+        if(getActivityInstanceEvaluationsResponse is GetActivityInstanceEvaluationsResponse) {
+            Evaluation[] evaluations = [];
+            foreach var evaluation_record in getActivityInstanceEvaluationsResponse.activity_instance_evaluations {
+                Evaluation|error evaluation = evaluation_record.cloneWithType(Evaluation);
+                if(evaluation is Evaluation) {
+                    evaluations.push(evaluation);
+                } else {
+                    log:printError("Error while processing Application record received", evaluation);
+                    return error("Error while processing Application record received: " + evaluation.message() + 
+                        ":: Detail: " + evaluation.detail().toString());
+                }
+            }
+
+            return evaluations;
+            
+        } else {
+            log:printError("Error while getting evaluations", getActivityInstanceEvaluationsResponse);
+            return error("Error while getting evaluations: " + getActivityInstanceEvaluationsResponse.message() + 
+                ":: Detail: " + getActivityInstanceEvaluationsResponse.detail().toString());
+        }
+    }
     
 }
