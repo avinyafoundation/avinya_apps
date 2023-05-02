@@ -143,6 +143,11 @@ service / on new http:Listener(9091) {
         return  delete_count;
     }
 
+    resource function delete person_activity_attendance/[int person_id]() returns json|error {
+        json|error delete_count = globalDataClient->deletePersonActivityAttendance(person_id);
+        return  delete_count;
+    }
+
     resource function get activity_instances_today/[int activity_id]() returns ActivityInstance[]|error {
         GetActivityInstancesTodayResponse|graphql:ClientError getActivityInstancesTodayResponse = globalDataClient->getActivityInstancesToday(activity_id);
         if(getActivityInstancesTodayResponse is GetActivityInstancesTodayResponse) {
