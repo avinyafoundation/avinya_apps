@@ -49,8 +49,8 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
             .indexWhere((attendance) => attendance.person_id == -1);
       if (value == false) {
         if (index != -1) {
-          await deleteActivityAttendance(
-              _fetchedAttendanceAfterSchool[index].id!);
+          deletePersonActivityAttendance(
+              _fetchedAttendanceAfterSchool[index].person_id!);
         }
 
         _fetchedAttendanceAfterSchool[index] =
@@ -109,20 +109,24 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
       ActivityAttendance activityAttendance = ActivityAttendance(
           person_id: -1, sign_in_time: null, sign_out_time: null);
       ;
-      if (sign_in)
-        activityAttendance = await createActivityAttendance(ActivityAttendance(
+      if (sign_in) {
+        activityAttendance = ActivityAttendance(
           activity_instance_id: activityInstance.id,
           person_id: person_id,
           sign_in_time: DateTime.now().toString(),
           in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
-        ));
-      else {
-        activityAttendance = await createActivityAttendance(ActivityAttendance(
+        );
+        createActivityAttendance(
+            activityAttendance); // make the call async and returrn withtout waiting
+      } else {
+        activityAttendance = ActivityAttendance(
           activity_instance_id: activityInstance.id,
           person_id: person_id,
           sign_out_time: DateTime.now().toString(),
           out_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
-        ));
+        );
+        createActivityAttendance(
+            activityAttendance); // make the call async and returrn withtout waiting
       }
 
       _fetchedAttendance[index] = activityAttendance;
