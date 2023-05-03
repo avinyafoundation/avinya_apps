@@ -92,9 +92,19 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
     print(
         'index: $index  person_id: $person_id  value: $value _fetchedAttendance lenth ${_fetchedAttendance.length}');
 
-    if (index == -1)
+    if (index == -1) {
       index = _fetchedAttendance
           .indexWhere((attendance) => attendance.person_id == -1);
+      if (index == -1) {
+        print(
+            'index is still -1 => index: $index  person_id: $person_id  value: $value');
+        // if index is still -1 then there is no empty slot
+        // so we need to create a new slot
+        _fetchedAttendance.add(ActivityAttendance(
+            person_id: -1, sign_in_time: null, sign_out_time: null));
+        index = _fetchedAttendance.length - 1;
+      }
+    }
 
     if (value == false) {
       if (index != -1) {
