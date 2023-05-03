@@ -49,8 +49,8 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
             .indexWhere((attendance) => attendance.person_id == -1);
       if (value == false) {
         if (index != -1) {
-          deletePersonActivityAttendance(
-              _fetchedAttendanceAfterSchool[index].person_id!);
+          await deleteActivityAttendance(
+              _fetchedAttendanceAfterSchool[index].id!);
         }
 
         _fetchedAttendanceAfterSchool[index] =
@@ -89,7 +89,8 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
           attendance.person_id == person_id &&
           attendance.sign_out_time != null);
 
-    print('index: $index  person_id: $person_id  value: $value');
+    print(
+        'index: $index  person_id: $person_id  value: $value _fetchedAttendance lenth ${_fetchedAttendance.length}');
 
     if (index == -1)
       index = _fetchedAttendance
@@ -97,7 +98,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
 
     if (value == false) {
       if (index != -1) {
-        await deleteActivityAttendance(_fetchedAttendance[index].id!);
+        deletePersonActivityAttendance(_fetchedAttendance[index].person_id!);
       }
       if (sign_in)
         _fetchedAttendance[index] =
@@ -175,7 +176,9 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                               activityId);
                                       if (_fetchedAttendance.length == 0)
                                         _fetchedAttendance = new List.filled(
-                                            _fetchedOrganization!.people.length,
+                                            _fetchedOrganization!
+                                                    .people.length *
+                                                2, // add 2 records for eign in and out
                                             new ActivityAttendance(
                                                 person_id: -1));
                                       else {
@@ -190,6 +193,10 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                                       _fetchedOrganization!
                                                           .people[i].id) ==
                                               -1) {
+                                            // add 2 records for sing in and out
+                                            _fetchedAttendance.add(
+                                                new ActivityAttendance(
+                                                    person_id: -1));
                                             _fetchedAttendance.add(
                                                 new ActivityAttendance(
                                                     person_id: -1));
