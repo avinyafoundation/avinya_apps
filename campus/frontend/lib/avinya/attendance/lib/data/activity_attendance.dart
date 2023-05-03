@@ -88,6 +88,23 @@ Future<int> deleteActivityAttendance(int id) async {
   }
 }
 
+Future<int> deletePersonActivityAttendance(int person_id) async {
+  final response = await http.delete(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/person_activity_attendance/$person_id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    return int.parse(response.body);
+  } else {
+    throw Exception('Failed to create Activity Participant Attendance.');
+  }
+}
+
 Future<List<ActivityAttendance>> getClassActivityAttendanceToday(
     int organization_id, int activity_id) async {
   final response = await http.get(

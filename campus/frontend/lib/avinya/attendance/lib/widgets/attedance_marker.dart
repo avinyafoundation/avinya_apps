@@ -11,7 +11,6 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
   bool _isCheckedIn = false;
   bool _isCheckedOut = false;
   List<ActivityAttendance> _personAttendanceToday = [];
-  int _count = 0;
 
   Future<void> _handleCheckIn() async {
     var activityInstance =

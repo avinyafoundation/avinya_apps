@@ -412,3 +412,33 @@ public type GetPersonAttendanceTodayResponse record {|
         string? out_marked_by;
     |}[] person_attendance_today;
 |};
+
+public type GetActivityEvaluationsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? evaluatee_id;
+        int? evaluator_id;
+        int? evaluation_criteria_id;
+        string? response;
+        string? notes;
+        int? grade;
+        int? activity_instance_id;
+        string? updated;
+    |}[] activity_evaluations;
+|};
+
+public type GetActivityInstanceEvaluationsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? evaluatee_id;
+        int? evaluator_id;
+        int? evaluation_criteria_id;
+        string? response;
+        string? notes;
+        int? grade;
+        int? activity_instance_id;
+        string? updated;
+    |}[] activity_instance_evaluations;
+|};
