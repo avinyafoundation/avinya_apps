@@ -72,7 +72,7 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         map<json> responseMap = <map<json>>graphqlResponse;
         json responseData = responseMap.get("data");
-        json|error row_count = check responseData.delete_attendance;
+        json|error row_count = check responseData.delete_person_attendance;
         return row_count;
     }
     remote isolated function getActivityInstancesToday(int id) returns GetActivityInstancesTodayResponse|graphql:ClientError {
