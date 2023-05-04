@@ -141,7 +141,7 @@ class HomePage extends StatelessWidget {
         child: _CarouselCard(
           demo: studyDemos['assetadminApp'],
           asset: const AssetImage(
-            'assets/studies/shrine_card.png',
+            'assets/images/asset.png',
             // package: 'flutter_gallery_assets',
           ),
           assetColor: const Color(0xFFFEDBD0),
