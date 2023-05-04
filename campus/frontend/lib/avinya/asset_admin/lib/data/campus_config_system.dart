@@ -49,6 +49,7 @@ class CampusConfigSystem {
   Application application = Application();
   String? user_jwt_sub;
   String? user_jwt_email;
+  String? user_digital_id;
 
   void setVacancyId(int id) {
     vacancyId = id;
