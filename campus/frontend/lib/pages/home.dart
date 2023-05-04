@@ -18,6 +18,9 @@ import 'package:attendance/routes.dart' as attendance_routes;
 import 'package:asset/routes.dart' as asset_routes;
 import 'package:pcti_notes/routes.dart' as campus_pcti_routes;
 import 'package:pcti_notes_admin/routes.dart' as campus_pcti_admin;
+import 'package:asset_admin/routes.dart' as asset_admin_routes;
+import 'package:pcti_notes/routes.dart' as campus_pcti_routes;
+import 'package:pcti_notes_admin/routes.dart' as campus_pcti_admin;
 import 'package:pcti_feedback/routes.dart' as feedback_routes;
 import 'package:consumable/routes.dart' as consumable_routes;
 
@@ -131,6 +134,24 @@ class HomePage extends StatelessWidget {
           //assetDarkColor: const Color(0xFF543B3C),
           textColor: Colors.black,
           studyRoute: asset_routes.assetRoute,
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: _CarouselCard(
+          demo: studyDemos['assetadminApp'],
+          asset: const AssetImage(
+            'assets/images/asset.png',
+            // package: 'flutter_gallery_assets',
+          ),
+          assetColor: const Color(0xFFFEDBD0),
+          // assetDark: const AssetImage(
+          //   'assets/studies/shrine_card_dark.png',
+          //   package: 'flutter_gallery_assets',
+          // ),
+          // assetDarkColor: const Color(0xFF543B3C),
+          textColor: Colors.black,
+          studyRoute: asset_admin_routes.assetadminRoute,
         ),
       ),
       Padding(
