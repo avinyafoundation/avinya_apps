@@ -60,7 +60,7 @@ class _RestorableAttendanceSelections extends RestorableProperty<Set<int>> {
 
 class _DailyAttendanceReportState extends State<DailyAttendanceReport>
     with RestorationMixin {
-  final _RestorableAttendanceSelections _dessertSelections =
+  final _RestorableAttendanceSelections _attendanceSelections =
       _RestorableAttendanceSelections();
   final RestorableInt _rowIndex = RestorableInt(0);
   final RestorableInt _rowsPerPage =
@@ -76,6 +76,12 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport>
   var afterSchoolActivityId = 0;
   Organization? _fetchedOrganization;
   List<ActivityAttendance> _fetchedAttendanceAfterSchool = [];
+
+  void updateAttendance(List<ActivityAttendance> newAttendance) {
+    setState(() {
+      _fetchedAttendance = newAttendance;
+    });
+  }
 
   @override
   void initState() {
@@ -93,7 +99,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport>
 
   @override
   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
-    registerForRestoration(_dessertSelections, 'selected_row_indices');
+    registerForRestoration(_attendanceSelections, 'selected_row_indices');
     registerForRestoration(_rowIndex, 'current_row_index');
     registerForRestoration(_rowsPerPage, 'rows_per_page');
     registerForRestoration(_sortAscending, 'sort_ascending');
@@ -134,41 +140,68 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport>
 //     break;
 //   }
 // }
-    _attendanceDataSource ??= _AttendanceDataSource(context);
-    if (_fetchedOrganization != null) if (_fetchedOrganization!.people.length >
-        0)
-      _fetchedOrganization!.people.map((person) {
-        _attendanceDataSource!._fetchedAttendance!
+    // _attendanceDataSource ??= _AttendanceDataSource(context);
+    // if (_fetchedOrganization != null) if (_fetchedOrganization!.people.length >
+    //     0)
+    //   _fetchedOrganization!.people.map((person) {
+    //     _attendanceDataSource!._fetchedAttendance!
+    //         .map((i, element) {
+    //           String columnName = element.keys.first;
+    //           if (_sortColumnIndex.value == i) {
+    //             _attendanceDataSource!._fetchedAttendance!._sort<String>(
+    //               (d) => d[columnName]!,
+    //               _sortAscending.value,
+    //             );
+    //             return MapEntry(
+    //                 i, _attendanceDataSource!._fetchedAttendance![i]);
+    //           }
+    //           return MapEntry(i, element);
+    //         })
+    //         .values
+    //         .toList();
+
+    //     _attendanceDataSource!.updateSelectedAttendance(_attendanceSelections);
+    //     _attendanceDataSource!
+    //         .addListener(_updateSelectedAttendanceRowListener);
+    //   });
+    // _attendanceDataSource ??= _AttendanceDataSource(context);
+    if (_fetchedOrganization != null &&
+        _fetchedOrganization!.people.isNotEmpty) {
+      _fetchedOrganization!.people.forEach((person) {
+        _attendanceDataSource!._fetchedAttendance
+            .asMap()
             .map((i, element) {
-              String columnName = element.keys.first;
+              String? columnName = element.sign_in_time;
               if (_sortColumnIndex.value == i) {
-                _attendanceDataSource!._fetchedAttendance!._sort<String>(
-                  (d) => d[columnName]!,
+                _attendanceDataSource!._sort<String>(
+                  (d) => columnName!,
                   _sortAscending.value,
                 );
                 return MapEntry(
-                    i, _attendanceDataSource!._fetchedAttendance![i]);
+                    i, _attendanceDataSource!._fetchedAttendance[i]);
               }
               return MapEntry(i, element);
             })
             .values
             .toList();
 
-        _attendanceDataSource!.updateSelectedAttendance(_dessertSelections);
+        _attendanceDataSource!.updateSelectedAttendance(_attendanceSelections);
         _attendanceDataSource!
             .addListener(_updateSelectedAttendanceRowListener);
       });
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _attendanceDataSource ??= _AttendanceDataSource(context);
+    _attendanceDataSource ??=
+        _AttendanceDataSource(_fetchedAttendance, context);
     _attendanceDataSource!.addListener(_updateSelectedAttendanceRowListener);
   }
 
   void _updateSelectedAttendanceRowListener() {
-    _dessertSelections
+    _attendanceSelections
         .setAttendanceSelections(_attendanceDataSource!._fetchedAttendance);
   }
 
@@ -297,6 +330,9 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport>
                                         }
                                       }
                                     }
+                                    // Pass the fetched data to the constructor of the new class
+                                    _AttendanceDataSource(
+                                        _fetchedAttendance, context);
 
                                     setState(() {});
                                   },
@@ -318,10 +354,10 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport>
                   if (_fetchedOrganization!.people.length > 0)
                     ..._fetchedOrganization!.people.map((person) {
                       var columnHeaders = _attendanceDataSource!
-                          ._fetchedAttendance!
+                          ._fetchedAttendance
                           .map((attendance) {
                         return DataColumn(
-                          label: Text(attendance!.sign_in_time!.toString()),
+                          label: Text(attendance.sign_in_time!.toString()),
                           numeric: true,
                           onSort: (columnIndex, ascending) => _sort<String>(
                               (d) => d.sign_in_time!.toString(),
@@ -393,16 +429,28 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport>
 }
 
 class _AttendanceDataSource extends DataTableSource {
-  _AttendanceDataSource(this.context) {
-    // final localizations = GalleryLocalizations.of(context)!;
-    late List<ActivityAttendance> _fetchedAttendance = [];
-  }
+  // late List<ActivityAttendance> _fetchedAttendance;
+  // final _AttendanceDataSource fetchedData;
+  final List<ActivityAttendance> _fetchedAttendance;
+// _AttendanceDataSource(this.fetchedData);
+  // _AttendanceDataSource(this.context) {
+  //   // _fetchedAttendance = fetchedData;
+  //   List<ActivityAttendance> fetchedData;
+  // }
+  // _AttendanceDataSource(this.fetchedData);
+
+  // _AttendanceDataSource(List<ActivityAttendance> fetchedAttendance);
 
   final BuildContext context;
 
-  get _fetchedAttendance => null;
+  _AttendanceDataSource(this._fetchedAttendance, this.context);
+
+  // late List<ActivityAttendance> _fetchedAttendance;
 
   int get length => _fetchedAttendance.length;
+
+  dynamic operator [](int key) => _fetchedAttendance[key];
+  void operator []=(int key, dynamic value) => _fetchedAttendance[key] = value;
 
   void _sort<T>(
       Comparable<T> Function(ActivityAttendance d) getField, bool ascending) {
