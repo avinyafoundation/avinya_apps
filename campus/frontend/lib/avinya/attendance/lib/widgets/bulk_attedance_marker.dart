@@ -89,15 +89,26 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
           attendance.person_id == person_id &&
           attendance.sign_out_time != null);
 
-    print('index: $index  person_id: $person_id  value: $value');
+    print(
+        'index: $index  person_id: $person_id  value: $value _fetchedAttendance lenth ${_fetchedAttendance.length}');
 
-    if (index == -1)
+    if (index == -1) {
       index = _fetchedAttendance
           .indexWhere((attendance) => attendance.person_id == -1);
+      if (index == -1) {
+        print(
+            'index is still -1 => index: $index  person_id: $person_id  value: $value');
+        // if index is still -1 then there is no empty slot
+        // so we need to create a new slot
+        _fetchedAttendance.add(ActivityAttendance(
+            person_id: -1, sign_in_time: null, sign_out_time: null));
+        index = _fetchedAttendance.length - 1;
+      }
+    }
 
     if (value == false) {
       if (index != -1) {
-        await deleteActivityAttendance(_fetchedAttendance[index].id!);
+        deletePersonActivityAttendance(_fetchedAttendance[index].person_id!);
       }
       if (sign_in)
         _fetchedAttendance[index] =
@@ -109,20 +120,24 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
       ActivityAttendance activityAttendance = ActivityAttendance(
           person_id: -1, sign_in_time: null, sign_out_time: null);
       ;
-      if (sign_in)
-        activityAttendance = await createActivityAttendance(ActivityAttendance(
+      if (sign_in) {
+        activityAttendance = ActivityAttendance(
           activity_instance_id: activityInstance.id,
           person_id: person_id,
           sign_in_time: DateTime.now().toString(),
           in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
-        ));
-      else {
-        activityAttendance = await createActivityAttendance(ActivityAttendance(
+        );
+        createActivityAttendance(
+            activityAttendance); // make the call async and returrn withtout waiting
+      } else {
+        activityAttendance = ActivityAttendance(
           activity_instance_id: activityInstance.id,
           person_id: person_id,
           sign_out_time: DateTime.now().toString(),
           out_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
-        ));
+        );
+        createActivityAttendance(
+            activityAttendance); // make the call async and returrn withtout waiting
       }
 
       _fetchedAttendance[index] = activityAttendance;
@@ -171,7 +186,9 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                               activityId);
                                       if (_fetchedAttendance.length == 0)
                                         _fetchedAttendance = new List.filled(
-                                            _fetchedOrganization!.people.length,
+                                            _fetchedOrganization!
+                                                    .people.length *
+                                                2, // add 2 records for eign in and out
                                             new ActivityAttendance(
                                                 person_id: -1));
                                       else {
@@ -186,6 +203,10 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                                       _fetchedOrganization!
                                                           .people[i].id) ==
                                               -1) {
+                                            // add 2 records for sing in and out
+                                            _fetchedAttendance.add(
+                                                new ActivityAttendance(
+                                                    person_id: -1));
                                             _fetchedAttendance.add(
                                                 new ActivityAttendance(
                                                     person_id: -1));
