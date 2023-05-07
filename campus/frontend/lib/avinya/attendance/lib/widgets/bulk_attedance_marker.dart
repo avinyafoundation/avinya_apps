@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gallery/avinya/attendance/lib/data.dart';
 import 'package:gallery/avinya/attendance/lib/data/activity_attendance.dart';
+import 'package:gallery/avinya/attendance/lib/data/evaluation.dart';
+import 'package:gallery/avinya/attendance/lib/widgets/evaluation_list.dart';
 
 import '../data/activity_instance.dart';
 
@@ -20,6 +22,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
   Organization? _fetchedOrganization;
   List<ActivityAttendance> _fetchedAttendance = [];
   List<ActivityAttendance> _fetchedAttendanceAfterSchool = [];
+  List<Evaluation> _fetchedEvaluations = [];
 
   @override
   void initState() {
@@ -249,6 +252,41 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                             }
                                           }
                                         }
+
+                                        if (activityInstance.id == -1) {
+                                          activityInstance =
+                                              await campusAttendanceSystemInstance
+                                                  .getCheckinActivityInstance(
+                                                      activityId);
+                                        }
+
+                                        _fetchedEvaluations =
+                                            await getActivityInstanceEvaluations(
+                                                activityInstance.id!);
+                                        if (_fetchedEvaluations.length == 0)
+                                          _fetchedEvaluations = new List.filled(
+                                              _fetchedOrganization!
+                                                  .people.length,
+                                              new Evaluation(evaluatee_id: -1));
+                                        else {
+                                          for (int i = 0;
+                                              i <
+                                                  _fetchedOrganization!
+                                                      .people.length;
+                                              i++) {
+                                            if (_fetchedEvaluations.indexWhere(
+                                                    (evaluation) =>
+                                                        evaluation
+                                                            .evaluatee_id ==
+                                                        _fetchedOrganization!
+                                                            .people[i].id) ==
+                                                -1) {
+                                              _fetchedEvaluations.add(
+                                                  new Evaluation(
+                                                      evaluatee_id: -1));
+                                            }
+                                          }
+                                        }
                                       }
 
                                       setState(() {});
@@ -292,6 +330,11 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                         if (campusAppsPortalInstance.isTeacher)
                           TableCell(
                               child: Text("After school",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold))),
+                        if (campusAppsPortalInstance.isTeacher)
+                          TableCell(
+                              child: Text("Absence Reason",
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold))),
                       ]),
@@ -431,6 +474,110 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                           setState(() {});
                                         },
                                       ),
+                                    ),
+                              if (campusAppsPortalInstance.isTeacher)
+                                if (_fetchedEvaluations.length > 0)
+                                  if (_fetchedEvaluations
+                                          .firstWhere(
+                                              (evaluation) =>
+                                                  evaluation.evaluatee_id ==
+                                                  person.id,
+                                              orElse: () => new Evaluation(
+                                                  evaluatee_id: -1))
+                                          .evaluatee_id !=
+                                      -1)
+                                    TableCell(
+                                      child: Row(children: [
+                                        Text(_fetchedEvaluations
+                                            .firstWhere((evaluation) =>
+                                                evaluation.evaluatee_id ==
+                                                person.id)
+                                            .response!),
+                                        IconButton(
+                                          icon: Icon(Icons.edit),
+                                          onPressed: () async {
+                                            var evaluation = _fetchedEvaluations
+                                                .firstWhere((evaluation) =>
+                                                    evaluation.evaluatee_id ==
+                                                    person.id);
+
+                                            await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EditEvaluationPage(
+                                                          evaluation:
+                                                              evaluation)),
+                                            );
+                                            _fetchedEvaluations =
+                                                await getActivityInstanceEvaluations(
+                                                    activityInstance.id!);
+                                            setState(() {});
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.delete),
+                                          onPressed: () async {
+                                            var evaluation = _fetchedEvaluations
+                                                .firstWhere((evaluation) =>
+                                                    evaluation.evaluatee_id ==
+                                                    person.id);
+                                            await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DeleteEvaluationPage(
+                                                          evaluation:
+                                                              evaluation)),
+                                            );
+                                            _fetchedEvaluations =
+                                                await getActivityInstanceEvaluations(
+                                                    activityInstance.id!);
+                                            setState(() {});
+                                          },
+                                        ),
+                                      ]),
+                                    )
+                                  else
+                                    TableCell(
+                                      child: Row(children: [
+                                        Text(""),
+                                        IconButton(
+                                          icon: Icon(Icons.add),
+                                          onPressed: () async {
+                                            if (activityInstance.id == -1) {
+                                              activityInstance =
+                                                  await campusAttendanceSystemInstance
+                                                      .getCheckinActivityInstance(
+                                                          activityId);
+                                            }
+                                            var evaluation = Evaluation(
+                                              evaluator_id:
+                                                  campusAppsPortalInstance
+                                                      .getUserPerson()
+                                                      .id,
+                                              evaluatee_id: person.id,
+                                              activity_instance_id:
+                                                  activityInstance.id,
+                                              grade: 0,
+                                              evaluation_criteria_id: 54,
+                                              response: "Unexcused absence",
+                                            );
+                                            await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AddEvaluationPage(
+                                                        evaluation: evaluation,
+                                                      )),
+                                            );
+                                            _fetchedEvaluations =
+                                                await getActivityInstanceEvaluations(
+                                                    activityInstance.id!);
+                                            setState(() {});
+                                          },
+                                        ),
+                                      ]),
                                     ),
                             ]);
                           }).toList()
