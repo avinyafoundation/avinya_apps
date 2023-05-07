@@ -198,6 +198,12 @@ class Demos {
         category: GalleryDemoCategory.study,
         studyId: 'starter',
       ),
+      'assetadminApp': GalleryDemo(
+        title: "Asset Admin App",
+        subtitle: "Asset App for Admin",
+        category: GalleryDemoCategory.study,
+        studyId: 'starter',
+      ),
       'consumableApp': GalleryDemo(
         title: "Consumable App",
         subtitle: "Consumable Rating App for the Users",

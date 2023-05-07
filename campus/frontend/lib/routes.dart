@@ -17,7 +17,10 @@ import 'package:pcti_notes_admin/routes.dart' as pcti_notes_admin_routes;
 import 'package:pcti_notes/app.dart' deferred as pcti_notes;
 import 'package:pcti_notes/routes.dart' as pcti_notes_routes;
 import 'package:gallery/avinya/asset/lib/app.dart' deferred as asset;
+import 'package:gallery/avinya/asset_admin/lib/app.dart' deferred as assetadmin;
 import 'package:gallery/avinya/asset/lib/routes.dart' as asset_routes;
+import 'package:gallery/avinya/asset_admin/lib/routes.dart'
+    as asset_admin_routes;
 import 'package:attendance/routes.dart' as routes;
 import 'package:gallery/pages/profile.dart' as profile;
 import 'package:pcti_feedback/app.dart' deferred as feedback;
@@ -103,6 +106,16 @@ class RouteConfiguration {
       (context, match) => StudyWrapper(
         study: DeferredWidget(asset.loadLibrary,
             () => asset.AssetUserSystem()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),
+    Path(
+      r'^' + asset_admin_routes.assetadminRoute,
+      (context, match) => StudyWrapper(
+        study: DeferredWidget(
+            assetadmin.loadLibrary,
+            () => assetadmin
+                .AssetAdminSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),
