@@ -48,6 +48,8 @@ dependencies:
     path: ./lib/avinya/pcti_feedback
   asset:
     path: ./lib/avinya/asset
+  asset_admin:
+    path: ./lib/avinya/asset_admin
   consumable:
     path: ./lib/avinya/consumable
   route_observer_mixin: ^1.7.0

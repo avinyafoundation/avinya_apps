@@ -280,6 +280,29 @@ service / on new http:Listener(9091) {
         }
     }
 
+    resource function put evaluations (@http:Payload Evaluation evaluation) returns Evaluation|error {
+        UpdateEvaluationsResponse|graphql:ClientError updateEvaluationResponse = globalDataClient->updateEvaluations(evaluation);
+        if(updateEvaluationResponse is UpdateEvaluationsResponse) {
+            Evaluation|error evaluation_record = updateEvaluationResponse.update_evaluation.cloneWithType(Evaluation);
+            if(evaluation_record is Evaluation) {
+                return evaluation_record;
+            }
+            else {
+                return error("Error while processing Application record received: " + evaluation_record.message() + 
+                    ":: Detail: " + evaluation_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating evaluation", updateEvaluationResponse);
+            return error("Error while creating evaluation: " + updateEvaluationResponse.message() + 
+                ":: Detail: " + updateEvaluationResponse.detail().toString());
+        }
+    }
+
+    resource function delete evaluations/[int id]() returns json|error {
+        json|error delete_count = globalDataClient->deleteEvaluation(id);
+        return  delete_count;
+    }
+
     resource function get activity_evaluations/[int activity_id]() returns Evaluation[]|error {
         GetActivityEvaluationsResponse|graphql:ClientError getActivityEvaluationsResponse = globalDataClient->getActivityEvaluations(activity_id);
         if(getActivityEvaluationsResponse is GetActivityEvaluationsResponse) {
