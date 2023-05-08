@@ -137,7 +137,6 @@ class HomePage extends StatelessWidget {
           studyRoute: asset_routes.assetRoute,
         ),
       ),
-
       //2023-04-19 commented for prod and stag branches
       Padding(
         padding: const EdgeInsets.all(10.0),
