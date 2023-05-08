@@ -123,7 +123,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
     var headerLabels = ["person", ...columnNames];
     // var headerLabels = ['ID2', 'Name', 'Price'];
     var cols =
-        headerLabels.map((label) => DataColumn(label: Text(label!))).toList();
+        columnNames.map((label) => DataColumn(label: Text(label!))).toList();
 
     return SingleChildScrollView(
       child: campusAppsPortalPersonMetaDataInstance
@@ -310,37 +310,36 @@ class MyData extends DataTableSource {
     if (_fetchedOrganization != null &&
         _fetchedOrganization!.people.isNotEmpty) {
       for (final person in _fetchedOrganization!.people) {
-        final List<DataCell> cells = [];
-        cells.add(DataCell(Text(person.preferred_name!)));
+        // final List<DataCell> cells = [];
+        List<DataCell> cells = new List.filled(
+          columnNames
+              .toSet()
+              .toList()
+              .length, // add 2 records for eign in and out
+          new DataCell(Text("Absent")),
+        );
+        // cells.add(DataCell(Text(person.preferred_name!)));
         // for (final date in columnNames) {
         for (final attendance in _fetchedAttendance) {
           if (attendance.person == person.id) {
+            // for (int i = 0; i < columnNames.toSet().toList().length; i++) {
             for (final date in columnNames) {
               if (attendance.sign_in_time != null &&
                   attendance.sign_in_time!.split(" ")[0] == date) {
-                print("Present: ${attendance.person} - Present: ${date}");
-                cells.add(DataCell(Text("Present")));
-                break;
+                for (int i = 0; i < columnNames.toSet().toList().length; i++) {
+                  columnNames.firstWhere((date) {
+                    cells[i] = DataCell(Text("Present"));
+                    return true;
+                  });
+                }
               }
-              // else if (attendance.sign_in_time == null &&
-              //     attendance.sign_in_time!.split(" ")[0] == date) {
-              //   print("Absent: ${attendance.person}");
-              //   cells.add(DataCell(Text("Absent")));
-              //   break;
-              else if (attendance.sign_in_time == null) {
-                print("Absent: ${attendance.person} - Absent: ${date}");
-                cells.add(DataCell(Text("Absent")));
-                break;
-              } else if (cells.length == columnNames.length - 1) {
-                break;
-              }
+
               // break;
             }
-            if (rows.length == columnNames.toSet().toList().length - 1) {
-              break;
-            }
+
             print("Cells1: ${cells}");
-            rows.add(DataRow(cells: cells));
+            // rows.add(DataRow(cells: cells));
+            return DataRow(cells: cells);
             // break;
           }
         }
@@ -348,9 +347,9 @@ class MyData extends DataTableSource {
         // rows.add(DataRow(cells: cells));
         // }
         // rows.add(DataRow(cells: cells));
-        for (DataRow row in rows) {
-          print("rows: ${row}");
-        }
+        // for (DataRow row in rows) {
+        //   print("rows: ${row}");
+        // }
 
         DataRow? findDesiredRow(List<DataRow> rows, int desiredIndex) {
           if (desiredIndex >= 0 && desiredIndex < rows.length) {
@@ -389,6 +388,116 @@ class MyData extends DataTableSource {
     }
     return null;
   }
+
+  // @override
+  // DataRow? getRow(int index) {
+  //   final List<DataRow> rows = [];
+
+  //   if (_fetchedOrganization != null &&
+  //       _fetchedOrganization!.people.isNotEmpty) {
+  //     for (final person in _fetchedOrganization!.people) {
+  //       List<DataCell> cells = new List.filled(
+  //         columnNames
+  //             .toSet()
+  //             .toList()
+  //             .length, // add 2 records for eign in and out
+  //         new DataCell(Text("Absent")),
+  //       );
+  //       // cells.add(DataCell(Text(person.preferred_name!)));
+  //       // for (final date in columnNames) {
+  //       for (final attendance in _fetchedAttendance) {
+  //         if (attendance.person == person.id &&
+  //             attendance.sign_in_time != null) {
+  //           // for (int i = 0; i < columnNames.toSet().toList().length; i++) {
+  //           //   if (columnNames.indexWhere((cols) =>
+  //           //           cols![i] == attendance.sign_in_time!.split(" ")[0]) ==
+  //           //       -1) {
+  //           //     cells.add(new DataCell(Text("Present")));
+  //           //   }
+  //           // }
+  //           for (final date in columnNames) {
+  //             if (attendance.sign_in_time != null &&
+  //                 attendance.sign_in_time!.split(" ")[0] == date) {
+  //               for (int i = 0; i < columnNames.toSet().toList().length; i++) {
+  //                 // columnNames.indexWhere((cols) =>
+  //                 //     cols![i] = DataCell(Text("Present")));
+  //                 columnNames.indexWhere((date) {
+  //                   cells[i] = DataCell(Text("Present"));
+  //                   return true;
+  //                 });
+  //               }
+
+  //               // print("Present: ${attendance.person} - Present: ${date}");
+  //               // cells.add(DataCell(Text("Present")));
+  //               // break;
+  //             }
+  //             // else if (attendance.sign_in_time == null &&
+  //             //     attendance.sign_in_time!.split(" ")[0] == date) {
+  //             //   print("Absent: ${attendance.person}");
+  //             //   cells.add(DataCell(Text("Absent")));
+  //             //   break;
+  //             // else if (attendance.sign_in_time == null) {
+  //             //   print("Absent: ${attendance.person} - Absent: ${date}");
+  //             //   cells.add(DataCell(Text("Absent")));
+  //             //   break;
+  //             // } else if (cells.length == columnNames.length - 1) {
+  //             //   break;
+  //             // }
+  //             // break;
+  //           }
+  //           // if (rows.length == columnNames.toSet().toList().length - 1) {
+  //           //   break;
+  //           // }
+  //           print("Cells1: ${cells}");
+  //           rows.add(DataRow(cells: cells));
+  //           // break;
+  //         }
+  //       }
+  //       // return DataRow(cells: cells);
+  //       // rows.add(DataRow(cells: cells));
+  //       // }
+  //       // rows.add(DataRow(cells: cells));
+  //       for (DataRow row in rows) {
+  //         print("rows: ${row}");
+  //       }
+
+  //       DataRow? findDesiredRow(List<DataRow> rows, int desiredIndex) {
+  //         if (desiredIndex >= 0 && desiredIndex < rows.length) {
+  //           List<DataCell> cells = rows[desiredIndex].cells.toList();
+  //           return DataRow(cells: cells);
+  //         }
+
+  //         return null; // Return null if the desiredIndex is out of bounds
+  //       }
+
+  //       if (rows.length == _fetchedOrganization!.people.length) {
+  //         return findDesiredRow(rows, index);
+  //       }
+
+  //       // DataRow? desiredRow = findDesiredRow(rows, index);
+
+  //       // if (rows.length == 3) {
+  //       //   return DataRow(cells: cells);
+  //       // }
+  //       // if (rows.isNotEmpty) {
+  //       //   return rows[index % rows.length];
+  //       // }
+
+  //       // print("rows: ${rows}");
+  //     }
+  //     // if (rows.isNotEmpty) {
+  //     //   return rows[index % rows.length];
+  //     // }
+  //     print("Cells: ${rows}");
+  //     // return DataRow(cells: [
+  //     //   DataCell(Text("ss1")),
+  //     //   DataCell(Text("ss2")),
+  //     //   DataCell(Text("ss3")),
+  //     //   DataCell(Text("ss4")),
+  //     // ]);
+  //   }
+  //   return null;
+  // }
 
   // @override
   // DataRow? getRow(int index) {
