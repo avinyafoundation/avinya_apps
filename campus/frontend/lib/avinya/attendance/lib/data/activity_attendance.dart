@@ -1,3 +1,4 @@
+import 'package:gallery/avinya/attendance/lib/data.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -14,6 +15,7 @@ class ActivityAttendance {
   String? in_marked_by;
   String? out_marked_by;
   bool? selected = false;
+  int? person;
 
   ActivityAttendance({
     this.id,
@@ -25,6 +27,7 @@ class ActivityAttendance {
     this.sign_out_time,
     this.in_marked_by,
     this.out_marked_by,
+    this.person,
   });
 
   factory ActivityAttendance.fromJson(Map<String, dynamic> json) {
@@ -38,6 +41,7 @@ class ActivityAttendance {
       sign_out_time: json['sign_out_time'],
       in_marked_by: json['in_marked_by'],
       out_marked_by: json['out_marked_by'],
+      person: json['person'] != null ? json['person']['id'] : null,
     );
   }
 
@@ -52,6 +56,7 @@ class ActivityAttendance {
         if (sign_out_time != null) 'sign_out_time': sign_out_time,
         if (in_marked_by != null) 'in_marked_by': in_marked_by,
         if (out_marked_by != null) 'out_marked_by': out_marked_by,
+        if (person != null) 'person': person,
       };
 }
 

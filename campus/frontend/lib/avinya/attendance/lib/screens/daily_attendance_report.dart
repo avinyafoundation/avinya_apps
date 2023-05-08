@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:attendance/widgets/daily_attendance_report.dart';
+import 'package:gallery/avinya/attendance/lib/widgets/daily_attendance_report.dart';
 // import 'package:flutter_gen/gen_l10n/gallery_localizations.dart';
 import 'package:gallery/data/gallery_options.dart';
 import 'package:intl/intl.dart';
@@ -36,7 +36,9 @@ class _DailyAttendanceReportScreenState
       ),
       body: Column(
         children: [
-          DailyAttendanceReport()
+          DailyAttendanceReport(
+            title: '',
+          )
           // Expanded(
           //   child: Container(
           //     height: MediaQuery.of(context).size.height - kToolbarHeight - 24,

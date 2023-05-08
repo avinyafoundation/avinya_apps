@@ -1,91 +1,54 @@
-// Copyright 2019 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+import 'dart:math';
+import 'dart:html';
 
 import 'package:flutter/material.dart';
-import 'package:attendance/data/activity_attendance.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
-// import 'package:flutter_gen/gen_l10n/gallery_localizations.dart';
-import 'package:gallery/data/gallery_options.dart';
+import 'package:attendance/data/activity_attendance.dart';
 import 'package:gallery/data/person.dart';
-import 'package:intl/intl.dart';
+import 'package:collection/collection.dart';
 
 class DailyAttendanceReport extends StatefulWidget {
-  const DailyAttendanceReport({super.key});
+  const DailyAttendanceReport({Key? key, required this.title})
+      : super(key: key);
+
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
+
+  final String title;
 
   @override
   State<DailyAttendanceReport> createState() => _DailyAttendanceReportState();
 }
 
-class _RestorableAttendanceSelections extends RestorableProperty<Set<int>> {
-  Set<int> _attendanceSelections = {};
-
-  /// Returns whether or not a dessert row is selected by index.
-  bool isSelected(int index) => _attendanceSelections.contains(index);
-
-  /// Takes a list of [_Dessert]s and saves the row indices of selected rows
-  /// into a [Set].
-  void setAttendanceSelections(List<ActivityAttendance> attendanceList) {
-    final updatedSet = <int>{};
-    for (var i = 0; i < attendanceList.length; i += 1) {
-      var attendance = attendanceList[i];
-      if (attendance.selected!) {
-        updatedSet.add(i);
-      }
-    }
-    _attendanceSelections = updatedSet;
-    notifyListeners();
-  }
-
-  @override
-  Set<int> createDefaultValue() => _attendanceSelections;
-
-  @override
-  Set<int> fromPrimitives(Object? data) {
-    final selectedItemIndices = data as List<dynamic>;
-    _attendanceSelections = {
-      ...selectedItemIndices.map<int>((dynamic id) => id as int),
-    };
-    return _attendanceSelections;
-  }
-
-  @override
-  void initWithValue(Set<int> value) {
-    _attendanceSelections = value;
-  }
-
-  @override
-  Object toPrimitives() => _attendanceSelections.toList();
-}
-
-class _DailyAttendanceReportState extends State<DailyAttendanceReport>
-    with RestorationMixin {
-  final _RestorableAttendanceSelections _attendanceSelections =
-      _RestorableAttendanceSelections();
-  final RestorableInt _rowIndex = RestorableInt(0);
-  final RestorableInt _rowsPerPage =
-      RestorableInt(PaginatedDataTable.defaultRowsPerPage);
-  final RestorableBool _sortAscending = RestorableBool(true);
-  final RestorableIntN _sortColumnIndex = RestorableIntN(null);
-
+class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
   List<ActivityAttendance> _fetchedAttendance = [];
-  _AttendanceDataSource? _attendanceDataSource;
+  List<ActivityAttendance> _fetchedAttendanceAfterSchool = [];
+  Organization? _fetchedOrganization;
+
+  late DataTableSource _data;
+
+  //  final List<Map<String, dynamic>> _fetchedAttendance = []; // First data set
+  // final List<Map<String, dynamic>> _fetchedOrganization = []; // Second data set
+  // final DataTableSource _data = MyData(_fetchedAttendance, _fetchedOrganization);
+
+  // DataTableSource? _attendanceDataSource;
+  List<String?> columnNames = [];
+
   List<Map<String, bool>> attendanceList = [];
   var _selectedValue;
   var activityId = 0;
   var afterSchoolActivityId = 0;
-  Organization? _fetchedOrganization;
-  List<ActivityAttendance> _fetchedAttendanceAfterSchool = [];
-
-  void updateAttendance(List<ActivityAttendance> newAttendance) {
-    setState(() {
-      _fetchedAttendance = newAttendance;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
+    // _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization);
     if (campusAppsPortalInstance.isTeacher) {
       activityId = campusAppsPortalInstance.activityIds['homeroom']!;
       afterSchoolActivityId =
@@ -95,141 +58,72 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport>
   }
 
   @override
-  String get restorationId => 'data_table_demo';
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization);
+  }
 
   @override
-  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
-    registerForRestoration(_attendanceSelections, 'selected_row_indices');
-    registerForRestoration(_rowIndex, 'current_row_index');
-    registerForRestoration(_rowsPerPage, 'rows_per_page');
-    registerForRestoration(_sortAscending, 'sort_ascending');
-    registerForRestoration(_sortColumnIndex, 'sort_column_index');
-
-    // _attendanceDataSource ??= _AttendanceDataSource(context);
-    // switch (_sortColumnIndex.value) {
-    //   case 0:
-    //     _attendanceDataSource!._fetchedAttendance!._sort<String>((d) => d.name, _sortAscending.value);
-    //     break;
-    //   case 1:
-    //     _attendanceDataSource!
-    //         ._sort<num>((d) => d.calories, _sortAscending.value);
-    //     break;
-    //   case 2:
-    //     _attendanceDataSource!._sort<num>((d) => d.fat, _sortAscending.value);
-    //     break;
-    //   case 3:
-    //     _attendanceDataSource!._sort<num>((d) => d.carbs, _sortAscending.value);
-    //     break;
-    // }
-    //    for (int i = 0; i < _attendanceDataSource!.length; i++) {
-    //   String columnName = _attendanceDataSource[i].keys.first;
-    //   switch (_sortColumnIndex.value) {
-    //     case i:
-    //       _attendanceDataSource!._sort<String>(
-    //           (d) => d[columnName]!, _sortAscending.value);
-    //       break;
-    //   }
-    // }
-//   for (int i = 0; i < _attendanceDataSource!.length; i++) {
-//   String columnName = _attendanceDataSource[i].keys.first;
-//   if (_sortColumnIndex.value == i) {
-//     _attendanceDataSource!._sort<String>(
-//       (d) => d[columnName]!,
-//       _sortAscending.value,
-//     );
-//     break;
-//   }
-// }
-    // _attendanceDataSource ??= _AttendanceDataSource(context);
-    // if (_fetchedOrganization != null) if (_fetchedOrganization!.people.length >
-    //     0)
-    //   _fetchedOrganization!.people.map((person) {
-    //     _attendanceDataSource!._fetchedAttendance!
+  Widget build(BuildContext context) {
+    // var cols = [
+    //   DataColumn(label: Text('ID')),
+    //   DataColumn(label: Text('Name')),
+    //   DataColumn(label: Text('Price'))
+    // ];
+    // if (_fetchedOrganization != null &&
+    //     _fetchedOrganization!.people.isNotEmpty) {
+    //   _fetchedOrganization!.people.forEach((person) {
+    //   _fetchedAttendance
+    //         .asMap()
     //         .map((i, element) {
-    //           String columnName = element.keys.first;
-    //           if (_sortColumnIndex.value == i) {
-    //             _attendanceDataSource!._fetchedAttendance!._sort<String>(
-    //               (d) => d[columnName]!,
-    //               _sortAscending.value,
-    //             );
-    //             return MapEntry(
-    //                 i, _attendanceDataSource!._fetchedAttendance![i]);
+    //           String? columnName = element.sign_in_time;
+    //           if (columnName != null) {
+    //             columnName = columnName.split(" ")[0];
+    //             // _attendanceDataSource!._sort<String>(
+    //             //   (d) => columnName!,
+    //             //   _sortAscending.value,
+    //             // );
+    //             // return MapEntry(
+    //             //     i, _attendanceDataSource!._fetchedAttendance[i]);
     //           }
     //           return MapEntry(i, element);
     //         })
     //         .values
     //         .toList();
-
-    //     _attendanceDataSource!.updateSelectedAttendance(_attendanceSelections);
-    //     _attendanceDataSource!
-    //         .addListener(_updateSelectedAttendanceRowListener);
     //   });
-    // _attendanceDataSource ??= _AttendanceDataSource(context);
+    // }
+
+    // List<String> columnNames = _fetchedAttendance
+    //     .map((attendance) => attendance.sign_in_time!.split(" ")[0])
+    //     .toList();
+
     if (_fetchedOrganization != null &&
         _fetchedOrganization!.people.isNotEmpty) {
       _fetchedOrganization!.people.forEach((person) {
-        _attendanceDataSource!._fetchedAttendance
-            .asMap()
-            .map((i, element) {
-              String? columnName = element.sign_in_time;
-              if (_sortColumnIndex.value == i) {
-                _attendanceDataSource!._sort<String>(
-                  (d) => columnName!,
-                  _sortAscending.value,
-                );
-                return MapEntry(
-                    i, _attendanceDataSource!._fetchedAttendance[i]);
-              }
-              return MapEntry(i, element);
-            })
-            .values
-            .toList();
-
-        _attendanceDataSource!.updateSelectedAttendance(_attendanceSelections);
-        _attendanceDataSource!
-            .addListener(_updateSelectedAttendanceRowListener);
+        if (_fetchedAttendance.length > 0) {
+          // Add null check here
+          // Process attendance data here
+          List<String?> names = _fetchedAttendance
+              .map((attendance) => attendance.sign_in_time?.split(" ")[0])
+              .where((name) => name != null) // Filter out null values
+              .toList();
+          columnNames.addAll(names);
+        }
       });
+      columnNames = columnNames.toSet().toList(); // Remove duplicates
     }
-  }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _attendanceDataSource ??=
-        _AttendanceDataSource(_fetchedAttendance, context);
-    _attendanceDataSource!.addListener(_updateSelectedAttendanceRowListener);
-  }
+    // Get unique sign-in dates from signInData
+// var uniqueDates = _fetchedAttendance.map((data) => data.sign_in_time.split(" ")[0]).toSet().toList();
 
-  void _updateSelectedAttendanceRowListener() {
-    _attendanceSelections
-        .setAttendanceSelections(_attendanceDataSource!._fetchedAttendance);
-  }
+// Sort dates in ascending order
+    columnNames.sort();
 
-  void _sort<T>(
-    Comparable<T> Function(ActivityAttendance d) getField,
-    int columnIndex,
-    bool ascending,
-  ) {
-    _attendanceDataSource!._sort<T>(getField, ascending);
-    setState(() {
-      _sortColumnIndex.value = columnIndex;
-      _sortAscending.value = ascending;
-    });
-  }
-
-  @override
-  void dispose() {
-    _rowsPerPage.dispose();
-    _sortColumnIndex.dispose();
-    _sortAscending.dispose();
-    _attendanceDataSource!.removeListener(_updateSelectedAttendanceRowListener);
-    _attendanceDataSource!.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // final localizations = GalleryLocalizations.of(context)!;
+// Combine person_id and unique dates into header labels array
+    var headerLabels = ["person", ...columnNames];
+    // var headerLabels = ['ID2', 'Name', 'Price'];
+    var cols =
+        headerLabels.map((label) => DataColumn(label: Text(label!))).toList();
 
     return SingleChildScrollView(
       child: campusAppsPortalPersonMetaDataInstance
@@ -238,7 +132,6 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport>
           ? Text("Please go to 'Mark Attedance' Page",
               style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold))
           : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -267,7 +160,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport>
                                         await getClassActivityAttendanceReport(
                                             _fetchedOrganization!.id!,
                                             activityId,
-                                            50);
+                                            250);
                                     if (_fetchedAttendance.length == 0)
                                       _fetchedAttendance = new List.filled(
                                           _fetchedOrganization!.people.length,
@@ -296,12 +189,12 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport>
                                           await getClassActivityAttendanceReport(
                                               _fetchedOrganization!.id!,
                                               afterSchoolActivityId,
-                                              50);
+                                              250);
                                       _fetchedAttendanceAfterSchool =
                                           await getClassActivityAttendanceReport(
                                               _fetchedOrganization!.id!,
                                               afterSchoolActivityId,
-                                              50);
+                                              250);
                                       if (_fetchedAttendanceAfterSchool
                                               .length ==
                                           0)
@@ -331,10 +224,15 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport>
                                       }
                                     }
                                     // Pass the fetched data to the constructor of the new class
-                                    _AttendanceDataSource(
-                                        _fetchedAttendance, context);
+                                    // DataTableSource(_fetchedAttendance);
+                                    // MyData(_fetchedAttendance, columnNames,
+                                    //     _fetchedOrganization);
 
-                                    setState(() {});
+                                    // setState(() {});
+                                    setState(() {
+                                      _data = MyData(_fetchedAttendance,
+                                          columnNames, _fetchedOrganization);
+                                    });
                                   },
                                   items: org.child_organizations
                                       .map((Organization value) {
@@ -348,185 +246,297 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport>
                           ]),
                   ],
                 ),
-                SizedBox(height: 16.0),
-                // children: [
-                if (_fetchedOrganization != null)
-                  if (_fetchedOrganization!.people.length > 0)
-                    ..._fetchedOrganization!.people.map((person) {
-                      var columnHeaders = _attendanceDataSource!
-                          ._fetchedAttendance
-                          .map((attendance) {
-                        return DataColumn(
-                          label: Text(attendance.sign_in_time!.toString()),
-                          numeric: true,
-                          onSort: (columnIndex, ascending) => _sort<String>(
-                              (d) => d.sign_in_time!.toString(),
-                              columnIndex,
-                              ascending),
-                        );
-                      }).toList();
-                      return Scrollbar(
-                        child: ListView(
-                          restorationId: 'data_table_list_view',
-                          padding: const EdgeInsets.all(16),
-                          children: [
-                            PaginatedDataTable(
-                              header: Text("dataTableHeader"),
-                              rowsPerPage: _rowsPerPage.value,
-                              showCheckboxColumn: false,
-                              onRowsPerPageChanged: (value) {
-                                setState(() {
-                                  _rowsPerPage.value = value!;
-                                });
-                              },
-                              initialFirstRowIndex: _rowIndex.value,
-                              onPageChanged: (rowIndex) {
-                                setState(() {
-                                  _rowIndex.value = rowIndex;
-                                });
-                              },
-                              sortColumnIndex: _sortColumnIndex.value,
-                              sortAscending: _sortAscending.value,
-                              onSelectAll: _attendanceDataSource!._selectAll,
-
-                              // columns: [
-                              //   DataColumn(
-                              //     label: Text("Name"),
-                              //     onSort: (columnIndex, ascending) =>
-                              //         _sort<String>((d) => d.name, columnIndex, ascending),
-                              //   ),
-                              //   DataColumn(
-                              //     label: Text("Sign In"),
-                              //     numeric: true,
-                              //     onSort: (columnIndex, ascending) =>
-                              //         _sort<num>((d) => d.calories, columnIndex, ascending),
-                              //   ),
-                              //   DataColumn(
-                              //     label: Text("Sign Out"),
-                              //     numeric: true,
-                              //     onSort: (columnIndex, ascending) =>
-                              //         _sort<num>((d) => d.fat, columnIndex, ascending),
-                              //   ),
-                              //   DataColumn(
-                              //     label: Text("After School"),
-                              //     numeric: true,
-                              //     onSort: (columnIndex, ascending) =>
-                              //         _sort<num>((d) => d.carbs, columnIndex, ascending),
-                              //   ),
-                              // ],
-                              columns: columnHeaders,
-
-                              source: _attendanceDataSource!,
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
+                Column(
+                  children: <Widget>[
+                    if (cols.length > 0)
+                      PaginatedDataTable(
+                        source: _data,
+                        columns: cols,
+                        header: const Center(child: Text('Daily Attendance')),
+                        columnSpacing: 100,
+                        horizontalMargin: 60,
+                        rowsPerPage: 8,
+                      ),
+                  ],
+                )
               ],
             ),
     );
   }
 }
 
-class _AttendanceDataSource extends DataTableSource {
-  // late List<ActivityAttendance> _fetchedAttendance;
-  // final _AttendanceDataSource fetchedData;
+class MyData extends DataTableSource {
+  // final List<Map<String, dynamic>> _data = List.generate(
+  //     200,
+  //     (index) => {
+  //           "id": index,
+  //           "title": "Item $index",
+  //           "price": Random().nextInt(10000)
+  //         });
+
+  MyData(this._fetchedAttendance, this.columnNames, this._fetchedOrganization);
+
   final List<ActivityAttendance> _fetchedAttendance;
-// _AttendanceDataSource(this.fetchedData);
-  // _AttendanceDataSource(this.context) {
-  //   // _fetchedAttendance = fetchedData;
-  //   List<ActivityAttendance> fetchedData;
+  final List<String?> columnNames;
+  final Organization? _fetchedOrganization;
+
+// final List<Map<String, dynamic>> data1;
+//   final List<Map<String, dynamic>> data2;
+
+//   MyData(this.data1, this.data2);
+
+  // @override
+  // DataRow? getRow(int index) {
+  //   return DataRow(cells: [
+  //     DataCell(Text(_data[index]['sign_in_time'].toString())),
+  //     DataCell(Text(_data[index]["title"])),
+  //     DataCell(Text(_data[index]["price"].toString())),
+  //   ]);
   // }
-  // _AttendanceDataSource(this.fetchedData);
 
-  // _AttendanceDataSource(List<ActivityAttendance> fetchedAttendance);
-
-  final BuildContext context;
-
-  _AttendanceDataSource(this._fetchedAttendance, this.context);
-
-  // late List<ActivityAttendance> _fetchedAttendance;
-
-  int get length => _fetchedAttendance.length;
-
-  dynamic operator [](int key) => _fetchedAttendance[key];
-  void operator []=(int key, dynamic value) => _fetchedAttendance[key] = value;
-
-  void _sort<T>(
-      Comparable<T> Function(ActivityAttendance d) getField, bool ascending) {
-    _fetchedAttendance.sort((a, b) {
-      final aValue = getField(a);
-      final bValue = getField(b);
-      return ascending
-          ? Comparable.compare(aValue, bValue)
-          : Comparable.compare(bValue, aValue);
-    });
-    notifyListeners();
-  }
-
-  int _selectedCount = 0;
-
-  void updateSelectedAttendance(_RestorableAttendanceSelections selectedRows) {
-    _selectedCount = 0;
-    for (var i = 0; i < _fetchedAttendance.length; i += 1) {
-      var attendance = _fetchedAttendance[i];
-      if (selectedRows.isSelected(i)) {
-        attendance.selected = true;
-        _selectedCount += 1;
-      } else {
-        attendance.selected = false;
-      }
-    }
-    notifyListeners();
-  }
+  // @override
+  // DataRow? getRow(int index) {
+  //   return DataRow(cells: [
+  //     DataCell(Text(_data[index]['sign_in_time'].toString())),
+  //     DataCell(Text(_data[index]["title"])),
+  //     DataCell(Text(_data[index]["price"].toString())),
+  //   ]);
+  // }
 
   @override
   DataRow? getRow(int index) {
-    final format = NumberFormat.decimalPercentPattern(
-      locale: GalleryOptions.of(context).locale.toString(),
-      decimalDigits: 0,
-    );
-    assert(index >= 0);
-    if (index >= _fetchedAttendance.length) return null;
-    final attendance = _fetchedAttendance[index];
-    return DataRow.byIndex(
-      index: index,
-      selected: attendance.selected!,
-      onSelectChanged: (value) {
-        if (attendance.selected != value) {
-          _selectedCount += value! ? 1 : -1;
-          assert(_selectedCount >= 0);
-          attendance.selected = value;
-          notifyListeners();
+    final List<DataRow> rows = [];
+
+    if (_fetchedOrganization != null &&
+        _fetchedOrganization!.people.isNotEmpty) {
+      for (final person in _fetchedOrganization!.people) {
+        final List<DataCell> cells = [];
+        cells.add(DataCell(Text(person.preferred_name!)));
+        for (final date in columnNames) {
+          for (final attendance in _fetchedAttendance) {
+            if (attendance.person == person.id) {
+              if (attendance.sign_in_time != null &&
+                  attendance.sign_in_time!.split(" ")[0] == date) {
+                // print('Present');
+                cells.add(DataCell(Text("Present")));
+              } else if (attendance.sign_in_time != null &&
+                  attendance.sign_in_time!.split(" ")[0] != date) {
+                // print('Absent');
+                cells.add(DataCell(Text("Absent")));
+              }
+            }
+          }
+          return DataRow(cells: cells);
+          // rows.add(DataRow(cells: cells));
         }
-      },
-      cells: [
-        DataCell(Text(attendance.sign_in_time!)),
-        // DataCell(Text('${dessert.calories}')),
-        // DataCell(Text(dessert.fat.toStringAsFixed(1))),
-        // DataCell(Text('${dessert.carbs}')),
-        ...List.generate(
-          _fetchedAttendance.length,
-          (index) => DataCell(Text(attendance.sign_in_time!)),
-        ),
-      ],
-    );
+        // rows.add(DataRow(cells: cells));
+        // if (rows.length == 3) {
+        //   return DataRow(cells: cells);
+        // }
+        // if (rows.isNotEmpty) {
+        //   return rows[index % rows.length];
+        // }
+
+        // print("Cells: ${cells}");
+      }
+      // if (rows.isNotEmpty) {
+      //   return rows[index % rows.length];
+      // }
+      print("Cells: ${rows}");
+      // return DataRow(cells: [
+      //   DataCell(Text("ss1")),
+      //   DataCell(Text("ss2")),
+      //   DataCell(Text("ss3")),
+      //   DataCell(Text("ss4")),
+      // ]);
+    }
+    return null;
   }
 
-  @override
-  int get rowCount => _fetchedAttendance.length;
+  // @override
+  // DataRow? getRow(int index) {
+  //   final List<DataRow> rows = [];
+
+  //   if (_fetchedOrganization != null &&
+  //       _fetchedOrganization!.people.isNotEmpty) {
+  //     for (final person in _fetchedOrganization!.people) {
+  //       final List<DataCell> cells = [];
+  //       cells.add(DataCell(Text(person.preferred_name!)));
+  //       for (final date in columnNames) {
+  //         bool isPresent = false;
+  //         for (final attendance in _fetchedAttendance) {
+  //           if (attendance.person == person.id &&
+  //               attendance.sign_in_time != null &&
+  //               attendance.sign_in_time!.split(" ")[0] == date) {
+  //             cells.add(DataCell(Text("Present")));
+  //             isPresent = true;
+  //             break; // Stop checking attendance records for this date
+  //           }
+  //           if (!isPresent) {
+  //             cells.add(DataCell(Text("Absent")));
+  //           }
+  //         }
+
+  //         // final List<DataCell> row = cells;
+  //       }
+  //       return DataRow(cells: cells);
+
+  //       // print("Cells: ${cells}");
+  //       // rows.add(DataRow(cells: cells));
+  //       // final row = cells;
+  //       // DataRow(cells: cells); // Create a new DataRow for each person
+  //       // print("Cells: ${row}");
+  //       // return DataRow(cells: row);
+
+  //       // rows.add(row);
+  //     }
+  //     // var row;
+
+  //     // if (rows.isNotEmpty) {
+  //     //   return rows[index % rows.length];
+  //     // }
+  //   }
+  //   return null;
+  // }
+
+  // @override
+  // DataRow? getRow(int index) {
+  //   final List<DataRow> rows = [];
+
+  //   if (_fetchedOrganization != null &&
+  //       _fetchedOrganization!.people.isNotEmpty) {
+  //     for (final person in _fetchedOrganization!.people) {
+  //       final List<DataCell> cells = [];
+
+  //       for (final date in columnNames) {
+  //         final attendance = _fetchedAttendance.firstWhere(
+  //           (attendance) =>
+  //               attendance.person_id == person.id &&
+  //               attendance.sign_in_time?.split(" ")[0] == date,
+  //           orElse: () => ActivityAttendance(person_id: -1),
+  //         );
+
+  //         String cellContent = 'Absent';
+
+  //         if (attendance.person_id != -1 && attendance.sign_in_time != null) {
+  //           cellContent = 'Present';
+  //         }
+
+  //         cells.add(DataCell(Text(cellContent)));
+  //       }
+
+  //       rows.add(DataRow(cells: cells));
+  //       print("Cells: $cells");
+  //     }
+
+  //     if (rows.isNotEmpty) {
+  //       return rows[index % rows.length];
+  //     }
+  //   }
+
+  //   return null;
+  // }
+
+  // DataRow? getRow(int index) {
+  //   print("_fetchedAttendance: ${_fetchedAttendance.length}");
+
+  //   // print('getRow called');
+  //   if (_fetchedOrganization != null &&
+  //       _fetchedOrganization!.people.isNotEmpty) {
+  //     final List<DataCell> cells = [];
+
+  //     // Loop over each person
+  //     for (final person in _fetchedOrganization!.people) {
+  //       // cells.add(DataCell(Text(person.preferred_name!)));
+
+  //       // Loop over each date
+  //       for (final date in columnNames) {
+  //         final attendance = _fetchedAttendance.firstWhereOrNull(
+  //           (attendance) =>
+  //               attendance.person_id == person.id &&
+  //               attendance.sign_in_time?.split(" ")[0] == date,
+  //         );
+  //         final bool isChecked = attendance != null &&
+  //             attendance.person_id != -1 &&
+  //             attendance.sign_in_time != null;
+
+  //         // Add a checkbox cell for the person and date combination
+  //         cells.add(DataCell(
+  //           isChecked ? Icon(Icons.check) : Icon(Icons.close),
+  //         ));
+  //         print(
+  //             "Person: ${person.preferred_name!},Att: ${attendance?.sign_in_time}, Date: $date, Attendance: $attendance, isChecked: $isChecked");
+  //       }
+  //       // print("Cells: $cells");
+  //       // print("Cells: ${cells.length}");
+  //     }
+  //     // print("Hello, world!");
+  //     window.console.log("Hello, world from console!");
+  //     return DataRow(cells: cells);
+  //   }
+  //   return null;
+  // }
+
+  // DataRow? getRow(int index) {
+  //   if (_fetchedOrganization != null) if (_fetchedOrganization!.people.length >
+  //       0)
+  //     _fetchedOrganization!.people.map((person) {
+  //       return DataRow(cells: [
+  //         DataCell(Text(person.preferred_name!)),
+  //         DataCell(Text(person.digital_id!)),
+  //         // sign in
+  //         if (_fetchedAttendance.length > 0)
+  //           if (columnNames.length > 0)
+  //             for (int i = 0; i < columnNames.length; i++)
+  //               if (_fetchedAttendance
+  //                       .firstWhere(
+  //                         (attendance) =>
+  //                             attendance.person_id == person.id &&
+  //                             attendance.sign_in_time != null,
+  //                       )
+  //                       .person_id !=
+  //                   -1)
+  //                 DataCell(
+  //                   Checkbox(
+  //                     value: _fetchedAttendance
+  //                             .firstWhere(
+  //                               (attendance) =>
+  //                                   attendance.person_id == person.id &&
+  //                                   attendance.sign_in_time != null,
+  //                             )
+  //                             .sign_in_time !=
+  //                         null,
+  //                     onChanged: (bool? value) async {
+  //                       await toggleAttendance(person.id!, value!, true, false);
+  //                       // setState(() {});
+  //                     },
+  //                   ),
+  //                 )
+  //               else
+  //                 DataCell(
+  //                   Checkbox(
+  //                     value: false,
+  //                     onChanged: (bool? value) async {
+  //                       await toggleAttendance(person.id!, value!, true, false);
+  //                     },
+  //                   ),
+  //                 ),
+  //       ]);
+  //     }).toList();
+  //   return null;
+  // }
 
   @override
+  // TODO: implement isRowCountApproximate
   bool get isRowCountApproximate => false;
 
   @override
-  int get selectedRowCount => _selectedCount;
+  // TODO: implement rowCount
+  int get rowCount => _fetchedOrganization?.people.length ?? 0;
 
-  void _selectAll(bool? checked) {
-    for (final attendance in _fetchedAttendance) {
-      attendance.selected = checked ?? false;
-    }
-    _selectedCount = checked! ? _fetchedAttendance.length : 0;
-    notifyListeners();
-  }
+  @override
+  // TODO: implement selectedRowCount
+  int get selectedRowCount => 0;
 }
+
+toggleAttendance(int i, bool bool, bool bool2, bool bool3) {}
