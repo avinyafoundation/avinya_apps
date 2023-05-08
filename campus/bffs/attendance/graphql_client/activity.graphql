@@ -167,3 +167,18 @@ query getActivityInstanceEvaluations($activity_instance_id: Int!) {
         updated
     }      
 }
+
+mutation updateEvaluations($evaluation: Evaluation!)
+{
+    update_evaluation(evaluation:$evaluation) {
+        id
+        evaluatee_id
+        evaluator_id
+        evaluation_criteria_id
+        response
+        notes
+        grade
+        activity_instance_id
+        updated
+    }       
+}

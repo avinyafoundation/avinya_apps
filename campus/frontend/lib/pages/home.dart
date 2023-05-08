@@ -18,6 +18,9 @@ import 'package:attendance/routes.dart' as attendance_routes;
 import 'package:asset/routes.dart' as asset_routes;
 import 'package:pcti_notes/routes.dart' as campus_pcti_routes;
 import 'package:pcti_notes_admin/routes.dart' as campus_pcti_admin;
+import 'package:asset_admin/routes.dart' as asset_admin_routes;
+import 'package:pcti_notes/routes.dart' as campus_pcti_routes;
+import 'package:pcti_notes_admin/routes.dart' as campus_pcti_admin;
 import 'package:pcti_feedback/routes.dart' as feedback_routes;
 import 'package:consumable/routes.dart' as consumable_routes;
 

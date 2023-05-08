@@ -5443,6 +5443,31 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "delete_evaluation",
+                            "args": [
+                                {
+                                    "name": "id",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "add_evaluation_meta_data",
                             "args": [
                                 {
@@ -5726,6 +5751,31 @@
                             "args": [
                                 {
                                     "name": "id",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "delete_person_attendance",
+                            "args": [
+                                {
+                                    "name": "person_id",
                                     "type": {
                                         "kind": "NON_NULL",
                                         "name": null,

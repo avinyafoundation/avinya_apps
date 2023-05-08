@@ -72,7 +72,7 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         map<json> responseMap = <map<json>>graphqlResponse;
         json responseData = responseMap.get("data");
-        json|error row_count = check responseData.delete_attendance;
+        json|error row_count = check responseData.delete_person_attendance;
         return row_count;
     }
     remote isolated function getActivityInstancesToday(int id) returns GetActivityInstancesTodayResponse|graphql:ClientError {
@@ -131,5 +131,22 @@ public isolated client class GraphqlClient {
         map<anydata> variables = {"activity_instance_id": activity_instance_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetActivityInstanceEvaluationsResponse> check performDataBinding(graphqlResponse, GetActivityInstanceEvaluationsResponse);
+    }
+
+    remote isolated function updateEvaluations(Evaluation evaluation) returns UpdateEvaluationsResponse|graphql:ClientError {
+        string query = string `mutation updateEvaluations($evaluation:Evaluation!) {update_evaluation(evaluation:$evaluation) {id evaluatee_id evaluator_id evaluation_criteria_id response notes grade activity_instance_id updated}}`;
+        map<anydata> variables = {"evaluation": evaluation};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <UpdateEvaluationsResponse> check performDataBinding(graphqlResponse, UpdateEvaluationsResponse);
+    }
+
+    remote isolated function deleteEvaluation(int id) returns json|error {
+        string query = string `mutation deleteEvaluation($id:Int!) {delete_evaluation(id:$id)}`;
+        map<anydata> variables = {"id": id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        map<json> responseMap = <map<json>>graphqlResponse;
+        json responseData = responseMap.get("data");
+        json|error row_count = check responseData.delete_evaluation;
+        return row_count;
     }
 }

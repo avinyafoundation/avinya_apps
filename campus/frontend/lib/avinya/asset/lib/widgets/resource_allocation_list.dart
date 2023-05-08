@@ -39,28 +39,52 @@ class ResourceAllocationListState extends State<ResourceAllocationList> {
           if (snapshot.data!.length > 0) {
             return ListView.builder(
               itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) => ListTile(
-                  title: Text(
-                    (snapshot.data![index].asset!.model!.toString()),
+              itemBuilder: (context, index) {
+                return Card(
+                  elevation: 2.0,
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 4.0),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    title: Text(
+                      snapshot.data![index].asset!.model!.toString(),
+                      style: const TextStyle(
+                          fontSize: 18.0, fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 8.0),
+                        Text(
+                          snapshot.data![index].asset!.name!.toString(),
+                          style: const TextStyle(fontSize: 16.0),
+                        ),
+                        const SizedBox(height: 4.0),
+                        Text(
+                          'Quantity: ${snapshot.data![index].quantity!.toString()}',
+                          style: const TextStyle(fontSize: 14.0),
+                        ),
+                        const SizedBox(height: 4.0),
+                        Text(
+                          'Start Date: ${snapshot.data![index].startDate!.toString()}',
+                          style: const TextStyle(fontSize: 14.0),
+                        ),
+                        const SizedBox(height: 4.0),
+                        Text(
+                          'End Date: ${snapshot.data![index].endDate!.toString()}',
+                          style: const TextStyle(fontSize: 14.0),
+                        ),
+                        const SizedBox(height: 8.0),
+                      ],
+                    ),
+                    onTap: onTap != null
+                        ? () => onTap!(snapshot.data![index])
+                        : null,
+                    trailing: const Icon(Icons.arrow_forward_ios),
                   ),
-                  subtitle: Text(
-                    ' ' +
-                        (snapshot.data![index].asset!.name!.toString()) +
-                        ' | ' +
-                        snapshot.data![index].quantity!.toString() +
-                        ' | ' +
-                        snapshot.data![index].startDate!.toString() +
-                        ' | ' +
-                        snapshot.data![index].endDate!.toString() +
-                        ' | ',
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                  ),
-                  onTap:
-                      onTap != null ? () => onTap!(snapshot.data![index]) : null
-                  // print((snapshot.data![index].asset!.name!.toString())
-                  ),
+                );
+              },
             );
           } else {
             return const Center(
@@ -152,7 +176,7 @@ class _AddResourceAllocationPageState extends State<AddResourceAllocationPage> {
           child: Column(
             children: <Widget>[
               const Text(
-                  'Fill in the details of the AvinyaType you want to add'),
+                  'Fill in the details of the Asset you want to request'),
               TextFormField(
                 controller: asset_Controller,
                 decoration: const InputDecoration(labelText: 'asset'),
