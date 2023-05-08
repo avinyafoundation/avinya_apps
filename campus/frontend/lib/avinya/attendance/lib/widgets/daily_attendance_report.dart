@@ -312,24 +312,61 @@ class MyData extends DataTableSource {
       for (final person in _fetchedOrganization!.people) {
         final List<DataCell> cells = [];
         cells.add(DataCell(Text(person.preferred_name!)));
-        for (final date in columnNames) {
-          for (final attendance in _fetchedAttendance) {
-            if (attendance.person == person.id) {
+        // for (final date in columnNames) {
+        for (final attendance in _fetchedAttendance) {
+          if (attendance.person == person.id) {
+            for (final date in columnNames) {
               if (attendance.sign_in_time != null &&
                   attendance.sign_in_time!.split(" ")[0] == date) {
-                // print('Present');
+                print("Present: ${attendance.person} - Present: ${date}");
                 cells.add(DataCell(Text("Present")));
-              } else if (attendance.sign_in_time != null &&
-                  attendance.sign_in_time!.split(" ")[0] != date) {
-                // print('Absent');
-                cells.add(DataCell(Text("Absent")));
+                break;
               }
+              // else if (attendance.sign_in_time == null &&
+              //     attendance.sign_in_time!.split(" ")[0] == date) {
+              //   print("Absent: ${attendance.person}");
+              //   cells.add(DataCell(Text("Absent")));
+              //   break;
+              else if (attendance.sign_in_time == null) {
+                print("Absent: ${attendance.person} - Absent: ${date}");
+                cells.add(DataCell(Text("Absent")));
+                break;
+              } else if (cells.length == columnNames.length - 1) {
+                break;
+              }
+              // break;
             }
+            if (rows.length == columnNames.toSet().toList().length - 1) {
+              break;
+            }
+            print("Cells1: ${cells}");
+            rows.add(DataRow(cells: cells));
+            // break;
           }
-          return DataRow(cells: cells);
-          // rows.add(DataRow(cells: cells));
         }
+        // return DataRow(cells: cells);
         // rows.add(DataRow(cells: cells));
+        // }
+        // rows.add(DataRow(cells: cells));
+        for (DataRow row in rows) {
+          print("rows: ${row}");
+        }
+
+        DataRow? findDesiredRow(List<DataRow> rows, int desiredIndex) {
+          if (desiredIndex >= 0 && desiredIndex < rows.length) {
+            List<DataCell> cells = rows[desiredIndex].cells.toList();
+            return DataRow(cells: cells);
+          }
+
+          return null; // Return null if the desiredIndex is out of bounds
+        }
+
+        if (rows.length == _fetchedOrganization!.people.length) {
+          return findDesiredRow(rows, index);
+        }
+
+        // DataRow? desiredRow = findDesiredRow(rows, index);
+
         // if (rows.length == 3) {
         //   return DataRow(cells: cells);
         // }
@@ -337,7 +374,7 @@ class MyData extends DataTableSource {
         //   return rows[index % rows.length];
         // }
 
-        // print("Cells: ${cells}");
+        // print("rows: ${rows}");
       }
       // if (rows.isNotEmpty) {
       //   return rows[index % rows.length];
