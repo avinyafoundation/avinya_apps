@@ -478,6 +478,7 @@ type Mutation {
   add_application(application: Application!): ApplicationData
   add_evaluations(evaluations: [Evaluation!]!): Int
   update_evaluation(evaluation: Evaluation!): EvaluationData
+  delete_evaluation(id: Int!): Int
   add_evaluation_meta_data(metadata: EvaluationMetadata!): EvaluationMetadataData
   add_evaluation_criteria(evaluationCriteria: EvaluationCriteria!): EvaluationCriteriaData
   add_evaluation_answer_option(evaluationAnswer: EvaluationCriteriaAnswerOption!): EvaluationCriteriaAnswerOptionData
@@ -490,6 +491,7 @@ type Mutation {
   add_organization(org: Organization!): OrganizationData
   add_attendance(attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
   delete_attendance(id: Int!): Int
+  delete_person_attendance(person_id: Int!): Int
   add_empower_parent(person: Person!): PersonData
   update_application_status(applicationStatus: String!, applicationId: Int!): ApplicationStatusData
   update_person_avinya_type(personId: Int!, newAvinyaId: Int!, transitionDate: String!): PersonData

@@ -61,63 +61,64 @@ class HomePage extends StatelessWidget {
           studyRoute: attendance_routes.attendanceRoute,
         ),
       ),
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: _CarouselCard(
-          //2023-03-09 lahiru added for campus_pcti
-          demo: studyDemos['campuspctiApp'],
-          asset: const AssetImage(
-            'assets/images/pcti_notes.png',
-            // package: 'flutter_gallery_assets',
-          ),
-          assetColor: const Color(0xFFFFFFFF),
-          // assetDark: const AssetImage(
-          //   'assets/studies/rally_card_dark.png',
-          //   package: 'flutter_gallery_assets',
-          // ),
-          //assetDarkColor: const Color(0xFF253538),
-          textColor: Colors.black,
-          studyRoute: campus_pcti_routes.campuspctiRoute,
-        ),
-      ),
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: _CarouselCard(
-          //2023-03-09 lahiru added for campus_pcti_admin
-          demo: studyDemos['campuspctiadminApp'],
-          asset: const AssetImage(
-            'assets/images/pcti_admin.png',
-            // package: 'flutter_gallery_assets',
-          ),
-          assetColor: const Color(0xFFFFFFFF),
-          // assetDark: const AssetImage(
-          //   'assets/studies/shrine_card_dark.png',
-          //   package: 'flutter_gallery_assets',
-          // ),
-          // assetDarkColor: const Color(0xFF543B3C),
-          textColor: Colors.black,
-          studyRoute: campus_pcti_admin.campuspctiadminRoute,
-        ),
-      ),
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: _CarouselCard(
-          //2023-03-09 lahiru added for campus_pcti_admin
-          demo: studyDemos['feedbackApp'],
-          asset: const AssetImage(
-            'assets/images/feedback.png',
-            // package: 'flutter_gallery_assets',
-          ),
-          assetColor: const Color(0xFFFFFFFF),
-          // assetDark: const AssetImage(
-          //   'assets/studies/rally_card_dark.png',
-          //   package: 'flutter_gallery_assets',
-          // ),
-          // assetDarkColor: const Color(0xFF543B3C),
-          textColor: Colors.black,
-          studyRoute: feedback_routes.feedbackRoute,
-        ),
-      ),
+      //2023-04-19 commented for prod and stag branches
+      // Padding(
+      //   padding: const EdgeInsets.all(10.0),
+      //   child: _CarouselCard(
+      //     //2023-03-09 lahiru added for campus_pcti
+      //     demo: studyDemos['campuspctiApp'],
+      //     asset: const AssetImage(
+      //       'assets/images/pcti_notes.png',
+      //       // package: 'flutter_gallery_assets',
+      //     ),
+      //     assetColor: const Color(0xFFFFFFFF),
+      //     // assetDark: const AssetImage(
+      //     //   'assets/studies/rally_card_dark.png',
+      //     //   package: 'flutter_gallery_assets',
+      //     // ),
+      //     //assetDarkColor: const Color(0xFF253538),
+      //     textColor: Colors.black,
+      //     studyRoute: campus_pcti_routes.campuspctiRoute,
+      //   ),
+      // ),
+      // Padding(
+      //   padding: const EdgeInsets.all(10.0),
+      //   child: _CarouselCard(
+      //     //2023-03-09 lahiru added for campus_pcti_admin
+      //     demo: studyDemos['campuspctiadminApp'],
+      //     asset: const AssetImage(
+      //       'assets/images/pcti_admin.png',
+      //       // package: 'flutter_gallery_assets',
+      //     ),
+      //     assetColor: const Color(0xFFFFFFFF),
+      //     // assetDark: const AssetImage(
+      //     //   'assets/studies/shrine_card_dark.png',
+      //     //   package: 'flutter_gallery_assets',
+      //     // ),
+      //     // assetDarkColor: const Color(0xFF543B3C),
+      //     textColor: Colors.black,
+      //     studyRoute: campus_pcti_admin.campuspctiadminRoute,
+      //   ),
+      // ),
+      // Padding(
+      //   padding: const EdgeInsets.all(10.0),
+      //   child: _CarouselCard(
+      //     //2023-03-09 lahiru added for campus_pcti_admin
+      //     demo: studyDemos['feedbackApp'],
+      //     asset: const AssetImage(
+      //       'assets/images/feedback.png',
+      //       // package: 'flutter_gallery_assets',
+      //     ),
+      //     assetColor: const Color(0xFFFFFFFF),
+      //     // assetDark: const AssetImage(
+      //     //   'assets/studies/rally_card_dark.png',
+      //     //   package: 'flutter_gallery_assets',
+      //     // ),
+      //     // assetDarkColor: const Color(0xFF543B3C),
+      //     textColor: Colors.black,
+      //     studyRoute: feedback_routes.feedbackRoute,
+      //   ),
+      // ),
       Padding(
         padding: const EdgeInsets.all(10.0),
         child: _CarouselCard(
@@ -136,43 +137,28 @@ class HomePage extends StatelessWidget {
           studyRoute: asset_routes.assetRoute,
         ),
       ),
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: _CarouselCard(
-          demo: studyDemos['assetadminApp'],
-          asset: const AssetImage(
-            'assets/images/asset.png',
-            // package: 'flutter_gallery_assets',
-          ),
-          assetColor: const Color(0xFFFEDBD0),
-          // assetDark: const AssetImage(
-          //   'assets/studies/shrine_card_dark.png',
-          //   package: 'flutter_gallery_assets',
-          // ),
-          // assetDarkColor: const Color(0xFF543B3C),
-          textColor: Colors.black,
-          studyRoute: asset_admin_routes.assetadminRoute,
-        ),
-      ),
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: _CarouselCard(
-          demo: studyDemos['consumableApp'],
-          asset: const AssetImage(
-            'assets/images/consumable.png',
-            // package: 'flutter_gallery_assets',
-          ),
-          assetColor: const Color(0xFFFFFFFF),
-          // assetDark: const AssetImage(
-          //   'assets/studies/shrine_card_dark.png',
-          //   package: 'flutter_gallery_assets',
-          // ),
-          // assetDarkColor: const Color(0xFF543B3C),
-          //textColor: shrineBrown900,
-          textColor: Colors.black,
-          studyRoute: consumable_routes.consumableRoute,
-        ),
-      ),
+
+      //2023-04-19 commented for prod and stag branches
+      // Padding(
+      //   padding: const EdgeInsets.all(10.0),
+      //   child: _CarouselCard(
+      //     demo: studyDemos['consumableApp'],
+      //     asset: const AssetImage(
+      //       'assets/images/consumable.png',
+      //       // package: 'flutter_gallery_assets',
+      //     ),
+      //     assetColor: const Color(0xFFFFFFFF),
+      //     // assetDark: const AssetImage(
+      //     //   'assets/studies/shrine_card_dark.png',
+      //     //   package: 'flutter_gallery_assets',
+      //     // ),
+      //     // assetDarkColor: const Color(0xFF543B3C),
+      //     //textColor: shrineBrown900,
+      //     textColor: Colors.black,
+      //     studyRoute: consumable_routes.consumableRoute,
+      //   ),
+      // ),
+
     ];
 
     if (isDesktop) {
