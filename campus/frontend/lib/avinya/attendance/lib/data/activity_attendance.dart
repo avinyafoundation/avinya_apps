@@ -150,6 +150,7 @@ Future<List<ActivityAttendance>> getPersonActivityAttendanceReport(
     List<ActivityAttendance> activityAttendances = await resultsJson
         .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
         .toList();
+    print("activity attendance report"+"$activityAttendances");
     return activityAttendances;
   } else {
     throw Exception(

@@ -3,6 +3,8 @@
 import 'package:attendance/widgets/attedance_marker.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/person_attendance_report.dart';
+
 class AttendanceMarkerScreen extends StatefulWidget {
   const AttendanceMarkerScreen({Key? key}) : super(key: key);
 
@@ -32,7 +34,9 @@ class _AttendanceMarkerScreenState extends State<AttendanceMarkerScreen> {
               SizedBox(height: 40),
               AttendanceMarker(),
               SizedBox(height: 40),
-              Text('Person attendance report will be shown here'),
+              Text('Person Attendance Report'),
+              SizedBox(height: 10),
+              PersonAttendanceMarkerReport(),
             ],
           ),
         ),
