@@ -61,6 +61,7 @@ class HomePage extends StatelessWidget {
           studyRoute: attendance_routes.attendanceRoute,
         ),
       ),
+      //2023-04-19 commented for prod and stag branches
       Padding(
         padding: const EdgeInsets.all(10.0),
         child: _CarouselCard(
@@ -136,24 +137,7 @@ class HomePage extends StatelessWidget {
           studyRoute: asset_routes.assetRoute,
         ),
       ),
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: _CarouselCard(
-          demo: studyDemos['assetadminApp'],
-          asset: const AssetImage(
-            'assets/images/asset.png',
-            // package: 'flutter_gallery_assets',
-          ),
-          assetColor: const Color(0xFFFEDBD0),
-          // assetDark: const AssetImage(
-          //   'assets/studies/shrine_card_dark.png',
-          //   package: 'flutter_gallery_assets',
-          // ),
-          // assetDarkColor: const Color(0xFF543B3C),
-          textColor: Colors.black,
-          studyRoute: asset_admin_routes.assetadminRoute,
-        ),
-      ),
+      //2023-04-19 commented for prod and stag branches
       Padding(
         padding: const EdgeInsets.all(10.0),
         child: _CarouselCard(
