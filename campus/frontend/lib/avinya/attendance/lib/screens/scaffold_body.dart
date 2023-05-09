@@ -54,7 +54,7 @@ class SMSScaffoldBody extends StatelessWidget {
             .startsWith('/daily_attendance_report'))
           const FadeTransitionPage<void>(
             key: ValueKey('daily_attendance_report'),
-            child: DataTableDemo(),
+            child: DailyAttendanceReportScreen(),
           )
 
         // Avoid building a Navigator with an empty `pages` list when the
