@@ -159,17 +159,18 @@ public type EducationExperience record {
 
 public type Evaluation record {
     int[]? parent_evaluations?;
-    int? activity_instance_id?;
     string? notes?;
     int? evaluatee_id?;
+    string? created?;
+    int[]? child_evaluations?;
+    string? record_type?;
+    int? activity_instance_id?;
     int? evaluation_criteria_id?;
     string? response?;
-    int[]? child_evaluations?;
     int? evaluator_id?;
     int? grade?;
     int? id?;
     string? updated?;
-    string? record_type?;
 };
 
 public type EvaluationCriteria record {
@@ -558,4 +559,49 @@ public type GetPersonAttendanceTodayResponse record {|
         string? in_marked_by;
         string? out_marked_by;
     |}[]? person_attendance_today;
+|};
+
+public type GetActivityEvaluationsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? evaluatee_id;
+        int? evaluator_id;
+        int? evaluation_criteria_id;
+        string? response;
+        string? notes;
+        int? grade;
+        int? activity_instance_id;
+        string? updated;
+    |}[]? activity_evaluations;
+|};
+
+public type GetActivityInstanceEvaluationsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? evaluatee_id;
+        int? evaluator_id;
+        int? evaluation_criteria_id;
+        string? response;
+        string? notes;
+        int? grade;
+        int? activity_instance_id;
+        string? updated;
+    |}[]? activity_instance_evaluations;
+|};
+
+public type UpdateEvaluationsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? evaluatee_id;
+        int? evaluator_id;
+        int? evaluation_criteria_id;
+        string? response;
+        string? notes;
+        int? grade;
+        int? activity_instance_id;
+        string? updated;
+    |}? update_evaluation;
 |};

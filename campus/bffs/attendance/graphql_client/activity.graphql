@@ -139,3 +139,46 @@ query getPersonAttendanceToday($person_id: Int!, $activity_id: Int!) {
         out_marked_by
     }      
 }
+
+query getActivityEvaluations($activity_id: Int!) {
+    activity_evaluations(activity_id:$activity_id) {
+        id
+        evaluatee_id
+        evaluator_id
+        evaluation_criteria_id
+        response
+        notes
+        grade
+        activity_instance_id
+        updated
+    }      
+}
+
+query getActivityInstanceEvaluations($activity_instance_id: Int!) {
+    activity_instance_evaluations(activity_instance_id:$activity_instance_id) {
+        id
+        evaluatee_id
+        evaluator_id
+        evaluation_criteria_id
+        response
+        notes
+        grade
+        activity_instance_id
+        updated
+    }      
+}
+
+mutation updateEvaluations($evaluation: Evaluation!)
+{
+    update_evaluation(evaluation:$evaluation) {
+        id
+        evaluatee_id
+        evaluator_id
+        evaluation_criteria_id
+        response
+        notes
+        grade
+        activity_instance_id
+        updated
+    }       
+}

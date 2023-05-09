@@ -87,4 +87,22 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetPersonAttendanceTodayResponse> check performDataBinding(graphqlResponse, GetPersonAttendanceTodayResponse);
     }
+    remote isolated function getActivityEvaluations(int activity_id) returns GetActivityEvaluationsResponse|graphql:ClientError {
+        string query = string `query getActivityEvaluations($activity_id:Int!) {activity_evaluations(activity_id:$activity_id) {id evaluatee_id evaluator_id evaluation_criteria_id response notes grade activity_instance_id updated}}`;
+        map<anydata> variables = {"activity_id": activity_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetActivityEvaluationsResponse> check performDataBinding(graphqlResponse, GetActivityEvaluationsResponse);
+    }
+    remote isolated function getActivityInstanceEvaluations(int activity_instance_id) returns GetActivityInstanceEvaluationsResponse|graphql:ClientError {
+        string query = string `query getActivityInstanceEvaluations($activity_instance_id:Int!) {activity_instance_evaluations(activity_instance_id:$activity_instance_id) {id evaluatee_id evaluator_id evaluation_criteria_id response notes grade activity_instance_id updated}}`;
+        map<anydata> variables = {"activity_instance_id": activity_instance_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetActivityInstanceEvaluationsResponse> check performDataBinding(graphqlResponse, GetActivityInstanceEvaluationsResponse);
+    }
+    remote isolated function updateEvaluations(Evaluation evaluation) returns UpdateEvaluationsResponse|graphql:ClientError {
+        string query = string `mutation updateEvaluations($evaluation:Evaluation!) {update_evaluation(evaluation:$evaluation) {id evaluatee_id evaluator_id evaluation_criteria_id response notes grade activity_instance_id updated}}`;
+        map<anydata> variables = {"evaluation": evaluation};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <UpdateEvaluationsResponse> check performDataBinding(graphqlResponse, UpdateEvaluationsResponse);
+    }
 }

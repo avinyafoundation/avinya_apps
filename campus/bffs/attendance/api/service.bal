@@ -143,6 +143,11 @@ service / on new http:Listener(9091) {
         return  delete_count;
     }
 
+    resource function delete person_activity_attendance/[int person_id]() returns json|error {
+        json|error delete_count = globalDataClient->deletePersonActivityAttendance(person_id);
+        return  delete_count;
+    }
+
     resource function get activity_instances_today/[int activity_id]() returns ActivityInstance[]|error {
         GetActivityInstancesTodayResponse|graphql:ClientError getActivityInstancesTodayResponse = globalDataClient->getActivityInstancesToday(activity_id);
         if(getActivityInstancesTodayResponse is GetActivityInstancesTodayResponse) {
@@ -260,6 +265,89 @@ service / on new http:Listener(9091) {
             log:printError("Error while creating application", getPersonAttendanceReportResponse);
             return error("Error while creating application: " + getPersonAttendanceReportResponse.message() + 
                 ":: Detail: " + getPersonAttendanceReportResponse.detail().toString());
+        }
+    }
+
+    resource function post evaluations (@http:Payload Evaluation[] evaluations) returns json|error {
+        json|graphql:ClientError createEvaluationResponse = globalDataClient->createEvaluations(evaluations);
+        if(createEvaluationResponse is json) {
+            log:printInfo("Evaluations created successfully: " + createEvaluationResponse.toString());
+            return createEvaluationResponse;
+        } else {
+            log:printError("Error while creating evaluation", createEvaluationResponse);
+            return error("Error while creating evaluation: " + createEvaluationResponse.message() + 
+                ":: Detail: " + createEvaluationResponse.detail().toString());
+        }
+    }
+
+    resource function put evaluations (@http:Payload Evaluation evaluation) returns Evaluation|error {
+        UpdateEvaluationsResponse|graphql:ClientError updateEvaluationResponse = globalDataClient->updateEvaluations(evaluation);
+        if(updateEvaluationResponse is UpdateEvaluationsResponse) {
+            Evaluation|error evaluation_record = updateEvaluationResponse.update_evaluation.cloneWithType(Evaluation);
+            if(evaluation_record is Evaluation) {
+                return evaluation_record;
+            }
+            else {
+                return error("Error while processing Application record received: " + evaluation_record.message() + 
+                    ":: Detail: " + evaluation_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating evaluation", updateEvaluationResponse);
+            return error("Error while creating evaluation: " + updateEvaluationResponse.message() + 
+                ":: Detail: " + updateEvaluationResponse.detail().toString());
+        }
+    }
+
+    resource function delete evaluations/[int id]() returns json|error {
+        json|error delete_count = globalDataClient->deleteEvaluation(id);
+        return  delete_count;
+    }
+
+    resource function get activity_evaluations/[int activity_id]() returns Evaluation[]|error {
+        GetActivityEvaluationsResponse|graphql:ClientError getActivityEvaluationsResponse = globalDataClient->getActivityEvaluations(activity_id);
+        if(getActivityEvaluationsResponse is GetActivityEvaluationsResponse) {
+            Evaluation[] evaluations = [];
+            foreach var evaluation_record in getActivityEvaluationsResponse.activity_evaluations {
+                Evaluation|error evaluation = evaluation_record.cloneWithType(Evaluation);
+                if(evaluation is Evaluation) {
+                    evaluations.push(evaluation);
+                } else {
+                    log:printError("Error while processing Application record received", evaluation);
+                    return error("Error while processing Application record received: " + evaluation.message() + 
+                        ":: Detail: " + evaluation.detail().toString());
+                }
+            }
+
+            return evaluations;
+            
+        } else {
+            log:printError("Error while getting evaluations", getActivityEvaluationsResponse);
+            return error("Error while getting evaluations: " + getActivityEvaluationsResponse.message() + 
+                ":: Detail: " + getActivityEvaluationsResponse.detail().toString());
+        }
+    }
+
+    resource function get activity_instance_evaluations/[int activity_instancce_id]() returns Evaluation[]|error {
+        GetActivityInstanceEvaluationsResponse|graphql:ClientError getActivityInstanceEvaluationsResponse = globalDataClient->getActivityInstanceEvaluations(activity_instancce_id);
+        if(getActivityInstanceEvaluationsResponse is GetActivityInstanceEvaluationsResponse) {
+            Evaluation[] evaluations = [];
+            foreach var evaluation_record in getActivityInstanceEvaluationsResponse.activity_instance_evaluations {
+                Evaluation|error evaluation = evaluation_record.cloneWithType(Evaluation);
+                if(evaluation is Evaluation) {
+                    evaluations.push(evaluation);
+                } else {
+                    log:printError("Error while processing Application record received", evaluation);
+                    return error("Error while processing Application record received: " + evaluation.message() + 
+                        ":: Detail: " + evaluation.detail().toString());
+                }
+            }
+
+            return evaluations;
+            
+        } else {
+            log:printError("Error while getting evaluations", getActivityInstanceEvaluationsResponse);
+            return error("Error while getting evaluations: " + getActivityInstanceEvaluationsResponse.message() + 
+                ":: Detail: " + getActivityInstanceEvaluationsResponse.detail().toString());
         }
     }
     

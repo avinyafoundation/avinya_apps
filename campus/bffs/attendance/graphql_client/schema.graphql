@@ -328,6 +328,7 @@ input Evaluation {
   evaluation_criteria_id: Int
   activity_instance_id: Int
   updated: String
+  created: String
   response: String
   notes: String
   grade: Int
@@ -394,6 +395,7 @@ type EvaluationData {
   activity_instance_id: Int
   evaluation_criteria_id: Int
   updated: String
+  created: String
   notes: String
   grade: Int
   response: String
@@ -476,6 +478,7 @@ type Mutation {
   add_application(application: Application!): ApplicationData
   add_evaluations(evaluations: [Evaluation!]!): Int
   update_evaluation(evaluation: Evaluation!): EvaluationData
+  delete_evaluation(id: Int!): Int
   add_evaluation_meta_data(metadata: EvaluationMetadata!): EvaluationMetadataData
   add_evaluation_criteria(evaluationCriteria: EvaluationCriteria!): EvaluationCriteriaData
   add_evaluation_answer_option(evaluationAnswer: EvaluationCriteriaAnswerOption!): EvaluationCriteriaAnswerOptionData
@@ -488,6 +491,7 @@ type Mutation {
   add_organization(org: Organization!): OrganizationData
   add_attendance(attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
   delete_attendance(id: Int!): Int
+  delete_person_attendance(person_id: Int!): Int
   add_empower_parent(person: Person!): PersonData
   update_application_status(applicationStatus: String!, applicationId: Int!): ApplicationStatusData
   update_person_avinya_type(personId: Int!, newAvinyaId: Int!, transitionDate: String!): PersonData
@@ -701,6 +705,8 @@ type Query {
   project_tasks(activity_id: Int!): [ActivityData!]
   student_applicant(jwt_sub_id: String): PersonData
   all_evaluations: [EvaluationData!]!
+  activity_evaluations(activity_id: Int!): [EvaluationData!]
+  activity_instance_evaluations(activity_instance_id: Int!): [EvaluationData!]
   evaluation_meta_data(meta_evaluation_id: Int!): EvaluationMetadataData
   evaluationCriteria(prompt: String, id: Int): EvaluationCriteriaData!
   evaluation_cycle(name: String, id: Int): EvaluationCycleData!

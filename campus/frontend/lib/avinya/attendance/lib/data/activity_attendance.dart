@@ -1,3 +1,4 @@
+import 'package:gallery/avinya/attendance/lib/data.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -13,6 +14,8 @@ class ActivityAttendance {
   String? sign_out_time;
   String? in_marked_by;
   String? out_marked_by;
+  bool? selected = false;
+  int? person;
 
   ActivityAttendance({
     this.id,
@@ -24,6 +27,7 @@ class ActivityAttendance {
     this.sign_out_time,
     this.in_marked_by,
     this.out_marked_by,
+    this.person,
   });
 
   factory ActivityAttendance.fromJson(Map<String, dynamic> json) {
@@ -37,6 +41,7 @@ class ActivityAttendance {
       sign_out_time: json['sign_out_time'],
       in_marked_by: json['in_marked_by'],
       out_marked_by: json['out_marked_by'],
+      person: json['person'] != null ? json['person']['id'] : null,
     );
   }
 
@@ -51,6 +56,7 @@ class ActivityAttendance {
         if (sign_out_time != null) 'sign_out_time': sign_out_time,
         if (in_marked_by != null) 'in_marked_by': in_marked_by,
         if (out_marked_by != null) 'out_marked_by': out_marked_by,
+        if (person != null) 'person': person,
       };
 }
 
@@ -75,6 +81,23 @@ Future<ActivityAttendance> createActivityAttendance(
 Future<int> deleteActivityAttendance(int id) async {
   final response = await http.delete(
     Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/activity_attendance/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    return int.parse(response.body);
+  } else {
+    throw Exception('Failed to create Activity Participant Attendance.');
+  }
+}
+
+Future<int> deletePersonActivityAttendance(int person_id) async {
+  final response = await http.delete(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/person_activity_attendance/$person_id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
