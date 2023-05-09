@@ -90,6 +90,66 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                                       _fetchedOrganization =
                                           await fetchOrganization(newValue.id!);
 
+<<<<<<< HEAD
+                                    _fetchedAttendance =
+                                        await getClassActivityAttendanceReport(
+                                            _fetchedOrganization!.id!,
+                                            activityId,
+                                            250);
+                                    if (_fetchedAttendance.length > 0) {
+                                      // Add null check here
+                                      // Process attendance data here
+                                      List<String?> names = _fetchedAttendance
+                                          .map((attendance) => attendance
+                                              .sign_in_time
+                                              ?.split(" ")[0])
+                                          .where((name) =>
+                                              name !=
+                                              null) // Filter out null values
+                                          .toList();
+                                      columnNames = [];
+                                      columnNames
+                                          .addAll(names.toSet().toList());
+                                    }
+
+                                    print(
+                                        "columnNames.length ${columnNames.length}");
+                                    columnNames.sort();
+                                    columnNames.insert(0, "Digital ID");
+                                    columnNames.insert(0, "Name");
+                                    print(
+                                        'columnNames[0] ${columnNames[0]} columnNames[last] ${columnNames[columnNames.length - 1]}');
+
+                                    print(columnNames.length);
+                                    cols = columnNames
+                                        .map((label) =>
+                                            DataColumn(label: Text(label!)))
+                                        .toList();
+                                    print('cols.length ${cols.length}');
+                                    _data = MyData(_fetchedAttendance,
+                                        columnNames, _fetchedOrganization);
+                                    if (_fetchedAttendance.length == 0)
+                                      _fetchedAttendance = new List.filled(
+                                          _fetchedOrganization!.people.length,
+                                          new ActivityAttendance(
+                                              person_id: -1));
+                                    else {
+                                      for (int i = 0;
+                                          i <
+                                              _fetchedOrganization!
+                                                  .people.length;
+                                          i++) {
+                                        if (_fetchedAttendance.indexWhere(
+                                                (attendance) =>
+                                                    attendance.person_id ==
+                                                    _fetchedOrganization!
+                                                        .people[i].id) ==
+                                            -1) {
+                                          _fetchedAttendance.add(
+                                              new ActivityAttendance(
+                                                  person_id: -1));
+                                        }
+=======
                                       _fetchedAttendance =
                                           await getClassActivityAttendanceReport(
                                               _fetchedOrganization!.id!,
@@ -110,6 +170,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                                         columnNames.addAll(names);
                                       } else {
                                         columnNames.clear();
+>>>>>>> 94c52eff2d4027467669f6162294cc40cb3a10cc
                                       }
 
                                       columnNames =
@@ -212,7 +273,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                           // header: const Center(child: Text('Daily Attendance')),
                           columnSpacing: 100,
                           horizontalMargin: 60,
-                          rowsPerPage: 8,
+                          rowsPerPage: 20,
                         )
                       : Container(
                           margin: EdgeInsets.all(20), // Add margin here
@@ -239,11 +300,24 @@ class MyData extends DataTableSource {
         columnNames.length > 0) {
       var person = _fetchedOrganization!.people[index];
       List<DataCell> cells = new List.filled(
+<<<<<<< HEAD
+        columnNames.length,
+        new DataCell(Container(child: Text("Absent"), color: Colors.red)),
+      );
+      cells[0] = DataCell(Text(person.preferred_name!));
+      cells[1] = DataCell(Text(person.digital_id.toString()));
+      print('person ${person.preferred_name} ${person.digital_id}');
+      print(
+          'columnsNames.lenght ${columnNames.length} cells.length ${cells.length}');
+      // cells.add(DataCell(Text(person.preferred_name!)));
+      // for (final date in columnNames) {
+=======
         columnNames.toSet().toList().length,
         new DataCell(Text("Absent")),
       );
       cells[0] = DataCell(Text(person.preferred_name!));
       cells[1] = DataCell(Text(person.digital_id.toString()));
+>>>>>>> 94c52eff2d4027467669f6162294cc40cb3a10cc
       for (final attendance in _fetchedAttendance) {
         if (attendance.person_id == person.id) {
           for (final date in columnNames) {
@@ -256,7 +330,70 @@ class MyData extends DataTableSource {
           }
         }
       }
+<<<<<<< HEAD
+      return DataRow(
+        cells: cells,
+        color: MaterialStateColor.resolveWith((states) {
+          const Set<MaterialState> interactiveStates = <MaterialState>{
+            MaterialState.pressed,
+            MaterialState.hovered,
+            MaterialState.focused,
+            MaterialState.selected,
+          };
+          if (states.any(interactiveStates.contains)) {
+            return Colors.blue;
+          }
+          if (index % 2 == 0) {
+            return Colors.grey.shade100;
+          } else {
+            return Colors.grey.shade200;
+          }
+        }),
+      );
+
+      // }
+      // rows.add(DataRow(cells: cells));
+      // for (DataRow row in rows) {
+      //   print("rows: ${row}");
+      // }
+
+      //   DataRow? findDesiredRow(List<DataRow> rows, int desiredIndex) {
+      //     if (desiredIndex >= 0 && desiredIndex < rows.length) {
+      //       List<DataCell> cells = rows[desiredIndex].cells.toList();
+      //       return DataRow(cells: cells);
+      //     }
+
+      //     return null; // Return null if the desiredIndex is out of bounds
+      //   }
+
+      //   if (rows.length == _fetchedOrganization!.people.length) {
+      //     return findDesiredRow(rows, index);
+      //   }
+
+      //   // DataRow? desiredRow = findDesiredRow(rows, index);
+
+      //   // if (rows.length == 3) {
+      //   //   return DataRow(cells: cells);
+      //   // }
+      //   // if (rows.isNotEmpty) {
+      //   //   return rows[index % rows.length];
+      //   // }
+
+      //   // print("rows: ${rows}");
+      // //}
+      // // if (rows.isNotEmpty) {
+      // //   return rows[index % rows.length];
+      // // }
+      // print("Cells: ${rows}");
+      // return DataRow(cells: [
+      //   DataCell(Text("ss1")),
+      //   DataCell(Text("ss2")),
+      //   DataCell(Text("ss3")),
+      //   DataCell(Text("ss4")),
+      // ]);
+=======
       return DataRow(cells: cells);
+>>>>>>> 94c52eff2d4027467669f6162294cc40cb3a10cc
     }
     return null;
   }
