@@ -32,7 +32,7 @@ class _DailyAttendanceReportScreenState
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("demoDataTableTitle"),
+        title: Text("Daily Attendance Report"),
       ),
       body: SingleChildScrollView(
         child: Container(
