@@ -172,20 +172,27 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                                               name !=
                                               null) // Filter out null values
                                           .toList();
-                                      columnNames.addAll(names);
+                                      columnNames = [];
+                                      columnNames
+                                          .addAll(names.toSet().toList());
                                     }
 
-                                    columnNames = columnNames.toSet().toList();
-                                    print(columnNames.length);
+                                    print(
+                                        "columnNames.length ${columnNames.length}");
                                     columnNames.sort();
+                                    columnNames.insert(0, "Digital ID");
                                     columnNames.insert(0, "Name");
-                                    columnNames.insert(1, "Digital ID");
+                                    print(
+                                        'columnNames[0] ${columnNames[0]} columnNames[last] ${columnNames[columnNames.length - 1]}');
+
                                     print(columnNames.length);
                                     cols = columnNames
                                         .map((label) =>
                                             DataColumn(label: Text(label!)))
                                         .toList();
-                                    print(cols.length);
+                                    print('cols.length ${cols.length}');
+                                    _data = MyData(_fetchedAttendance,
+                                        columnNames, _fetchedOrganization);
                                     if (_fetchedAttendance.length == 0)
                                       _fetchedAttendance = new List.filled(
                                           _fetchedOrganization!.people.length,
@@ -280,7 +287,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                           header: const Center(child: Text('Daily Attendance')),
                           columnSpacing: 100,
                           horizontalMargin: 60,
-                          rowsPerPage: 8,
+                          rowsPerPage: 20,
                         )
                       : Text('No attendance data found'),
                 ]),
@@ -352,14 +359,14 @@ class MyData extends DataTableSource {
       //for (final person in _fetchedOrganization!.people) {
       // final List<DataCell> cells = [];
       List<DataCell> cells = new List.filled(
-        columnNames
-            .toSet()
-            .toList()
-            .length, // add 2 records for eign in and out
-        new DataCell(Text("Absent")),
+        columnNames.length,
+        new DataCell(Container(child: Text("Absent"), color: Colors.red)),
       );
       cells[0] = DataCell(Text(person.preferred_name!));
       cells[1] = DataCell(Text(person.digital_id.toString()));
+      print('person ${person.preferred_name} ${person.digital_id}');
+      print(
+          'columnsNames.lenght ${columnNames.length} cells.length ${cells.length}');
       // cells.add(DataCell(Text(person.preferred_name!)));
       // for (final date in columnNames) {
       for (final attendance in _fetchedAttendance) {
@@ -375,7 +382,25 @@ class MyData extends DataTableSource {
           }
         }
       }
-      return DataRow(cells: cells);
+      return DataRow(
+        cells: cells,
+        color: MaterialStateColor.resolveWith((states) {
+          const Set<MaterialState> interactiveStates = <MaterialState>{
+            MaterialState.pressed,
+            MaterialState.hovered,
+            MaterialState.focused,
+            MaterialState.selected,
+          };
+          if (states.any(interactiveStates.contains)) {
+            return Colors.blue;
+          }
+          if (index % 2 == 0) {
+            return Colors.grey.shade100;
+          } else {
+            return Colors.grey.shade200;
+          }
+        }),
+      );
 
       // }
       // rows.add(DataRow(cells: cells));
