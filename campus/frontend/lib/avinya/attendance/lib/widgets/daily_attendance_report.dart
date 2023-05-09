@@ -97,27 +97,27 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
     //     .map((attendance) => attendance.sign_in_time!.split(" ")[0])
     //     .toList();
 
-    if (_fetchedOrganization != null &&
-        _fetchedOrganization!.people.isNotEmpty) {
-      _fetchedOrganization!.people.forEach((person) {
-        if (_fetchedAttendance.length > 0) {
-          // Add null check here
-          // Process attendance data here
-          List<String?> names = _fetchedAttendance
-              .map((attendance) => attendance.sign_in_time?.split(" ")[0])
-              .where((name) => name != null) // Filter out null values
-              .toList();
-          columnNames.addAll(names);
-        }
-      });
-      columnNames = columnNames.toSet().toList(); // Remove duplicates
-    }
+    // if (_fetchedOrganization != null &&
+    //     _fetchedOrganization!.people.isNotEmpty) {
+    //   _fetchedOrganization!.people.forEach((person) {
+    //     if (_fetchedAttendance.length > 0) {
+    //       // Add null check here
+    //       // Process attendance data here
+    //       List<String?> names = _fetchedAttendance
+    //           .map((attendance) => attendance.sign_in_time?.split(" ")[0])
+    //           .where((name) => name != null) // Filter out null values
+    //           .toList();
+    //       columnNames.addAll(names);
+    //     }
+    //   });
+    //   columnNames = columnNames.toSet().toList(); // Remove duplicates
+    // }
 
     // Get unique sign-in dates from signInData
 // var uniqueDates = _fetchedAttendance.map((data) => data.sign_in_time.split(" ")[0]).toSet().toList();
 
 // Sort dates in ascending order
-    columnNames.sort();
+    // columnNames.sort();
 
 // Combine person_id and unique dates into header labels array
     var headerLabels = ["person", ...columnNames];
@@ -131,7 +131,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
               .contains('Student')
           ? Text("Please go to 'Mark Attedance' Page",
               style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold))
-          : Column(
+          : Wrap(
               children: <Widget>[
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -161,6 +161,31 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                                             _fetchedOrganization!.id!,
                                             activityId,
                                             250);
+                                    if (_fetchedAttendance.length > 0) {
+                                      // Add null check here
+                                      // Process attendance data here
+                                      List<String?> names = _fetchedAttendance
+                                          .map((attendance) => attendance
+                                              .sign_in_time
+                                              ?.split(" ")[0])
+                                          .where((name) =>
+                                              name !=
+                                              null) // Filter out null values
+                                          .toList();
+                                      columnNames.addAll(names);
+                                    }
+
+                                    columnNames = columnNames.toSet().toList();
+                                    print(columnNames.length);
+                                    columnNames.sort();
+                                    columnNames.insert(0, "Name");
+                                    columnNames.insert(1, "Digital ID");
+                                    print(columnNames.length);
+                                    cols = columnNames
+                                        .map((label) =>
+                                            DataColumn(label: Text(label!)))
+                                        .toList();
+                                    print(cols.length);
                                     if (_fetchedAttendance.length == 0)
                                       _fetchedAttendance = new List.filled(
                                           _fetchedOrganization!.people.length,
@@ -246,19 +271,33 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                           ]),
                   ],
                 ),
-                Column(
-                  children: <Widget>[
-                    if (cols.length > 0)
-                      PaginatedDataTable(
-                        source: _data,
-                        columns: cols,
-                        header: const Center(child: Text('Daily Attendance')),
-                        columnSpacing: 100,
-                        horizontalMargin: 60,
-                        rowsPerPage: 8,
-                      ),
-                  ],
-                )
+                SizedBox(height: 20),
+                Wrap(children: [
+                  (cols.length > 0)
+                      ? PaginatedDataTable(
+                          source: _data,
+                          columns: cols,
+                          header: const Center(child: Text('Daily Attendance')),
+                          columnSpacing: 100,
+                          horizontalMargin: 60,
+                          rowsPerPage: 8,
+                        )
+                      : Text('No attendance data found'),
+                ]),
+
+                // Column(
+                //   children: <Widget>[
+                //     if (cols.length > 0)
+                //       PaginatedDataTable(
+                //         source: _data,
+                //         columns: cols,
+                //         header: const Center(child: Text('Daily Attendance')),
+                //         columnSpacing: 100,
+                //         horizontalMargin: 60,
+                //         rowsPerPage: 8,
+                //       ),
+                //   ],
+                // )
               ],
             ),
     );
@@ -305,80 +344,73 @@ class MyData extends DataTableSource {
 
   @override
   DataRow? getRow(int index) {
-    final List<DataRow> rows = [];
+    // final List<DataRow> rows = [];
 
     if (_fetchedOrganization != null &&
         _fetchedOrganization!.people.isNotEmpty) {
-      for (final person in _fetchedOrganization!.people) {
-        // final List<DataCell> cells = [];
-        List<DataCell> cells = new List.filled(
-          columnNames
-              .toSet()
-              .toList()
-              .length, // add 2 records for eign in and out
-          new DataCell(Text("Absent")),
-        );
-        // cells.add(DataCell(Text(person.preferred_name!)));
-        // for (final date in columnNames) {
-        for (final attendance in _fetchedAttendance) {
-          if (attendance.person == person.id) {
-            // for (int i = 0; i < columnNames.toSet().toList().length; i++) {
-            for (final date in columnNames) {
-              if (attendance.sign_in_time != null &&
-                  attendance.sign_in_time!.split(" ")[0] == date) {
-                for (int i = 0; i < columnNames.toSet().toList().length; i++) {
-                  columnNames.firstWhere((date) {
-                    cells[i] = DataCell(Text("Present"));
-                    return true;
-                  });
-                }
-              }
-
-              // break;
+      var person = _fetchedOrganization!.people[index];
+      //for (final person in _fetchedOrganization!.people) {
+      // final List<DataCell> cells = [];
+      List<DataCell> cells = new List.filled(
+        columnNames
+            .toSet()
+            .toList()
+            .length, // add 2 records for eign in and out
+        new DataCell(Text("Absent")),
+      );
+      cells[0] = DataCell(Text(person.preferred_name!));
+      cells[1] = DataCell(Text(person.digital_id.toString()));
+      // cells.add(DataCell(Text(person.preferred_name!)));
+      // for (final date in columnNames) {
+      for (final attendance in _fetchedAttendance) {
+        if (attendance.person_id == person.id) {
+          // for (int i = 0; i < columnNames.toSet().toList().length; i++) {
+          for (final date in columnNames) {
+            if (attendance.sign_in_time != null &&
+                attendance.sign_in_time!.split(" ")[0] == date) {
+              print(
+                  'index ${index} date ${date} person_id ${attendance.person_id} sign_in_time ${attendance.sign_in_time} columnNames length ${columnNames.length} columnNames.indexOf(date) ${columnNames.indexOf(date)}');
+              cells[columnNames.indexOf(date)] = DataCell(Text("Present"));
             }
-
-            print("Cells1: ${cells}");
-            // rows.add(DataRow(cells: cells));
-            return DataRow(cells: cells);
-            // break;
           }
         }
-        // return DataRow(cells: cells);
-        // rows.add(DataRow(cells: cells));
-        // }
-        // rows.add(DataRow(cells: cells));
-        // for (DataRow row in rows) {
-        //   print("rows: ${row}");
-        // }
-
-        DataRow? findDesiredRow(List<DataRow> rows, int desiredIndex) {
-          if (desiredIndex >= 0 && desiredIndex < rows.length) {
-            List<DataCell> cells = rows[desiredIndex].cells.toList();
-            return DataRow(cells: cells);
-          }
-
-          return null; // Return null if the desiredIndex is out of bounds
-        }
-
-        if (rows.length == _fetchedOrganization!.people.length) {
-          return findDesiredRow(rows, index);
-        }
-
-        // DataRow? desiredRow = findDesiredRow(rows, index);
-
-        // if (rows.length == 3) {
-        //   return DataRow(cells: cells);
-        // }
-        // if (rows.isNotEmpty) {
-        //   return rows[index % rows.length];
-        // }
-
-        // print("rows: ${rows}");
       }
-      // if (rows.isNotEmpty) {
-      //   return rows[index % rows.length];
+      return DataRow(cells: cells);
+
       // }
-      print("Cells: ${rows}");
+      // rows.add(DataRow(cells: cells));
+      // for (DataRow row in rows) {
+      //   print("rows: ${row}");
+      // }
+
+      //   DataRow? findDesiredRow(List<DataRow> rows, int desiredIndex) {
+      //     if (desiredIndex >= 0 && desiredIndex < rows.length) {
+      //       List<DataCell> cells = rows[desiredIndex].cells.toList();
+      //       return DataRow(cells: cells);
+      //     }
+
+      //     return null; // Return null if the desiredIndex is out of bounds
+      //   }
+
+      //   if (rows.length == _fetchedOrganization!.people.length) {
+      //     return findDesiredRow(rows, index);
+      //   }
+
+      //   // DataRow? desiredRow = findDesiredRow(rows, index);
+
+      //   // if (rows.length == 3) {
+      //   //   return DataRow(cells: cells);
+      //   // }
+      //   // if (rows.isNotEmpty) {
+      //   //   return rows[index % rows.length];
+      //   // }
+
+      //   // print("rows: ${rows}");
+      // //}
+      // // if (rows.isNotEmpty) {
+      // //   return rows[index % rows.length];
+      // // }
+      // print("Cells: ${rows}");
       // return DataRow(cells: [
       //   DataCell(Text("ss1")),
       //   DataCell(Text("ss2")),
