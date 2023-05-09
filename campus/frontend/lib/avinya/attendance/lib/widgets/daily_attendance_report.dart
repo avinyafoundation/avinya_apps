@@ -48,7 +48,14 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization);
+    _data = MyData(
+        _fetchedAttendance, columnNames, _fetchedOrganization, updateSelected);
+  }
+
+  void updateSelected(int index, bool value, List<bool> selected) {
+    setState(() {
+      selected[index] = value;
+    });
   }
 
   @override
@@ -185,8 +192,11 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                                         }
                                       }
                                       setState(() {
-                                        _data = MyData(_fetchedAttendance,
-                                            columnNames, _fetchedOrganization);
+                                        _data = MyData(
+                                            _fetchedAttendance,
+                                            columnNames,
+                                            _fetchedOrganization,
+                                            updateSelected);
                                       });
                                     },
                                     items: org.child_organizations
@@ -207,6 +217,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                 Wrap(children: [
                   (cols.length > 2)
                       ? PaginatedDataTable(
+                          showCheckboxColumn: false,
                           source: _data,
                           columns: cols,
                           // header: const Center(child: Text('Daily Attendance')),
@@ -226,11 +237,13 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
 }
 
 class MyData extends DataTableSource {
-  MyData(this._fetchedAttendance, this.columnNames, this._fetchedOrganization);
+  MyData(this._fetchedAttendance, this.columnNames, this._fetchedOrganization,
+      this.updateSelected);
 
   final List<ActivityAttendance> _fetchedAttendance;
   final List<String?> columnNames;
   final Organization? _fetchedOrganization;
+  final Function(int, bool, List<bool>) updateSelected;
 
   @override
   DataRow? getRow(int index) {
@@ -256,23 +269,23 @@ class MyData extends DataTableSource {
           }
         }
       }
+      int numItems = _fetchedOrganization!.people.length;
+      List<bool> selected = List<bool>.generate(numItems, (int index) => false);
       return DataRow(
         cells: cells,
-        color: MaterialStateColor.resolveWith((states) {
-          const Set<MaterialState> interactiveStates = <MaterialState>{
-            MaterialState.pressed,
-            MaterialState.hovered,
-            MaterialState.focused,
-            MaterialState.selected,
-          };
-          if (states.any(interactiveStates.contains)) {
-            return Colors.blue;
+        onSelectChanged: (value) {
+          updateSelected(index, value!,
+              selected); // Call the callback to update the selected state
+        },
+        color: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+          if (states.contains(MaterialState.hovered)) {
+            return Colors.grey.withOpacity(0.4);
           }
-          if (index % 2 == 0) {
-            return Colors.grey.shade100;
-          } else {
-            return Colors.grey.shade200;
+          if (index.isEven) {
+            return Colors.grey.withOpacity(0.2);
           }
+          return null;
         }),
       );
     }
