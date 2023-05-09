@@ -212,7 +212,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                           // header: const Center(child: Text('Daily Attendance')),
                           columnSpacing: 100,
                           horizontalMargin: 60,
-                          rowsPerPage: 8,
+                          rowsPerPage: 20,
                         )
                       : Container(
                           margin: EdgeInsets.all(20), // Add margin here
@@ -240,7 +240,7 @@ class MyData extends DataTableSource {
       var person = _fetchedOrganization!.people[index];
       List<DataCell> cells = new List.filled(
         columnNames.toSet().toList().length,
-        new DataCell(Text("Absent")),
+        new DataCell(Container(child: Text("Absent"), color: Colors.red)),
       );
       cells[0] = DataCell(Text(person.preferred_name!));
       cells[1] = DataCell(Text(person.digital_id.toString()));
@@ -256,7 +256,25 @@ class MyData extends DataTableSource {
           }
         }
       }
-      return DataRow(cells: cells);
+      return DataRow(
+        cells: cells,
+        color: MaterialStateColor.resolveWith((states) {
+          const Set<MaterialState> interactiveStates = <MaterialState>{
+            MaterialState.pressed,
+            MaterialState.hovered,
+            MaterialState.focused,
+            MaterialState.selected,
+          };
+          if (states.any(interactiveStates.contains)) {
+            return Colors.blue;
+          }
+          if (index % 2 == 0) {
+            return Colors.grey.shade100;
+          } else {
+            return Colors.grey.shade200;
+          }
+        }),
+      );
     }
     return null;
   }
