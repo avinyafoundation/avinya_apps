@@ -372,6 +372,7 @@ public type GetClassAttendanceReportResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
+        int? person_id;
         record {|
             int? id;
         |}? person;
@@ -387,6 +388,7 @@ public type GetPersonAttendanceReportResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
+        int? person_id;
         record {|
             int? id;
         |}? person;
