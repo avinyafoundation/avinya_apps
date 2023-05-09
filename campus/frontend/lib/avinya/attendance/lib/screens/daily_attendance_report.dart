@@ -34,18 +34,12 @@ class _DailyAttendanceReportScreenState
         automaticallyImplyLeading: false,
         title: Text("demoDataTableTitle"),
       ),
-      body: Column(
-        children: [
-          DailyAttendanceReport(
-            title: '',
-          )
-          // Expanded(
-          //   child: Container(
-          //     height: MediaQuery.of(context).size.height - kToolbarHeight - 24,
-          //     child: SingleChildScrollView(child: DailyAttendanceReport()),
-          //   ),
-          // ),
-        ],
+      body: SingleChildScrollView(
+        child: Container(
+          child: DailyAttendanceReport(
+            title: 'Daily Attendnace',
+          ),
+        ),
       ),
     );
   }
