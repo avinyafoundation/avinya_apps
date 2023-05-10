@@ -4,6 +4,21 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:gallery/avinya/asset/lib/data.dart';
 import 'package:gallery/avinya/attendance/lib/data/activity_attendance.dart';
 
+List<DateTime> getWeekdaysFromDate(DateTime fromDate, int numberOfWeekdays) {
+ List<DateTime> weekdaysList = [];
+  // Loop until we have the required number of weekdays
+  while (weekdaysList.length < numberOfWeekdays) {
+    // Move to the next day
+    fromDate = fromDate.add(Duration(days: 1));
+
+    // Check if the current day is a weekday
+    if (fromDate.weekday >= 1 && fromDate.weekday <= 5) {
+      weekdaysList.add(fromDate);
+    }
+  }
+
+  return weekdaysList;
+}
 class PersonAttendanceMarkerReport extends StatefulWidget {
   const PersonAttendanceMarkerReport({super.key});
 
@@ -14,23 +29,40 @@ class PersonAttendanceMarkerReport extends StatefulWidget {
 class _PersonAttendanceMarkerReportState extends State<PersonAttendanceMarkerReport> {
 
  List<ActivityAttendance> _personAttendanceReport = [];
- List<String?> _columnNames = [];
- var result_limit = 8;
+ var result_limit = 14;
+ DateTime fourteenDaysAgoDate = DateTime.now().subtract(Duration(days: 14));
+ List<DataColumn> _weekdaysColumns = [];
+ List<String?> stringDateTimeList = [];
+ List<DateTime> weekdaysList = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _generateWeekdaysColumns();
+  }
 
+  void _generateWeekdaysColumns() {
+    weekdaysList = getWeekdaysFromDate( fourteenDaysAgoDate , 14);
+    // Generate the DataColumn list
+    for (DateTime date in weekdaysList) {
+      _weekdaysColumns.add(DataColumn(
+        label: Text('${date.toString().split(" ")[0]}'),
+      ));
+    }
+  }
  Future<List<ActivityAttendance>> refreshPersonActivityAttendanceReport() async{
 
      _personAttendanceReport = await getPersonActivityAttendanceReport(
         campusAppsPortalInstance.getUserPerson().id!,
-        campusAppsPortalInstance.activityIds['school-day']!,
+        campusAppsPortalInstance.activityIds['homeroom']!,
         result_limit
      );        
      
-     _personAttendanceReport.removeWhere((dayAttendance) => [null].contains(dayAttendance.sign_in_time));
+    // _personAttendanceReport.removeWhere((dayAttendance) => [null].contains(dayAttendance.sign_in_time));
 
-   _columnNames = _personAttendanceReport.map((dayAttendance) => dayAttendance.sign_in_time!.substring(0,10)).toList();
+   //_columnNames = _personAttendanceReport.map((dayAttendance) => dayAttendance.sign_in_time!.substring(0,10)).toList();
     
-    print("columnnames"+"$_columnNames");
+   // print("columnnames"+"$_columnNames");
    return _personAttendanceReport;
  }
 
@@ -41,18 +73,21 @@ class _PersonAttendanceMarkerReportState extends State<PersonAttendanceMarkerRep
       builder: (BuildContext context,AsyncSnapshot snapshot){
 
         if(snapshot.hasData){
-
+        stringDateTimeList = weekdaysList.map((datetime){return datetime.toString().split(" ")[0];}).toList();
         return SingleChildScrollView(
-          //scrollDirection: Axis.horizontal,
+          scrollDirection: Axis.vertical,
           child: PaginatedDataTable(
-            
-            columns: _columnNames.map((columnName) => DataColumn(label:Text(columnName!))).toList(), 
-            source: _PersonAttendanceMarkerReportDataSource(snapshot.data,_columnNames),
-            rowsPerPage: 1,
-            columnSpacing: 30.0,
-            dataRowHeight: 40.0,
-            ),
+               columns: [
+                 DataColumn(label: Text('Date')),
+                 DataColumn(label: Text('Attendance'))
+               ], 
+               source: _PersonAttendanceMarkerReportDataSource(snapshot.data,stringDateTimeList),
+               rowsPerPage: 15,
+               dataRowHeight: 30.0,  
+               columnSpacing: 15.0,        
+          ),
         );
+        
         }else if(snapshot.hasError){
            return Text("${snapshot.error}");
         }
@@ -71,31 +106,29 @@ class _PersonAttendanceMarkerReportDataSource extends DataTableSource{
   
   @override
   DataRow? getRow(int index) {
-    if(index >= _data.length){
-     return null;
-    }
     List<DataCell> cells = [];
+
     print("index"+"$index");
+    print("data"+"$_data");
     print("numberofcolumns"+"$numberOfColumns");
-
-
-    int dataIndex=0;
-    for (var property in numberOfColumns){
-     var widget;
-     if(_data[dataIndex].sign_in_time !=null){
-        widget = Icon(
-          Icons.check,
-          color: Colors.black,
-          size: 20.0,
-        );
-     }
-
-
-      var cellWidget = DataCell(widget);
-      cells.add(cellWidget);
-      dataIndex++;
+    final attendance = numberOfColumns[index];
+    int i=0;
+  
+    for( ;i<_data.length;i++){
+     
+            if (_data[i].sign_in_time != null &&
+              attendance == _data[i].sign_in_time!.split(" ")[0]) {
+              cells.add(DataCell(Text(attendance!)));
+              cells.add(DataCell(Text("Present")));
+              break;
+              }
     }
-      
+    if(i==_data.length){
+      if(cells.isEmpty){
+        cells.add(DataCell(Text(attendance!)));
+        cells.add(DataCell(Container(child: Text("Absent"), color: Colors.red)));   
+      }
+    }   
     return DataRow(cells: cells);
   }
   
@@ -105,7 +138,7 @@ class _PersonAttendanceMarkerReportDataSource extends DataTableSource{
   
   @override
   // TODO: implement rowCount
-  int get rowCount => 1;
+  int get rowCount => numberOfColumns.length;
   
   @override
   // TODO: implement selectedRowCount
