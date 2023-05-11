@@ -238,7 +238,9 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
 
 class MyData extends DataTableSource {
   MyData(this._fetchedAttendance, this.columnNames, this._fetchedOrganization,
-      this.updateSelected);
+      this.updateSelected) {
+    columnNames.sort((a, b) => b!.compareTo(a!));
+  }
 
   final List<ActivityAttendance> _fetchedAttendance;
   final List<String?> columnNames;

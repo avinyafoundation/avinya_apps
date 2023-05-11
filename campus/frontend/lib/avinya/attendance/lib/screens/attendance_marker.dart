@@ -28,21 +28,22 @@ class _AttendanceMarkerScreenState extends State<AttendanceMarkerScreen> {
         appBar: AppBar(
           title: Text('Attendance Marker'),
         ),
-        body: Center(
-          child: Column(
-            children: [
-              SizedBox(height: 40),
-              AttendanceMarker(),
-              SizedBox(height: 40),
-              Text('Person Attendance Report'),
-              SizedBox(height: 5),
-              SingleChildScrollView(
-                child: Container(
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                SizedBox(height: 40),
+                AttendanceMarker(),
+                SizedBox(height: 40),
+                Text('Person Attendance Report'),
+                SizedBox(height: 5),
+                Container(
                   width: 500,
-                  height: 280,
-                  child: PersonAttendanceMarkerReport()),
-              ),
-            ],
+                  height: 500,
+                  child: PersonAttendanceMarkerReport(),
+                )
+              ],
+            ),
           ),
         ),
       );
