@@ -3,6 +3,8 @@
 import 'package:attendance/widgets/attedance_marker.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/person_attendance_report.dart';
+
 class AttendanceMarkerScreen extends StatefulWidget {
   const AttendanceMarkerScreen({Key? key}) : super(key: key);
 
@@ -26,14 +28,22 @@ class _AttendanceMarkerScreenState extends State<AttendanceMarkerScreen> {
         appBar: AppBar(
           title: Text('Attendance Marker'),
         ),
-        body: Center(
-          child: Column(
-            children: [
-              SizedBox(height: 40),
-              AttendanceMarker(),
-              SizedBox(height: 40),
-              Text('Person attendance report will be shown here'),
-            ],
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                SizedBox(height: 40),
+                AttendanceMarker(),
+                SizedBox(height: 40),
+                Text('Person Attendance Report'),
+                SizedBox(height: 5),
+                Container(
+                  width: 500,
+                  height: 500,
+                  child: PersonAttendanceMarkerReport(),
+                )
+              ],
+            ),
           ),
         ),
       );
