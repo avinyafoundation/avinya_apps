@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:attendance/data/activity_attendance.dart';
 import 'package:gallery/data/person.dart';
+import 'package:intl/intl.dart';
 
 class DailyAttendanceReport extends StatefulWidget {
   const DailyAttendanceReport({Key? key, required this.title})
@@ -223,7 +224,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                           // header: const Center(child: Text('Daily Attendance')),
                           columnSpacing: 100,
                           horizontalMargin: 60,
-                          rowsPerPage: 20,
+                          rowsPerPage: 25,
                         )
                       : Container(
                           margin: EdgeInsets.all(20), // Add margin here
@@ -249,13 +250,126 @@ class MyData extends DataTableSource {
 
   @override
   DataRow? getRow(int index) {
-    if (_fetchedOrganization != null &&
-        _fetchedOrganization!.people.isNotEmpty &&
-        columnNames.length > 0) {
-      var person = _fetchedOrganization!.people[index];
+    if (index == 0 || index == 1 || index == 2) {
       List<DataCell> cells = new List.filled(
         columnNames.toSet().toList().length,
         new DataCell(Container(child: Text("Absent"), color: Colors.red)),
+      );
+
+      if (index == 0) {
+        cells[0] = DataCell(Text(''));
+        cells[1] = DataCell(Text(''));
+        for (final date in columnNames) {
+          print("date ${date}");
+          if (columnNames.indexOf(date) == 0 ||
+              columnNames.indexOf(date) == 1) {
+            continue;
+          }
+
+          date == '$date 00:00:00';
+          cells[columnNames.indexOf(date)] = DataCell(Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.all(8),
+            child: Text(DateFormat.EEEE().format(DateTime.parse(date!)),
+                style: TextStyle(
+                  color: Color.fromARGB(255, 14, 72, 90),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                )),
+          ));
+        }
+      } else if (index == 1) {
+        cells[0] = DataCell(Text(''));
+        cells[1] = DataCell(Container(
+          alignment: Alignment.bottomRight,
+          padding: EdgeInsets.all(8),
+          child: Text('Present Count',
+              style: TextStyle(
+                color: Color.fromARGB(255, 14, 72, 90),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              )),
+        ));
+        for (final date in columnNames) {
+          int presentCount = 0;
+          if (columnNames.indexOf(date) == 0 ||
+              columnNames.indexOf(date) == 1) {
+            continue;
+          }
+          for (final attendance in _fetchedAttendance) {
+            if (attendance.sign_in_time != null &&
+                attendance.sign_in_time!.split(" ")[0] == date) {
+              presentCount++;
+            }
+          }
+          cells[columnNames.indexOf(date)] = DataCell(Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.all(8),
+            child: Text(presentCount.toString(),
+                style: TextStyle(
+                  color: Color.fromARGB(255, 14, 72, 90),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                )),
+          ));
+        }
+      } else if (index == 2) {
+        cells[0] = DataCell(Text(''));
+        cells[1] = DataCell(Container(
+          alignment: Alignment.bottomRight,
+          padding: EdgeInsets.all(8),
+          child: Text('Absent Count',
+              style: TextStyle(
+                color: Color.fromARGB(255, 14, 72, 90),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              )),
+        ));
+        for (final date in columnNames) {
+          int absentCount = 0;
+          int presentCount = 0;
+          if (columnNames.indexOf(date) == 0 ||
+              columnNames.indexOf(date) == 1) {
+            continue;
+          }
+          for (final attendance in _fetchedAttendance) {
+            if (attendance.sign_in_time != null &&
+                attendance.sign_in_time!.split(" ")[0] == date) {
+              presentCount++;
+            }
+          }
+          absentCount = _fetchedOrganization!.people.length - presentCount;
+          cells[columnNames.indexOf(date)] = DataCell(Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.all(8),
+            child: Text(absentCount.toString(),
+                style: TextStyle(
+                  color: Color.fromARGB(255, 14, 72, 90),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                )),
+          ));
+        }
+      }
+
+      return DataRow(
+        cells: cells,
+      );
+    }
+    if (_fetchedOrganization != null &&
+        _fetchedOrganization!.people.isNotEmpty &&
+        columnNames.length > 0) {
+      var person = _fetchedOrganization!
+          .people[index - 3]; // to facilitate additional rows
+      List<DataCell> cells = new List.filled(
+        columnNames.toSet().toList().length,
+        new DataCell(Container(
+            alignment: Alignment.center,
+            child: Text("Absent",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                )))),
       );
       cells[0] = DataCell(Text(person.preferred_name!));
       cells[1] = DataCell(Text(person.digital_id.toString()));
@@ -266,7 +380,8 @@ class MyData extends DataTableSource {
                 attendance.sign_in_time!.split(" ")[0] == date) {
               // print(
               //     'index ${index} date ${date} person_id ${attendance.person_id} sign_in_time ${attendance.sign_in_time} columnNames length ${columnNames.length} columnNames.indexOf(date) ${columnNames.indexOf(date)}');
-              cells[columnNames.indexOf(date)] = DataCell(Text("Present"));
+              cells[columnNames.indexOf(date)] = DataCell(Container(
+                  alignment: Alignment.center, child: Text("Present")));
             }
           }
         }
@@ -298,7 +413,14 @@ class MyData extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => _fetchedOrganization?.people.length ?? 0;
+  int get rowCount {
+    int count = 0;
+    if (_fetchedOrganization != null) {
+      count = _fetchedOrganization?.people.length ?? 0;
+      count += 3; //to facilitate additional rows
+    }
+    return count;
+  }
 
   @override
   int get selectedRowCount => 0;
