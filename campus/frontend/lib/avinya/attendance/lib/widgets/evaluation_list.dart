@@ -1,4 +1,4 @@
-import 'package:gallery/avinya/attendance/lib/data/evaluation.dart';
+import 'package:attendance/data/evaluation.dart';
 import 'package:flutter/material.dart';
 
 class EvaluationList extends StatefulWidget {
@@ -462,8 +462,8 @@ class _AddEvaluationPageState extends State<AddEvaluationPage> {
             response: _response_Controller.text,
             notes: _notes_Controller.text,
             grade: int.parse(_grade_Controller.text));
-        await createEvaluation([evaluation]);
-        Navigator.of(context).pop();
+        var result = await createEvaluation([evaluation]);
+        Navigator.of(context).pop(result);
       }
     } on Exception {
       await showDialog(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gallery/avinya/attendance/lib/data.dart';
-import 'package:gallery/avinya/attendance/lib/data/activity_attendance.dart';
-import 'package:gallery/avinya/attendance/lib/data/evaluation.dart';
-import 'package:gallery/avinya/attendance/lib/widgets/evaluation_list.dart';
+import 'package:attendance/data.dart';
+import 'package:attendance/data/activity_attendance.dart';
+import 'package:attendance/data/evaluation.dart';
+import 'package:attendance/widgets/evaluation_list.dart';
 
 import '../data/activity_instance.dart';
 
