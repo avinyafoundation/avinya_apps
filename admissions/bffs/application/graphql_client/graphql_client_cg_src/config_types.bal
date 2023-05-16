@@ -13,9 +13,8 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-import ballerina/http;
-import ballerina/graphql;
 
+import ballerina/graphql;
 
 # Client configuration details.
 @display {label: "Connection Config"}
@@ -44,8 +43,6 @@ public type ConnectionConfig record {|
     graphql:ProxyConfig proxy?;
     # Enables the inbound payload validation functionality which provided by the constraint package. Enabled by default
     boolean validation = true;
-    # OAuth2 client configurations
-    http:OAuth2ClientCredentialsGrantConfig oauth2ClientCredentialsGrantConfig?;
 |};
 
 # Provides settings related to HTTP/1.x protocol.

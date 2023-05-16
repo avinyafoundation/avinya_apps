@@ -101,3 +101,5 @@ public const CHUNKING_AUTO = "AUTO";
 public const CHUNKING_ALWAYS = "ALWAYS";
 # Never set the chunking header even if the payload is larger than 8KB in the outbound request/response.
 public const CHUNKING_NEVER = "NEVER";
+
+public const string VER = http:HTTP_GET;
