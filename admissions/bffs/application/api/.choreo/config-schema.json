@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "avinyafoundation": {
+      "type": "object",
+      "properties": {
+        "api": {
+          "type": "object",
+          "properties": {
+            "GLOBAL_DATA_API_URL": {
+              "type": "string",
+              "description": ""
+            },
+            "CHOREO_TOKEN_URL": {
+              "type": "string",
+              "description": ""
+            },
+            "GLOBAL_DATA_CLIENT_ID": {
+              "type": "string",
+              "description": ""
+            },
+            "GLOBAL_DATA_CLIENT_SECRET": {
+              "type": "string",
+              "description": ""
+            }
+            
+          },
+          "additionalProperties": false,
+          "required": [
+            "GLOBAL_DATA_API_URL",
+            "CHOREO_TOKEN_URL",
+            "GLOBAL_DATA_CLIENT_ID",
+            "GLOBAL_DATA_CLIENT_SECRET"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
