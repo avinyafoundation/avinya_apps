@@ -173,7 +173,7 @@ Future<List<ActivityAttendance>> getPersonActivityAttendanceReport(
     List<ActivityAttendance> activityAttendances = await resultsJson
         .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
         .toList();
-    print("activity attendance report"+"$activityAttendances");
+    print("activity attendance report" + "$activityAttendances");
     return activityAttendances;
   } else {
     throw Exception(
@@ -201,5 +201,31 @@ Future<List<ActivityAttendance>> getClassActivityAttendanceReport(
   } else {
     throw Exception(
         'Failed to get Activity Participant Attendance report for organization ID $organization_id and activity $activity_id for result limit.$result_limit');
+  }
+}
+
+Future<List<ActivityAttendance>> getClassActivityAttendanceReportForPayment(
+    int organization_id,
+    int activity_id,
+    String from_date,
+    String to_date) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/class_attendance_report_date/$organization_id/$activity_id/$from_date/$to_date'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Activity Participant Attendance report for organization ID $organization_id and activity $activity_id');
   }
 }
