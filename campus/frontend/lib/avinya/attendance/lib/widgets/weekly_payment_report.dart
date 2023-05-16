@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:attendance/widgets/week_picker.dart';
+import 'package:attendance/widgets/excel_export.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:attendance/data/activity_attendance.dart';
 import 'package:gallery/data/person.dart';
 import 'package:intl/intl.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 class WeeklyPaymentReport extends StatefulWidget {
   const WeeklyPaymentReport({Key? key, required this.title}) : super(key: key);
@@ -442,6 +442,11 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                               ]),
                       ],
                     ),
+                    SizedBox(width: 20),
+                    ExcelExport(
+                        fetchedAttendance: _fetchedAttendance,
+                        columnNames: columnNames,
+                        fetchedOrganization: _fetchedOrganization)
                   ],
                 ),
                 SizedBox(height: 16.0),
