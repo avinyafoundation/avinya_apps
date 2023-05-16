@@ -76,7 +76,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
     _data = MyData(
         _fetchedAttendance, columnNames, _fetchedOrganization, updateSelected);
@@ -89,7 +89,14 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
     });
   }
 
-  void updateDateRange(_rangeStart, _rangeEnd) {
+  void updateDateRange(_rangeStart, _rangeEnd) async {
+    if (_fetchedOrganization != null) {
+      _fetchedAttendance = await getClassActivityAttendanceReportForPayment(
+          this._fetchedOrganization!.id!,
+          activityId,
+          DateFormat('yyyy-MM-dd').format(_rangeStart),
+          DateFormat('yyyy-MM-dd').format(_rangeEnd));
+    }
     setState(() {
       final startDate = _rangeStart ?? _selectedDay;
       final endDate = _rangeEnd ?? _selectedDay;
@@ -98,6 +105,95 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
       final formattedEndDate = formatter.format(endDate!);
       this.formattedStartDate = formattedStartDate;
       this.formattedEndDate = formattedEndDate;
+      refreshState(this._selectedValue);
+    });
+  }
+
+  void refreshState(Organization? newValue) async {
+    var cols =
+        columnNames.map((label) => DataColumn(label: Text(label!))).toList();
+    _selectedValue = newValue!;
+    print(newValue.id);
+    _fetchedOrganization = await fetchOrganization(newValue.id!);
+
+    _fetchedAttendance = await getClassActivityAttendanceReportForPayment(
+        _fetchedOrganization!.id!,
+        activityId,
+        DateFormat('yyyy-MM-dd')
+            .format(DateFormat('MMMM d, yyyy').parse(this.formattedStartDate)),
+        DateFormat('yyyy-MM-dd')
+            .format(DateFormat('MMMM d, yyyy').parse(this.formattedEndDate)));
+    if (_fetchedAttendance.length > 0) {
+      // Add null check here
+      // Process attendance data here
+      columnNames.clear();
+      List<String?> names = _fetchedAttendance
+          .map((attendance) => attendance.sign_in_time?.split(" ")[0])
+          .where((name) => name != null) // Filter out null values
+          .toList();
+      columnNames.addAll(names);
+    } else {
+      columnNames.clear();
+    }
+
+    columnNames = columnNames.toSet().toList();
+    columnNames.sort();
+    columnNames.insert(0, "Name");
+    columnNames.insert(1, "Digital ID");
+    columnNames.insert(columnNames.length, "Present Count");
+    columnNames.insert(columnNames.length, "Absent Count");
+    columnNames.insert(columnNames.length, "Student Payment Rs.");
+    columnNames.insert(columnNames.length, "Phone Payment Rs.");
+    cols = columnNames.map((label) => DataColumn(label: Text(label!))).toList();
+    print(cols.length);
+    if (_fetchedAttendance.length == 0)
+      _fetchedAttendance = new List.filled(_fetchedOrganization!.people.length,
+          new ActivityAttendance(person_id: -1));
+    else {
+      for (int i = 0; i < _fetchedOrganization!.people.length; i++) {
+        if (_fetchedAttendance.indexWhere((attendance) =>
+                attendance.person_id == _fetchedOrganization!.people[i].id) ==
+            -1) {
+          _fetchedAttendance.add(new ActivityAttendance(person_id: -1));
+        }
+      }
+    }
+    if (campusAppsPortalInstance.isTeacher) {
+      _fetchedAttendanceAfterSchool =
+          await getClassActivityAttendanceReportForPayment(
+              _fetchedOrganization!.id!,
+              afterSchoolActivityId,
+              DateFormat('yyyy-MM-dd').format(
+                  DateFormat('MMMM d, yyyy').parse(this.formattedStartDate)),
+              DateFormat('yyyy-MM-dd').format(
+                  DateFormat('MMMM d, yyyy').parse(this.formattedEndDate)));
+      _fetchedAttendanceAfterSchool =
+          await getClassActivityAttendanceReportForPayment(
+              _fetchedOrganization!.id!,
+              afterSchoolActivityId,
+              DateFormat('yyyy-MM-dd').format(
+                  DateFormat('MMMM d, yyyy').parse(this.formattedStartDate)),
+              DateFormat('yyyy-MM-dd').format(
+                  DateFormat('MMMM d, yyyy').parse(this.formattedEndDate)));
+      if (_fetchedAttendanceAfterSchool.length == 0)
+        _fetchedAttendanceAfterSchool = new List.filled(
+            _fetchedOrganization!.people.length,
+            new ActivityAttendance(person_id: -1));
+      else {
+        for (int i = 0; i < _fetchedOrganization!.people.length; i++) {
+          if (_fetchedAttendanceAfterSchool.indexWhere((attendance) =>
+                  attendance.person_id == _fetchedOrganization!.people[i].id) ==
+              -1) {
+            _fetchedAttendanceAfterSchool
+                .add(new ActivityAttendance(person_id: -1));
+          }
+        }
+      }
+    }
+    setState(() {
+      _fetchedOrganization;
+      _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
+          updateSelected);
     });
   }
 
@@ -228,6 +324,10 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                                               "Present Count");
                                           columnNames.insert(columnNames.length,
                                               "Absent Count");
+                                          columnNames.insert(columnNames.length,
+                                              "Student Payment Rs.");
+                                          columnNames.insert(columnNames.length,
+                                              "Phone Payment Rs.");
                                           cols = columnNames
                                               .map((label) => DataColumn(
                                                   label: Text(label!)))
@@ -321,6 +421,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                                             }
                                           }
                                           setState(() {
+                                            _fetchedOrganization;
                                             _data = MyData(
                                                 _fetchedAttendance,
                                                 columnNames,
@@ -354,7 +455,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                           // header: const Center(child: Text('Daily Attendance')),
                           columnSpacing: 100,
                           horizontalMargin: 60,
-                          rowsPerPage: 25,
+                          rowsPerPage: 22,
                         )
                       : Container(
                           margin: EdgeInsets.all(20), // Add margin here
@@ -397,28 +498,22 @@ class MyData extends DataTableSource {
   @override
   DataRow? getRow(int index) {
     if (index == 0) {
-      // List<String> columnNames = getDatesFromMondayToToday();
-      // columnNames.insert(0, "Name");
-      // columnNames.insert(1, "Digital ID");
-      // print("dates ${columnNames.length}");
-      // List<DataCell> cells = new List.filled(
-      //   columnNames.toSet().toList().length,
-      //   new DataCell(Container(child: Text("Absent"), color: Colors.red)),
-      // );
-
-      // if (index == 0) {
       List<DataCell> cells = new List.filled(
         columnNames.toSet().toList().length,
         new DataCell(Container(child: Text("Absent"), color: Colors.red)),
       );
       cells[0] = DataCell(Text(''));
       cells[1] = DataCell(Text(''));
+      cells[columnNames.length - 4] = DataCell(Text(''));
+      cells[columnNames.length - 3] = DataCell(Text(''));
       cells[columnNames.length - 2] = DataCell(Text(''));
       cells[columnNames.length - 1] = DataCell(Text(''));
+
       for (final date in columnNames) {
-        print("date ${date}");
         if (columnNames.indexOf(date) == 0 ||
             columnNames.indexOf(date) == 1 ||
+            columnNames.indexOf(date) == columnNames.length - 4 ||
+            columnNames.indexOf(date) == columnNames.length - 3 ||
             columnNames.indexOf(date) == columnNames.length - 2 ||
             columnNames.indexOf(date) == columnNames.length - 1) {
           continue;
@@ -455,43 +550,121 @@ class MyData extends DataTableSource {
                   color: Colors.red,
                 )))),
       );
+
       cells[0] = DataCell(Text(person.preferred_name!));
       cells[1] = DataCell(Text(person.digital_id.toString()));
 
-      // Get the previous Monday and today's date
-      // DateTime now = DateTime.now();
-      // DateTime previousMonday = now.subtract(Duration(days: now.weekday - 1));
-      // DateTime mondayMorning6AM = DateTime(
-      //     previousMonday.year, previousMonday.month, previousMonday.day, 6);
+      int absentCount = 0;
 
-      // Filter the results based on the date range
-      // List<ActivityAttendance> filteredAttendance =
-      //     _fetchedAttendance.where((result) {
-      //   if (result.sign_in_time != null) {
-      //     DateTime createdDate =
-      //         DateFormat('yyyy-MM-dd').parse(result.sign_in_time!);
-      //     return createdDate.isAfter(mondayMorning6AM) &&
-      //         createdDate.isBefore(now) &&
-      //         result.sign_in_time != null;
-      //   }
-      //   return false;
-      // }).toList();
+      final dateRegex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+      final dateFormatter = DateFormat('yyyy-MM-dd');
 
-      // print("filteredAttendance ${filteredAttendance.length} ${person.id}");
+      for (var element in columnNames) {
+        if (dateRegex.hasMatch(element!)) {
+          try {
+            dateFormatter.parseStrict(element);
+            absentCount++;
+          } catch (e) {
+            // Handle the exception or continue to the next element
+          }
+        }
+      }
+      cells[columnNames.length - 4] = DataCell(Container(
+          alignment: Alignment.center,
+          child: Text(
+              style: TextStyle(
+                color: Color.fromARGB(255, 14, 72, 90),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              '0')));
+
+      cells[columnNames.length - 3] = DataCell(Container(
+          alignment: Alignment.center,
+          child: Text(
+              style: TextStyle(
+                color: Color.fromARGB(255, 14, 72, 90),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              absentCount.toString())));
+
+      cells[columnNames.length - 2] = DataCell(Container(
+          alignment: Alignment.center,
+          child: Text(
+              style: TextStyle(
+                color: Color.fromARGB(255, 14, 72, 90),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              '0')));
+
+      cells[columnNames.length - 1] = DataCell(Container(
+          alignment: Alignment.center,
+          child: Text(
+              style: TextStyle(
+                color: Color.fromARGB(255, 14, 72, 90),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              '0')));
 
       for (final attendance in _fetchedAttendance) {
         if (attendance.person_id == person.id) {
+          int presentCount = 0;
+          int newAbsentCount = 0;
           for (final date in columnNames) {
             if (attendance.sign_in_time != null &&
                 attendance.sign_in_time!.split(" ")[0] == date) {
+              presentCount++;
               // print(
               //     'index ${index} date ${date} person_id ${attendance.person_id} sign_in_time ${attendance.sign_in_time} columnNames length ${columnNames.length} columnNames.indexOf(date) ${columnNames.indexOf(date)}');
               cells[columnNames.indexOf(date)] = DataCell(Container(
                   alignment: Alignment.center, child: Text("Present")));
             }
           }
+
+          newAbsentCount = absentCount - presentCount;
+          cells[columnNames.length - 4] = DataCell(Container(
+              alignment: Alignment.center,
+              child: Text(
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 14, 72, 90),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  presentCount.toString())));
+          cells[columnNames.length - 3] = DataCell(Container(
+              alignment: Alignment.center,
+              child: Text(
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 14, 72, 90),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  newAbsentCount.toString())));
+          int studentPayment = 100 * presentCount;
+          cells[columnNames.length - 2] = DataCell(Container(
+              alignment: Alignment.center,
+              child: Text(
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 14, 72, 90),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  studentPayment.toDouble().toStringAsFixed(2))));
+          cells[columnNames.length - 1] = DataCell(Container(
+              alignment: Alignment.center,
+              child: Text(
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 14, 72, 90),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  studentPayment.toDouble().toStringAsFixed(2))));
         }
       }
+
       int numItems = _fetchedOrganization!.people.length;
       List<bool> selected = List<bool>.generate(numItems, (int index) => false);
       return DataRow(
