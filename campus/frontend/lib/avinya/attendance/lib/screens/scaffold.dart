@@ -2,6 +2,7 @@ import 'package:adaptive_navigation/adaptive_navigation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery/auth.dart';
+import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:gallery/config/app_config.dart';
 import '../routing.dart';
@@ -11,7 +12,8 @@ class SMSScaffold extends StatelessWidget {
   static const pageNames = [
     '/attendance_marker',
     '/bulk_attendance_marker/classes',
-    '/daily_attendance_report'
+    '/daily_attendance_report',
+    '/weekly_payment_report'
   ];
 
   const SMSScaffold({
@@ -22,6 +24,37 @@ class SMSScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final routeState = RouteStateScope.of(context);
     final selectedIndex = _getSelectedIndex(routeState.route.pathTemplate);
+
+    List<AdaptiveScaffoldDestination> destinations = [];
+    if (campusAppsPortalInstance.isTeacher ||
+        campusAppsPortalInstance.isSecurity ||
+        campusAppsPortalInstance.isFoundation) {
+      destinations = const [
+        AdaptiveScaffoldDestination(
+          title: 'Attendance Marker',
+          icon: Icons.person_outline,
+        ),
+        AdaptiveScaffoldDestination(
+          title: 'Bulk Attendance Marker',
+          icon: Icons.people,
+        ),
+        AdaptiveScaffoldDestination(
+          title: 'Daily Attendance Report',
+          icon: Icons.summarize,
+        ),
+        AdaptiveScaffoldDestination(
+          title: 'Weekly Payment Report',
+          icon: Icons.summarize,
+        ),
+      ];
+    } else {
+      destinations = const [
+        AdaptiveScaffoldDestination(
+          title: 'Attendance Marker',
+          icon: Icons.person_outline,
+        ),
+      ];
+    }
 
     return Scaffold(
       body: AdaptiveNavigationScaffold(
@@ -76,20 +109,7 @@ class SMSScaffold extends StatelessWidget {
         onDestinationSelected: (idx) {
           routeState.go(pageNames[idx]);
         },
-        destinations: const [
-          AdaptiveScaffoldDestination(
-            title: 'Attendance Marker',
-            icon: Icons.person_outline,
-          ),
-          AdaptiveScaffoldDestination(
-            title: 'Bulk Attendance Marker',
-            icon: Icons.people,
-          ),
-          AdaptiveScaffoldDestination(
-            title: 'Daily Attendance Report',
-            icon: Icons.summarize,
-          ),
-        ],
+        destinations: destinations,
       ),
       persistentFooterButtons: [
         new OutlinedButton(

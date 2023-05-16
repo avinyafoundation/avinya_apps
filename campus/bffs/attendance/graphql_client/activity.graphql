@@ -98,8 +98,8 @@ query getClassAttendanceToday($organization_id: Int!, $activity_id: Int!) {
     }      
 }
 
-query getClassAttendanceReport($organization_id: Int!, $activity_id: Int!, $result_limit: Int!) {
-    class_attendance_report(organization_id:$organization_id, activity_id: $activity_id, result_limit: $result_limit) {
+query getClassAttendanceReport($organization_id: Int!, $activity_id: Int!, $result_limit: Int!, $from_date: String!, $to_date: String!) {
+    class_attendance_report(organization_id:$organization_id, activity_id: $activity_id, result_limit: $result_limit, from_date: $from_date, to_date: $to_date) {
         id
         person {
             id

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../data.dart';
 import '../data/activity_attendance.dart';
+import 'package:attendance/data/evaluation.dart';
+// import 'package:attendance/widgets/evaluation_list.dart';
+import 'package:gallery/avinya/attendance/lib/widgets/evaluation_list.dart';
 
 class AttendanceMarker extends StatefulWidget {
   @override
@@ -10,7 +13,9 @@ class AttendanceMarker extends StatefulWidget {
 class _AttendanceMarkerState extends State<AttendanceMarker> {
   bool _isCheckedIn = false;
   bool _isCheckedOut = false;
+  bool _isAbsent = false;
   List<ActivityAttendance> _personAttendanceToday = [];
+  List<Evaluation> _fechedEvaluations = [];
 
   Future<void> _handleCheckIn() async {
     var activityInstance =
@@ -60,6 +65,25 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
       _isCheckedOut = _personAttendanceToday[1].sign_out_time != null;
     }
 
+    if (!_isCheckedIn) {
+      var activityInstance =
+          await campusAttendanceSystemInstance.getCheckinActivityInstance(
+              campusAppsPortalInstance.activityIds['school-day']!);
+      _fechedEvaluations =
+          await getActivityInstanceEvaluations(activityInstance.id!);
+
+      if (_fechedEvaluations.indexWhere((element) =>
+              element.evaluator_id ==
+              campusAppsPortalInstance.getUserPerson().id!) ==
+          -1) {
+        _isCheckedIn = false;
+      } else {
+        _isCheckedIn = true;
+        _isCheckedOut = true;
+        _isAbsent = true;
+      }
+    }
+
     return _personAttendanceToday;
   }
 
@@ -79,23 +103,69 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
               child: Column(
             children: [
               if (!_isCheckedIn)
-                ElevatedButton(
-                  child: Text('Check-In'),
-                  onPressed: _handleCheckIn,
-                  style: ButtonStyle(
-                    // increase the fontSize
-                    textStyle: MaterialStateProperty.all(
-                      TextStyle(fontSize: 20),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  ElevatedButton(
+                    child: Text('Check-In'),
+                    onPressed: _handleCheckIn,
+                    style: ButtonStyle(
+                      // increase the fontSize
+                      textStyle: MaterialStateProperty.all(
+                        TextStyle(fontSize: 20),
+                      ),
+                      elevation: MaterialStateProperty.all(
+                          20), // increase the elevation
+                      // Add outline around button
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.greenAccent),
+                      foregroundColor: MaterialStateProperty.all(Colors.black),
                     ),
-                    elevation:
-                        MaterialStateProperty.all(20), // increase the elevation
-                    // Add outline around button
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.greenAccent),
-                    foregroundColor: MaterialStateProperty.all(Colors.black),
                   ),
-                ),
-              if (_isCheckedOut)
+                  SizedBox(width: 20),
+                  ElevatedButton(
+                    child: Text('Absent'),
+                    onPressed: () async {
+                      var activityInstance =
+                          await campusAttendanceSystemInstance
+                              .getCheckinActivityInstance(
+                                  campusAppsPortalInstance
+                                      .activityIds['school-day']!);
+                      var evaluation = Evaluation(
+                        evaluator_id:
+                            campusAppsPortalInstance.getUserPerson().id,
+                        evaluatee_id:
+                            campusAppsPortalInstance.getUserPerson().id,
+                        activity_instance_id: activityInstance.id,
+                        grade: 0,
+                        evaluation_criteria_id: 54,
+                        response: "Unexcused absence",
+                      );
+                      var result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddEvaluationPage(
+                                  evaluation: evaluation,
+                                )),
+                      );
+                      if (result != null) {
+                        await refreshPersonActivityAttendanceToday();
+                        setState(() {});
+                      }
+                      // _fetchedEvaluations =
+                      //             await getActivityInstanceEvaluations(
+                      //                             activityInstance.id!);
+                      //             setState(() {});
+                    },
+                    style: ButtonStyle(
+                      textStyle:
+                          MaterialStateProperty.all(TextStyle(fontSize: 20)),
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.blue),
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                  ),
+                ]),
+              if (_isCheckedOut && !_isAbsent)
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -108,6 +178,11 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
                           _personAttendanceToday[1].sign_out_time!),
                     SizedBox(width: 20),
                   ],
+                )
+              else if (_isAbsent)
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Text('Attendance marked as Absent today.')],
                 )
               else if (_isCheckedIn)
                 Row(

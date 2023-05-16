@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gallery/avinya/attendance/lib/data.dart';
-import 'package:gallery/avinya/attendance/lib/data/activity_attendance.dart';
-import 'package:gallery/avinya/attendance/lib/data/evaluation.dart';
-import 'package:gallery/avinya/attendance/lib/widgets/evaluation_list.dart';
+import 'package:attendance/data.dart';
+import 'package:attendance/data/activity_attendance.dart';
+import 'package:attendance/data/evaluation.dart';
+import 'package:attendance/widgets/evaluation_list.dart';
 
 import '../data/activity_instance.dart';
 
@@ -217,10 +217,6 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                         }
                                       }
                                       if (campusAppsPortalInstance.isTeacher) {
-                                        _fetchedAttendanceAfterSchool =
-                                            await getClassActivityAttendanceToday(
-                                                _fetchedOrganization!.id!,
-                                                afterSchoolActivityId);
                                         _fetchedAttendanceAfterSchool =
                                             await getClassActivityAttendanceToday(
                                                 _fetchedOrganization!.id!,
@@ -488,11 +484,16 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                       -1)
                                     TableCell(
                                       child: Row(children: [
-                                        Text(_fetchedEvaluations
-                                            .firstWhere((evaluation) =>
-                                                evaluation.evaluatee_id ==
-                                                person.id)
-                                            .response!),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(_fetchedEvaluations
+                                                .firstWhere((evaluation) =>
+                                                    evaluation.evaluatee_id ==
+                                                    person.id)
+                                                .response!),
+                                          ),
+                                        ),
                                         IconButton(
                                           icon: Icon(Icons.edit),
                                           onPressed: () async {
@@ -578,7 +579,48 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                           },
                                         ),
                                       ]),
-                                    ),
+                                    )
+                                else
+                                  TableCell(
+                                    child: Row(children: [
+                                      Text(""),
+                                      IconButton(
+                                        icon: Icon(Icons.add),
+                                        onPressed: () async {
+                                          if (activityInstance.id == -1) {
+                                            activityInstance =
+                                                await campusAttendanceSystemInstance
+                                                    .getCheckinActivityInstance(
+                                                        activityId);
+                                          }
+                                          var evaluation = Evaluation(
+                                            evaluator_id:
+                                                campusAppsPortalInstance
+                                                    .getUserPerson()
+                                                    .id,
+                                            evaluatee_id: person.id,
+                                            activity_instance_id:
+                                                activityInstance.id,
+                                            grade: 0,
+                                            evaluation_criteria_id: 54,
+                                            response: "Unexcused absence",
+                                          );
+                                          await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    AddEvaluationPage(
+                                                      evaluation: evaluation,
+                                                    )),
+                                          );
+                                          _fetchedEvaluations =
+                                              await getActivityInstanceEvaluations(
+                                                  activityInstance.id!);
+                                          setState(() {});
+                                        },
+                                      ),
+                                    ]),
+                                  ),
                             ]);
                           }).toList()
                     ],
