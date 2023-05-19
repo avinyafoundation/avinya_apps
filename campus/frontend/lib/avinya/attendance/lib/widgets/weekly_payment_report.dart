@@ -28,6 +28,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
   List<ActivityAttendance> _fetchedAttendance = [];
   List<ActivityAttendance> _fetchedExcelReportData = [];
   List<ActivityAttendance> _fetchedAttendanceAfterSchool = [];
+  List<Person> _fetchedStudentList = [];
   Organization? _fetchedOrganization;
 
   //calendar specific variables
@@ -72,9 +73,11 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
               activityId,
               DateFormat('yyyy-MM-dd').format(startOfWeek),
               DateFormat('yyyy-MM-dd').format(endOfWeek));
+      _fetchedStudentList = await fetchStudentList(parentOrgId);
 
       setState(() {
         this._fetchedExcelReportData = _fetchedExcelReportData;
+        this._fetchedStudentList = _fetchedStudentList;
       });
     }
   }
@@ -93,12 +96,21 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
     selectWeek(today, activityId);
   }
 
+  void updateExcelState() {
+    ExcelExport(
+      fetchedAttendance: _fetchedExcelReportData,
+      columnNames: columnNames,
+      fetchedStudentList: _fetchedStudentList,
+      updateExcelState: updateExcelState,
+    );
+  }
+
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _data = MyData(
         _fetchedAttendance, columnNames, _fetchedOrganization, updateSelected);
-    TableRangeExample(updateDateRange, formattedStartDate);
+    WeekPicker(updateDateRange, formattedStartDate);
   }
 
   void updateSelected(int index, bool value, List<bool> selected) {
@@ -121,7 +133,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
       _fetchedExcelReportData =
           await getClassActivityAttendanceReportByParentOrg(
               parentOrgId,
-              afterSchoolActivityId,
+              activityId,
               DateFormat('yyyy-MM-dd').format(_rangeStart),
               DateFormat('yyyy-MM-dd').format(_rangeEnd));
     }
@@ -133,8 +145,10 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
       final formattedEndDate = formatter.format(endDate!);
       this.formattedStartDate = formattedStartDate;
       this.formattedEndDate = formattedEndDate;
-      this._fetchedExcelReportData = _fetchedExcelReportData;
-      refreshState(this._selectedValue);
+      this._fetchedStudentList = _fetchedStudentList;
+      if (this._selectedValue != null) {
+        refreshState(this._selectedValue);
+      }
     });
   }
 
@@ -142,7 +156,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
     var cols =
         columnNames.map((label) => DataColumn(label: Text(label!))).toList();
     _selectedValue = newValue!;
-    print(newValue.id);
+    // print(newValue.id);
     _fetchedOrganization = await fetchOrganization(newValue.id!);
 
     _fetchedAttendance = await getClassActivityAttendanceReportForPayment(
@@ -467,15 +481,17 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (_) => TableRangeExample(
+                            builder: (_) => WeekPicker(
                                 updateDateRange, formattedStartDate)),
                       ),
                     ),
                     SizedBox(width: 20),
                     ExcelExport(
-                        fetchedAttendance: _fetchedAttendance,
-                        columnNames: columnNames,
-                        fetchedOrganization: _fetchedOrganization)
+                      fetchedAttendance: _fetchedExcelReportData,
+                      columnNames: columnNames,
+                      fetchedStudentList: _fetchedStudentList,
+                      updateExcelState: updateExcelState,
+                    ),
                   ],
                 ),
                 SizedBox(height: 16.0),
