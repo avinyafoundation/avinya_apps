@@ -88,8 +88,22 @@ public isolated client class GraphqlClient {
         return <GetClassAttendanceTodayResponse> check performDataBinding(graphqlResponse, GetClassAttendanceTodayResponse);
     }
     remote isolated function getClassAttendanceReport(int organization_id, int activity_id, int result_limit) returns GetClassAttendanceReportResponse|graphql:ClientError {
-        string query = string `query getClassAttendanceReport($organization_id:Int!,$activity_id:Int!,$result_limit:Int!) {class_attendance_report(organization_id:$organization_id,activity_id:$activity_id,result_limit:$result_limit) {id person_id person {id} activity_instance_id sign_in_time sign_out_time in_marked_by out_marked_by}}`;
-        map<anydata> variables = {"result_limit": result_limit, "organization_id": organization_id, "activity_id": activity_id};
+        string query = string `query getClassAttendanceReport($organization_id:Int!,$activity_id:Int!,$result_limit:Int!) {class_attendance_report(organization_id:$organization_id,activity_id:$activity_id,result_limit:$result_limit) {id person {id} activity_instance_id sign_in_time sign_out_time in_marked_by out_marked_by person_id}}`;
+        map<anydata> variables = {"organization_id": organization_id, "activity_id": activity_id, "result_limit": result_limit};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetClassAttendanceReportResponse> check performDataBinding(graphqlResponse, GetClassAttendanceReportResponse);
+    }
+
+    remote isolated function getClassAttendanceReportByDate(int organization_id, int activity_id, string from_date, string to_date) returns GetClassAttendanceReportResponse|graphql:ClientError {
+        string query = string `query getClassAttendanceReport($organization_id:Int!,$activity_id:Int!,$from_date:String!,$to_date:String!) {class_attendance_report(organization_id:$organization_id,activity_id:$activity_id,from_date:$from_date,to_date:$to_date) {id person {id} activity_instance_id sign_in_time sign_out_time in_marked_by out_marked_by person_id}}`;
+        map<anydata> variables = {"organization_id": organization_id, "activity_id": activity_id,"from_date": from_date, "to_date": to_date};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetClassAttendanceReportResponse> check performDataBinding(graphqlResponse, GetClassAttendanceReportResponse);
+    }
+
+    remote isolated function getClassAttendanceReportByParentOrg(int parent_organization_id, int activity_id, string from_date, string to_date) returns GetClassAttendanceReportResponse|graphql:ClientError {
+        string query = string `query getClassAttendanceReport($parent_organization_id:Int!,$activity_id:Int!,$from_date:String!,$to_date:String!) {class_attendance_report(parent_organization_id:$parent_organization_id,activity_id:$activity_id,from_date:$from_date,to_date:$to_date) {id person {id} activity_instance_id sign_in_time sign_out_time in_marked_by out_marked_by person_id}}`;
+        map<anydata> variables = {"parent_organization_id": parent_organization_id, "activity_id": activity_id,"from_date": from_date, "to_date": to_date};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetClassAttendanceReportResponse> check performDataBinding(graphqlResponse, GetClassAttendanceReportResponse);
     }
