@@ -8,6 +8,7 @@ class Evaluation {
   int? evaluatee_id;
   int? evaluator_id;
   int? evaluation_criteria_id;
+  int? activity_instance_id;
   String? updated;
   String? response;
   String? notes;
@@ -20,6 +21,7 @@ class Evaluation {
     this.evaluatee_id,
     this.evaluator_id,
     this.evaluation_criteria_id,
+    this.activity_instance_id,
     this.updated,
     this.response,
     this.notes,
@@ -38,6 +40,7 @@ class Evaluation {
       response: json['response'],
       notes: json['notes'],
       grade: json['grade'],
+      activity_instance_id: json['activity_instance_id'],
       // child_evaluations: json['child_evaluations']
       //     .map<Evaluation>((eval_json) => Evaluation.fromJson(eval_json))
       //     .toList(),
@@ -53,6 +56,8 @@ class Evaluation {
         if (evaluator_id != null) 'evaluator_id': evaluator_id,
         if (evaluation_criteria_id != null)
           'evaluation_criteria_id': evaluation_criteria_id,
+        if (activity_instance_id != null)
+          'activity_instance_id': activity_instance_id,
         if (updated != null) 'updated': updated,
         if (response != null) 'response': response,
         if (notes != null) 'notes': notes,
@@ -104,9 +109,6 @@ Future<Evaluation> fetchEvaluation(String id) async {
 }
 
 Future<http.Response> createEvaluation(List<Evaluation> evaluations) async {
-  print(evaluations);
-  print(evaluations.map((evaluation) => evaluation.toJson()).toList());
-  // log(evaluations.map((evaluation) => evaluation.toJson()).toString());
   final response = await http.post(
     Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/evaluations'),
     headers: <String, String>{
@@ -116,23 +118,23 @@ Future<http.Response> createEvaluation(List<Evaluation> evaluations) async {
     body: jsonEncode(
         evaluations.map((evaluation) => evaluation.toJson()).toList()),
   );
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     return response;
   } else {
     throw Exception('Failed to create Evaluation.');
   }
 }
 
-Future<http.Response> updateEvaluation(Evaluation applicantConsent) async {
+Future<http.Response> updateEvaluation(Evaluation evaluation) async {
   final response = await http.put(
     Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/evaluations'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
-    body: jsonEncode(applicantConsent.toJson()),
+    body: jsonEncode(evaluation.toJson()),
   );
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     return response;
   } else {
     throw Exception('Failed to update Evaluation.');
@@ -148,9 +150,32 @@ Future<http.Response> deleteEvaluation(String id) async {
     },
   );
 
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     return response;
   } else {
     throw Exception('Failed to delete Evaluation.');
+  }
+}
+
+Future<List<Evaluation>> getActivityInstanceEvaluations(
+    int activity_instance_id) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/activity_instance_evaluations/$activity_instance_id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<Evaluation> evaluations = await resultsJson
+        .map<Evaluation>((json) => Evaluation.fromJson(json))
+        .toList();
+    return evaluations;
+  } else {
+    throw Exception(
+        'Failed to get rvaluations  for activity instance $activity_instance_id');
   }
 }

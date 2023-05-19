@@ -46,6 +46,8 @@ class _CampusAttendanceManagementSystemState
         '/bulk_attendance_marker',
         '/bulk_attendance_marker/classes',
         '/bulk_attendance_marker/class2',
+        '/daily_attendance_report',
+        '/weekly_payment_report',
         '/avinya_types',
         '/#access_token',
       ],
@@ -107,6 +109,12 @@ class _CampusAttendanceManagementSystemState
 
     final attendanceMarkerRoute =
         ParsedRoute('/attendance_marker', '/attendance_marker', {}, {});
+    final bulkAttendanceMarkerRoute = ParsedRoute(
+        '/bulk_attendance_marker', '/bulk_attendance_marker', {}, {});
+    final dailyAttendanceReportRoute = ParsedRoute(
+        '/daily_attendance_report', '/daily_attendance_report', {}, {});
+    final weeklyPaymentReportRoute =
+        ParsedRoute('/weekly_payment_report', '/weekly_payment_report', {}, {});
 
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
@@ -119,6 +127,12 @@ class _CampusAttendanceManagementSystemState
       return activitiesRoute;
     } else if (signedIn && from == attendanceMarkerRoute) {
       return attendanceMarkerRoute;
+    } else if (signedIn && from == bulkAttendanceMarkerRoute) {
+      return bulkAttendanceMarkerRoute;
+    } else if (signedIn && from == dailyAttendanceReportRoute) {
+      return dailyAttendanceReportRoute;
+    } else if (signedIn && from == weeklyPaymentReportRoute) {
+      return weeklyPaymentReportRoute;
     }
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {

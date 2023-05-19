@@ -160,9 +160,10 @@ public type Organization record {
     string? record_type?;
     string name_en?;
 };
-
 public type Person record {
     int? permanent_address_id?;
+    string? street_address?;
+    string? bank_account_number?;
     string? notes?;
     int[]? parent_student?;
     string? date_of_birth?;
@@ -171,14 +172,19 @@ public type Person record {
     int? mailing_address_id?;
     string? id_no?;
     string? jwt_email?;
+    string? bank_name?;
+    string? bank_branch?;
     int? id?;
     string? email?;
     string? created?;
+    string? digital_id?;
     string? sex?;
     string? passport_no?;
     string? record_type?;
     Address? mailing_address?;
     int[]? child_student?;
+    string? bank_account_name?;
+    int? avinya_phone?;
     string? full_name?;
     string? nic_no?;
     int? phone?;
@@ -187,6 +193,7 @@ public type Person record {
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
+    int? academy_org_id?;
 };
 
 public type Prospect record {
@@ -372,6 +379,7 @@ public type GetClassAttendanceReportResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
+        int? person_id;
         record {|
             int? id;
         |}? person;
@@ -387,6 +395,7 @@ public type GetPersonAttendanceReportResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
+        int? person_id;
         record {|
             int? id;
         |}? person;
@@ -411,4 +420,49 @@ public type GetPersonAttendanceTodayResponse record {|
         string? in_marked_by;
         string? out_marked_by;
     |}[] person_attendance_today;
+|};
+
+public type GetActivityEvaluationsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? evaluatee_id;
+        int? evaluator_id;
+        int? evaluation_criteria_id;
+        string? response;
+        string? notes;
+        int? grade;
+        int? activity_instance_id;
+        string? updated;
+    |}[] activity_evaluations;
+|};
+
+public type GetActivityInstanceEvaluationsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? evaluatee_id;
+        int? evaluator_id;
+        int? evaluation_criteria_id;
+        string? response;
+        string? notes;
+        int? grade;
+        int? activity_instance_id;
+        string? updated;
+    |}[] activity_instance_evaluations;
+|};
+
+public type UpdateEvaluationsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? evaluatee_id;
+        int? evaluator_id;
+        int? evaluation_criteria_id;
+        string? response;
+        string? notes;
+        int? grade;
+        int? activity_instance_id;
+        string? updated;
+    |}? update_evaluation;
 |};

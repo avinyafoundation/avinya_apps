@@ -1,0 +1,13 @@
+mutation createStudentApplicantConsent($consent: ApplicantConsent!) {
+    add_student_applicant_consent(applicantConsent:$consent) {
+        name
+        date_of_birth
+        done_ol
+        ol_year
+        distance_to_school
+        phone
+        email
+        information_correct_consent
+        agree_terms_consent
+    }
+}

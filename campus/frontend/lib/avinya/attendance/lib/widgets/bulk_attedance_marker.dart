@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gallery/avinya/attendance/lib/data.dart';
-import 'package:gallery/avinya/attendance/lib/data/activity_attendance.dart';
+import 'package:attendance/data.dart';
+import 'package:attendance/data/activity_attendance.dart';
+import 'package:attendance/data/evaluation.dart';
+import 'package:attendance/widgets/evaluation_list.dart';
 
 import '../data/activity_instance.dart';
 
@@ -14,20 +16,68 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
   List<Map<String, bool>> attendanceList = [];
   var _selectedValue;
   var activityId = 0;
+  var afterSchoolActivityId = 0;
   var activityInstance = ActivityInstance(id: -1);
+  var activityInstanceAfterSchool = ActivityInstance(id: -1);
   Organization? _fetchedOrganization;
   List<ActivityAttendance> _fetchedAttendance = [];
+  List<ActivityAttendance> _fetchedAttendanceAfterSchool = [];
+  List<Evaluation> _fetchedEvaluations = [];
 
   @override
   void initState() {
     super.initState();
-    if (campusAppsPortalInstance.isTeacher)
+    if (campusAppsPortalInstance.isTeacher) {
       activityId = campusAppsPortalInstance.activityIds['homeroom']!;
-    else if (campusAppsPortalInstance.isSecurity)
+      afterSchoolActivityId =
+          campusAppsPortalInstance.activityIds['after-school']!;
+    } else if (campusAppsPortalInstance.isSecurity)
       activityId = campusAppsPortalInstance.activityIds['arrival']!;
   }
 
-  Future<void> toggleAttendance(int person_id, bool value, bool sign_in) async {
+  Future<void> toggleAttendance(
+      int person_id, bool value, bool sign_in, bool after_school) async {
+    // handle after achool
+    if (after_school) {
+      if (activityInstanceAfterSchool.id == -1) {
+        activityInstanceAfterSchool = await campusAttendanceSystemInstance
+            .getCheckinActivityInstance(afterSchoolActivityId);
+      }
+      int index = -1;
+      index = _fetchedAttendanceAfterSchool.indexWhere((attendance) =>
+          attendance.person_id == person_id && attendance.sign_in_time != null);
+
+      if (index == -1)
+        index = _fetchedAttendanceAfterSchool
+            .indexWhere((attendance) => attendance.person_id == -1);
+      if (value == false) {
+        if (index != -1) {
+          await deleteActivityAttendance(
+              _fetchedAttendanceAfterSchool[index].id!);
+        }
+
+        _fetchedAttendanceAfterSchool[index] =
+            ActivityAttendance(person_id: -1, sign_in_time: null);
+      } else {
+        ActivityAttendance activityAttendance = ActivityAttendance(
+            person_id: -1, sign_in_time: null, sign_out_time: null);
+        ;
+
+        activityAttendance = await createActivityAttendance(ActivityAttendance(
+          activity_instance_id: activityInstanceAfterSchool.id,
+          person_id: person_id,
+          sign_in_time: DateTime.now().toString(),
+          in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
+        ));
+
+        _fetchedAttendanceAfterSchool[index] = activityAttendance;
+      }
+
+      return;
+    }
+
+    // handle normal attendance sing in and out
+
     if (activityInstance.id == -1) {
       activityInstance = await campusAttendanceSystemInstance
           .getCheckinActivityInstance(activityId);
@@ -42,15 +92,26 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
           attendance.person_id == person_id &&
           attendance.sign_out_time != null);
 
-    print('index: $index  person_id: $person_id  value: $value');
+    print(
+        'index: $index  person_id: $person_id  value: $value _fetchedAttendance lenth ${_fetchedAttendance.length}');
 
-    if (index == -1)
+    if (index == -1) {
       index = _fetchedAttendance
           .indexWhere((attendance) => attendance.person_id == -1);
+      if (index == -1) {
+        print(
+            'index is still -1 => index: $index  person_id: $person_id  value: $value');
+        // if index is still -1 then there is no empty slot
+        // so we need to create a new slot
+        _fetchedAttendance.add(ActivityAttendance(
+            person_id: -1, sign_in_time: null, sign_out_time: null));
+        index = _fetchedAttendance.length - 1;
+      }
+    }
 
     if (value == false) {
       if (index != -1) {
-        await deleteActivityAttendance(_fetchedAttendance[index].id!);
+        deletePersonActivityAttendance(_fetchedAttendance[index].person_id!);
       }
       if (sign_in)
         _fetchedAttendance[index] =
@@ -62,20 +123,24 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
       ActivityAttendance activityAttendance = ActivityAttendance(
           person_id: -1, sign_in_time: null, sign_out_time: null);
       ;
-      if (sign_in)
-        activityAttendance = await createActivityAttendance(ActivityAttendance(
+      if (sign_in) {
+        activityAttendance = ActivityAttendance(
           activity_instance_id: activityInstance.id,
           person_id: person_id,
           sign_in_time: DateTime.now().toString(),
           in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
-        ));
-      else {
-        activityAttendance = await createActivityAttendance(ActivityAttendance(
+        );
+        createActivityAttendance(
+            activityAttendance); // make the call async and returrn withtout waiting
+      } else {
+        activityAttendance = ActivityAttendance(
           activity_instance_id: activityInstance.id,
           person_id: person_id,
           sign_out_time: DateTime.now().toString(),
           out_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
-        ));
+        );
+        createActivityAttendance(
+            activityAttendance); // make the call async and returrn withtout waiting
       }
 
       _fetchedAttendance[index] = activityAttendance;
@@ -124,7 +189,9 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                               activityId);
                                       if (_fetchedAttendance.length == 0)
                                         _fetchedAttendance = new List.filled(
-                                            _fetchedOrganization!.people.length,
+                                            _fetchedOrganization!
+                                                    .people.length *
+                                                2, // add 2 records for eign in and out
                                             new ActivityAttendance(
                                                 person_id: -1));
                                       else {
@@ -139,9 +206,81 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                                       _fetchedOrganization!
                                                           .people[i].id) ==
                                               -1) {
+                                            // add 2 records for sing in and out
                                             _fetchedAttendance.add(
                                                 new ActivityAttendance(
                                                     person_id: -1));
+                                            _fetchedAttendance.add(
+                                                new ActivityAttendance(
+                                                    person_id: -1));
+                                          }
+                                        }
+                                      }
+                                      if (campusAppsPortalInstance.isTeacher) {
+                                        _fetchedAttendanceAfterSchool =
+                                            await getClassActivityAttendanceToday(
+                                                _fetchedOrganization!.id!,
+                                                afterSchoolActivityId);
+                                        if (_fetchedAttendanceAfterSchool
+                                                .length ==
+                                            0)
+                                          _fetchedAttendanceAfterSchool =
+                                              new List.filled(
+                                                  _fetchedOrganization!
+                                                      .people.length,
+                                                  new ActivityAttendance(
+                                                      person_id: -1));
+                                        else {
+                                          for (int i = 0;
+                                              i <
+                                                  _fetchedOrganization!
+                                                      .people.length;
+                                              i++) {
+                                            if (_fetchedAttendanceAfterSchool
+                                                    .indexWhere((attendance) =>
+                                                        attendance.person_id ==
+                                                        _fetchedOrganization!
+                                                            .people[i].id) ==
+                                                -1) {
+                                              _fetchedAttendanceAfterSchool.add(
+                                                  new ActivityAttendance(
+                                                      person_id: -1));
+                                            }
+                                          }
+                                        }
+
+                                        if (activityInstance.id == -1) {
+                                          activityInstance =
+                                              await campusAttendanceSystemInstance
+                                                  .getCheckinActivityInstance(
+                                                      activityId);
+                                        }
+
+                                        _fetchedEvaluations =
+                                            await getActivityInstanceEvaluations(
+                                                activityInstance.id!);
+                                        if (_fetchedEvaluations.length == 0)
+                                          _fetchedEvaluations = new List.filled(
+                                              _fetchedOrganization!
+                                                  .people.length,
+                                              new Evaluation(evaluatee_id: -1));
+                                        else {
+                                          for (int i = 0;
+                                              i <
+                                                  _fetchedOrganization!
+                                                      .people.length;
+                                              i++) {
+                                            if (_fetchedEvaluations.indexWhere(
+                                                    (evaluation) =>
+                                                        evaluation
+                                                            .evaluatee_id ==
+                                                        _fetchedOrganization!
+                                                            .people[i].id) ==
+                                                -1) {
+                                              _fetchedEvaluations.add(
+                                                  new Evaluation(
+                                                      evaluatee_id: -1));
+                                            }
                                           }
                                         }
                                       }
@@ -184,6 +323,16 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                         TableCell(
                             child: Text("Sign out",
                                 style: TextStyle(fontWeight: FontWeight.bold))),
+                        if (campusAppsPortalInstance.isTeacher)
+                          TableCell(
+                              child: Text("After school",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold))),
+                        if (campusAppsPortalInstance.isTeacher)
+                          TableCell(
+                              child: Text("Absence Reason",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold))),
                       ]),
                       if (_fetchedOrganization != null)
                         if (_fetchedOrganization!.people.length > 0)
@@ -218,7 +367,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                           null,
                                       onChanged: (bool? value) async {
                                         await toggleAttendance(
-                                            person.id!, value!, true);
+                                            person.id!, value!, true, false);
                                         setState(() {});
                                       },
                                     ),
@@ -229,7 +378,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                       value: false,
                                       onChanged: (bool? value) async {
                                         await toggleAttendance(
-                                            person.id!, value!, true);
+                                            person.id!, value!, true, false);
                                         setState(() {});
                                       },
                                     ),
@@ -262,7 +411,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                           null,
                                       onChanged: (bool? value) async {
                                         await toggleAttendance(
-                                            person.id!, value!, false);
+                                            person.id!, value!, false, false);
                                         setState(() {});
                                       },
                                     ),
@@ -273,10 +422,204 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                       value: false,
                                       onChanged: (bool? value) async {
                                         await toggleAttendance(
-                                            person.id!, value!, false);
+                                            person.id!, value!, false, false);
                                         setState(() {});
                                       },
                                     ),
+                                  ),
+                              if (campusAppsPortalInstance.isTeacher)
+                                if (_fetchedAttendanceAfterSchool.length > 0)
+                                  if (_fetchedAttendanceAfterSchool
+                                          .firstWhere(
+                                              (attendance) =>
+                                                  attendance.person_id ==
+                                                      person.id &&
+                                                  attendance.sign_in_time !=
+                                                      null,
+                                              orElse: () =>
+                                                  new ActivityAttendance(
+                                                      person_id: -1))
+                                          .person_id !=
+                                      -1)
+                                    TableCell(
+                                      child: Checkbox(
+                                        value: _fetchedAttendanceAfterSchool
+                                                .firstWhere(
+                                                  (attendance) =>
+                                                      attendance.person_id ==
+                                                          person.id &&
+                                                      attendance.sign_in_time !=
+                                                          null,
+                                                )
+                                                .sign_in_time !=
+                                            null,
+                                        onChanged: (bool? value) async {
+                                          await toggleAttendance(
+                                              person.id!, value!, true, true);
+                                          setState(() {});
+                                        },
+                                      ),
+                                    )
+                                  else
+                                    TableCell(
+                                      child: Checkbox(
+                                        value: false,
+                                        onChanged: (bool? value) async {
+                                          await toggleAttendance(
+                                              person.id!, value!, true, true);
+                                          setState(() {});
+                                        },
+                                      ),
+                                    ),
+                              if (campusAppsPortalInstance.isTeacher)
+                                if (_fetchedEvaluations.length > 0)
+                                  if (_fetchedEvaluations
+                                          .firstWhere(
+                                              (evaluation) =>
+                                                  evaluation.evaluatee_id ==
+                                                  person.id,
+                                              orElse: () => new Evaluation(
+                                                  evaluatee_id: -1))
+                                          .evaluatee_id !=
+                                      -1)
+                                    TableCell(
+                                      child: Row(children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(_fetchedEvaluations
+                                                .firstWhere((evaluation) =>
+                                                    evaluation.evaluatee_id ==
+                                                    person.id)
+                                                .response!),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.edit),
+                                          onPressed: () async {
+                                            var evaluation = _fetchedEvaluations
+                                                .firstWhere((evaluation) =>
+                                                    evaluation.evaluatee_id ==
+                                                    person.id);
+
+                                            await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EditEvaluationPage(
+                                                          evaluation:
+                                                              evaluation)),
+                                            );
+                                            _fetchedEvaluations =
+                                                await getActivityInstanceEvaluations(
+                                                    activityInstance.id!);
+                                            setState(() {});
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.delete),
+                                          onPressed: () async {
+                                            var evaluation = _fetchedEvaluations
+                                                .firstWhere((evaluation) =>
+                                                    evaluation.evaluatee_id ==
+                                                    person.id);
+                                            await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DeleteEvaluationPage(
+                                                          evaluation:
+                                                              evaluation)),
+                                            );
+                                            _fetchedEvaluations =
+                                                await getActivityInstanceEvaluations(
+                                                    activityInstance.id!);
+                                            setState(() {});
+                                          },
+                                        ),
+                                      ]),
+                                    )
+                                  else
+                                    TableCell(
+                                      child: Row(children: [
+                                        Text(""),
+                                        IconButton(
+                                          icon: Icon(Icons.add),
+                                          onPressed: () async {
+                                            if (activityInstance.id == -1) {
+                                              activityInstance =
+                                                  await campusAttendanceSystemInstance
+                                                      .getCheckinActivityInstance(
+                                                          activityId);
+                                            }
+                                            var evaluation = Evaluation(
+                                              evaluator_id:
+                                                  campusAppsPortalInstance
+                                                      .getUserPerson()
+                                                      .id,
+                                              evaluatee_id: person.id,
+                                              activity_instance_id:
+                                                  activityInstance.id,
+                                              grade: 0,
+                                              evaluation_criteria_id: 54,
+                                              response: "Unexcused absence",
+                                            );
+                                            await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AddEvaluationPage(
+                                                        evaluation: evaluation,
+                                                      )),
+                                            );
+                                            _fetchedEvaluations =
+                                                await getActivityInstanceEvaluations(
+                                                    activityInstance.id!);
+                                            setState(() {});
+                                          },
+                                        ),
+                                      ]),
+                                    )
+                                else
+                                  TableCell(
+                                    child: Row(children: [
+                                      Text(""),
+                                      IconButton(
+                                        icon: Icon(Icons.add),
+                                        onPressed: () async {
+                                          if (activityInstance.id == -1) {
+                                            activityInstance =
+                                                await campusAttendanceSystemInstance
+                                                    .getCheckinActivityInstance(
+                                                        activityId);
+                                          }
+                                          var evaluation = Evaluation(
+                                            evaluator_id:
+                                                campusAppsPortalInstance
+                                                    .getUserPerson()
+                                                    .id,
+                                            evaluatee_id: person.id,
+                                            activity_instance_id:
+                                                activityInstance.id,
+                                            grade: 0,
+                                            evaluation_criteria_id: 54,
+                                            response: "Unexcused absence",
+                                          );
+                                          await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    AddEvaluationPage(
+                                                      evaluation: evaluation,
+                                                    )),
+                                          );
+                                          _fetchedEvaluations =
+                                              await getActivityInstanceEvaluations(
+                                                  activityInstance.id!);
+                                          setState(() {});
+                                        },
+                                      ),
+                                    ]),
                                   ),
                             ]);
                           }).toList()
