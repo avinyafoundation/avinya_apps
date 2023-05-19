@@ -266,11 +266,13 @@ public type Person record {
     Address? mailing_address?;
     int[]? child_student?;
     string? bank_account_name?;
+    string? bank_branch?;
     int? avinya_phone?;
     string? full_name?;
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    Organization? organization?;
     string? asgardeo_id?;
     string? updated?;
     string? preferred_name?;
@@ -596,4 +598,35 @@ public type GetOrganizationResponse record {|
             string? digital_id;
         |}[]? people;
     |}? organization;
+|};
+
+public type GetStudentByParentOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? preferred_name;
+        string? full_name;
+        string? date_of_birth;
+        string? sex;
+        string? asgardeo_id;
+        string? jwt_sub_id;
+        string? created;
+        string? updated;
+        string? jwt_email;
+        int? phone;
+        int? avinya_type_id;
+        string? notes;
+        string? nic_no;
+        string? passport_no;
+        string? id_no;
+        string? email;
+        string? street_address;
+        string? digital_id;
+        int? avinya_phone;
+        string? bank_name;
+        string? bank_account_number;
+        string? bank_account_name;
+        string? bank_branch;
+        int? academy_org_id;
+    |}[]? student_list_by_parent;
 |};
