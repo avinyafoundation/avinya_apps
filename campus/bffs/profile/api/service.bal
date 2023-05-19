@@ -64,18 +64,22 @@ service / on new http:Listener(9090) {
         }
     }
 
-    resource function get student_list_by_parent_org_id(int id) returns Person|error {
+    resource function get student_list_by_parent_org_id(int id) returns Person[]|error {
 
         GetStudentByParentOrgResponse|graphql:ClientError getPersonResponse = globalDataClient->getStudentByParentOrg(id);
         if(getPersonResponse is GetStudentByParentOrgResponse) {
-            Person|error person_record = getPersonResponse.student_list_by_parent.cloneWithType(Person);
-            if(person_record is Person) {
-                return person_record;
-            } else {
-                log:printError("Error while processing Application record received1", person_record);
-                return error("Error while processing Person record received2: " + person_record.message() + 
-                    ":: Detail:-------------------------------------------------------------->>>> " + person_record.detail().toString());
+            Person[] studdents = [];
+            foreach var person_record in getPersonResponse.student_list_by_parent {
+                Person|error person = person_record.cloneWithType(Person);
+                if(person is Person) {
+                    studdents.push(person);
+                } else {
+                    log:printError("Error while processing Person record received", person);
+                    return error("Error while processing Person record received: " + person.message() + 
+                        ":: Detail: " + person.detail().toString());
+                }
             }
+            return studdents;
         } else {
             log:printError("Error while fetching person records application3", getPersonResponse);
             return error("Error while fetching person records application4: " + getPersonResponse.message() + 

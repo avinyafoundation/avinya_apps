@@ -628,5 +628,5 @@ public type GetStudentByParentOrgResponse record {|
         string? bank_account_name;
         string? bank_branch;
         int? academy_org_id;
-    |}[]? student_list_by_parent;
+    |}[] student_list_by_parent;
 |};
