@@ -41,6 +41,7 @@ class Organization {
   Name? name;
   String? description;
   var child_organizations = <Organization>[];
+  var parent_organizations = <Organization>[];
   var people = <Person>[];
 
   Organization({
@@ -48,6 +49,7 @@ class Organization {
     this.name,
     this.description,
     this.child_organizations = const [],
+    this.parent_organizations = const [],
     this.people = const [],
   });
 
@@ -59,6 +61,10 @@ class Organization {
       child_organizations: json['child_organizations'] != null
           ? List<Organization>.from(
               json['child_organizations'].map((x) => Organization.fromJson(x)))
+          : [],
+      parent_organizations: json['parent_organizations'] != null
+          ? List<Organization>.from(
+              json['parent_organizations'].map((x) => Organization.fromJson(x)))
           : [],
       people: json['people'] != null
           ? List<Person>.from(json['people'].map((x) => Person.fromJson(x)))
@@ -74,6 +80,8 @@ class Organization {
         if (description != null) 'description': description,
         'child_organizations':
             List<dynamic>.from(child_organizations.map((x) => x.toJson())),
+        'parent_organizations':
+            List<dynamic>.from(parent_organizations.map((x) => x.toJson())),
         'people': List<dynamic>.from(people.map((x) => x.toJson())),
         // if (employees != null) 'employees': List<dynamic>.from(employees!.map((x) => x.toJson())),
       };
