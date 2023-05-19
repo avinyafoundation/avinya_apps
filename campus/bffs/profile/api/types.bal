@@ -272,7 +272,6 @@ public type Person record {
     string? nic_no?;
     int? phone?;
     int? organization_id?;
-    Organization? organization?;
     string? asgardeo_id?;
     string? updated?;
     string? preferred_name?;

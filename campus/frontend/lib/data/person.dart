@@ -136,6 +136,7 @@ class Person {
   String? street_address;
   String? bank_account_number;
   String? bank_name;
+  String? bank_branch;
   String? digital_id;
   String? bank_account_name;
   int? avinya_phone;
@@ -171,6 +172,7 @@ class Person {
     this.street_address,
     this.bank_account_number,
     this.bank_name,
+    this.bank_branch,
     this.digital_id,
     this.bank_account_name,
     this.avinya_phone,
@@ -208,6 +210,7 @@ class Person {
       street_address: json['street_address'],
       bank_account_number: json['bank_account_number'],
       bank_name: json['bank_name'],
+      bank_branch: json['bank_branch'],
       digital_id: json['digital_id'],
       bank_account_name: json['bank_account_name'],
       avinya_phone: json['avinya_phone'],
@@ -256,6 +259,7 @@ class Person {
         if (bank_account_number != null)
           'bank_account_number': bank_account_number,
         if (bank_name != null) 'bank_name': bank_name,
+        if (bank_branch != null) 'bank_name': bank_branch,
         if (digital_id != null) 'digital_id': digital_id,
         if (bank_account_name != null) 'bank_account_name': bank_account_name,
         if (avinya_phone != null) 'avinya_phone': avinya_phone,
@@ -287,6 +291,32 @@ Future<Person> fetchPerson(String digital_id) async {
   if (response.statusCode == 200) {
     Person person = Person.fromJson(json.decode(response.body));
     return person;
+  } else {
+    throw Exception('Failed to load Person');
+  }
+}
+
+Future<List<Person>> fetchStudentList(int id) async {
+  final uri = Uri.parse(
+          AppConfig.campusProfileBffApiUrl + '/student_list_by_parent_org_id')
+      .replace(queryParameters: {
+    'id': [id.toString()]
+  });
+
+  final response = await http.get(
+    uri,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<Person> studentList =
+        await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
+    return studentList;
   } else {
     throw Exception('Failed to load Person');
   }

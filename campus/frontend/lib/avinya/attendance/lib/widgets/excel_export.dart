@@ -7,13 +7,15 @@ import 'package:intl/intl.dart';
 class ExcelExport extends StatefulWidget {
   final List<ActivityAttendance> fetchedAttendance;
   final List<String?> columnNames;
-  final Organization? fetchedOrganization;
+  final List<Person> fetchedStudentList;
+  final Function() updateExcelState;
 
   const ExcelExport(
       {Key? key,
       required this.fetchedAttendance,
       required this.columnNames,
-      required this.fetchedOrganization})
+      required this.fetchedStudentList,
+      required this.updateExcelState})
       : super(key: key);
 
   @override
@@ -21,7 +23,7 @@ class ExcelExport extends StatefulWidget {
 }
 
 class _ExcelExportState extends State<ExcelExport> {
-  Organization? _fetchedOrganization;
+  List<Person> _fetchedStudentList = [];
   List<ActivityAttendance> _fetchedAttendance = [];
   List<String?> columnNames = [];
   List<String?> columnNamesWithoutDates = [];
@@ -59,10 +61,29 @@ class _ExcelExportState extends State<ExcelExport> {
     return nextWeekMonday;
   }
 
-  void exportToExcel() {
-    _fetchedAttendance = widget.fetchedAttendance;
-    columnNames = widget.columnNames;
-    _fetchedOrganization = widget.fetchedOrganization;
+  void exportToExcel() async {
+    await widget.updateExcelState();
+    // _fetchedAttendance = widget.fetchedAttendance;
+    // _fetchedStudentList = widget.fetchedStudentList;
+    // columnNames = widget.columnNames;
+    setState(() {
+      this._fetchedAttendance = widget.fetchedAttendance;
+      this._fetchedStudentList = widget.fetchedStudentList;
+      this.columnNames = widget.columnNames;
+    });
+    if (_fetchedAttendance.length > 0) {
+      // Add null check here
+      // Process attendance data here
+      columnNames.clear();
+      List<String?> names = _fetchedAttendance
+          .map((attendance) => attendance.sign_in_time?.split(" ")[0])
+          .where((name) => name != null) // Filter out null values
+          .toSet()
+          .toList();
+      columnNames.addAll(names);
+    } else {
+      columnNames.clear();
+    }
 
     final dateRegex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
     final dateFormatter = DateFormat('yyyy-MM-dd');
@@ -72,18 +93,20 @@ class _ExcelExportState extends State<ExcelExport> {
     String? fromDate = dateColumns.isNotEmpty ? dateColumns.first : '';
     String? toDate = dateColumns.isNotEmpty ? dateColumns.last : '';
 
-    columnNamesWithoutDates.addAll([
-      "Referance No",
-      "Staff Account Name",
-      "Bank Name",
-      "Branch Name",
-      "Staff Credit Account No",
-      "Transaction Code",
-      "Amount",
-      "YYYY",
-      "MM",
-      "DD"
-    ]);
+    if (columnNamesWithoutDates.isEmpty) {
+      columnNamesWithoutDates.addAll([
+        "Referance No",
+        "Staff Account Name",
+        "Bank Name",
+        "Branch Name",
+        "Staff Credit Account No",
+        "Transaction Code",
+        "Amount",
+        "YYYY",
+        "MM",
+        "DD"
+      ]);
+    }
 
     final excel = Excel.createExcel();
     final Sheet sheet = excel[excel.getDefaultSheet()!];
@@ -116,16 +139,14 @@ class _ExcelExportState extends State<ExcelExport> {
     );
 
     // Adding column headers
-    for (var columnIndex = 0;
-        columnIndex < columnNamesWithoutDates.length;
-        columnIndex++) {
+    for (var colIndex = 0;
+        colIndex < columnNamesWithoutDates.length;
+        colIndex++) {
       sheet
-          .cell(
-              CellIndex.indexByColumnRow(columnIndex: columnIndex, rowIndex: 1))
-          .value = columnNamesWithoutDates[columnIndex];
+          .cell(CellIndex.indexByColumnRow(columnIndex: colIndex, rowIndex: 1))
+          .value = columnNamesWithoutDates[colIndex];
       sheet
-          .cell(
-              CellIndex.indexByColumnRow(columnIndex: columnIndex, rowIndex: 1))
+          .cell(CellIndex.indexByColumnRow(columnIndex: colIndex, rowIndex: 1))
           .cellStyle = subHeaderStyle;
     }
     sheet.setColWidth(0, 10);
@@ -145,13 +166,9 @@ class _ExcelExportState extends State<ExcelExport> {
         .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0))
         .cellStyle = organizationHeaderStyle;
 
-    if (_fetchedOrganization != null &&
-        _fetchedOrganization!.people.isNotEmpty &&
-        columnNames.length > 0) {
-      for (var index = 0;
-          index < _fetchedOrganization!.people.length;
-          index++) {
-        var person = _fetchedOrganization!.people[index];
+    if (_fetchedStudentList.isNotEmpty && columnNames.length > 0) {
+      for (var index = 0; index < _fetchedStudentList.length; index++) {
+        var person = _fetchedStudentList[index];
 
         sheet
             .cell(
@@ -176,7 +193,7 @@ class _ExcelExportState extends State<ExcelExport> {
                 .cell(CellIndex.indexByColumnRow(
                     columnIndex: 3, rowIndex: index + 2))
                 .value =
-            person.bank_name?.toString() ?? ''; // update bank branch name
+            person.bank_branch?.toString() ?? ''; // update bank branch name
 
         sheet
             .cell(
