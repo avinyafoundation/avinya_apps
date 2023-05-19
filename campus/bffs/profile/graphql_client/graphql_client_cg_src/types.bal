@@ -159,17 +159,18 @@ public type EducationExperience record {
 
 public type Evaluation record {
     int[]? parent_evaluations?;
-    int? activity_instance_id?;
     string? notes?;
     int? evaluatee_id?;
+    string? created?;
+    int[]? child_evaluations?;
+    string? record_type?;
+    int? activity_instance_id?;
     int? evaluation_criteria_id?;
     string? response?;
-    int[]? child_evaluations?;
     int? evaluator_id?;
     int? grade?;
     int? id?;
     string? updated?;
-    string? record_type?;
 };
 
 public type EvaluationCriteria record {
@@ -246,6 +247,7 @@ public type Organization record {
 public type Person record {
     int? permanent_address_id?;
     string? street_address?;
+    string? bank_branch?;
     string? bank_account_number?;
     string? notes?;
     int[]? parent_student?;
@@ -596,4 +598,35 @@ public type GetOrganizationResponse record {|
             string? digital_id;
         |}[]? people;
     |}? organization;
+|};
+
+public type GetStudentByParentOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? preferred_name;
+        string? full_name;
+        string? date_of_birth;
+        string? sex;
+        string? asgardeo_id;
+        string? jwt_sub_id;
+        string? created;
+        string? updated;
+        string? jwt_email;
+        int? phone;
+        int? avinya_type_id;
+        string? notes;
+        string? nic_no;
+        string? passport_no;
+        string? id_no;
+        string? email;
+        string? street_address;
+        string? digital_id;
+        int? avinya_phone;
+        string? bank_name;
+        string? bank_account_number;
+        string? bank_account_name;
+        string? bank_branch;
+        int? academy_org_id;
+    |}[]? student_list_by_parent;
 |};

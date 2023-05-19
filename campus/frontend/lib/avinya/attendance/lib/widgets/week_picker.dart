@@ -2,21 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'package:flutter/material.dart';
+import 'package:attendance/widgets/weekly_payment_report.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../utils.dart';
 
-class TableRangeExample extends StatefulWidget {
-  TableRangeExample(this.updateDateRange, this.formattedStartDate);
+class WeekPicker extends StatefulWidget {
+  WeekPicker(this.updateDateRange, this.formattedStartDate);
   final Function(DateTime, DateTime) updateDateRange;
   final String formattedStartDate;
 
   @override
-  _TableRangeExampleState createState() => _TableRangeExampleState();
+  _WeekPickerState createState() => _WeekPickerState();
 }
 
-class _TableRangeExampleState extends State<TableRangeExample> {
+class _WeekPickerState extends State<WeekPicker> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
 
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
@@ -116,6 +117,15 @@ class _TableRangeExampleState extends State<TableRangeExample> {
             onPageChanged: (focusedDay) {
               _focusedDay = focusedDay;
             },
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              if (_rangeStart != null && _rangeEnd != null) {
+                widget.updateDateRange(_rangeStart!, _rangeEnd!);
+              }
+              Navigator.of(context).pop();
+            },
+            child: const Icon(Icons.save),
           )),
     );
   }

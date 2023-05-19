@@ -257,6 +257,7 @@ public type Person record {
     string? id_no?;
     string? jwt_email?;
     string? bank_name?;
+    string? bank_branch?;
     int? id?;
     string? email?;
     string? created?;

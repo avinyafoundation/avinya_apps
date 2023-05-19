@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:attendance/widgets/week_picker.dart';
+import 'package:attendance/widgets/excel_export.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:attendance/data/activity_attendance.dart';
 import 'package:gallery/data/person.dart';
 import 'package:intl/intl.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 class WeeklyPaymentReport extends StatefulWidget {
   const WeeklyPaymentReport({Key? key, required this.title}) : super(key: key);
@@ -26,7 +26,9 @@ class WeeklyPaymentReport extends StatefulWidget {
 
 class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
   List<ActivityAttendance> _fetchedAttendance = [];
+  List<ActivityAttendance> _fetchedExcelReportData = [];
   List<ActivityAttendance> _fetchedAttendanceAfterSchool = [];
+  List<Person> _fetchedStudentList = [];
   Organization? _fetchedOrganization;
 
   //calendar specific variables
@@ -46,7 +48,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
   late String formattedEndDate;
   var today = DateTime.now();
 
-  void selectWeek(DateTime today) {
+  void selectWeek(DateTime today, activityId) async {
     // Calculate the start of the week (excluding weekends) based on the selected day
     DateTime startOfWeek = today.subtract(Duration(days: today.weekday - 1));
     while (startOfWeek.weekday > DateTime.friday) {
@@ -60,19 +62,47 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
     final formatter = DateFormat('MMM d, yyyy');
     formattedStartDate = formatter.format(startOfWeek);
     formattedEndDate = formatter.format(endOfWeek);
+
+    int? parentOrgId =
+        campusAppsPortalInstance.getUserPerson().organization!.id;
+
+    if (parentOrgId != null) {
+      _fetchedExcelReportData =
+          await getClassActivityAttendanceReportByParentOrg(
+              parentOrgId,
+              activityId,
+              DateFormat('yyyy-MM-dd').format(startOfWeek),
+              DateFormat('yyyy-MM-dd').format(endOfWeek));
+      _fetchedStudentList = await fetchStudentList(parentOrgId);
+
+      setState(() {
+        this._fetchedExcelReportData = _fetchedExcelReportData;
+        this._fetchedStudentList = _fetchedStudentList;
+      });
+    }
   }
 
   @override
   void initState() {
     super.initState();
     var today = DateTime.now();
-    selectWeek(today);
     if (campusAppsPortalInstance.isTeacher) {
       activityId = campusAppsPortalInstance.activityIds['homeroom']!;
       afterSchoolActivityId =
           campusAppsPortalInstance.activityIds['after-school']!;
+      selectWeek(today, afterSchoolActivityId);
     } else if (campusAppsPortalInstance.isSecurity)
       activityId = campusAppsPortalInstance.activityIds['arrival']!;
+    selectWeek(today, activityId);
+  }
+
+  void updateExcelState() {
+    ExcelExport(
+      fetchedAttendance: _fetchedExcelReportData,
+      columnNames: columnNames,
+      fetchedStudentList: _fetchedStudentList,
+      updateExcelState: updateExcelState,
+    );
   }
 
   @override
@@ -80,7 +110,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
     super.didChangeDependencies();
     _data = MyData(
         _fetchedAttendance, columnNames, _fetchedOrganization, updateSelected);
-    TableRangeExample(updateDateRange, formattedStartDate);
+    WeekPicker(updateDateRange, formattedStartDate);
   }
 
   void updateSelected(int index, bool value, List<bool> selected) {
@@ -90,12 +120,22 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
   }
 
   void updateDateRange(_rangeStart, _rangeEnd) async {
+    int? parentOrgId =
+        campusAppsPortalInstance.getUserPerson().organization!.id;
     if (_fetchedOrganization != null) {
       _fetchedAttendance = await getClassActivityAttendanceReportForPayment(
           this._fetchedOrganization!.id!,
           activityId,
           DateFormat('yyyy-MM-dd').format(_rangeStart),
           DateFormat('yyyy-MM-dd').format(_rangeEnd));
+    }
+    if (parentOrgId != null) {
+      _fetchedExcelReportData =
+          await getClassActivityAttendanceReportByParentOrg(
+              parentOrgId,
+              activityId,
+              DateFormat('yyyy-MM-dd').format(_rangeStart),
+              DateFormat('yyyy-MM-dd').format(_rangeEnd));
     }
     setState(() {
       final startDate = _rangeStart ?? _selectedDay;
@@ -105,7 +145,10 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
       final formattedEndDate = formatter.format(endDate!);
       this.formattedStartDate = formattedStartDate;
       this.formattedEndDate = formattedEndDate;
-      refreshState(this._selectedValue);
+      this._fetchedStudentList = _fetchedStudentList;
+      if (this._selectedValue != null) {
+        refreshState(this._selectedValue);
+      }
     });
   }
 
@@ -113,7 +156,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
     var cols =
         columnNames.map((label) => DataColumn(label: Text(label!))).toList();
     _selectedValue = newValue!;
-    print(newValue.id);
+    // print(newValue.id);
     _fetchedOrganization = await fetchOrganization(newValue.id!);
 
     _fetchedAttendance = await getClassActivityAttendanceReportForPayment(
@@ -212,48 +255,6 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
               children: <Widget>[
                 Row(
                   children: [
-                    SizedBox(width: 20),
-                    ElevatedButton(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal:
-                                20), // Customize the color to your liking
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.calendar_today, color: Colors.black),
-                            SizedBox(width: 10),
-                            Text(
-                              '${this.formattedStartDate} - ${this.formattedEndDate}',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                          ],
-                        ),
-                      ),
-                      style: ButtonStyle(
-                        // increase the fontSize
-                        textStyle: MaterialStateProperty.all(
-                          TextStyle(fontSize: 20),
-                        ),
-                        elevation: MaterialStateProperty.all(
-                            20), // increase the elevation
-                        // Add outline around button
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.greenAccent),
-                        foregroundColor:
-                            MaterialStateProperty.all(Colors.black),
-                      ),
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => TableRangeExample(
-                                updateDateRange, formattedStartDate)),
-                      ),
-                    ),
                     SizedBox(width: 20),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -442,6 +443,55 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                               ]),
                       ],
                     ),
+                    SizedBox(width: 20),
+                    ElevatedButton(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal:
+                                20), // Customize the color to your liking
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.calendar_today, color: Colors.black),
+                            SizedBox(width: 10),
+                            Text(
+                              '${this.formattedStartDate} - ${this.formattedEndDate}',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ],
+                        ),
+                      ),
+                      style: ButtonStyle(
+                        // increase the fontSize
+                        textStyle: MaterialStateProperty.all(
+                          TextStyle(fontSize: 20),
+                        ),
+                        elevation: MaterialStateProperty.all(
+                            20), // increase the elevation
+                        // Add outline around button
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.greenAccent),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.black),
+                      ),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => WeekPicker(
+                                updateDateRange, formattedStartDate)),
+                      ),
+                    ),
+                    SizedBox(width: 20),
+                    ExcelExport(
+                      fetchedAttendance: _fetchedExcelReportData,
+                      columnNames: columnNames,
+                      fetchedStudentList: _fetchedStudentList,
+                      updateExcelState: updateExcelState,
+                    ),
                   ],
                 ),
                 SizedBox(height: 16.0),
@@ -609,9 +659,9 @@ class MyData extends DataTableSource {
               ),
               '0')));
 
+      int presentCount = 0;
       for (final attendance in _fetchedAttendance) {
         if (attendance.person_id == person.id) {
-          int presentCount = 0;
           int newAbsentCount = 0;
           for (final date in columnNames) {
             if (attendance.sign_in_time != null &&
