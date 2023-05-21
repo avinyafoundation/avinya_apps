@@ -100,7 +100,7 @@ class _ExcelExportState extends State<ExcelExport> {
         "Referance No",
         "Staff Account Name",
         "Bank Name",
-        "Branch Branch",
+        "Bank Branch",
         "Staff Credit Account No",
         "Transaction Code",
         "Amount",
