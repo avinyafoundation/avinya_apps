@@ -9,13 +9,15 @@ class ExcelExport extends StatefulWidget {
   final List<String?> columnNames;
   final List<Person> fetchedStudentList;
   final Function() updateExcelState;
+  final bool isFetching;
 
   const ExcelExport(
       {Key? key,
       required this.fetchedAttendance,
       required this.columnNames,
       required this.fetchedStudentList,
-      required this.updateExcelState})
+      required this.updateExcelState,
+      required this.isFetching})
       : super(key: key);
 
   @override
@@ -98,7 +100,7 @@ class _ExcelExportState extends State<ExcelExport> {
         "Referance No",
         "Staff Account Name",
         "Bank Name",
-        "Branch Name",
+        "Branch Branch",
         "Staff Credit Account No",
         "Transaction Code",
         "Amount",
@@ -267,10 +269,13 @@ class _ExcelExportState extends State<ExcelExport> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ElevatedButton(
-        child: Text('Export to Excel'),
-        onPressed: exportToExcel,
+    return IgnorePointer(
+      ignoring: widget.isFetching,
+      child: FloatingActionButton(
+        child: Icon(Icons.file_download),
+        onPressed: () {
+          exportToExcel();
+        },
       ),
     );
   }
