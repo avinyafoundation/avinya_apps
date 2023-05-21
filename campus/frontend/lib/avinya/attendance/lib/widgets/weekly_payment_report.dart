@@ -7,7 +7,10 @@ import 'package:gallery/data/person.dart';
 import 'package:intl/intl.dart';
 
 class WeeklyPaymentReport extends StatefulWidget {
-  const WeeklyPaymentReport({Key? key, required this.title}) : super(key: key);
+  const WeeklyPaymentReport(
+      {Key? key, required this.title, required this.updateDateRangeForExcel})
+      : super(key: key);
+  final Function(DateTime, DateTime) updateDateRangeForExcel;
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -30,6 +33,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
   List<ActivityAttendance> _fetchedAttendanceAfterSchool = [];
   List<Person> _fetchedStudentList = [];
   Organization? _fetchedOrganization;
+  bool _isFetching = true;
 
   //calendar specific variables
   DateTime _focusedDay = DateTime.now();
@@ -78,6 +82,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
       setState(() {
         this._fetchedExcelReportData = _fetchedExcelReportData;
         this._fetchedStudentList = _fetchedStudentList;
+        this._isFetching = false;
       });
     }
   }
@@ -90,7 +95,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
       activityId = campusAppsPortalInstance.activityIds['homeroom']!;
       afterSchoolActivityId =
           campusAppsPortalInstance.activityIds['after-school']!;
-      selectWeek(today, afterSchoolActivityId);
+      selectWeek(today, activityId);
     } else if (campusAppsPortalInstance.isSecurity)
       activityId = campusAppsPortalInstance.activityIds['arrival']!;
     selectWeek(today, activityId);
@@ -102,6 +107,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
       columnNames: columnNames,
       fetchedStudentList: _fetchedStudentList,
       updateExcelState: updateExcelState,
+      isFetching: _isFetching,
     );
   }
 
@@ -120,6 +126,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
   }
 
   void updateDateRange(_rangeStart, _rangeEnd) async {
+    widget.updateDateRangeForExcel(_rangeStart, _rangeEnd);
     int? parentOrgId =
         campusAppsPortalInstance.getUserPerson().organization!.id;
     if (_fetchedOrganization != null) {
@@ -235,6 +242,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
     }
     setState(() {
       _fetchedOrganization;
+      this._isFetching = false;
       _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
           updateSelected);
     });
@@ -244,6 +252,17 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
   Widget build(BuildContext context) {
     var cols =
         columnNames.map((label) => DataColumn(label: Text(label!))).toList();
+
+    if (_isFetching) {
+      return Center(child: CircularProgressIndicator());
+    }
+    ExcelExport(
+      fetchedAttendance: _fetchedExcelReportData,
+      columnNames: columnNames,
+      fetchedStudentList: _fetchedStudentList,
+      updateExcelState: updateExcelState,
+      isFetching: _isFetching,
+    );
 
     return SingleChildScrollView(
       child: campusAppsPortalPersonMetaDataInstance
@@ -445,26 +464,28 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                     ),
                     SizedBox(width: 20),
                     ElevatedButton(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal:
-                                20), // Customize the color to your liking
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.calendar_today, color: Colors.black),
-                            SizedBox(width: 10),
-                            Text(
-                              '${this.formattedStartDate} - ${this.formattedEndDate}',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                          ],
+                      child: Stack(children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal:
+                                  20), // Customize the color to your liking
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.calendar_today, color: Colors.black),
+                              SizedBox(width: 10),
+                              Text(
+                                '${this.formattedStartDate} - ${this.formattedEndDate}',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                      ]),
                       style: ButtonStyle(
                         // increase the fontSize
                         textStyle: MaterialStateProperty.all(
@@ -478,20 +499,16 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                         foregroundColor:
                             MaterialStateProperty.all(Colors.black),
                       ),
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => WeekPicker(
-                                updateDateRange, formattedStartDate)),
-                      ),
+                      onPressed: _isFetching
+                          ? null
+                          : () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => WeekPicker(
+                                        updateDateRange, formattedStartDate)),
+                              ),
                     ),
                     SizedBox(width: 20),
-                    ExcelExport(
-                      fetchedAttendance: _fetchedExcelReportData,
-                      columnNames: columnNames,
-                      fetchedStudentList: _fetchedStudentList,
-                      updateExcelState: updateExcelState,
-                    ),
                   ],
                 ),
                 SizedBox(height: 16.0),
