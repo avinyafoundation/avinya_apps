@@ -157,12 +157,28 @@ class _BackdropState extends State<Backdrop>
   Widget _buildStack(BuildContext context, BoxConstraints constraints) {
     final isDesktop = isDisplayDesktop(context);
 
+    Widget homePage = ValueListenableBuilder<bool>(
+      valueListenable: _isSettingsOpenNotifier,
+      builder: (context, isSettingsOpen, child) {
+        return ExcludeSemantics(
+          excluding: isSettingsOpen,
+          child: FocusTraversalGroup(child: _homePage),
+        );
+      },
+    );
+
     bool signedIn = campusAppsPortalInstance.getSignedIn();
-
-    log('signedIn: $signedIn! ');
-    print('signedIn: $signedIn!');
-
-    log('is decktop $isDesktop');
+    if (campusAppsPortalInstance.isTeacher ||
+        campusAppsPortalInstance.isSecurity ||
+        campusAppsPortalInstance.isFoundation ||
+        campusAppsPortalInstance.isStudent ||
+        campusAppsPortalInstance.isParent ||
+        campusAppsPortalInstance.isJanitor) {
+      homePage = homePage;
+    } else {
+      homePage =
+          Center(child: widget.homePage ?? const CircularProgressIndicator());
+    }
 
     final Widget settingsPage = ValueListenableBuilder<bool>(
       valueListenable: _isSettingsOpenNotifier,
@@ -181,16 +197,6 @@ class _BackdropState extends State<Backdrop>
                   child: FocusScope(child: _settingsPage),
                 )
               : ExcludeFocus(child: _settingsPage),
-        );
-      },
-    );
-
-    final Widget homePage = ValueListenableBuilder<bool>(
-      valueListenable: _isSettingsOpenNotifier,
-      builder: (context, isSettingsOpen, child) {
-        return ExcludeSemantics(
-          excluding: isSettingsOpen,
-          child: FocusTraversalGroup(child: _homePage),
         );
       },
     );
