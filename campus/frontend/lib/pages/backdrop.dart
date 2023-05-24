@@ -44,6 +44,7 @@ class _BackdropState extends State<Backdrop>
     routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute<dynamic>);
     int count = 0;
     while (campusAppsPortalInstance.isGroupFetched == false && count < 30) {
+      print("isGroupFetched");
       await Future.delayed(const Duration(milliseconds: 500));
       count++;
     }
