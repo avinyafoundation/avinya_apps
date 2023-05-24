@@ -45,7 +45,7 @@ class _BackdropState extends State<Backdrop>
     int count = 0;
     while (
         campusAppsPortalInstance.userPerson.digital_id == null && count < 30) {
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 1500));
       count++;
     }
     bool teacher = campusAppsPortalInstance.isTeacher;
