@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/gallery_localizations.dart';
 import 'package:gallery/constants.dart';
@@ -37,9 +39,29 @@ RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 class _BackdropState extends State<Backdrop>
     with TickerProviderStateMixin, RouteAware {
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
     routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute<dynamic>);
+    int count = 0;
+    while (
+        campusAppsPortalInstance.userPerson.digital_id == null && count < 30) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      count++;
+    }
+    bool teacher = campusAppsPortalInstance.isTeacher;
+
+    if (teacher) {
+      _homePage = const HomePage();
+    } else {
+      _homePage = Center(child: const Text("Unable to identify user type!"));
+    }
+  }
+
+  void delay(int milliseconds) {
+    timeDilation = 1.0;
+    Future<void>.delayed(Duration(milliseconds: milliseconds), () {
+      timeDilation = 1.0;
+    });
   }
 
   late AnimationController _settingsPanelController;
@@ -168,17 +190,21 @@ class _BackdropState extends State<Backdrop>
     );
 
     bool signedIn = campusAppsPortalInstance.getSignedIn();
-    if (campusAppsPortalInstance.isTeacher ||
-        campusAppsPortalInstance.isSecurity ||
-        campusAppsPortalInstance.isFoundation ||
-        campusAppsPortalInstance.isStudent ||
-        campusAppsPortalInstance.isParent ||
-        campusAppsPortalInstance.isJanitor) {
-      homePage = homePage;
-    } else {
-      homePage =
-          Center(child: widget.homePage ?? const CircularProgressIndicator());
-    }
+    // if (signedIn) {
+    //   if (campusAppsPortalInstance.isTeacher ||
+    //       campusAppsPortalInstance.isSecurity ||
+    //       campusAppsPortalInstance.isFoundation) {
+    //     homePage = homePage;
+    //   } else {
+    //     homePage =
+    //         Center(child: widget.homePage ?? const CircularProgressIndicator());
+    //   }
+    // }
+
+    log('signedIn: $signedIn! ');
+    print('signedIn: $signedIn!');
+
+    log('is decktop $isDesktop');
 
     final Widget settingsPage = ValueListenableBuilder<bool>(
       valueListenable: _isSettingsOpenNotifier,
