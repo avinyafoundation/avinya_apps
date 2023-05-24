@@ -32,6 +32,7 @@ class CampusAppsPortal {
   bool isJanitor = false;
   bool isTeacher = false;
   bool isFoundation = false;
+  bool isGroupFetched = false;
 
   final activityIds = {
     'school-day': 1,
@@ -193,6 +194,7 @@ class CampusAppsPortal {
           this.isFoundation = campusAppsPortalPersonMetaDataInstance
               .getGroups()
               .contains('Foundation');
+          this.isGroupFetched = true;
         }
       }
     } catch (e) {
