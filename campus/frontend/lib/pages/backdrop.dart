@@ -43,25 +43,16 @@ class _BackdropState extends State<Backdrop>
     super.didChangeDependencies();
     routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute<dynamic>);
     int count = 0;
-    while (
-        campusAppsPortalInstance.userPerson.digital_id == null && count < 30) {
+    while (campusAppsPortalInstance.isGroupFetched == false && count < 30) {
       await Future.delayed(const Duration(milliseconds: 500));
       count++;
     }
-    bool teacher = campusAppsPortalInstance.isTeacher;
 
-    if (teacher) {
+    if (campusAppsPortalInstance.isGroupFetched) {
       _homePage = const HomePage();
     } else {
       _homePage = Center(child: const Text("Unable to identify user type!"));
     }
-  }
-
-  void delay(int milliseconds) {
-    timeDilation = 1.0;
-    Future<void>.delayed(Duration(milliseconds: milliseconds), () {
-      timeDilation = 1.0;
-    });
   }
 
   late AnimationController _settingsPanelController;
