@@ -23,7 +23,7 @@ final GraphqlClient globalDataClient = check new (GLOBAL_DATA_API_URL,
 
 # A service representing a network-accessible API
 # bound to port `9090`.
-service / on new http:Listener(9090) {
+service / on new http:Listener(9095) {
 
     # Creates a student applicant Person record
     # + person - the input Person record
