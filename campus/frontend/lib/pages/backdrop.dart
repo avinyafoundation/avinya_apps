@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/gallery_localizations.dart';
 import 'package:gallery/constants.dart';
@@ -16,6 +18,7 @@ import 'package:gallery/pages/login.dart';
 import 'package:gallery/pages/settings.dart';
 import 'package:gallery/pages/settings_icon/icon.dart' as settings_icon;
 import '../data/campus_apps_portal.dart';
+import 'dart:async';
 
 const double _settingsButtonWidth = 64;
 const double _settingsButtonHeightDesktop = 56;
@@ -37,7 +40,7 @@ RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 class _BackdropState extends State<Backdrop>
     with TickerProviderStateMixin, RouteAware {
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
     routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute<dynamic>);
   }
@@ -48,10 +51,13 @@ class _BackdropState extends State<Backdrop>
   late ValueNotifier<bool> _isSettingsOpenNotifier;
   late Widget _settingsPage;
   late Widget _homePage;
+  late Completer<void> _completer;
 
   @override
   void initState() {
     super.initState();
+    _homePage = const Center(child: CircularProgressIndicator());
+    _completer = Completer<void>();
     _settingsPanelController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
@@ -66,7 +72,35 @@ class _BackdropState extends State<Backdrop>
         SettingsPage(
           animationController: _settingsPanelController,
         );
-    _homePage = widget.homePage ?? const HomePage();
+    // _homePage = widget.homePage ?? const HomePage();
+    int count = 0;
+    Future.delayed(const Duration(milliseconds: 500)).then((_) {
+      waitForGroupFetch(count);
+    });
+  }
+
+  void waitForGroupFetch(int count) {
+    if (campusAppsPortalInstance.isGroupFetched == false && count < 60) {
+      print('Waiting for group to be fetched...');
+      Future.delayed(const Duration(milliseconds: 500)).then((_) {
+        waitForGroupFetch(count + 1);
+      });
+    } else {
+      if (!_completer.isCompleted) {
+        if (campusAppsPortalInstance.isGroupFetched) {
+          setState(() {
+            _homePage = widget.homePage ?? const HomePage();
+          });
+        } else {
+          setState(() {
+            _homePage = Center(child: CircularProgressIndicator());
+          });
+        }
+        if (!_completer.isCompleted) {
+          _completer.complete();
+        }
+      }
+    }
   }
 
   @override
@@ -76,6 +110,9 @@ class _BackdropState extends State<Backdrop>
     _settingsPageFocusNode.dispose();
     _isSettingsOpenNotifier.dispose();
     routeObserver.unsubscribe(this);
+    if (!_completer.isCompleted) {
+      _completer.complete(); // Complete the future if it hasn't completed yet
+    }
     super.dispose();
   }
 
@@ -159,6 +196,16 @@ class _BackdropState extends State<Backdrop>
 
     bool signedIn = campusAppsPortalInstance.getSignedIn();
 
+    Widget homePage = ValueListenableBuilder<bool>(
+      valueListenable: _isSettingsOpenNotifier,
+      builder: (context, isSettingsOpen, child) {
+        return ExcludeSemantics(
+          excluding: isSettingsOpen,
+          child: FocusTraversalGroup(child: _homePage),
+        );
+      },
+    );
+
     log('signedIn: $signedIn! ');
     print('signedIn: $signedIn!');
 
@@ -181,16 +228,6 @@ class _BackdropState extends State<Backdrop>
                   child: FocusScope(child: _settingsPage),
                 )
               : ExcludeFocus(child: _settingsPage),
-        );
-      },
-    );
-
-    final Widget homePage = ValueListenableBuilder<bool>(
-      valueListenable: _isSettingsOpenNotifier,
-      builder: (context, isSettingsOpen, child) {
-        return ExcludeSemantics(
-          excluding: isSettingsOpen,
-          child: FocusTraversalGroup(child: _homePage),
         );
       },
     );
@@ -420,9 +457,7 @@ class _BackdropState extends State<Backdrop>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: _buildStack,
-    );
+    return _buildStack(context, BoxConstraints());
   }
 }
 
