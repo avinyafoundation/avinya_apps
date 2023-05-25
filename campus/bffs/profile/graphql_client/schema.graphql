@@ -91,6 +91,7 @@ input ActivityParticipantAttendance {
 type ActivityParticipantAttendanceData {
   id: Int
   activity_instance_id: Int
+  person_id: Int
   person: PersonData
   sign_in_time: String
   sign_out_time: String
@@ -327,6 +328,7 @@ input Evaluation {
   evaluation_criteria_id: Int
   activity_instance_id: Int
   updated: String
+  created: String
   response: String
   notes: String
   grade: Int
@@ -393,6 +395,7 @@ type EvaluationData {
   activity_instance_id: Int
   evaluation_criteria_id: Int
   updated: String
+  created: String
   notes: String
   grade: Int
   response: String
@@ -475,6 +478,7 @@ type Mutation {
   add_application(application: Application!): ApplicationData
   add_evaluations(evaluations: [Evaluation!]!): Int
   update_evaluation(evaluation: Evaluation!): EvaluationData
+  delete_evaluation(id: Int!): Int
   add_evaluation_meta_data(metadata: EvaluationMetadata!): EvaluationMetadataData
   add_evaluation_criteria(evaluationCriteria: EvaluationCriteria!): EvaluationCriteriaData
   add_evaluation_answer_option(evaluationAnswer: EvaluationCriteriaAnswerOption!): EvaluationCriteriaAnswerOptionData
@@ -486,6 +490,8 @@ type Mutation {
   add_prospect(prospect: Prospect!): ProspectData
   add_organization(org: Organization!): OrganizationData
   add_attendance(attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
+  delete_attendance(id: Int!): Int
+  delete_person_attendance(person_id: Int!): Int
   add_empower_parent(person: Person!): PersonData
   update_application_status(applicationStatus: String!, applicationId: Int!): ApplicationStatusData
   update_person_avinya_type(personId: Int!, newAvinyaId: Int!, transitionDate: String!): PersonData
@@ -577,6 +583,7 @@ input Person {
   digital_id: String
   avinya_phone: Int
   bank_name: String
+  bank_branch: String
   bank_account_number: String
   bank_account_name: String
   academy_org_id: Int
@@ -610,6 +617,7 @@ type PersonData {
   digital_id: String
   avinya_phone: Int
   bank_name: String
+  bank_branch: String
   bank_account_number: String
   bank_account_name: String
   academy_org_id: Int
@@ -681,6 +689,7 @@ type Query {
   organization_structure(name: String, id: Int): OrganizationStructureData
   organizations(level: Int!): OrganizationStructureData
   organization(name: String, id: Int): OrganizationData
+  student_list_by_parent(id: Int): [PersonData!]
   person(name: String, id: Int): PersonData
   person_by_digital_id(id: String): PersonData
   prospect(email: String, phone: Int): ProspectData
@@ -699,6 +708,8 @@ type Query {
   project_tasks(activity_id: Int!): [ActivityData!]
   student_applicant(jwt_sub_id: String): PersonData
   all_evaluations: [EvaluationData!]!
+  activity_evaluations(activity_id: Int!): [EvaluationData!]
+  activity_instance_evaluations(activity_instance_id: Int!): [EvaluationData!]
   evaluation_meta_data(meta_evaluation_id: Int!): EvaluationMetadataData
   evaluationCriteria(prompt: String, id: Int): EvaluationCriteriaData!
   evaluation_cycle(name: String, id: Int): EvaluationCycleData!
@@ -707,11 +718,16 @@ type Query {
   work_experience(id: Int): WorkExperienceData
   work_experience_ByPerson(person_id: Int): [WorkExperienceData!]
   activity(name: String, id: Int): ActivityData
+  class_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
+  person_attendance_today(person_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
+  person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int): [ActivityParticipantAttendanceData!]
+  class_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
   supplier(id: Int!): SupplierData
   suppliers: [SupplierData!]!
   consumable(id: Int!): ConsumableData
+  consumableByUpdate(updated: String, avinya_type_id: Int): [ConsumableData!]
   consumables: [ConsumableData!]!
   resource_property(id: Int!): ResourcePropertyData
   resource_properties: [ResourcePropertyData!]!

@@ -32,6 +32,8 @@ class CampusAppsPortal {
   bool isJanitor = false;
   bool isTeacher = false;
   bool isFoundation = false;
+  bool isGroupFetched = false;
+  bool isPaymentFetched = false;
 
   final activityIds = {
     'school-day': 1,
@@ -160,6 +162,10 @@ class CampusAppsPortal {
     this.persons = persons;
   }
 
+  void setPaymentStatus(bool value) {
+    this.isPaymentFetched = value;
+  }
+
   void fetchPersonForUser() async {
     // check if user is in Avinya database person table as a student
     try {
@@ -193,6 +199,9 @@ class CampusAppsPortal {
           this.isFoundation = campusAppsPortalPersonMetaDataInstance
               .getGroups()
               .contains('Foundation');
+          if (this.isSecurity || this.isTeacher || this.isFoundation) {
+            this.isGroupFetched = true;
+          }
         }
       }
     } catch (e) {
