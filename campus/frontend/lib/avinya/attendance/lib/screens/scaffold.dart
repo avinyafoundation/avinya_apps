@@ -13,7 +13,13 @@ class SMSScaffold extends StatelessWidget {
     '/attendance_marker',
     '/bulk_attendance_marker/classes',
     '/daily_attendance_report',
-    '/weekly_payment_report'
+    '/weekly_payment_report',
+    '/person_attendance_report',
+  ];
+
+  static const studentPageNames = [
+    '/attendance_marker',
+    '/person_attendance_report',
   ];
 
   const SMSScaffold({
@@ -46,12 +52,20 @@ class SMSScaffold extends StatelessWidget {
           title: 'Weekly Payment Report',
           icon: Icons.summarize,
         ),
+        AdaptiveScaffoldDestination(
+          title: 'Person Attendance Report',
+          icon: Icons.summarize,
+        ),
       ];
     } else {
       destinations = const [
         AdaptiveScaffoldDestination(
           title: 'Attendance Marker',
           icon: Icons.person_outline,
+        ),
+        AdaptiveScaffoldDestination(
+          title: 'Person Attendance Report',
+          icon: Icons.summarize,
         ),
       ];
     }
@@ -107,8 +121,17 @@ class SMSScaffold extends StatelessWidget {
         ),
         body: const SMSScaffoldBody(),
         onDestinationSelected: (idx) {
-          routeState.go(pageNames[idx]);
-        },
+     
+        if(campusAppsPortalInstance.isTeacher ||
+           campusAppsPortalInstance.isSecurity ||
+           campusAppsPortalInstance.isFoundation){
+
+            routeState.go(pageNames[idx]);
+
+         }else{
+            routeState.go(studentPageNames[idx]);
+         }
+       },
         destinations: destinations,
       ),
       persistentFooterButtons: [
@@ -126,7 +149,21 @@ class SMSScaffold extends StatelessWidget {
   }
 
   int _getSelectedIndex(String pathTemplate) {
-    int index = pageNames.indexOf(pathTemplate);
+
+    int index;
+
+    if(campusAppsPortalInstance.isTeacher ||
+       campusAppsPortalInstance.isSecurity ||
+       campusAppsPortalInstance.isFoundation){
+
+      index = pageNames.indexOf(pathTemplate);
+
+      }else{
+          
+      index =  studentPageNames.indexOf(pathTemplate);
+
+      }
+
     if (index >= 0)
       return index;
     else
