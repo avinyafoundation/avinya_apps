@@ -50,6 +50,7 @@ class _CampusAttendanceManagementSystemState
         '/weekly_payment_report',
         '/avinya_types',
         '/#access_token',
+        '/person_attendance_report',
       ],
       guard: _guard,
       initialRoute: '/attendance_marker',
@@ -116,6 +117,10 @@ class _CampusAttendanceManagementSystemState
     final weeklyPaymentReportRoute =
         ParsedRoute('/weekly_payment_report', '/weekly_payment_report', {}, {});
 
+    final personAttendanceReportRoute = ParsedRoute(
+        '/person_attendance_report', '/person_attendance_report', {}, {});
+
+
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
     // log("_guard JWT sub ${jwt_sub}");
@@ -133,6 +138,8 @@ class _CampusAttendanceManagementSystemState
       return dailyAttendanceReportRoute;
     } else if (signedIn && from == weeklyPaymentReportRoute) {
       return weeklyPaymentReportRoute;
+    }else if(signedIn && from == personAttendanceReportRoute){
+       return personAttendanceReportRoute;
     }
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {
