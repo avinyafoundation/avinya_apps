@@ -54,6 +54,7 @@ dependencies:
     path: ./lib/avinya/consumable
   route_observer_mixin: ^1.7.0
   sizer: ^2.0.15
+  flutter_spinkit: ^5.0.0
 
 dev_dependencies:
   flutter_test:

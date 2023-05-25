@@ -5,6 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
+distribution-version = "2201.5.0"
 
 [[package]]
 org = "avinyafoundation"
@@ -97,7 +98,8 @@ dependencies = [
 ]
 modules = [
 	{org = "ballerina", packageName = "graphql", moduleName = "graphql"},
-	{org = "ballerina", packageName = "graphql", moduleName = "graphql.parser"}
+	{org = "ballerina", packageName = "graphql", moduleName = "graphql.parser"},
+	{org = "ballerina", packageName = "graphql", moduleName = "graphql.subgraph"}
 ]
 
 [[package]]
@@ -194,7 +196,9 @@ org = "ballerina"
 name = "lang.int"
 version = "0.0.0"
 dependencies = [
-	{org = "ballerina", name = "jballerina.java"}
+	{org = "ballerina", name = "jballerina.java"},
+	{org = "ballerina", name = "lang.__internal"},
+	{org = "ballerina", name = "lang.object"}
 ]
 
 [[package]]
@@ -291,7 +295,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "regex"
-version = "1.3.2"
+version = "1.4.3"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.string"}

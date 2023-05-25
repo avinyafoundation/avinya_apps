@@ -1,6 +1,9 @@
+
 import 'package:flutter/material.dart';
-import 'package:gallery/avinya/asset/lib/data.dart';
-import 'package:gallery/avinya/attendance/lib/data/activity_attendance.dart';
+import 'package:attendance/data/activity_attendance.dart';
+import 'package:intl/intl.dart';
+
+import 'package:gallery/data/campus_apps_portal.dart';
 
 List<DateTime> getWeekdaysFromDate(DateTime fromDate, int numberOfWeekdays) {
   List<DateTime> weekdaysList = [];
@@ -34,11 +37,40 @@ class _PersonAttendanceMarkerReportState
   List<DataColumn> _weekdaysColumns = [];
   List<String?> stringDateTimeList = [];
   List<DateTime> weekdaysList = [];
+  
 
   @override
   void initState() {
     super.initState();
     _generateWeekdaysColumns();
+  }
+  
+  List<DataColumn> _buildDataColumns(){
+    
+    List<DataColumn> ColumnNames = [];
+
+    ColumnNames.add(DataColumn(
+                        label: Text(
+                              'Date',
+                              style:TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
+    ColumnNames.add(DataColumn(
+                        label: Text(
+                              'Attendance',
+                              style:TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
+ 
+      if(campusAppsPortalInstance.isStudent){
+
+        ColumnNames.add(DataColumn(
+                        label: Text(
+                              'Daily Payment',
+                              style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
+        ColumnNames.add(DataColumn(
+                        label: Text(
+                              'Phone Payment',
+                               style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
+      }
+
+    return ColumnNames;
   }
 
   void _generateWeekdaysColumns() {
@@ -76,22 +108,19 @@ class _PersonAttendanceMarkerReportState
             return datetime.toString().split(" ")[0];
           }).toList();
           return SingleChildScrollView(
-            scrollDirection: Axis.vertical,
             child: PaginatedDataTable(
-              columns: [
-                DataColumn(label: Text('Date')),
-                DataColumn(label: Text('Attendance'))
-              ],
+              columns: _buildDataColumns(),
               source: _PersonAttendanceMarkerReportDataSource(
                   snapshot.data, stringDateTimeList),
               rowsPerPage: 11,
               dataRowHeight: 40.0,
-              columnSpacing: 15.0,
+              columnSpacing: 100,
+              horizontalMargin: 60,
             ),
           );
-        } else if (snapshot.hasError) {
-          return Text("${snapshot.error}");
-        }
+        }// } else if (snapshot.hasError) {
+        //   return Text("${snapshot.error}");
+        // }
         return CircularProgressIndicator();
       },
     );
@@ -113,21 +142,38 @@ class _PersonAttendanceMarkerReportDataSource extends DataTableSource {
     final attendance = numberOfColumns[index];
 
     int i = 0;
+    double dailyPayment;
+    double phonePayment;
 
     for (; i < _data.length; i++) {
       if (_data[i].sign_in_time != null &&
           attendance == _data[i].sign_in_time!.split(" ")[0]) {
-        cells.add(DataCell(Text(attendance!)));
+        
+        cells.add(DataCell(Text(attendance!+"-"+"("+DateFormat.EEEE().format(DateTime.parse(attendance))+")")));
         cells.add(DataCell(Text("Present")));
+
+        if(campusAppsPortalInstance.isStudent){
+          dailyPayment = 100.00;
+          phonePayment = 100.00;
+          cells.add(DataCell(Text("Rs.$dailyPayment")));
+          cells.add(DataCell(Text("Rs.$phonePayment")));
+        }
         break;
       }
     }
 
     if (i == _data.length) {
       if (cells.isEmpty) {
-        cells.add(DataCell(Text(attendance!)));
+        cells.add(DataCell(Text(attendance!+"-"+"("+DateFormat.EEEE().format(DateTime.parse(attendance))+")")));
         cells
             .add(DataCell(Container(child: Text("Absent"), color: Colors.red)));
+        
+         if(campusAppsPortalInstance.isStudent){
+          dailyPayment = 00.00;
+          phonePayment = 00.00;
+          cells.add(DataCell(Text("Rs.$dailyPayment")));
+          cells.add(DataCell(Text("Rs.$phonePayment")));
+        }
       }
     }
     return DataRow(cells: cells);
