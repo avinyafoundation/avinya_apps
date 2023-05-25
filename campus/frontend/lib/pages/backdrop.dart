@@ -75,7 +75,8 @@ class _BackdropState extends State<Backdrop>
     // _homePage = widget.homePage ?? const HomePage();
     int count = 0;
     Future.delayed(const Duration(milliseconds: 500)).then((_) {
-      while (campusAppsPortalInstance.isGroupFetched == false && count < 30) {
+      while (campusAppsPortalInstance.isGroupFetched == false && count < 600) {
+        print('Waiting for group to be fetched...');
         Future.delayed(const Duration(milliseconds: 500));
         count++;
       }
