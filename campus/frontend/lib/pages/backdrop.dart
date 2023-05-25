@@ -10,6 +10,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/gallery_localizations.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gallery/constants.dart';
 import 'package:gallery/data/gallery_options.dart';
 import 'package:gallery/layout/adaptive.dart';
@@ -93,7 +94,23 @@ class _BackdropState extends State<Backdrop>
           });
         } else {
           setState(() {
-            _homePage = Center(child: CircularProgressIndicator());
+            _homePage = Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.blue, // Customize the background color
+                borderRadius:
+                    BorderRadius.circular(10), // Customize the border radius
+              ),
+              child: Center(
+                child: Material(
+                  color: Colors.transparent, // Set the color to transparent
+                  child: SpinKitCircle(
+                    color: Colors.white, // Customize the color of the indicator
+                    size: 50, // Customize the size of the indicator
+                  ),
+                ),
+              ),
+            );
           });
         }
         if (!_completer.isCompleted) {
@@ -318,21 +335,27 @@ class _BackdropState extends State<Backdrop>
                 ),
               ),
             ),
-            _SettingsIcon(
-              animationController: _iconController,
-              toggleSettings: _toggleSettings,
-              isSettingsOpenNotifier: _isSettingsOpenNotifier,
-            ),
-            _LogoutIcon(
-              animationController: _iconController,
-              toggleSettings: _toggleSettings,
-              isSettingsOpenNotifier: _isSettingsOpenNotifier,
-            ),
-            _ProfileIcon(
-              animationController: _iconController,
-              toggleSettings: _toggleSettings,
-              isSettingsOpenNotifier: _isSettingsOpenNotifier,
-            ),
+            campusAppsPortalInstance.isGroupFetched != false
+                ? _SettingsIcon(
+                    animationController: _iconController,
+                    toggleSettings: _toggleSettings,
+                    isSettingsOpenNotifier: _isSettingsOpenNotifier,
+                  )
+                : Container(),
+            campusAppsPortalInstance.isGroupFetched != false
+                ? _LogoutIcon(
+                    animationController: _iconController,
+                    toggleSettings: _toggleSettings,
+                    isSettingsOpenNotifier: _isSettingsOpenNotifier,
+                  )
+                : Container(),
+            campusAppsPortalInstance.isGroupFetched != false
+                ? _ProfileIcon(
+                    animationController: _iconController,
+                    toggleSettings: _toggleSettings,
+                    isSettingsOpenNotifier: _isSettingsOpenNotifier,
+                  )
+                : Container(),
           ],
           if (!isDesktop && signedIn) ...[
             Semantics(sortKey: const OrdinalSortKey(2), child: homePage),

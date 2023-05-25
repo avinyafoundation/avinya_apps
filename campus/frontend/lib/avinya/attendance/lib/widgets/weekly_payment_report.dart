@@ -5,6 +5,7 @@ import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:attendance/data/activity_attendance.dart';
 import 'package:gallery/data/person.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class WeeklyPaymentReport extends StatefulWidget {
   const WeeklyPaymentReport(
@@ -71,19 +72,33 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
         campusAppsPortalInstance.getUserPerson().organization!.id;
 
     if (parentOrgId != null) {
-      _fetchedExcelReportData =
-          await getClassActivityAttendanceReportByParentOrg(
-              parentOrgId,
-              activityId,
-              DateFormat('yyyy-MM-dd').format(startOfWeek),
-              DateFormat('yyyy-MM-dd').format(endOfWeek));
-      _fetchedStudentList = await fetchStudentList(parentOrgId);
-
       setState(() {
-        this._fetchedExcelReportData = _fetchedExcelReportData;
-        this._fetchedStudentList = _fetchedStudentList;
-        this._isFetching = false;
+        _isFetching = true; // Set _isFetching to true before starting the fetch
       });
+
+      try {
+        final fetchedExcelReportData =
+            await getClassActivityAttendanceReportByParentOrg(
+          parentOrgId,
+          activityId,
+          DateFormat('yyyy-MM-dd').format(startOfWeek),
+          DateFormat('yyyy-MM-dd').format(endOfWeek),
+        );
+        final fetchedStudentList = await fetchStudentList(parentOrgId);
+
+        setState(() {
+          _fetchedExcelReportData = fetchedExcelReportData;
+          _fetchedStudentList = fetchedStudentList;
+          _isFetching =
+              false; // Set _isFetching to false after the fetch completes
+        });
+      } catch (error) {
+        // Handle any errors that occur during the fetch
+        setState(() {
+          _isFetching = false; // Set _isFetching to false in case of error
+        });
+        // Perform error handling, e.g., show an error message
+      }
     }
   }
 
@@ -137,29 +152,43 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
           DateFormat('yyyy-MM-dd').format(_rangeEnd));
     }
     if (parentOrgId != null) {
-      _fetchedExcelReportData =
-          await getClassActivityAttendanceReportByParentOrg(
-              parentOrgId,
-              activityId,
-              DateFormat('yyyy-MM-dd').format(_rangeStart),
-              DateFormat('yyyy-MM-dd').format(_rangeEnd));
-    }
-    setState(() {
-      final startDate = _rangeStart ?? _selectedDay;
-      final endDate = _rangeEnd ?? _selectedDay;
-      final formatter = DateFormat('MMM d, yyyy');
-      final formattedStartDate = formatter.format(startDate!);
-      final formattedEndDate = formatter.format(endDate!);
-      this.formattedStartDate = formattedStartDate;
-      this.formattedEndDate = formattedEndDate;
-      this._fetchedStudentList = _fetchedStudentList;
-      if (this._selectedValue != null) {
-        refreshState(this._selectedValue);
+      setState(() {
+        _isFetching = true; // Set _isFetching to true before starting the fetch
+      });
+      try {
+        _fetchedExcelReportData =
+            await getClassActivityAttendanceReportByParentOrg(
+                parentOrgId,
+                activityId,
+                DateFormat('yyyy-MM-dd').format(_rangeStart),
+                DateFormat('yyyy-MM-dd').format(_rangeEnd));
+        setState(() {
+          final startDate = _rangeStart ?? _selectedDay;
+          final endDate = _rangeEnd ?? _selectedDay;
+          final formatter = DateFormat('MMM d, yyyy');
+          final formattedStartDate = formatter.format(startDate!);
+          final formattedEndDate = formatter.format(endDate!);
+          this.formattedStartDate = formattedStartDate;
+          this.formattedEndDate = formattedEndDate;
+          this._fetchedStudentList = _fetchedStudentList;
+          if (this._selectedValue != null) {
+            refreshState(this._selectedValue);
+          }
+        });
+      } catch (error) {
+        // Handle any errors that occur during the fetch
+        setState(() {
+          _isFetching = false; // Set _isFetching to false in case of error
+        });
+        // Perform error handling, e.g., show an error message
       }
-    });
+    }
   }
 
   void refreshState(Organization? newValue) async {
+    setState(() {
+      _isFetching = true; // Set _isFetching to true before starting the fetch
+    });
     var cols =
         columnNames.map((label) => DataColumn(label: Text(label!))).toList();
     _selectedValue = newValue!;
@@ -240,6 +269,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
         }
       }
     }
+
     setState(() {
       _fetchedOrganization;
       this._isFetching = false;
@@ -253,9 +283,6 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
     var cols =
         columnNames.map((label) => DataColumn(label: Text(label!))).toList();
 
-    if (_isFetching) {
-      return Center(child: CircularProgressIndicator());
-    }
     ExcelExport(
       fetchedAttendance: _fetchedExcelReportData,
       columnNames: columnNames,
@@ -464,36 +491,11 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                     ),
                     SizedBox(width: 20),
                     ElevatedButton(
-                      child: Stack(children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal:
-                                  20), // Customize the color to your liking
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.calendar_today, color: Colors.black),
-                              SizedBox(width: 10),
-                              Text(
-                                '${this.formattedStartDate} - ${this.formattedEndDate}',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w400),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ]),
                       style: ButtonStyle(
-                        // increase the fontSize
                         textStyle: MaterialStateProperty.all(
                           TextStyle(fontSize: 20),
                         ),
-                        elevation: MaterialStateProperty.all(
-                            20), // increase the elevation
-                        // Add outline around button
+                        elevation: MaterialStateProperty.all(20),
                         backgroundColor:
                             MaterialStateProperty.all(Colors.greenAccent),
                         foregroundColor:
@@ -507,28 +509,71 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                                     builder: (_) => WeekPicker(
                                         updateDateRange, formattedStartDate)),
                               ),
+                      child: Container(
+                        height: 50, // Adjust the height as needed
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (_isFetching)
+                              Padding(
+                                padding: EdgeInsets.only(right: 10),
+                                child: SpinKitFadingCircle(
+                                  color: Colors
+                                      .black, // Customize the color of the indicator
+                                  size:
+                                      20, // Customize the size of the indicator
+                                ),
+                              ),
+                            if (!_isFetching)
+                              Icon(Icons.calendar_today, color: Colors.black),
+                            SizedBox(width: 10),
+                            Text(
+                              '${this.formattedStartDate} - ${this.formattedEndDate}',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                     SizedBox(width: 20),
                   ],
                 ),
                 SizedBox(height: 16.0),
                 SizedBox(height: 32.0),
-                Wrap(children: [
-                  (cols.length > 2)
-                      ? PaginatedDataTable(
-                          showCheckboxColumn: false,
-                          source: _data,
-                          columns: cols,
-                          // header: const Center(child: Text('Daily Attendance')),
-                          columnSpacing: 100,
-                          horizontalMargin: 60,
-                          rowsPerPage: 22,
-                        )
-                      : Container(
-                          margin: EdgeInsets.all(20), // Add margin here
-                          child: Text('No attendance data found'),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (_isFetching)
+                      Container(
+                        margin: EdgeInsets.only(top: 180),
+                        child: SpinKitCircle(
+                          color: (Colors
+                              .blue), // Customize the color of the indicator
+                          size: 50, // Customize the size of the indicator
                         ),
-                ]),
+                      )
+                    else if (cols.length > 2)
+                      PaginatedDataTable(
+                        showCheckboxColumn: false,
+                        source: _data,
+                        columns: cols,
+                        // header: const Center(child: Text('Daily Attendance')),
+                        columnSpacing: 100,
+                        horizontalMargin: 60,
+                        rowsPerPage: 22,
+                      )
+                    else
+                      Container(
+                        margin: EdgeInsets.all(20),
+                        child: Text('No attendance data found'),
+                      ),
+                  ],
+                )
               ],
             ),
     );
