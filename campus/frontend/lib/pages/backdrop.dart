@@ -75,11 +75,17 @@ class _BackdropState extends State<Backdrop>
     // _homePage = widget.homePage ?? const HomePage();
     int count = 0;
     Future.delayed(const Duration(milliseconds: 500)).then((_) {
-      while (campusAppsPortalInstance.isGroupFetched == false && count < 600) {
-        print('Waiting for group to be fetched...');
-        Future.delayed(const Duration(milliseconds: 500));
-        count++;
-      }
+      waitForGroupFetch(count);
+    });
+  }
+
+  void waitForGroupFetch(int count) {
+    if (campusAppsPortalInstance.isGroupFetched == false && count < 60) {
+      print('Waiting for group to be fetched...');
+      Future.delayed(const Duration(milliseconds: 500)).then((_) {
+        waitForGroupFetch(count + 1);
+      });
+    } else {
       if (!_completer.isCompleted) {
         if (campusAppsPortalInstance.isGroupFetched) {
           setState(() {
@@ -90,12 +96,11 @@ class _BackdropState extends State<Backdrop>
             _homePage = Center(child: CircularProgressIndicator());
           });
         }
+        if (!_completer.isCompleted) {
+          _completer.complete();
+        }
       }
-    }).whenComplete(() {
-      if (!_completer.isCompleted) {
-        _completer.complete();
-      }
-    });
+    }
   }
 
   @override
@@ -190,26 +195,6 @@ class _BackdropState extends State<Backdrop>
     final isDesktop = isDisplayDesktop(context);
 
     bool signedIn = campusAppsPortalInstance.getSignedIn();
-
-    // int count = 0;
-    // bool widgetMounted = true; // Flag to track widget state
-    // Future.delayed(const Duration(milliseconds: 500)).then((_) {
-    //   while (campusAppsPortalInstance.isGroupFetched == false && count < 30) {
-    //     Future.delayed(const Duration(milliseconds: 500));
-    //     count++;
-    //   }
-    //   if (widgetMounted) {
-    //     if (campusAppsPortalInstance.isGroupFetched) {
-    //       setState(() {
-    //         _homePage = widget.homePage ?? const HomePage();
-    //       });
-    //     } else {
-    //       setState(() {
-    //         _homePage = Center(child: CircularProgressIndicator());
-    //       });
-    //     }
-    //   }
-    // });
 
     Widget homePage = ValueListenableBuilder<bool>(
       valueListenable: _isSettingsOpenNotifier,
