@@ -49,19 +49,28 @@ class _WeeklyPaymentReportScreenState extends State<WeeklyPaymentReportScreen>
         campusAppsPortalInstance.getUserPerson().organization!.id;
 
     if (parentOrgId != null) {
-      _fetchedExcelReportData =
-          await getClassActivityAttendanceReportByParentOrg(
-              parentOrgId,
-              activityId,
-              DateFormat('yyyy-MM-dd').format(startOfWeek),
-              DateFormat('yyyy-MM-dd').format(endOfWeek));
-      _fetchedStudentList = await fetchStudentList(parentOrgId);
-
       setState(() {
-        this._fetchedExcelReportData = _fetchedExcelReportData;
-        this._fetchedStudentList = _fetchedStudentList;
-        this.isFetching = false;
+        this.isFetching = true;
       });
+      try {
+        _fetchedExcelReportData =
+            await getClassActivityAttendanceReportByParentOrg(
+                parentOrgId,
+                activityId,
+                DateFormat('yyyy-MM-dd').format(startOfWeek),
+                DateFormat('yyyy-MM-dd').format(endOfWeek));
+        _fetchedStudentList = await fetchStudentList(parentOrgId);
+
+        setState(() {
+          this._fetchedExcelReportData = _fetchedExcelReportData;
+          this._fetchedStudentList = _fetchedStudentList;
+          this.isFetching = false;
+        });
+      } catch (e) {
+        setState(() {
+          this.isFetching = false;
+        });
+      }
     }
   }
 
@@ -69,24 +78,33 @@ class _WeeklyPaymentReportScreenState extends State<WeeklyPaymentReportScreen>
     int? parentOrgId =
         campusAppsPortalInstance.getUserPerson().organization!.id;
     if (parentOrgId != null) {
-      _fetchedExcelReportData =
-          await getClassActivityAttendanceReportByParentOrg(
-              parentOrgId,
-              activityId,
-              DateFormat('yyyy-MM-dd').format(_rangeStart),
-              DateFormat('yyyy-MM-dd').format(_rangeEnd));
+      setState(() {
+        this.isFetching = true;
+      });
+      try {
+        _fetchedExcelReportData =
+            await getClassActivityAttendanceReportByParentOrg(
+                parentOrgId,
+                activityId,
+                DateFormat('yyyy-MM-dd').format(_rangeStart),
+                DateFormat('yyyy-MM-dd').format(_rangeEnd));
+        setState(() {
+          final startDate = _rangeStart ?? _selectedDay;
+          final endDate = _rangeEnd ?? _selectedDay;
+          final formatter = DateFormat('MMM d, yyyy');
+          final formattedStartDate = formatter.format(startDate!);
+          final formattedEndDate = formatter.format(endDate!);
+          this.formattedStartDate = formattedStartDate;
+          this.formattedEndDate = formattedEndDate;
+          this._fetchedStudentList = _fetchedStudentList;
+          this.isFetching = false;
+        });
+      } catch (e) {
+        setState(() {
+          this.isFetching = false;
+        });
+      }
     }
-    setState(() {
-      final startDate = _rangeStart ?? _selectedDay;
-      final endDate = _rangeEnd ?? _selectedDay;
-      final formatter = DateFormat('MMM d, yyyy');
-      final formattedStartDate = formatter.format(startDate!);
-      final formattedEndDate = formatter.format(endDate!);
-      this.formattedStartDate = formattedStartDate;
-      this.formattedEndDate = formattedEndDate;
-      this._fetchedStudentList = _fetchedStudentList;
-      this.isFetching = false;
-    });
   }
 
   @override
@@ -123,27 +141,27 @@ class _WeeklyPaymentReportScreenState extends State<WeeklyPaymentReportScreen>
         automaticallyImplyLeading: false,
         title: Text("Weekly Student Payment Report"),
       ),
-      body: isFetching
-          ? Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Container(
-                child: Column(
-                  children: [
-                    WeeklyPaymentReport(
-                      title: 'Weekly Student Payment',
-                      updateDateRangeForExcel: updateDateRange,
-                    )
-                  ],
-                ),
-              ),
-            ),
-      floatingActionButton: ExcelExport(
-        fetchedAttendance: _fetchedExcelReportData,
-        columnNames: columnNames,
-        fetchedStudentList: _fetchedStudentList,
-        updateExcelState: updateExcelState,
-        isFetching: isFetching,
+      body: SingleChildScrollView(
+        child: Container(
+          child: Column(
+            children: [
+              WeeklyPaymentReport(
+                title: 'Weekly Student Payment',
+                updateDateRangeForExcel: updateDateRange,
+              )
+            ],
+          ),
+        ),
       ),
+      floatingActionButton: this.isFetching
+          ? null
+          : ExcelExport(
+              fetchedAttendance: _fetchedExcelReportData,
+              columnNames: columnNames,
+              fetchedStudentList: _fetchedStudentList,
+              updateExcelState: updateExcelState,
+              isFetching: isFetching,
+            ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }

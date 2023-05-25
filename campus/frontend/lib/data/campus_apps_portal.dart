@@ -33,7 +33,6 @@ class CampusAppsPortal {
   bool isTeacher = false;
   bool isFoundation = false;
   bool isGroupFetched = false;
-  bool isPaymentFetched = false;
 
   final activityIds = {
     'school-day': 1,
@@ -160,10 +159,6 @@ class CampusAppsPortal {
 
   void setPersons(List<Person>? persons) {
     this.persons = persons;
-  }
-
-  void setPaymentStatus(bool value) {
-    this.isPaymentFetched = value;
   }
 
   void fetchPersonForUser() async {
