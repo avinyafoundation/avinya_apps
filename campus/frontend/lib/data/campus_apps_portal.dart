@@ -194,7 +194,10 @@ class CampusAppsPortal {
           this.isFoundation = campusAppsPortalPersonMetaDataInstance
               .getGroups()
               .contains('Foundation');
-          if (this.isSecurity || this.isTeacher || this.isFoundation) {
+          if (this.isSecurity ||
+              this.isTeacher ||
+              this.isFoundation ||
+              this.isStudent) {
             this.isGroupFetched = true;
           }
         }
