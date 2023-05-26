@@ -47,7 +47,6 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
   List<Map<String, bool>> attendanceList = [];
   var _selectedValue;
   var activityId = 0;
-  var afterSchoolActivityId = 0;
 
   late String formattedStartDate;
   late String formattedEndDate;
@@ -108,8 +107,6 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
     var today = DateTime.now();
     if (campusAppsPortalInstance.isTeacher) {
       activityId = campusAppsPortalInstance.activityIds['homeroom']!;
-      afterSchoolActivityId =
-          campusAppsPortalInstance.activityIds['after-school']!;
       selectWeek(today, activityId);
     } else if (campusAppsPortalInstance.isSecurity)
       activityId = campusAppsPortalInstance.activityIds['arrival']!;
@@ -234,38 +231,6 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                 attendance.person_id == _fetchedOrganization!.people[i].id) ==
             -1) {
           _fetchedAttendance.add(new ActivityAttendance(person_id: -1));
-        }
-      }
-    }
-    if (campusAppsPortalInstance.isTeacher) {
-      _fetchedAttendanceAfterSchool =
-          await getClassActivityAttendanceReportForPayment(
-              _fetchedOrganization!.id!,
-              afterSchoolActivityId,
-              DateFormat('yyyy-MM-dd').format(
-                  DateFormat('MMMM d, yyyy').parse(this.formattedStartDate)),
-              DateFormat('yyyy-MM-dd').format(
-                  DateFormat('MMMM d, yyyy').parse(this.formattedEndDate)));
-      _fetchedAttendanceAfterSchool =
-          await getClassActivityAttendanceReportForPayment(
-              _fetchedOrganization!.id!,
-              afterSchoolActivityId,
-              DateFormat('yyyy-MM-dd').format(
-                  DateFormat('MMMM d, yyyy').parse(this.formattedStartDate)),
-              DateFormat('yyyy-MM-dd').format(
-                  DateFormat('MMMM d, yyyy').parse(this.formattedEndDate)));
-      if (_fetchedAttendanceAfterSchool.length == 0)
-        _fetchedAttendanceAfterSchool = new List.filled(
-            _fetchedOrganization!.people.length,
-            new ActivityAttendance(person_id: -1));
-      else {
-        for (int i = 0; i < _fetchedOrganization!.people.length; i++) {
-          if (_fetchedAttendanceAfterSchool.indexWhere((attendance) =>
-                  attendance.person_id == _fetchedOrganization!.people[i].id) ==
-              -1) {
-            _fetchedAttendanceAfterSchool
-                .add(new ActivityAttendance(person_id: -1));
-          }
         }
       }
     }
@@ -403,67 +368,6 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                                                 _fetchedAttendance.add(
                                                     new ActivityAttendance(
                                                         person_id: -1));
-                                              }
-                                            }
-                                          }
-                                          if (campusAppsPortalInstance
-                                              .isTeacher) {
-                                            _fetchedAttendanceAfterSchool =
-                                                await getClassActivityAttendanceReportForPayment(
-                                                    _fetchedOrganization!.id!,
-                                                    afterSchoolActivityId,
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateFormat(
-                                                                'MMMM d, yyyy')
-                                                            .parse(this
-                                                                .formattedStartDate)),
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateFormat(
-                                                                'MMMM d, yyyy')
-                                                            .parse(this
-                                                                .formattedEndDate)));
-                                            _fetchedAttendanceAfterSchool =
-                                                await getClassActivityAttendanceReportForPayment(
-                                                    _fetchedOrganization!.id!,
-                                                    afterSchoolActivityId,
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateFormat(
-                                                                'MMMM d, yyyy')
-                                                            .parse(this
-                                                                .formattedStartDate)),
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateFormat(
-                                                                'MMMM d, yyyy')
-                                                            .parse(this
-                                                                .formattedEndDate)));
-                                            if (_fetchedAttendanceAfterSchool
-                                                    .length ==
-                                                0)
-                                              _fetchedAttendanceAfterSchool =
-                                                  new List.filled(
-                                                      _fetchedOrganization!
-                                                          .people.length,
-                                                      new ActivityAttendance(
-                                                          person_id: -1));
-                                            else {
-                                              for (int i = 0;
-                                                  i <
-                                                      _fetchedOrganization!
-                                                          .people.length;
-                                                  i++) {
-                                                if (_fetchedAttendanceAfterSchool
-                                                        .indexWhere((attendance) =>
-                                                            attendance
-                                                                .person_id ==
-                                                            _fetchedOrganization!
-                                                                .people[i]
-                                                                .id) ==
-                                                    -1) {
-                                                  _fetchedAttendanceAfterSchool
-                                                      .add(
-                                                          new ActivityAttendance(
-                                                              person_id: -1));
-                                                }
                                               }
                                             }
                                           }
