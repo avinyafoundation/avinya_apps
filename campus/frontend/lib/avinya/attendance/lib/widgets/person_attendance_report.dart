@@ -4,6 +4,7 @@ import 'package:attendance/data/activity_attendance.dart';
 import 'package:intl/intl.dart';
 
 import 'package:gallery/data/campus_apps_portal.dart';
+import '../routing.dart';
 
 List<DateTime> getWeekdaysFromDate(DateTime fromDate, int numberOfWeekdays) {
   List<DateTime> weekdaysList = [];
@@ -37,6 +38,7 @@ class _PersonAttendanceMarkerReportState
   List<DataColumn> _weekdaysColumns = [];
   List<String?> stringDateTimeList = [];
   List<DateTime> weekdaysList = [];
+  bool isAttendanceMarkerPathTemplate = false;
   
 
   @override
@@ -45,7 +47,7 @@ class _PersonAttendanceMarkerReportState
     _generateWeekdaysColumns();
   }
   
-  List<DataColumn> _buildDataColumns(){
+  List<DataColumn> _buildDataColumns(bool isAttendanceMarkerPathTemplate){
     
     List<DataColumn> ColumnNames = [];
 
@@ -57,8 +59,11 @@ class _PersonAttendanceMarkerReportState
                         label: Text(
                               'Attendance',
                               style:TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
- 
-      if(campusAppsPortalInstance.isStudent){
+  
+
+        if(!isAttendanceMarkerPathTemplate){
+
+       
 
         ColumnNames.add(DataColumn(
                         label: Text(
@@ -68,7 +73,8 @@ class _PersonAttendanceMarkerReportState
                         label: Text(
                               'Phone Payment',
                                style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
-      }
+        }
+    
 
     return ColumnNames;
   }
@@ -100,6 +106,19 @@ class _PersonAttendanceMarkerReportState
 
   @override
   Widget build(BuildContext context) {
+
+  
+   final currentRoute = RouteStateScope.of(context).route;
+
+   if(currentRoute.pathTemplate.startsWith('/attendance_marker')){
+       
+         isAttendanceMarkerPathTemplate = true;
+   }else{
+        isAttendanceMarkerPathTemplate = false;
+   }
+   
+   
+
     return FutureBuilder<List<ActivityAttendance>>(
       future: refreshPersonActivityAttendanceReport(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -109,9 +128,9 @@ class _PersonAttendanceMarkerReportState
           }).toList();
           return SingleChildScrollView(
             child: PaginatedDataTable(
-              columns: _buildDataColumns(),
+              columns: _buildDataColumns(isAttendanceMarkerPathTemplate),
               source: _PersonAttendanceMarkerReportDataSource(
-                  snapshot.data, stringDateTimeList),
+                  snapshot.data, stringDateTimeList,isAttendanceMarkerPathTemplate),
               rowsPerPage: 11,
               dataRowHeight: 40.0,
               columnSpacing: 100,
@@ -128,12 +147,13 @@ class _PersonAttendanceMarkerReportState
 }
 
 class _PersonAttendanceMarkerReportDataSource extends DataTableSource {
-  _PersonAttendanceMarkerReportDataSource(this._data, this.numberOfColumns) {
+  _PersonAttendanceMarkerReportDataSource(this._data, this.numberOfColumns,this.isAttendanceMarkerPathTemplate) {
     numberOfColumns.sort((a, b) => b!.compareTo(a!));
   }
 
   List<ActivityAttendance> _data;
   List<String?> numberOfColumns = [];
+  bool  isAttendanceMarkerPathTemplate;
 
   @override
   DataRow? getRow(int index) {
@@ -152,7 +172,10 @@ class _PersonAttendanceMarkerReportDataSource extends DataTableSource {
         cells.add(DataCell(Text(attendance!+"-"+"("+DateFormat.EEEE().format(DateTime.parse(attendance))+")")));
         cells.add(DataCell(Text("Present")));
 
-        if(campusAppsPortalInstance.isStudent){
+        if(!isAttendanceMarkerPathTemplate){
+
+         
+
           dailyPayment = 100.00;
           phonePayment = 100.00;
           cells.add(DataCell(Text("Rs.$dailyPayment")));
@@ -164,16 +187,24 @@ class _PersonAttendanceMarkerReportDataSource extends DataTableSource {
 
     if (i == _data.length) {
       if (cells.isEmpty) {
+
+      
+
         cells.add(DataCell(Text(attendance!+"-"+"("+DateFormat.EEEE().format(DateTime.parse(attendance))+")")));
         cells
             .add(DataCell(Container(child: Text("Absent"), color: Colors.red)));
         
-         if(campusAppsPortalInstance.isStudent){
+        if(!isAttendanceMarkerPathTemplate){
+
+         
+
           dailyPayment = 00.00;
           phonePayment = 00.00;
           cells.add(DataCell(Text("Rs.$dailyPayment")));
           cells.add(DataCell(Text("Rs.$phonePayment")));
+          
         }
+
       }
     }
     return DataRow(cells: cells);
