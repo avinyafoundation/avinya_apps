@@ -52,10 +52,6 @@ class SMSScaffold extends StatelessWidget {
           title: 'Weekly Payment Report',
           icon: Icons.summarize,
         ),
-        AdaptiveScaffoldDestination(
-          title: 'Person Attendance Report',
-          icon: Icons.summarize,
-        ),
       ];
     } else {
       destinations = const [
@@ -64,7 +60,7 @@ class SMSScaffold extends StatelessWidget {
           icon: Icons.person_outline,
         ),
         AdaptiveScaffoldDestination(
-          title: 'Person Attendance Report',
+          title: 'Person Payment Report',
           icon: Icons.summarize,
         ),
       ];
