@@ -196,9 +196,9 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
         _fetchedOrganization!.id!,
         activityId,
         DateFormat('yyyy-MM-dd')
-            .format(DateFormat('MMMM d, yyyy').parse(this.formattedStartDate)),
+            .format(DateFormat('MMM d, yyyy').parse(this.formattedStartDate)),
         DateFormat('yyyy-MM-dd')
-            .format(DateFormat('MMMM d, yyyy').parse(this.formattedEndDate)));
+            .format(DateFormat('MMM d, yyyy').parse(this.formattedEndDate)));
     if (_fetchedAttendance.length > 0) {
       // Add null check here
       // Process attendance data here
@@ -301,12 +301,12 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                                                   activityId,
                                                   DateFormat('yyyy-MM-dd')
                                                       .format(DateFormat(
-                                                              'MMMM d, yyyy')
+                                                              'MMM d, yyyy')
                                                           .parse(this
                                                               .formattedStartDate)),
                                                   DateFormat('yyyy-MM-dd')
                                                       .format(DateFormat(
-                                                              'MMMM d, yyyy')
+                                                              'MMM d, yyyy')
                                                           .parse(this
                                                               .formattedEndDate)));
                                           if (_fetchedAttendance.length > 0) {
