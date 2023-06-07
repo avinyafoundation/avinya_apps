@@ -28,6 +28,9 @@ class Person {
   String? email;
   Address? permanent_address;
   Address? mailing_address;
+  String? street_address;
+  int? branch_id;
+  String? branch_code;
 
   Person({
     this.id,
@@ -41,6 +44,7 @@ class Person {
     this.passport_no,
     this.permanent_address_id,
     this.mailing_address_id,
+    this.street_address,
     this.nic_no,
     this.id_no,
     this.phone,
@@ -51,6 +55,8 @@ class Person {
     this.email,
     this.permanent_address,
     this.mailing_address,
+    this.branch_id,
+    this.branch_code,
   });
 
   factory Person.fromJson(Map<String, dynamic> json) {
@@ -66,6 +72,7 @@ class Person {
       passport_no: json['passport_no'],
       permanent_address_id: json['permanent_address_id'],
       mailing_address_id: json['mailing_address_id'],
+      street_address: json['street_address'],
       nic_no: json['nic_no'],
       id_no: json['id_no'],
       phone: json['phone'],
@@ -74,6 +81,8 @@ class Person {
       jwt_sub_id: json['jwt_sub_id'],
       jwt_email: json['jwt_email'],
       email: json['email'],
+      branch_code: json['branch_code'],
+      branch_id: json['branch_id'],
       permanent_address: Address.fromJson(
           json['permanent_address'] != null ? json['permanent_address'] : {}),
       mailing_address: Address.fromJson(
@@ -95,6 +104,7 @@ class Person {
           'permanent_address_id': permanent_address_id,
         if (mailing_address_id != null)
           'mailing_address_id': mailing_address_id,
+        if (street_address != null) 'street_address': street_address,
         if (nic_no != null) 'nic_no': nic_no,
         if (id_no != null) 'id_no': id_no,
         if (phone != null) 'phone': phone,
@@ -103,6 +113,8 @@ class Person {
         if (jwt_sub_id != null) 'jwt_sub_id': jwt_sub_id,
         if (jwt_email != null) 'jwt_email': jwt_email,
         if (email != null) 'email': email,
+        if (branch_code != null) 'branch_code': branch_code,
+        if (branch_id != null) 'branch_id': branch_id,
         if (permanent_address != null)
           'permanent_address': permanent_address!.toJson(),
         if (mailing_address != null)

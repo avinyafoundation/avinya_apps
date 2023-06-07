@@ -277,6 +277,7 @@ public type Person record {
     string? preferred_name?;
     string? jwt_sub_id?;
     int? academy_org_id?;
+    string? branch_code?;
 };
 
 public type Prospect record {
