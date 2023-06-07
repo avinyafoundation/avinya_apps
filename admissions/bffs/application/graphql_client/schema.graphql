@@ -583,9 +583,12 @@ input Person {
   digital_id: String
   avinya_phone: Int
   bank_name: String
+  bank_branch: String
   bank_account_number: String
   bank_account_name: String
   academy_org_id: Int
+  academy_org_name: String
+  branch_code: String
 }
 
 type PersonData {
@@ -616,6 +619,7 @@ type PersonData {
   digital_id: String
   avinya_phone: Int
   bank_name: String
+  bank_branch: String
   bank_account_number: String
   bank_account_name: String
   academy_org_id: Int
@@ -687,6 +691,7 @@ type Query {
   organization_structure(name: String, id: Int): OrganizationStructureData
   organizations(level: Int!): OrganizationStructureData
   organization(name: String, id: Int): OrganizationData
+  student_list_by_parent(id: Int): [PersonData!]
   person(name: String, id: Int): PersonData
   person_by_digital_id(id: String): PersonData
   prospect(email: String, phone: Int): ProspectData
@@ -718,7 +723,7 @@ type Query {
   class_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_today(person_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int): [ActivityParticipantAttendanceData!]
-  class_attendance_report(organization_id: Int, activity_id: Int, result_limit: Int): [ActivityParticipantAttendanceData!]
+  class_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
   supplier(id: Int!): SupplierData

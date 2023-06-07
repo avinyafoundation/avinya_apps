@@ -20,9 +20,14 @@ final GraphqlClient globalDataClient = check new (GLOBAL_DATA_API_URL,
     config = initClientConfig()
 );
 
-
 # A service representing a network-accessible API
-# bound to port `9090`.
+# bound to port `9095`.
+@http:ServiceConfig {
+    cors: {
+        allowOrigins: ["*"]
+    }
+}
+
 service / on new http:Listener(9095) {
 
     # Creates a student applicant Person record
@@ -96,17 +101,19 @@ service / on new http:Listener(9095) {
         }
     }
 
-    // resource function post address (@http:Payload Address address) returns Address|error {
-    //     CreateAddressResponse|graphql:ClientError createAddressResponse = globalDataClient->createAddress(address);
-    //     if(createAddressResponse is CreateAddressResponse) {
-    //         Address|error address_record = createAddressResponse.add_address.cloneWithType(Address);
-    //         if(address_record is Address) {
-    //             return address_record;
-    //         } else {
-    //             log:printError("Error while processing Application record received", address_record);
-    //             return error("Error while processing Application record received: " + address_record.message() + 
-    //                 ":: Detail: " + address_record.detail().toString());
-    //         }
+    // resource function post address (@http:Payload Address address) returns json|error {
+    //     json|graphql:ClientError createAddressResponse = globalDataClient->createAddress(address);
+    //     if(createAddressResponse is json) {
+    //         log:printInfo("Address created successfully: " + createAddressResponse.toString());
+    //         return createAddressResponse;
+    //         // Address|error address_record = createAddressResponse.add_address.cloneWithType(Address);
+    //         // if(address_record is Address) {
+    //         //     return address_record;
+    //         // } else {
+    //         //     log:printError("Error while processing Application record received", address_record);
+    //         //     return error("Error while processing Application record received: " + address_record.message() + 
+    //         //         ":: Detail: " + address_record.detail().toString());
+    //         // }
     //     } else {
     //         log:printError("Error while creating application", createAddressResponse);
     //         return error("Error while creating application: " + createAddressResponse.message() + 
