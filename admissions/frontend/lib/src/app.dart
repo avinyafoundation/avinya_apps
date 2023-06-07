@@ -55,7 +55,7 @@ class _AdmissionsManagementSystemState
         '/#access_token',
       ],
       guard: _guard,
-      initialRoute: '/subscribe',
+      initialRoute: '/apply',
     );
 
     _routeState = RouteState(_routeParser);
@@ -120,26 +120,28 @@ class _AdmissionsManagementSystemState
     log("_guard signed in $signedIn");
     log("_guard JWT sub ${jwt_sub}");
     log("_guard from ${from.toString()}\n");
-    if (!signedIn && from == subscribeRoute) {
-      return subscribeRoute;
-    } else if (!signedIn && from == subscribedThankyouRoute) {
-      return subscribedThankyouRoute;
-    } else if (!signedIn && from == preconditionsRoute && jwt_sub == null) {
-      return preconditionsRoute;
-    } else if (!signedIn && from != signInRoute) {
-      // Go to /signin if the user is not signed in
-      return signInRoute;
-    } else if (signedIn && from == applyRoute) {
+    // if (!signedIn && from == subscribeRoute) {
+    //   return subscribeRoute;
+    // } else if (!signedIn && from == subscribedThankyouRoute) {
+    //   return subscribedThankyouRoute;
+    // } else if (!signedIn && from == preconditionsRoute && jwt_sub == null) {
+    //   return preconditionsRoute;
+    // } else
+    // if (!signedIn && from != signInRoute) {
+    //   // Go to /signin if the user is not signed in
+    //   return signInRoute;
+    // } else
+    if (!signedIn && from == applyRoute) {
       return applyRoute;
-    } else if (signedIn && from == testsRoute) {
+    } else if (!signedIn && from == testsRoute) {
       return testsRoute;
-    } else if (signedIn && from == applicationRoute) {
+    } else if (!signedIn && from == applicationRoute) {
       return applicationRoute;
     }
     // Go to /application if the user is signed in and tries to go to /signin.
-    else if (signedIn && from == signInRoute) {
+    else if (!signedIn && from == signInRoute) {
       return ParsedRoute('/application', '/application', {}, {});
-    } else if (signedIn && jwt_sub != null) {
+    } else if (!signedIn && jwt_sub != null) {
       return applyRoute;
     }
     return from;
@@ -148,7 +150,7 @@ class _AdmissionsManagementSystemState
   void _handleAuthStateChanged() async {
     bool signedIn = await _auth.getSignedIn();
     if (!signedIn) {
-      _routeState.go('/subscribe');
+      _routeState.go('/apply');
     }
   }
 
