@@ -277,16 +277,17 @@ class _BackdropState extends State<Backdrop>
           if (!isDesktop && !signedIn) ...[
             // Slides the settings page up and down from the top of the
             // screen.
-            PositionedTransition(
-              rect: _slideDownSettingsPageAnimation(constraints),
-              child: settingsPage,
-            ),
+            // PositionedTransition(
+            //   rect: _slideDownSettingsPageAnimation(constraints),
+            //   child: settingsPage,
+            // ),
             // Slides the home page up and down below the bottom of the
             // screen.
-            PositionedTransition(
-              rect: _slideDownHomePageAnimation(constraints),
-              child: loginPage,
-            ),
+            // PositionedTransition(
+            //   rect: _slideDownHomePageAnimation(constraints),
+            //   child: loginPage,
+            // ),
+            Semantics(sortKey: const OrdinalSortKey(2), child: loginPage),
           ],
           if (isDesktop && signedIn) ...[
             Semantics(sortKey: const OrdinalSortKey(2), child: homePage),
@@ -473,6 +474,59 @@ class _BackdropState extends State<Backdrop>
               isSettingsOpenNotifier: _isSettingsOpenNotifier,
             ),
           ],
+          if (!isDesktop && !signedIn) ...[
+            Semantics(sortKey: const OrdinalSortKey(2), child: loginPage),
+            ValueListenableBuilder<bool>(
+              valueListenable: _isSettingsOpenNotifier,
+              builder: (context, isSettingsOpen, child) {
+                if (isSettingsOpen) {
+                  return ExcludeSemantics(
+                    child: Listener(
+                      onPointerDown: (_) => _toggleSettings(),
+                      child: const ModalBarrier(dismissible: false),
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              },
+            ),
+            Semantics(
+              sortKey: const OrdinalSortKey(3),
+              child: ScaleTransition(
+                alignment: Directionality.of(context) == TextDirection.ltr
+                    ? Alignment.topRight
+                    : Alignment.topLeft,
+                scale: CurvedAnimation(
+                  parent: _settingsPanelController,
+                  curve: Curves.easeIn,
+                  reverseCurve: Curves.easeOut,
+                ),
+                child: Align(
+                  alignment: AlignmentDirectional.topEnd,
+                  child: Material(
+                    elevation: 7,
+                    clipBehavior: Clip.antiAlias,
+                    borderRadius: BorderRadius.circular(40),
+                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    child: Container(
+                      constraints: const BoxConstraints(
+                        maxHeight: 560,
+                        maxWidth: desktopSettingsWidth,
+                        minWidth: desktopSettingsWidth,
+                      ),
+                      child: settingsPage,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            _SettingsIcon(
+              animationController: _iconController,
+              toggleSettings: _toggleSettings,
+              isSettingsOpenNotifier: _isSettingsOpenNotifier,
+            ),
+          ]
         ],
       ),
     );

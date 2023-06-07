@@ -84,7 +84,7 @@ Future<http.Response> createProspect(Prospect prospect) async {
     },
     body: jsonEncode(prospect.toJson()),
   );
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     return response;
   } else {
     throw Exception('Failed to create Prospect.');
