@@ -247,6 +247,7 @@ public type Organization record {
 public type Person record {
     int? permanent_address_id?;
     string? street_address?;
+    string? bank_branch?;
     string? bank_account_number?;
     string? notes?;
     int[]? parent_student?;
@@ -265,6 +266,7 @@ public type Person record {
     string? passport_no?;
     string? record_type?;
     Address? mailing_address?;
+    string? branch_code?;
     int[]? child_student?;
     string? bank_account_name?;
     int? avinya_phone?;
@@ -272,6 +274,7 @@ public type Person record {
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    string? academy_org_name?;
     string? asgardeo_id?;
     string? updated?;
     string? preferred_name?;
@@ -381,23 +384,29 @@ public type CreateStudentApplicantResponse record {|
         string? preferred_name;
         string? full_name;
         string? sex;
-        record {|record {|
+        record {|
+            record {|
                 string name_en;
-            |} name;|}? organization;
+            |} name;
+        |}? organization;
         int? phone;
         string? email;
         record {|
             string street_address;
-            record {|record {|
+            record {|
+                record {|
                     string name_en;
-                |} name;|} city;
+                |} name;
+            |} city;
             int? phone;
         |}? permanent_address;
         record {|
             string street_address;
-            record {|record {|
+            record {|
+                record {|
                     string name_en;
-                |} name;|} city;
+                |} name;
+            |} city;
             int? phone;
         |}? mailing_address;
         string? notes;
@@ -433,7 +442,8 @@ public type CreateStudentApplicantConsentResponse record {|
 
 public type GetOrganizationVacanciesResponse record {|
     map<json?> __extensions?;
-    record {|record {|
+    record {|
+        record {|
             record {|
                 string name_en;
             |} name;
@@ -449,9 +459,11 @@ public type GetOrganizationVacanciesResponse record {|
                 int? level;
             |}? avinya_type;
             int? phone;
-            record {|record {|
+            record {|
+                record {|
                     string name_en;
-                |} name; record {|
+                |} name;
+                record {|
                     string? name;
                     string? description;
                     int? head_count;
@@ -473,16 +485,20 @@ public type GetOrganizationVacanciesResponse record {|
                             string? answer;
                         |}[]? answer_options;
                     |}[]? evaluation_criteria;
-                |}[]? vacancies;|}[]? child_organizations;
-            record {|record {|
+                |}[]? vacancies;
+            |}[]? child_organizations;
+            record {|
+                record {|
                     string name_en;
-                |} name;|}[]? parent_organizations;
+                |} name;
+            |}[]? parent_organizations;
             record {|
                 string? name;
                 string? description;
                 int? head_count;
             |}[]? vacancies;
-        |}[]? organizations;|}? organization_structure;
+        |}[]? organizations;
+    |}? organization_structure;
 |};
 
 public type CreateProspectResponse record {|
@@ -499,9 +515,11 @@ public type CreateProspectResponse record {|
 
 public type CreateStudentApplicationResponse record {|
     map<json?> __extensions?;
-    record {|record {|
+    record {|
+        record {|
             string? status;
-        |}[]? statuses;|}? add_application;
+        |}[]? statuses;
+    |}? add_application;
 |};
 
 public type GetApplicationResponse record {|

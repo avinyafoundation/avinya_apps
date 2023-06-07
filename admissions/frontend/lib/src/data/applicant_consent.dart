@@ -94,7 +94,7 @@ Future<List<ApplicantConsent>> fetchApplicantConsents() async {
     },
   );
 
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
     List<ApplicantConsent> applicantConsents = await resultsJson
         .map<ApplicantConsent>((json) => ApplicantConsent.fromJson(json))
@@ -116,7 +116,7 @@ Future<ApplicantConsent> fetchApplicantConsent(String id) async {
     },
   );
 
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
     ApplicantConsent applicantConsent = await resultsJson
         .map<ApplicantConsent>((json) => ApplicantConsent.fromJson(json));
@@ -136,7 +136,7 @@ Future<http.Response> createApplicantConsent(
     },
     body: jsonEncode(applicantConsent.toJson()),
   );
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     return response;
   } else {
     throw Exception('Failed to create ApplicantConsent.');
@@ -153,7 +153,7 @@ Future<http.Response> updateApplicantConsent(
     },
     body: jsonEncode(applicantConsent.toJson()),
   );
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     return response;
   } else {
     throw Exception('Failed to update ApplicantConsent.');
@@ -170,7 +170,7 @@ Future<http.Response> deleteApplicantConsent(String id) async {
     },
   );
 
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     return response;
   } else {
     throw Exception('Failed to delete ApplicantConsent.');
