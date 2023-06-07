@@ -73,11 +73,11 @@ class _BackdropState extends State<Backdrop>
         SettingsPage(
           animationController: _settingsPanelController,
         );
-    // _homePage = widget.homePage ?? const HomePage();
-    int count = 0;
-    Future.delayed(const Duration(milliseconds: 500)).then((_) {
-      waitForGroupFetch(count);
-    });
+    _homePage = widget.homePage ?? const HomePage();
+    // int count = 0;
+    // Future.delayed(const Duration(milliseconds: 500)).then((_) {
+    //   waitForGroupFetch(count);
+    // });
   }
 
   void waitForGroupFetch(int count) {
@@ -420,7 +420,7 @@ class _BackdropState extends State<Backdrop>
               isSettingsOpenNotifier: _isSettingsOpenNotifier,
             ),
           ],
-          if (!signedIn) ...[
+          if (isDesktop && !signedIn) ...[
             Semantics(sortKey: const OrdinalSortKey(2), child: loginPage),
             ValueListenableBuilder<bool>(
               valueListenable: _isSettingsOpenNotifier,
@@ -473,6 +473,59 @@ class _BackdropState extends State<Backdrop>
               isSettingsOpenNotifier: _isSettingsOpenNotifier,
             ),
           ],
+          if (!isDesktop && !signedIn) ...[
+            Semantics(sortKey: const OrdinalSortKey(2), child: loginPage),
+            ValueListenableBuilder<bool>(
+              valueListenable: _isSettingsOpenNotifier,
+              builder: (context, isSettingsOpen, child) {
+                if (isSettingsOpen) {
+                  return ExcludeSemantics(
+                    child: Listener(
+                      onPointerDown: (_) => _toggleSettings(),
+                      child: const ModalBarrier(dismissible: false),
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              },
+            ),
+            Semantics(
+              sortKey: const OrdinalSortKey(3),
+              child: ScaleTransition(
+                alignment: Directionality.of(context) == TextDirection.ltr
+                    ? Alignment.topRight
+                    : Alignment.topLeft,
+                scale: CurvedAnimation(
+                  parent: _settingsPanelController,
+                  curve: Curves.easeIn,
+                  reverseCurve: Curves.easeOut,
+                ),
+                child: Align(
+                  alignment: AlignmentDirectional.topEnd,
+                  child: Material(
+                    elevation: 7,
+                    clipBehavior: Clip.antiAlias,
+                    borderRadius: BorderRadius.circular(40),
+                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    child: Container(
+                      constraints: const BoxConstraints(
+                        maxHeight: 560,
+                        maxWidth: desktopSettingsWidth,
+                        minWidth: desktopSettingsWidth,
+                      ),
+                      child: settingsPage,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            _SettingsIcon(
+              animationController: _iconController,
+              toggleSettings: _toggleSettings,
+              isSettingsOpenNotifier: _isSettingsOpenNotifier,
+            ),
+          ]
         ],
       ),
     );
