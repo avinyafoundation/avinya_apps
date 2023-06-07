@@ -73,11 +73,11 @@ class _BackdropState extends State<Backdrop>
         SettingsPage(
           animationController: _settingsPanelController,
         );
-    _homePage = widget.homePage ?? const HomePage();
-    // int count = 0;
-    // Future.delayed(const Duration(milliseconds: 500)).then((_) {
-    //   waitForGroupFetch(count);
-    // });
+    // _homePage = widget.homePage ?? const HomePage();
+    int count = 0;
+    Future.delayed(const Duration(milliseconds: 500)).then((_) {
+      waitForGroupFetch(count);
+    });
   }
 
   void waitForGroupFetch(int count) {
@@ -277,16 +277,17 @@ class _BackdropState extends State<Backdrop>
           if (!isDesktop && !signedIn) ...[
             // Slides the settings page up and down from the top of the
             // screen.
-            PositionedTransition(
-              rect: _slideDownSettingsPageAnimation(constraints),
-              child: settingsPage,
-            ),
+            // PositionedTransition(
+            //   rect: _slideDownSettingsPageAnimation(constraints),
+            //   child: settingsPage,
+            // ),
             // Slides the home page up and down below the bottom of the
             // screen.
-            PositionedTransition(
-              rect: _slideDownHomePageAnimation(constraints),
-              child: loginPage,
-            ),
+            // PositionedTransition(
+            //   rect: _slideDownHomePageAnimation(constraints),
+            //   child: loginPage,
+            // ),
+            Semantics(sortKey: const OrdinalSortKey(2), child: loginPage),
           ],
           if (isDesktop && signedIn) ...[
             Semantics(sortKey: const OrdinalSortKey(2), child: homePage),
