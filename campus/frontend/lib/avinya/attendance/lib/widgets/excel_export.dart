@@ -178,6 +178,10 @@ class _ExcelExportState extends State<ExcelExport> {
         .cellStyle = organizationHeaderStyle;
 
     if (_fetchedStudentList.isNotEmpty && columnNames.length > 0) {
+      _fetchedStudentList.removeWhere((student) =>
+          student.bank_account_name == null ||
+          student.bank_account_name!.isEmpty);
+
       for (var index = 0; index < _fetchedStudentList.length; index++) {
         var person = _fetchedStudentList[index];
 
