@@ -120,420 +120,419 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'If you are a student applicant who has already registered, please go to the sign in page and login to your account.',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 10.0),
-                ElevatedButton(
-                  onPressed: () async {
-                    // Navigator.pushNamed(context, '/signin');
-                    await routeState.go('/signin');
-                  },
-                  child: Text('Sign in'),
-                ),
-                SizedBox(height: 20.0),
-                Text(
-                  'If you are a new student applicant, please fill out the form below.',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Container(
-                  child: SingleChildScrollView(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            child: Wrap(children: [
-                              Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Avinya Academy Student Admissions",
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(height: 10.0),
-                                    Text(
-                                        "Avinya Academy is a school that is dedicated to providing a high quality education to students from all backgrounds."),
-                                    Text(
-                                        "We are currently accepting applications for the 2022/2023 academic year. "),
-                                    Text(
-                                        "Please fill out the form below to apply for admission to Avinya Academy. "),
-                                    SizedBox(height: 20.0),
-                                    // Text(
-                                    //   "Application Eligibility Criteria",
-                                    //   style: TextStyle(
-                                    //       fontSize: 15,
-                                    //       fontWeight: FontWeight.bold),
-                                    // ),
-                                    // SizedBox(height: 10.0),
-                                    // Text(
-                                    //     "In order to be eligible to join an Avinya Academy the student will need to meet the following eligibility criteria:"),
-                                    // SizedBox(height: 15.0),
-                                    // Text(
-                                    //     "1. Be within a 15km radius of the Avinya Academy Bandaragama location"),
-                                    // SizedBox(height: 10.0),
-                                    // Text(
-                                    //     "2. Have attempted your O/L examination at least once"),
-                                    // SizedBox(height: 10.0),
-                                    // Text(
-                                    //     "3. Your year of birth is 2004 or 2005"),
-                                    // SizedBox(height: 10.0),
-                                    // Text(
-                                    //     "4. Interested in a vocational programme in IT, Healthcare or Tourism industries"),
-                                    // SizedBox(height: 10.0),
-                                    // Text(
-                                    //     "5. Committed to full time learning over a three year period"),
-                                    // SizedBox(height: 10.0),
-                                    // Text(
-                                    //     "6. Committed to attending school on a daily basis and spend around 8 hours in the shcool"),
-                                    // SizedBox(height: 10.0),
-                                    // Text(
-                                    //     "7. A valid phone number and an email address for us to contact you and your parents/guardians"),
-                                    // SizedBox(height: 12.0),
-                                    // Text(
-                                    //     "Please verify the following details before proceeding:"),
-                                  ]),
-                            ]),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Congratulations!',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 10.0),
+                      Text(
+                        'You have successfully filled out your application.',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      SizedBox(height: 20.0),
+                      InkWell(
+                        onTap: () {
+                          Clipboard.setData(
+                            ClipboardData(
+                              text: admissionSystemInstance
+                                  .getStudentPerson()
+                                  .id_no
+                                  .toString(),
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content:
+                                    Text('Reference ID copied to clipboard!')),
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 12.0),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50],
+                            borderRadius: BorderRadius.circular(8.0),
+                            border: Border.all(color: Colors.blue),
                           ),
-                        ]),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  admissionSystemInstance
+                                      .getStudentPerson()
+                                      .id_no
+                                      .toString(),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 10.0),
+                              Icon(
+                                Icons.content_copy,
+                                color: Colors.blue,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20.0),
+                      Text(
+                        'Keep this reference ID safe and easily accessible for future use.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const Text(''),
-                TextFormField(
-                  controller: _full_name_Controller,
-                  decoration: const InputDecoration(
-                    labelText: 'Your name *',
-                    hintText: 'Enter your name',
-                    //helperText: 'Same as in your NIC or birth certificate'
-                  ),
-                  onFieldSubmitted: (_) {
-                    _full_name_FocusNode.requestFocus();
-                  },
-                  validator: _mandatoryValidator,
-                ),
-                SizedBox(height: 10.0),
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  SizedBox(height: 20.0),
                   Text(
-                      'Date of birth: ${dateOfBirth.year}/${dateOfBirth.month}/${dateOfBirth.day}'),
+                    'If you are a new student applicant, please fill out the form below.',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Container(
+                    child: SingleChildScrollView(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                              child: Wrap(children: [
+                                Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Text(
+                                      //   "Avinya Academy Student Admissions",
+                                      //   style: TextStyle(
+                                      //       fontSize: 20,
+                                      //       fontWeight: FontWeight.bold),
+                                      // ),
+                                      // SizedBox(height: 10.0),
+                                      // Text(
+                                      //     "Avinya Academy is a school that is dedicated to providing a high quality education to students from all backgrounds."),
+                                      // Text(
+                                      //     "We are currently accepting applications for the 2022/2023 academic year. "),
+                                      // Text(
+                                      //     "Please fill out the form below to apply for admission to Avinya Academy. "),
+                                      // SizedBox(height: 20.0),
+                                      // Text(
+                                      //   "Application Eligibility Criteria",
+                                      //   style: TextStyle(
+                                      //       fontSize: 15,
+                                      //       fontWeight: FontWeight.bold),
+                                      // ),
+                                      // SizedBox(height: 10.0),
+                                      // Text(
+                                      //     "In order to be eligible to join an Avinya Academy the student will need to meet the following eligibility criteria:"),
+                                      // SizedBox(height: 15.0),
+                                      // Text(
+                                      //     "1. Be within a 15km radius of the Avinya Academy Bandaragama location"),
+                                      // SizedBox(height: 10.0),
+                                      // Text(
+                                      //     "2. Have attempted your O/L examination at least once"),
+                                      // SizedBox(height: 10.0),
+                                      // Text(
+                                      //     "3. Your year of birth is 2004 or 2005"),
+                                      // SizedBox(height: 10.0),
+                                      // Text(
+                                      //     "4. Interested in a vocational programme in IT, Healthcare or Tourism industries"),
+                                      // SizedBox(height: 10.0),
+                                      // Text(
+                                      //     "5. Committed to full time learning over a three year period"),
+                                      // SizedBox(height: 10.0),
+                                      // Text(
+                                      //     "6. Committed to attending school on a daily basis and spend around 8 hours in the shcool"),
+                                      // SizedBox(height: 10.0),
+                                      // Text(
+                                      //     "7. A valid phone number and an email address for us to contact you and your parents/guardians"),
+                                      // SizedBox(height: 12.0),
+                                      // Text(
+                                      //     "Please verify the following details before proceeding:"),
+                                    ]),
+                              ]),
+                            ),
+                          ]),
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  FormField(
+                    builder: (state) {
+                      return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            SizedBox(height: 10.0),
+                            Text('Have you done your GCE O/L Exam?'),
+                            SizedBox(height: 10.0),
+                            Row(children: [
+                              SizedBox(width: 10.0),
+                              SizedBox(
+                                width: 10,
+                                child: Radio(
+                                  value: true,
+                                  groupValue: doneOL,
+                                  activeColor: Colors.orange,
+                                  onChanged: (value) {
+                                    //value may be true or false
+                                    setState(() {
+                                      doneOL = true;
+                                    });
+                                  },
+                                ),
+                              ),
+                              SizedBox(width: 10.0),
+                              Text('Yes'),
+                              SizedBox(width: 10.0),
+                              //]),
+                              //Row(children: [
+                              SizedBox(
+                                width: 10,
+                                child: Radio(
+                                  value: false,
+                                  groupValue: doneOL,
+                                  activeColor: Colors.orange,
+                                  onChanged: (value) {
+                                    //value may be true or false
+                                    setState(() {
+                                      doneOL = false;
+                                    });
+                                  },
+                                ),
+                              ),
+                              SizedBox(width: 10.0),
+                              Text('No'),
+                            ]),
+                            state.hasError
+                                ? Text(
+                                    state.errorText!,
+                                    style: TextStyle(color: Colors.red),
+                                  )
+                                : Container(),
+                          ]);
+                    },
+                    validator: (value) {
+                      if (!doneOL) {
+                        return 'You must have attempted O/L at least once';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 10.0),
+                  Text("Select the year you did GCE O/L"),
                   Container(
                     // Need to use container to add size constraint.
                     width: 300,
                     height: 400,
-                    child: CalendarDatePicker(
-                      firstDate: DateTime(2004, 1),
-                      lastDate: DateTime(2006, 2),
-                      initialDate: dateOfBirth,
-                      initialCalendarMode: DatePickerMode.day,
-                      onDateChanged: (DateTime dateTime) {
+                    child: YearPicker(
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime(2022),
+                      initialDate: DateTime(2022),
+                      currentDate: DateTime(2021),
+                      selectedDate: olYear,
+                      onChanged: (DateTime dateTime) {
                         setState(() {
-                          dateOfBirth = dateTime;
+                          olYear = dateTime;
                         });
                       },
                     ),
                   ),
-                ]),
-                FormField(
-                  builder: (state) {
-                    return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SizedBox(height: 10.0),
-                          Text('Have you done your GCE O/L Exam?'),
-                          SizedBox(height: 10.0),
-                          Row(children: [
-                            SizedBox(width: 10.0),
-                            SizedBox(
-                              width: 10,
-                              child: Radio(
-                                value: true,
-                                groupValue: doneOL,
-                                activeColor: Colors.orange,
-                                onChanged: (value) {
-                                  //value may be true or false
-                                  setState(() {
-                                    doneOL = true;
-                                  });
-                                },
+                  SizedBox(height: 10.0),
+                  // TextFormField(
+                  //   controller: _distance_Controller,
+                  //   decoration: InputDecoration(
+                  //     labelText:
+                  //         'Distance from the school location in Kilometers *',
+                  //     hintText:
+                  //         'How far you live from Avinya Academy Bandaragama in KM?',
+                  //     helperText: 'e.g. 14',
+                  //   ),
+                  //   onFieldSubmitted: (_) {
+                  //     _distance_FocusNode.requestFocus();
+                  //   },
+                  //   validator: (value) =>
+                  //       _mandatoryValidator(value) ?? _distanceValidator(value),
+
+                  //   keyboardType: TextInputType.number,
+                  //   inputFormatters: <TextInputFormatter>[
+                  //     FilteringTextInputFormatter.digitsOnly,
+                  //     // phoneMaskTextInputFormatter,
+                  //   ], // Only numbers can be entered
+                  // ),
+                  SizedBox(width: 10.0, height: 10.0),
+                  FormField<bool>(
+                    builder: (state) {
+                      return Row(children: [
+                        SizedBox(width: 10.0),
+                        SizedBox(
+                          width: 10,
+                          child: Checkbox(
+                            value: checkbox1,
+                            activeColor: Colors.orange,
+                            onChanged: (value) {
+                              //value may be true or false
+                              setState(() {
+                                checkbox1 = !checkbox1;
+                                state.didChange(value);
+                              });
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 10.0),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                state.errorText ?? '',
+                                style: TextStyle(
+                                  color: Theme.of(context).errorColor,
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 10.0),
-                            Text('Yes'),
-                            SizedBox(width: 10.0),
-                            //]),
-                            //Row(children: [
-                            SizedBox(
-                              width: 10,
-                              child: Radio(
-                                value: false,
-                                groupValue: doneOL,
-                                activeColor: Colors.orange,
-                                onChanged: (value) {
-                                  //value may be true or false
-                                  setState(() {
-                                    doneOL = false;
-                                  });
-                                },
+                              SizedBox(width: 10.0),
+                              Container(
+                                width: c_width,
+                                child: Text(
+                                  'By checking this box, I confirm that the information provided herein' +
+                                      ' on the student applicant is accurate, correct and complete and that' +
+                                      ' it would lead to the rejection of the application in the event' +
+                                      ' of any false information being provided.',
+                                  softWrap: true,
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 10.0),
-                            Text('No'),
-                          ]),
-                          state.hasError
-                              ? Text(
-                                  state.errorText!,
-                                  style: TextStyle(color: Colors.red),
-                                )
-                              : Container(),
-                        ]);
-                  },
-                  validator: (value) {
-                    if (!doneOL) {
-                      return 'You must have attempted O/L at least once';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10.0),
-                Text("Select the year you did GCE O/L"),
-                Container(
-                  // Need to use container to add size constraint.
-                  width: 300,
-                  height: 400,
-                  child: YearPicker(
-                    firstDate: DateTime(2020),
-                    lastDate: DateTime(2022),
-                    initialDate: DateTime(2022),
-                    currentDate: DateTime(2021),
-                    selectedDate: olYear,
-                    onChanged: (DateTime dateTime) {
-                      setState(() {
-                        olYear = dateTime;
-                      });
+                            ]),
+                      ]);
+                    },
+                    validator: (value) {
+                      if (!checkbox1) {
+                        return 'You need to verify informaton correctness';
+                      } else {
+                        return null;
+                      }
                     },
                   ),
-                ),
-                SizedBox(height: 10.0),
-                // TextFormField(
-                //   controller: _distance_Controller,
-                //   decoration: InputDecoration(
-                //     labelText:
-                //         'Distance from the school location in Kilometers *',
-                //     hintText:
-                //         'How far you live from Avinya Academy Bandaragama in KM?',
-                //     helperText: 'e.g. 14',
-                //   ),
-                //   onFieldSubmitted: (_) {
-                //     _distance_FocusNode.requestFocus();
-                //   },
-                //   validator: (value) =>
-                //       _mandatoryValidator(value) ?? _distanceValidator(value),
-
-                //   keyboardType: TextInputType.number,
-                //   inputFormatters: <TextInputFormatter>[
-                //     FilteringTextInputFormatter.digitsOnly,
-                //     // phoneMaskTextInputFormatter,
-                //   ], // Only numbers can be entered
-                // ),
-                TextFormField(
-                  controller: _phone_Controller,
-                  decoration: InputDecoration(
-                    labelText: 'Phone number *',
-                    hintText: 'Enter your phone number',
-                    helperText: 'e.g 077 123 4567',
-                  ),
-                  onFieldSubmitted: (_) {
-                    _phone_FocusNode.requestFocus();
-                  },
-                  validator: (value) =>
-                      _mandatoryValidator(value) ?? _phoneValidator(value),
-
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly,
-                    phoneMaskTextInputFormatter,
-                  ], // Only numbers can be entered
-                ),
-                TextFormField(
-                  controller: _email_Controller,
-                  decoration: InputDecoration(
-                    labelText: 'Email *',
-                    hintText: 'Enter your email address',
-                    helperText: 'e.g john@mail.com',
-                  ),
-                  onFieldSubmitted: (_) {
-                    _email_FocusNode.requestFocus();
-                  },
-                  validator: (value) => EmailValidator.validate(value!)
-                      ? null
-                      : "Please enter a valid email",
-                ),
-                SizedBox(width: 10.0, height: 10.0),
-                FormField<bool>(
-                  builder: (state) {
-                    return Row(children: [
-                      SizedBox(width: 10.0),
-                      SizedBox(
-                        width: 10,
-                        child: Checkbox(
-                          value: checkbox1,
-                          activeColor: Colors.orange,
-                          onChanged: (value) {
-                            //value may be true or false
-                            setState(() {
-                              checkbox1 = !checkbox1;
-                              state.didChange(value);
-                            });
-                          },
+                  SizedBox(width: 10.0, height: 10.0),
+                  FormField<bool>(
+                    builder: (state) {
+                      return Row(children: [
+                        SizedBox(width: 10.0),
+                        SizedBox(
+                          width: 10,
+                          child: Checkbox(
+                            value: checkbox2,
+                            activeColor: Colors.orange,
+                            onChanged: (value) {
+                              //value may be true or false
+                              setState(() {
+                                checkbox2 = !checkbox2;
+                                state.didChange(value);
+                              });
+                            },
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 10.0),
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              state.errorText ?? '',
-                              style: TextStyle(
-                                color: Theme.of(context).errorColor,
+                        SizedBox(width: 10.0),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                state.errorText ?? '',
+                                style: TextStyle(
+                                  color: Theme.of(context).errorColor,
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 10.0),
-                            Container(
-                              width: c_width,
-                              child: Text(
-                                'By checking this box, I confirm that the information provided herein' +
-                                    ' on the student applicant is accurate, correct and complete and that' +
-                                    ' it would lead to the rejection of the application in the event' +
-                                    ' of any false information being provided.',
-                                softWrap: true,
+                              SizedBox(width: 10.0),
+                              Container(
+                                width: c_width,
+                                child: Text(
+                                  'By checking this box, I agree to the Terms of Use and Privacy Policy' +
+                                      ' (unless I am under the age of 18, in which case,' +
+                                      ' I represent that my parent or legal guardian also agrees' +
+                                      ' to the Terms of Use on my behalf)',
+                                  softWrap: true,
+                                ),
                               ),
-                            ),
-                          ]),
-                    ]);
-                  },
-                  validator: (value) {
-                    if (!checkbox1) {
-                      return 'You need to verify informaton correctness';
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-                SizedBox(width: 10.0, height: 10.0),
-                FormField<bool>(
-                  builder: (state) {
-                    return Row(children: [
-                      SizedBox(width: 10.0),
-                      SizedBox(
-                        width: 10,
-                        child: Checkbox(
-                          value: checkbox2,
-                          activeColor: Colors.orange,
-                          onChanged: (value) {
-                            //value may be true or false
-                            setState(() {
-                              checkbox2 = !checkbox2;
-                              state.didChange(value);
-                            });
-                          },
-                        ),
-                      ),
-                      SizedBox(width: 10.0),
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              state.errorText ?? '',
-                              style: TextStyle(
-                                color: Theme.of(context).errorColor,
-                              ),
-                            ),
-                            SizedBox(width: 10.0),
-                            Container(
-                              width: c_width,
-                              child: Text(
-                                'By checking this box, I agree to the Terms of Use and Privacy Policy' +
-                                    ' (unless I am under the age of 18, in which case,' +
-                                    ' I represent that my parent or legal guardian also agrees' +
-                                    ' to the Terms of Use on my behalf)',
-                                softWrap: true,
-                              ),
-                            ),
-                          ]),
-                    ]);
-                  },
-                  validator: (value) {
-                    if (!checkbox2) {
-                      return 'You need to agree to the terms and conditions';
-                    } else {
-                      return null;
-                    }
-                  },
-                ),
-                SizedBox(width: 10.0, height: 10.0),
-                ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Processing Data')),
-                        );
-
-                        bool successAddingApplicantConsent =
-                            await addSudentApplicantConsent(context);
-                        if (successAddingApplicantConsent) {
+                            ]),
+                      ]);
+                    },
+                    validator: (value) {
+                      if (!checkbox2) {
+                        return 'You need to agree to the terms and conditions';
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+                  SizedBox(width: 10.0, height: 10.0),
+                  ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('You consented successfully')),
+                            const SnackBar(content: Text('Processing Data')),
                           );
-                          await routeState.go('/signin');
+
+                          bool successAddingApplicantConsent =
+                              await addSudentApplicantConsent(context);
+                          if (successAddingApplicantConsent) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('You consented successfully')),
+                            );
+                            await routeState.go('/submitted_thankyou');
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Failed to zpply, try again')),
+                            );
+                          }
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text('Failed to zpply, try again')),
+                              content: Text(
+                                'Some of the data you entred on this form ' +
+                                    'does not meet the eligibility criteria.\r\n' +
+                                    'The errors are shown inline on the form.\r\n' +
+                                    'Please check and correct the data and try again.',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontStyle: FontStyle.italic,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              behavior: SnackBarBehavior.floating,
+                              margin: EdgeInsets.only(
+                                  left: 100.0, right: 100.0, bottom: 100.0),
+                              duration: Duration(seconds: 5),
+                              backgroundColor: Colors.yellow,
+                            ),
                           );
                         }
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Some of the data you entred on this form ' +
-                                  'does not meet the eligibility criteria.\r\n' +
-                                  'The errors are shown inline on the form.\r\n' +
-                                  'Please check and correct the data and try again.',
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontStyle: FontStyle.italic,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            behavior: SnackBarBehavior.floating,
-                            margin: EdgeInsets.only(
-                                left: 100.0, right: 100.0, bottom: 100.0),
-                            duration: Duration(seconds: 5),
-                            backgroundColor: Colors.yellow,
-                          ),
-                        );
-                      }
-                    },
-                    child: Text('Submit'))
-              ],
+                      },
+                      child: Text('Submit'))
+                ],
+              ),
             ),
           ),
         ),
@@ -581,6 +580,12 @@ class _PreconditionsScreenState extends State<PreconditionsScreen> {
         log(phoneMaskTextInputFormatter.getUnmaskedText());
         admissionSystemInstance.setPrecondisionsSubmitted(true);
         final ApplicantConsent applicantConsent = ApplicantConsent(
+          organization_id:
+              admissionSystemInstance.getStudentPerson().organization_id!,
+          avinya_type_id:
+              admissionSystemInstance.getStudentPerson().avinya_type_id!,
+          application_id: admissionSystemInstance.getApplication().id!,
+          person_id: admissionSystemInstance.getStudentPerson().id!,
           name: _full_name_Controller.text,
           date_of_birth: DateFormat('yyyy-MM-dd').format(dateOfBirth),
           done_ol: doneOL,
