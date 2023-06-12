@@ -35,9 +35,10 @@ service / on new http:Listener(9095) {
     # + return - Student record with persisted data
     resource function post student_applicant(@http:Payload Person person) returns Person|error {
         CreateStudentApplicantResponse|graphql:ClientError createStudentApplicantResponse = globalDataClient->createStudentApplicant(person);
-
+// log:printInfo("Evaluations created successfully: " + createStudentApplicantResponse.toString());
         if(createStudentApplicantResponse is CreateStudentApplicantResponse) {
             Person|error person_record = createStudentApplicantResponse.add_student_applicant.cloneWithType(Person);
+            log:printInfo("createStudentApplicantResponse " + createStudentApplicantResponse.toString());
             if(person_record is Person) {
                 return person_record;
             } else {
