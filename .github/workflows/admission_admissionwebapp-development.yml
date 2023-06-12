@@ -81,7 +81,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'admissionswebapp-development'
+          app-name: 'admissionwebapp-development'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3002A9951AF34C92AFF585EF303AAF4F }}
           package: .
