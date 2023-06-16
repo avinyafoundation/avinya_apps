@@ -64,9 +64,32 @@ class CampusAppsPortalAuth extends ChangeNotifier {
         }
 
         if (AppConfig.apiTokens != null) {
-          //use refresh token
-          // however when app reloads, apiTokens will be null
-          // should refresh token when calling APIs
+          // Use refresh token
+          String refreshToken = AppConfig.refreshToken;
+          String clientId = AppConfig.choreoSTSClientID;
+
+          final response = await http.post(
+            Uri.parse(AppConfig.asgardeoTokenEndpoint),
+            headers: <String, String>{
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            encoding: Encoding.getByName('utf-8'),
+            body: {
+              'grant_type': 'refresh_token',
+              'refresh_token': refreshToken,
+              'client_id': clientId,
+            },
+          );
+
+          if (response.statusCode == 200) {
+            var refreshedTokens = json.decode(response.body);
+            AppConfig.apiTokens = refreshedTokens;
+            AppConfig.campusBffApiKey = refreshedTokens["access_token"];
+            print('Access token refreshed successfully');
+          } else {
+            print('Failed to refresh access token');
+            // Handle the error case appropriately
+          }
         } else {
           log("in Auth -- choreoSTSClientID is :" +
               AppConfig.choreoSTSClientID);
@@ -103,6 +126,7 @@ class CampusAppsPortalAuth extends ChangeNotifier {
               ..forEach((key, value) =>
                   print("API tokens Key : $key, Value : $value"));
             AppConfig.campusBffApiKey = _api_tokens["access_token"];
+            AppConfig.refreshToken = _api_tokens["refresh_token"];
             print('Fetch API tokens success');
           } else {
             print('Failed to fetch API key');
