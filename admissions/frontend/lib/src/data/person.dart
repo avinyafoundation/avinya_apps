@@ -31,6 +31,8 @@ class Person {
   String? street_address;
   int? branch_id;
   String? branch_code;
+  String? parent_full_name;
+  int? parent_phone;
 
   Person({
     this.id,
@@ -57,6 +59,8 @@ class Person {
     this.mailing_address,
     this.branch_id,
     this.branch_code,
+    this.parent_full_name,
+    this.parent_phone,
   });
 
   factory Person.fromJson(Map<String, dynamic> json) {
@@ -83,6 +87,8 @@ class Person {
       email: json['email'],
       branch_code: json['branch_code'],
       branch_id: json['branch_id'],
+      parent_full_name: json['parent_full_name'],
+      parent_phone: json['parent_phone'],
       permanent_address: Address.fromJson(
           json['permanent_address'] != null ? json['permanent_address'] : {}),
       mailing_address: Address.fromJson(
@@ -115,6 +121,8 @@ class Person {
         if (email != null) 'email': email,
         if (branch_code != null) 'branch_code': branch_code,
         if (branch_id != null) 'branch_id': branch_id,
+        if (parent_full_name != null) 'parent_full_name': parent_full_name,
+        if (parent_phone != null) 'parent_phone': parent_phone,
         if (permanent_address != null)
           'permanent_address': permanent_address!.toJson(),
         if (mailing_address != null)
@@ -170,7 +178,7 @@ Future<Person> createPerson(Person person) async {
     },
     body: jsonEncode(person.toJson()),
   );
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     // var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
     Person person = Person.fromJson(json.decode(response.body));
     return person;

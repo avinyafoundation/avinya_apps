@@ -123,7 +123,7 @@ Future<Application> createApplication(Application applicantConsent) async {
     },
     body: jsonEncode(applicantConsent.toJson()),
   );
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     Application createdApplication =
         Application.fromJson(json.decode(response.body));
     return createdApplication;

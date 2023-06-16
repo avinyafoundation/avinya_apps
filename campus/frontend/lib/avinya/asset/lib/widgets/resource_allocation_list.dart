@@ -21,11 +21,11 @@ class ResourceAllocationListState extends State<ResourceAllocationList> {
   void initState() {
     super.initState();
     futureResourceAllocations =
-        fetchResourceAllocations(10); // for now get notes for activity id 1
+        fetchResourceAllocations(campusAppsPortalInstance.getUserPerson().id!); // for now get notes for activity id 1
   }
 
   Future<List<ResourceAllocation>> refreshResourceAllocationState() async {
-    futureResourceAllocations = fetchResourceAllocations(10);
+    futureResourceAllocations = fetchResourceAllocations(campusAppsPortalInstance.getUserPerson().id!);
     return futureResourceAllocations;
   }
 

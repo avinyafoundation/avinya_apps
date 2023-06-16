@@ -29,7 +29,9 @@ class _AdmissionsManagementSystemState
     _routeParser = TemplateRouteParser(
       allowedPaths: [
         '/subscribe',
+        '/welcome',
         '/subscribed_thankyou',
+        '/submitted_thankyou',
         '/preconditions',
         '/signin',
         '/apply',
@@ -55,7 +57,7 @@ class _AdmissionsManagementSystemState
         '/#access_token',
       ],
       guard: _guard,
-      initialRoute: '/apply',
+      initialRoute: '/welcome',
     );
 
     _routeState = RouteState(_routeParser);
@@ -103,12 +105,15 @@ class _AdmissionsManagementSystemState
     final signedIn = await _auth.getSignedIn();
     String? jwt_sub = admissionSystemInstance.getJWTSub();
     final applyRoute = ParsedRoute('/apply', '/apply', {}, {});
-    final subscribeRoute = ParsedRoute('/subscribe', '/subscribe', {}, {});
-    final subscribedThankyouRoute =
-        ParsedRoute('/subscribed_thankyou', '/subscribed_thankyou', {}, {});
+    final welcomeRoute = ParsedRoute('/welcome', '/welcome', {}, {});
+    // final subscribeRoute = ParsedRoute('/subscribe', '/subscribe', {}, {});
+    // final subscribedThankyouRoute =
+    //     ParsedRoute('/subscribed_thankyou', '/subscribed_thankyou', {}, {});
+    // final submittedThankyouRoute =
+    //     ParsedRoute('/submitted_thankyou', '/submitted_thankyou', {}, {});
 
-    final preconditionsRoute =
-        ParsedRoute('/preconditions', '/preconditions', {}, {});
+    // final preconditionsRoute =
+    //     ParsedRoute('/preconditions', '/preconditions', {}, {});
     final signInRoute = ParsedRoute('/signin', '/signin', {}, {});
 
     final testsRoute = ParsedRoute('/tests/logical', '/tests/logical', {}, {});
@@ -137,6 +142,8 @@ class _AdmissionsManagementSystemState
       return testsRoute;
     } else if (!signedIn && from == applicationRoute) {
       return applicationRoute;
+    } else if (!signedIn && from == welcomeRoute) {
+      return welcomeRoute;
     }
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (!signedIn && from == signInRoute) {
@@ -150,7 +157,7 @@ class _AdmissionsManagementSystemState
   void _handleAuthStateChanged() async {
     bool signedIn = await _auth.getSignedIn();
     if (!signedIn) {
-      _routeState.go('/apply');
+      _routeState.go('/welcome');
     }
   }
 
