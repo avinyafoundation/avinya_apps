@@ -4,6 +4,8 @@ import 'package:ShoolManagementSystem/src/screens/apply.dart';
 import 'package:ShoolManagementSystem/src/screens/preconditions.dart';
 import 'package:ShoolManagementSystem/src/screens/subscribe.dart';
 import 'package:ShoolManagementSystem/src/screens/subscribed_thankyou.dart';
+import 'package:ShoolManagementSystem/src/screens/submitted_thankyou.dart';
+import 'package:ShoolManagementSystem/src/screens/welcome.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
@@ -36,6 +38,7 @@ class _SMSNavigatorState extends State<SMSNavigator> {
   final _applyKey = const ValueKey('Apply');
   final _subscribeKey = const ValueKey('Subscribe');
   final _subscribedThankyouKey = const ValueKey('Subscribed Thankyou');
+  final _submittedThankyouKey = const ValueKey('Submitted Thankyou');
   final _preconditionsKey = const ValueKey('Preconditions');
   final _signInKey = const ValueKey('Sign in');
   final _testsKey = const ValueKey('Tests');
@@ -147,6 +150,18 @@ class _SMSNavigatorState extends State<SMSNavigator> {
           FadeTransitionPage<void>(
             key: _subscribedThankyouKey,
             child: SubscribedThankyouScreen(),
+          )
+        else if (routeState.route.pathTemplate == '/submitted_thankyou')
+          // Display the sign in screen.
+          FadeTransitionPage<void>(
+            key: _submittedThankyouKey,
+            child: SubmittedThankyouScreen(),
+          )
+        else if (routeState.route.pathTemplate == '/welcome')
+          // Display the sign in screen.
+          FadeTransitionPage<void>(
+            key: _scaffoldKey,
+            child: WelcomeScreen(),
           )
         else if (routeState.route.pathTemplate == '/preconditions')
           // Display the sign in screen.

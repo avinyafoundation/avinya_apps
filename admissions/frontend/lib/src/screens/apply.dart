@@ -1,12 +1,12 @@
 import 'dart:developer';
 
 import 'package:ShoolManagementSystem/src/data.dart';
-import 'package:ShoolManagementSystem/src/data/address.dart';
 import 'package:flutter/gestures.dart';
 // import 'package:ShoolManagementSystem/src/data/library.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../config/app_config.dart';
@@ -56,8 +56,18 @@ class _ApplyScreenState extends State<ApplyScreen> {
   late FocusNode _phone_FocusNode;
   late TextEditingController _address_Controller;
   late FocusNode _address_FocusNode;
+  late TextEditingController _parent_full_name_Controller;
+  late FocusNode _parent_full_name_FocusNode;
+  late TextEditingController _parent_phone_Controller;
+  late FocusNode _parent_phone_FocusNode;
+  DateTime dateOfBirth = DateTime.utc(2005, 1, 1);
 
   MaskTextInputFormatter phoneMaskTextInputFormatter =
+      new MaskTextInputFormatter(
+          mask: '###-###-####',
+          filter: {"#": RegExp(r'[0-9]')},
+          type: MaskAutoCompletionType.eager);
+  MaskTextInputFormatter ParentphoneMaskTextInputFormatter =
       new MaskTextInputFormatter(
           mask: '###-###-####',
           filter: {"#": RegExp(r'[0-9]')},
@@ -144,6 +154,10 @@ class _ApplyScreenState extends State<ApplyScreen> {
     _phone_FocusNode = FocusNode();
     _address_Controller = TextEditingController();
     _address_FocusNode = FocusNode();
+    _parent_full_name_Controller = TextEditingController();
+    _parent_full_name_FocusNode = FocusNode();
+    _parent_phone_Controller = TextEditingController();
+    _parent_phone_FocusNode = FocusNode();
   }
 
   @override
@@ -307,6 +321,27 @@ class _ApplyScreenState extends State<ApplyScreen> {
                   },
                   validator: _mandatoryValidator,
                 ),
+                SizedBox(height: 10.0),
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(
+                      'Date of birth: ${dateOfBirth.year}/${dateOfBirth.month}/${dateOfBirth.day}'),
+                  Container(
+                    // Need to use container to add size constraint.
+                    width: 300,
+                    height: 400,
+                    child: CalendarDatePicker(
+                      firstDate: DateTime(2004, 1),
+                      lastDate: DateTime(2006, 2),
+                      initialDate: dateOfBirth,
+                      initialCalendarMode: DatePickerMode.day,
+                      onDateChanged: (DateTime dateTime) {
+                        setState(() {
+                          dateOfBirth = dateTime;
+                        });
+                      },
+                    ),
+                  ),
+                ]),
                 Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -376,6 +411,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
                     phoneMaskTextInputFormatter,
                   ], // Only numbers can be entered
                 ),
+                SizedBox(height: 10.0),
                 TextFormField(
                   controller: _email_Controller,
                   decoration: InputDecoration(
@@ -404,38 +440,73 @@ class _ApplyScreenState extends State<ApplyScreen> {
                   validator: _mandatoryValidator,
                 ),
                 SizedBox(height: 10.0),
-                Container(
-                  padding: EdgeInsets.only(left: 5.0, right: 5.0),
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(3.0)),
-                  child: DropdownButtonFormField<CityNearBandaragama>(
-                    hint: new Text("Select the city you live in"),
-                    value: selectedcity,
-                    // isExpanded: true,
-                    icon: Icon(Icons.keyboard_arrow_down, size: 22),
-                    decoration: InputDecoration(
-                      constraints: BoxConstraints(
-                        maxWidth: 350.0,
-                      ),
-                    ),
-                    items: cities.map((CityNearBandaragama value) {
-                      return new DropdownMenuItem<CityNearBandaragama>(
-                        value: value,
-                        child: new Text(value.name!),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      //Do something with this value
-                      setState(() {
-                        selectedcity = value!;
-                      });
-                    },
-                    validator: (value) => value == null
-                        ? 'You must select the city nearest to your home'
-                        : null,
+                const Text(''),
+                TextFormField(
+                  controller: _parent_full_name_Controller,
+                  decoration: const InputDecoration(
+                    labelText: "Parent/Guardian's Name  *",
+                    hintText: "Enter Parent/Guardian's Name",
+                    //helperText: 'Same as in your NIC or birth certificate'
                   ),
+                  onFieldSubmitted: (_) {
+                    _parent_full_name_FocusNode.requestFocus();
+                  },
+                  validator: _mandatoryValidator,
                 ),
+                SizedBox(height: 10.0),
+                TextFormField(
+                  controller: _parent_phone_Controller,
+                  decoration: InputDecoration(
+                    labelText: "Parent's mobile phone number *",
+                    hintText: "Enter Parent's mobile phone number",
+                    helperText: 'e.g 077 123 4567',
+                  ),
+                  onFieldSubmitted: (_) {
+                    _parent_phone_FocusNode.requestFocus();
+                  },
+                  validator: (value) =>
+                      _mandatoryValidator(value) ??
+                      _parent_phoneValidator(value),
+
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly,
+                    ParentphoneMaskTextInputFormatter,
+                  ], // Only numbers can be entered
+                ),
+                SizedBox(height: 10.0),
+                // Container(
+                //   padding: EdgeInsets.only(left: 5.0, right: 5.0),
+                //   decoration: BoxDecoration(
+                //       border: Border.all(color: Colors.grey),
+                //       borderRadius: BorderRadius.circular(3.0)),
+                //   child: DropdownButtonFormField<CityNearBandaragama>(
+                //     hint: new Text("Select the city you live in"),
+                //     value: selectedcity,
+                //     // isExpanded: true,
+                //     icon: Icon(Icons.keyboard_arrow_down, size: 22),
+                //     decoration: InputDecoration(
+                //       constraints: BoxConstraints(
+                //         maxWidth: 350.0,
+                //       ),
+                //     ),
+                //     items: cities.map((CityNearBandaragama value) {
+                //       return new DropdownMenuItem<CityNearBandaragama>(
+                //         value: value,
+                //         child: new Text(value.name!),
+                //       );
+                //     }).toList(),
+                //     onChanged: (value) {
+                //       //Do something with this value
+                //       setState(() {
+                //         selectedcity = value!;
+                //       });
+                //     },
+                //     validator: (value) => value == null
+                //         ? 'You must select the city nearest to your home'
+                //         : null,
+                //   ),
+                // ),
                 SizedBox(height: 10.0),
                 SizedBox(height: 10.0),
                 Container(
@@ -491,7 +562,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
                           );
                           admissionSystemInstance.setApplicationSubmitted(true);
 
-                          await routeState.go('/tests/logical');
+                          await routeState.go('/preconditions');
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -546,6 +617,13 @@ class _ApplyScreenState extends State<ApplyScreen> {
         : null;
   }
 
+  String? _parent_phoneValidator(String? text) {
+    String? value = ParentphoneMaskTextInputFormatter.getUnmaskedText();
+    return (value.length != 10)
+        ? 'Phone number must be 10 digits e.g 071 234 5678'
+        : null;
+  }
+
   Future<bool> addSudentApplicant(BuildContext context) async {
     try {
       if (_formKey.currentState!.validate()) {
@@ -583,6 +661,10 @@ class _ApplyScreenState extends State<ApplyScreen> {
             jwt_email: admissionSystemInstance.getJWTEmail(),
             branch_code: selectedbranchcode,
             organization_id: organizationId,
+            date_of_birth: DateFormat('yyyy-MM-dd').format(dateOfBirth),
+            parent_full_name: _parent_full_name_Controller.text,
+            parent_phone:
+                int.parse(ParentphoneMaskTextInputFormatter.getUnmaskedText()),
           );
 
           ScaffoldMessenger.of(context).showSnackBar(
