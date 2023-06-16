@@ -62,8 +62,10 @@ class CampusAppsPortalAuth extends ChangeNotifier {
           _signedIn = false;
           return _signedIn;
         }
-
-        if (AppConfig.apiTokens != null) {
+        bool isAccessTokenExpired =
+            JwtDecoder.isExpired(_openid_tokens["access_token"]);
+        print("Access token is expired $isAccessTokenExpired");
+        if (AppConfig.apiTokens != null && isAccessTokenExpired) {
           // Use refresh token
           String refreshToken = AppConfig.refreshToken;
           String clientId = AppConfig.choreoSTSClientID;
