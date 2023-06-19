@@ -88,6 +88,7 @@ class CampusAppsPortalAuth extends ChangeNotifier {
             var refreshedTokens = json.decode(response.body);
             AppConfig.apiTokens = refreshedTokens;
             AppConfig.campusBffApiKey = refreshedTokens["access_token"];
+            AppConfig.refreshToken = refreshedTokens["refresh_token"];
             print('Access token refreshed successfully');
           } else {
             print('Failed to refresh access token');
