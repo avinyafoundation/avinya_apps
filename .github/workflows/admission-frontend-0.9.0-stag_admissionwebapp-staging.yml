@@ -6,7 +6,7 @@ name: Build and deploy Node.js app to Azure Web App - admissionwebapp-developmen
 on:
   push:
     branches:
-      - main
+      - admission-frontend-0.9.0-stag
   workflow_dispatch:
 
 jobs:
@@ -38,7 +38,7 @@ jobs:
       - name: Build Flutter app
         run: |
           cd admissions/frontend
-          flutter build web --release --dart-define=choreo_sts_client_id=${{ secrets.CHOREO_STS_CLIENT_ID }} --dart-define=asgardeo_client_id=${{ secrets.ASGARDEO_CLIENT_ID_DEV }} --dart-define=ENV=dev-cloud
+          flutter build web --release --dart-define=choreo_sts_client_id=${{ secrets.CHOREO_STS_CLIENT_ID }} --dart-define=asgardeo_client_id=${{ secrets.ASGARDEO_CLIENT_ID }} --dart-define=ENV=dev-cloud
           flutter config --enable-web
 
       - name: Upload Flutter build artifacts
@@ -81,7 +81,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'admissionwebapp-development'
+          app-name: 'admissionwebapp-staging'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3002A9951AF34C92AFF585EF303AAF4F }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3A1A0B81739040AE81A9D04A057FC31E }}
           package: .

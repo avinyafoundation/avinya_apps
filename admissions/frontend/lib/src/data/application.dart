@@ -119,7 +119,6 @@ Future<Application> createApplication(Application applicantConsent) async {
     Uri.parse(AppConfig.admissionsApplicationBffApiUrl + '/application'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.admissionsApplicationBffApiKey,
     },
     body: jsonEncode(applicantConsent.toJson()),
   );
