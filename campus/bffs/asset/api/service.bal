@@ -651,4 +651,87 @@ service / on new http:Listener(9094) {
                 ":: Detail: " + getAvinyaTypesByAssetResponse.detail().toString());
         }
     }
+
+    resource function get resource_allocations_report/[int organization_id]/[int avinya_type_id]() returns ResourceAllocation[]|error {
+        GetResourceAllocationReportResponse|graphql:ClientError getResourceAllocationsReportResponse = globalDataClient->getResourceAllocationReport(organization_id,avinya_type_id);
+        if(getResourceAllocationsReportResponse is GetResourceAllocationReportResponse) {
+            ResourceAllocation[] resource_allocations = [];
+            foreach var resource_allocation in getResourceAllocationsReportResponse.resource_allocations_report {
+                ResourceAllocation|error resource_allocation_record = resource_allocation.cloneWithType(ResourceAllocation);
+                if(resource_allocation_record is ResourceAllocation) {
+                    resource_allocations.push(resource_allocation_record);
+                } else {
+                    log:printError("Error while processing Application record received", resource_allocation_record);
+                    return error("Error while processing Application record received: " + resource_allocation_record.message() + 
+                        ":: Detail: " + resource_allocation_record.detail().toString());
+                }
+            }
+            
+            return resource_allocations;
+            
+        } else {
+            log:printError("Error while getting application", getResourceAllocationsReportResponse);
+            return error("Error while getting application: " + getResourceAllocationsReportResponse.message() + 
+                ":: Detail: " +getResourceAllocationsReportResponse.detail().toString());
+        }
+    }
+
+    resource function get organizations_by_avinya_type(int avinya_type) returns Organization[]|error {
+        
+        
+        
+        GetOrganizationsByAvinyaTypeResponse|graphql:ClientError getOrganizationsByAvinyaTypeResponse = globalDataClient->getOrganizationsByAvinyaType(avinya_type);
+        
+        if(getOrganizationsByAvinyaTypeResponse is GetOrganizationsByAvinyaTypeResponse) {
+            
+            Organization[] organizations_by_avinya_type_record  = [];
+            
+            foreach var organization_by_avinya_type in getOrganizationsByAvinyaTypeResponse.organizations_by_avinya_type {
+                
+                Organization|error organization_by_avinya_type_record = organization_by_avinya_type.cloneWithType(Organization);
+               
+                if(organization_by_avinya_type_record  is Organization) {
+
+                   organizations_by_avinya_type_record .push(organization_by_avinya_type_record);
+                } else {
+                    log:printError("Error while processing Application record received", organization_by_avinya_type_record);
+                    return error("Error while processing Application record received: " + organization_by_avinya_type_record.message() + 
+                        ":: Detail: " + organization_by_avinya_type_record.detail().toString());
+                }
+            }
+            
+            return organizations_by_avinya_type_record;
+            
+        } else {
+            log:printError("Error while getting application", getOrganizationsByAvinyaTypeResponse);
+            return error("Error while getting application: " + getOrganizationsByAvinyaTypeResponse.message() + 
+                ":: Detail: " +getOrganizationsByAvinyaTypeResponse.detail().toString());
+        }
+    }
+
+    resource function get all_avinya_types() returns AvinyaType[]|error {
+        GetAvinyaTypesResponse|graphql:ClientError getAvinyaTypesResponse = globalDataClient->getAvinyaTypes();
+        if(getAvinyaTypesResponse is GetAvinyaTypesResponse) {
+            AvinyaType[] avinyaTypes = [];
+            foreach var avinya_type in getAvinyaTypesResponse.avinya_types {
+                AvinyaType|error avinyaType = avinya_type.cloneWithType(AvinyaType);
+                if(avinyaType is AvinyaType) {
+                    avinyaTypes.push(avinyaType);
+                } else {
+                    log:printError("Error while processing Application record received", avinyaType);
+                    return error("Error while processing Application record received: " + avinyaType.message() + 
+                        ":: Detail: " + avinyaType.detail().toString());
+                }
+            }
+
+            return avinyaTypes;
+            
+        } else {
+            log:printError("Error while getting application", getAvinyaTypesResponse);
+            return error("Error while getting application: " + getAvinyaTypesResponse.message() + 
+                ":: Detail: " + getAvinyaTypesResponse.detail().toString());
+        }
+    }
+
+
 }
