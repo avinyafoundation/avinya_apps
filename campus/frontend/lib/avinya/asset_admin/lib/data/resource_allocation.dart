@@ -17,6 +17,7 @@ class ResourceAllocation {
   dynamic consumable;
   Organization? organization;
   Person? person;
+  var resource_properties = <ResourceProperty>[];
 
   ResourceAllocation({
     this.endDate,
@@ -30,6 +31,7 @@ class ResourceAllocation {
     this.consumable,
     this.organization,
     this.person,
+    this.resource_properties = const[],
   });
 
   factory ResourceAllocation.fromJson(Map<String, dynamic> json) {
@@ -50,6 +52,10 @@ class ResourceAllocation {
           ? Organization.fromJson(json['organization'])
           : null,
       person: json['person'] != null ? Person.fromJson(json['person']) : null,
+      resource_properties: json['resource_properties'] !=null 
+        ? List<ResourceProperty>.from(
+          json['resource_properties'].map((x)=>ResourceProperty.fromJson(x)))
+          :[]
     );
   }
 
@@ -65,6 +71,7 @@ class ResourceAllocation {
         if (consumable != null) 'consumable': consumable,
         if (organization != null) 'organization': organization,
         if (person != null) 'person': person,
+        if(resource_properties != null) 'resource_properties' : resource_properties,
       };
 }
 
@@ -161,6 +168,32 @@ Future<Asset> fetchAssetByAvinyaType(int id) async {
   } else {
     throw Exception('Failed to load Asset');
   }
+}
+
+Future<List<ResourceAllocation>> getResourceAllocationReport(int organization_id,int avinya_type_id) async{
+
+ final response = await http.get(
+   Uri.parse(
+    '${AppConfig.campusAssetBffApiUrl}/resource_allocations_report/$organization_id/$avinya_type_id'),
+    headers: <String,String>{
+     'Content-Type': 'application/json; charset=UTF-8',
+     'accept': 'application/json',
+     'Authorization': 'Bearer ${AppConfig.campusConfigBffApiKey}',
+    },
+ );
+ if(response.statusCode > 199 && response.statusCode < 300 ){
+    
+    var resultsJson = json.decode(response.body).cast<Map<String,dynamic>>();
+    List<ResourceAllocation> resourceAllocations = await resultsJson
+    .map<ResourceAllocation>((json) => ResourceAllocation.fromJson(json))
+        .toList();
+    print("Resource Allocations report" + "$resourceAllocations");
+    return resourceAllocations;
+  } else {
+    throw Exception(
+        'Failed to get Resource Allocations report for organization ID $organization_id and avinya type ID $avinya_type_id for result limit.');
+  }
+
 }
 
 
