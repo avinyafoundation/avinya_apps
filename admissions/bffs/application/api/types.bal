@@ -277,6 +277,7 @@ public type Person record {
     string? preferred_name?;
     string? jwt_sub_id?;
     int? academy_org_id?;
+    string? branch_code?;
 };
 
 public type Prospect record {
@@ -376,51 +377,13 @@ public type WorkExperience record {
     string? start_date?;
 };
 
-public type CreateStudentApplicantResponse record {|
-    map<json?> __extensions?;
-    record {|
-        string? asgardeo_id;
-        string? preferred_name;
-        string? full_name;
-        string? sex;
-        record {|record {|
-                string name_en;
-            |} name;|}? organization;
-        int? phone;
-        string? email;
-        record {|
-            string street_address;
-            record {|record {|
-                    string name_en;
-                |} name;|} city;
-            int? phone;
-        |}? permanent_address;
-        record {|
-            string street_address;
-            record {|record {|
-                    string name_en;
-                |} name;|} city;
-            int? phone;
-        |}? mailing_address;
-        string? notes;
-        string? date_of_birth;
-        record {|
-            string? name;
-            boolean active;
-            string global_type;
-            string? foundation_type;
-            string? focus;
-            int? level;
-        |}? avinya_type;
-        string? passport_no;
-        string? nic_no;
-        string? id_no;
-    |}? add_student_applicant;
-|};
-
 public type CreateStudentApplicantConsentResponse record {|
     map<json?> __extensions?;
     record {|
+        int? organization_id;
+        int? person_id;
+        int? application_id;
+        int? avinya_type_id;
         string? name;
         string? date_of_birth;
         boolean? done_ol;
@@ -433,6 +396,24 @@ public type CreateStudentApplicantConsentResponse record {|
     |}? add_student_applicant_consent;
 |};
 
+public type CreateStudentApplicantResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? preferred_name;
+        string? full_name;
+        string? sex;
+        int? phone;
+        string? email;
+        string? id_no;
+        int? organization_id;
+        int? avinya_type_id;
+        string? jwt_sub_id;
+        string? jwt_email;
+        string? street_address;
+        string? branch_code;
+        int? id;
+    |}? add_student_applicant;
+|};
 public type GetOrganizationVacanciesResponse record {|
     map<json?> __extensions?;
     record {|record {|
@@ -501,7 +482,9 @@ public type CreateProspectResponse record {|
 
 public type CreateStudentApplicationResponse record {|
     map<json?> __extensions?;
-    record {|record {|
+    record {|
+    int? id;
+    record {|
             string? status;
         |}[]? statuses;|}? add_application;
 |};

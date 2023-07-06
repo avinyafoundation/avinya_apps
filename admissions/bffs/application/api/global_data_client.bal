@@ -4,7 +4,7 @@ import ballerina/log;
 public isolated client class GraphqlClient {
     final graphql:Client graphqlClient;
     public isolated function init(string serviceUrl, ConnectionConfig config = {}) returns graphql:ClientError? {
-        graphql:ClientConfiguration graphqlClientConfig = {timeout: config.timeout, forwarded: config.forwarded, poolConfig: config.poolConfig, compression: config.compression, circuitBreaker: config.circuitBreaker, retryConfig: config.retryConfig, validation: config.validation};
+        graphql:ClientConfiguration graphqlClientConfig = {auth: config.oauth2ClientCredentialsGrantConfig, timeout: config.timeout, forwarded: config.forwarded, poolConfig: config.poolConfig, compression: config.compression, circuitBreaker: config.circuitBreaker, retryConfig: config.retryConfig, validation: config.validation};
         do {
             if config.http1Settings is ClientHttp1Settings {
                 ClientHttp1Settings settings = check config.http1Settings.ensureType(ClientHttp1Settings);
@@ -29,13 +29,28 @@ public isolated client class GraphqlClient {
         self.graphqlClient = clientEp;
     }
     remote isolated function createStudentApplicant(Person person) returns CreateStudentApplicantResponse|graphql:ClientError {
-        string query = string `mutation createStudentApplicant($person:Person!) {add_student_applicant(person:$person) {asgardeo_id preferred_name full_name sex organization {name {name_en}} phone email permanent_address {street_address city {name {name_en}} phone} mailing_address {street_address city {name {name_en}} phone} notes date_of_birth avinya_type {name active global_type foundation_type focus level} passport_no nic_no id_no}}`;
+        string query = string `mutation createStudentApplicant($person: Person!)
+  {add_student_applicant(person:$person){
+    preferred_name,
+    full_name,
+    sex,
+    organization_id,
+    phone,
+    email,
+    avinya_type_id,
+    jwt_sub_id,
+    jwt_email,
+    street_address,
+    id_no,
+    branch_code,
+    id
+  }}`;
         map<anydata> variables = {"person": person};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <CreateStudentApplicantResponse> check performDataBinding(graphqlResponse, CreateStudentApplicantResponse);
     }
     remote isolated function createStudentApplicantConsent(ApplicantConsent consent) returns CreateStudentApplicantConsentResponse|graphql:ClientError {
-        string query = string `mutation createStudentApplicantConsent($consent:ApplicantConsent!) {add_student_applicant_consent(applicantConsent:$consent) {name date_of_birth done_ol ol_year distance_to_school phone email information_correct_consent agree_terms_consent}}`;
+        string query = string `mutation createStudentApplicantConsent($consent:ApplicantConsent!) {add_student_applicant_consent(applicantConsent:$consent) {organization_id avinya_type_id person_id application_id name date_of_birth done_ol ol_year distance_to_school phone email information_correct_consent agree_terms_consent}}`;
         map<anydata> variables = {"consent": consent};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <CreateStudentApplicantConsentResponse> check performDataBinding(graphqlResponse, CreateStudentApplicantConsentResponse);
@@ -53,7 +68,7 @@ public isolated client class GraphqlClient {
         return <CreateProspectResponse> check performDataBinding(graphqlResponse, CreateProspectResponse);
     }
     remote isolated function createStudentApplication(Application application) returns CreateStudentApplicationResponse|graphql:ClientError {
-        string query = string `mutation createStudentApplication($application:Application!) {add_application(application:$application) {statuses {status}}}`;
+        string query = string `mutation createStudentApplication($application:Application!) {add_application(application:$application) {id statuses {status}}}`;
         map<anydata> variables = {"application": application};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <CreateStudentApplicationResponse> check performDataBinding(graphqlResponse, CreateStudentApplicationResponse);

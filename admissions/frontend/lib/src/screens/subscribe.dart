@@ -451,8 +451,8 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
         log(prospect.toJson().toString());
         var createProspectResponse = null;
         try {
-          createProspectResponse = await await createProspect(prospect)
-              .timeout(Duration(seconds: 10));
+          createProspectResponse =
+              await createProspect(prospect).timeout(Duration(seconds: 10));
         } catch (e) {
           log(e.toString());
           ScaffoldMessenger.of(context).showSnackBar(
