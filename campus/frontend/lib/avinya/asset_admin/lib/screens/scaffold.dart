@@ -3,15 +3,16 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../auth.dart';
-import '../config/app_config.dart';
+
+import 'package:gallery/auth.dart';
+import 'package:gallery/config/app_config.dart';
 import '../routing.dart';
 // import '../auth.dart';
 import 'scaffold_body.dart';
 
 class SMSScaffold extends StatelessWidget {
   static const pageNames = [
-    '/resource_allocations',
+    '/resource_allocation_report',
     '/resource_allocation/:id',
   ];
 
@@ -23,6 +24,19 @@ class SMSScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final routeState = RouteStateScope.of(context);
     final selectedIndex = _getSelectedIndex(routeState.route.pathTemplate);
+
+    List<AdaptiveScaffoldDestination> destinations = [];
+
+    destinations = const [
+     AdaptiveScaffoldDestination(
+          title: 'Resource Allocation Report',
+          icon: Icons.summarize,
+        ),
+     AdaptiveScaffoldDestination(
+          title: 'Resource Allocation Report2',
+          icon: Icons.summarize,
+        ),
+    ];
 
     return Scaffold(
       body: AdaptiveNavigationScaffold(
@@ -77,16 +91,7 @@ class SMSScaffold extends StatelessWidget {
         onDestinationSelected: (idx) {
           routeState.go(pageNames[idx]);
         },
-        destinations: const [
-          AdaptiveScaffoldDestination(
-            title: 'Assets',
-            icon: Icons.type_specimen,
-          ),
-          AdaptiveScaffoldDestination(
-            title: 'Tests',
-            icon: Icons.text_snippet,
-          ),
-        ],
+        destinations: destinations,
       ),
       persistentFooterButtons: [
         new OutlinedButton(

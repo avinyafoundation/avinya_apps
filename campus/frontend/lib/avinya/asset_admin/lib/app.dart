@@ -29,7 +29,7 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
     _routeParser = TemplateRouteParser(
       allowedPaths: [
         '/signin',
-        '/resource_allocations',
+        '/resource_allocation_report',
         '/resource_allocations/:id',
         // '/assets/new',
         // '/assets/all',
@@ -40,7 +40,8 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
         '/#access_token',
       ],
       guard: _guard,
-      initialRoute: '/signin',
+      // initialRoute: '/signin',
+      initialRoute: '/resource_allocation_report',
     );
 
     _routeState = RouteState(_routeParser);
@@ -90,21 +91,20 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
 
     final signInRoute = ParsedRoute('/signin', '/signin', {}, {});
 
-    final resourceAllocationRoute =
-        ParsedRoute('/resource_allocations', '/resource_allocations', {}, {});
+    final resourceAllocationReportRoute =
+        ParsedRoute('/resource_allocation_report', '/resource_allocation_report', {}, {});
 
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
     // log("_guard JWT sub ${jwt_sub}");
     log("_guard from ${from.toString()}\n");
 
-    if (signedIn && from == resourceAllocationRoute) {
-      return resourceAllocationRoute;
+    if (signedIn && from == resourceAllocationReportRoute ) {
+      return resourceAllocationReportRoute;
     }
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {
-      return ParsedRoute(
-          '/resource_allocations', '/resource_allocations', {}, {});
+      return ParsedRoute('/resource_allocation_report', '/resource_allocation_report', {}, {});
     }
     log("_guard signed in2 $signedIn");
     // } else if (signedIn && jwt_sub != null) {
@@ -116,7 +116,8 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
   void _handleAuthStateChanged() async {
     bool signedIn = await _auth.getSignedIn();
     if (!signedIn) {
-      _routeState.go('/signin');
+      // _routeState.go('/signin');
+      _routeState.go('/resource_allocation_report');
     }
   }
 
