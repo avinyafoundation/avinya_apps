@@ -1,0 +1,6 @@
+{
+    "admissionsApplicationBffApiUrl": "http://localhost:9095",
+    "choreo_sts_endpoint" : "https://sts.choreo.dev/oauth2/token",
+    "asgardeo_token_endpoint" : "https://api.asgardeo.io/t/avinyafoundation/oauth2/token",
+    "logout_url" : "https://api.asgardeo.io/t/avinyafoundation/oidc/logout"
+}

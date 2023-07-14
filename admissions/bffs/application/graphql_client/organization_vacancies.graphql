@@ -1,0 +1,104 @@
+query getOrganizationVacancies($name: String!) {
+    organization_structure(name:$name) {
+        organizations{
+            
+            name{
+                name_en
+            }
+            address {
+                street_address
+            }
+            avinya_type{
+                name
+                active
+                global_type
+                foundation_type
+                focus
+                level
+            }
+            phone
+            child_organizations{
+                
+                name{
+                    name_en
+                }
+                vacancies {
+                    name
+                    description
+                    head_count
+                    avinya_type {
+                        name
+                        active
+                        global_type
+                        foundation_type
+                        focus
+                        level
+                    }
+                    evaluation_criteria {
+                        prompt
+                        description
+                        difficulty
+                        evaluation_type
+                        rating_out_of
+                        answer_options {
+                            answer
+                        }
+                    }
+                }
+            }
+            parent_organizations{
+                
+                name{
+                    name_en
+                }
+            }
+            vacancies {
+                name
+                description
+                head_count
+            }
+        }
+            
+        }
+    }
+
+mutation createProspect($prospect: Prospect!) {
+    add_prospect(prospect:$prospect){
+        name
+        phone
+        email
+        receive_information_consent
+        agree_terms_consent
+        created
+    }
+}
+
+mutation createStudentApplication($application: Application!) {
+    add_application(application:$application){
+        statuses{
+            status
+        }
+    }
+}
+
+query getApplication($person_id: Int!) {
+    application(person_id:$person_id) {
+        application_date
+        statuses {
+            status
+            updated
+        }
+    }      
+}
+
+query getStudentApplicant($jwt_sub_id: String!) {
+    student_applicant(jwt_sub_id:$jwt_sub_id) {
+        asgardeo_id
+        full_name
+        preferred_name
+        email
+        phone
+        jwt_sub_id
+        jwt_email
+    }
+}

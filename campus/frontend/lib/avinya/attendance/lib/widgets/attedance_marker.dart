@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../data.dart';
 import '../data/activity_attendance.dart';
+import 'package:attendance/data/evaluation.dart';
+// import 'package:attendance/widgets/evaluation_list.dart';
+import 'package:gallery/avinya/attendance/lib/widgets/evaluation_list.dart';
 
 class AttendanceMarker extends StatefulWidget {
   @override
@@ -10,21 +13,24 @@ class AttendanceMarker extends StatefulWidget {
 class _AttendanceMarkerState extends State<AttendanceMarker> {
   bool _isCheckedIn = false;
   bool _isCheckedOut = false;
+  bool _isAbsent = false;
   List<ActivityAttendance> _personAttendanceToday = [];
+  List<Evaluation> _fechedEvaluations = [];
 
   Future<void> _handleCheckIn() async {
     var activityInstance =
         await campusAttendanceSystemInstance.getCheckinActivityInstance(
             campusAppsPortalInstance.activityIds['school-day']);
     // call the API to check-in
-    createActivityAttendance(ActivityAttendance(
+    await createActivityAttendance(ActivityAttendance(
       activity_instance_id: activityInstance.id,
       person_id: campusAppsPortalInstance.getUserPerson().id,
       sign_in_time: DateTime.now().toString(),
       in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
     ));
+    await refreshPersonActivityAttendanceToday();
     setState(() {
-      _isCheckedIn = true;
+      //_isCheckedIn = true;
     });
     print('Checked in for today.');
   }
@@ -34,14 +40,15 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
         await campusAttendanceSystemInstance.getCheckoutActivityInstance(
             campusAppsPortalInstance.activityIds['school-day']);
     // call the API to check-out
-    createActivityAttendance(ActivityAttendance(
+    await createActivityAttendance(ActivityAttendance(
       activity_instance_id: activityInstance.id,
       person_id: campusAppsPortalInstance.getUserPerson().id,
       sign_out_time: DateTime.now().toString(),
       out_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
     ));
+    await refreshPersonActivityAttendanceToday();
     setState(() {
-      _isCheckedOut = true;
+      //_isCheckedOut = true;
     });
     print('Checked out for today.');
   }
@@ -51,6 +58,31 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
     _personAttendanceToday = await getPersonActivityAttendanceToday(
         campusAppsPortalInstance.getUserPerson().id!,
         campusAppsPortalInstance.activityIds['school-day']!);
+    if (_personAttendanceToday.length > 0) {
+      _isCheckedIn = _personAttendanceToday[0].sign_in_time != null;
+    }
+    if (_personAttendanceToday.length > 1) {
+      _isCheckedOut = _personAttendanceToday[1].sign_out_time != null;
+    }
+
+    if (!_isCheckedIn) {
+      var activityInstance =
+          await campusAttendanceSystemInstance.getCheckinActivityInstance(
+              campusAppsPortalInstance.activityIds['school-day']!);
+      _fechedEvaluations =
+          await getActivityInstanceEvaluations(activityInstance.id!);
+
+      if (_fechedEvaluations.indexWhere((element) =>
+              element.evaluator_id ==
+              campusAppsPortalInstance.getUserPerson().id!) ==
+          -1) {
+        _isCheckedIn = false;
+      } else {
+        _isCheckedIn = true;
+        _isCheckedOut = true;
+        _isAbsent = true;
+      }
+    }
 
     return _personAttendanceToday;
   }
@@ -67,41 +99,98 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
           if (snapshot.data!.length > 1) {
             _isCheckedOut = snapshot.data![1].sign_out_time != null;
           }
-          return Column(
+          return SingleChildScrollView(
+              child: Column(
             children: [
               if (!_isCheckedIn)
-                ElevatedButton(
-                  child: Text('Check-In'),
-                  onPressed: _handleCheckIn,
-                  style: ButtonStyle(
-                    // increase the fontSize
-                    textStyle: MaterialStateProperty.all(
-                      TextStyle(fontSize: 20),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  ElevatedButton(
+                    child: Text('Check-In'),
+                    onPressed: _handleCheckIn,
+                    style: ButtonStyle(
+                      // increase the fontSize
+                      textStyle: MaterialStateProperty.all(
+                        TextStyle(fontSize: 20),
+                      ),
+                      elevation: MaterialStateProperty.all(
+                          20), // increase the elevation
+                      // Add outline around button
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.greenAccent),
+                      foregroundColor: MaterialStateProperty.all(Colors.black),
                     ),
-                    elevation:
-                        MaterialStateProperty.all(20), // increase the elevation
-                    // Add outline around button
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.greenAccent),
-                    foregroundColor: MaterialStateProperty.all(Colors.black),
                   ),
-                ),
-              if (_isCheckedOut)
+                  SizedBox(width: 20),
+                  ElevatedButton(
+                    child: Text('Absent'),
+                    onPressed: () async {
+                      var activityInstance =
+                          await campusAttendanceSystemInstance
+                              .getCheckinActivityInstance(
+                                  campusAppsPortalInstance
+                                      .activityIds['school-day']!);
+                      var evaluation = Evaluation(
+                        evaluator_id:
+                            campusAppsPortalInstance.getUserPerson().id,
+                        evaluatee_id:
+                            campusAppsPortalInstance.getUserPerson().id,
+                        activity_instance_id: activityInstance.id,
+                        grade: 0,
+                        evaluation_criteria_id: 54,
+                        response: "Unexcused absence",
+                      );
+                      var result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddEvaluationPage(
+                                  evaluation: evaluation,
+                                )),
+                      );
+                      if (result != null) {
+                        await refreshPersonActivityAttendanceToday();
+                        setState(() {});
+                      }
+                      // _fetchedEvaluations =
+                      //             await getActivityInstanceEvaluations(
+                      //                             activityInstance.id!);
+                      //             setState(() {});
+                    },
+                    style: ButtonStyle(
+                      textStyle:
+                          MaterialStateProperty.all(TextStyle(fontSize: 20)),
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.blue),
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                  ),
+                ]),
+              if (_isCheckedOut && !_isAbsent)
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text('Attendance marked for today.'),
-                    Text('Checked in at ' + snapshot.data![0].sign_in_time!),
-                    Text('Checked out at ' + snapshot.data![1].sign_out_time!),
+                    if (_personAttendanceToday.length > 0)
+                      Text('Checked in at ' +
+                          _personAttendanceToday[0].sign_in_time!),
+                    if (_personAttendanceToday.length > 1)
+                      Text('Checked out at ' +
+                          _personAttendanceToday[1].sign_out_time!),
                     SizedBox(width: 20),
                   ],
+                )
+              else if (_isAbsent)
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Text('Attendance marked as Absent today.')],
                 )
               else if (_isCheckedIn)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Checked in for today at ' +
-                        snapshot.data![0].sign_in_time!),
+                    if (_personAttendanceToday.length > 0)
+                      Text('Checked in for today at ' +
+                          _personAttendanceToday[0].sign_in_time!),
                     SizedBox(width: 20),
                   ],
                 ),
@@ -123,7 +212,7 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
                   ),
                 ),
             ],
-          );
+          ));
         } else if (snapshot.hasError) {
           return Text('${snapshot.error}');
         }

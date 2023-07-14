@@ -48,10 +48,13 @@ dependencies:
     path: ./lib/avinya/pcti_feedback
   asset:
     path: ./lib/avinya/asset
+  asset_admin:
+    path: ./lib/avinya/asset_admin
   consumable:
     path: ./lib/avinya/consumable
   route_observer_mixin: ^1.7.0
   sizer: ^2.0.15
+  flutter_spinkit: ^5.0.0
 
 dev_dependencies:
   flutter_test:
@@ -274,6 +277,8 @@ flutter:
     - packages/shrine_images/37-0.jpg
     - assets/config/dev.json
     - assets/config/prod.json
+    - assets/config/dev-cloud.json
+    - assets/config/stag.json
     - assets/images/
 
   generate: true
