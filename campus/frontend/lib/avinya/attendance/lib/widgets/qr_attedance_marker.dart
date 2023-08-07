@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../data.dart';
 import '../data/activity_attendance.dart';
 import 'package:attendance/data/evaluation.dart';
 // import 'package:attendance/widgets/evaluation_list.dart';
 import 'package:gallery/avinya/attendance/lib/widgets/evaluation_list.dart';
 import 'package:gallery/avinya/attendance/lib/widgets/qr_image.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-class AttendanceMarker extends StatefulWidget {
+class QrAttendanceMarker extends StatefulWidget {
   @override
-  _AttendanceMarkerState createState() => _AttendanceMarkerState();
+  _QrAttendanceMarkerState createState() => _QrAttendanceMarkerState();
 }
 
-class _AttendanceMarkerState extends State<AttendanceMarker> {
+class _QrAttendanceMarkerState extends State<QrAttendanceMarker> {
   bool _isCheckedIn = false;
   bool _isCheckedOut = false;
   bool _isAbsent = false;
@@ -19,7 +21,25 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
   List<Evaluation> _fechedEvaluations = [];
 
   String sign_in_time = "ee";
+
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  QRViewController? controller;
   String qrCodeData = "";
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
+  }
+
+  void _onQRViewCreated(QRViewController controller) {
+    this.controller = controller;
+    controller.scannedDataStream.listen((scanData) {
+      setState(() {
+        qrCodeData = scanData.code!;
+      });
+    });
+  }
 
   Future<void> _handleCheckIn() async {
     var activityInstance =
@@ -116,22 +136,54 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
             children: [
               if (!_isCheckedIn)
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  ElevatedButton(
-                    child: Text('Check-In'),
-                    onPressed: _handleCheckIn,
-                    style: ButtonStyle(
-                      // increase the fontSize
-                      textStyle: MaterialStateProperty.all(
-                        TextStyle(fontSize: 20),
-                      ),
-                      elevation: MaterialStateProperty.all(
-                          20), // increase the elevation
-                      // Add outline around button
-                      backgroundColor:
-                          MaterialStateProperty.all(Colors.greenAccent),
-                      foregroundColor: MaterialStateProperty.all(Colors.black),
-                    ),
+                  // ElevatedButton(
+                  //   child: Text('Check-In'),
+                  //   onPressed: _handleCheckIn,
+                  //   style: ButtonStyle(
+                  //     // increase the fontSize
+                  //     textStyle: MaterialStateProperty.all(
+                  //       TextStyle(fontSize: 20),
+                  //     ),
+                  //     elevation: MaterialStateProperty.all(
+                  //         20), // increase the elevation
+                  //     // Add outline around button
+                  //     backgroundColor:
+                  //         MaterialStateProperty.all(Colors.greenAccent),
+                  //     foregroundColor: MaterialStateProperty.all(Colors.black),
+                  //   ),
+                  // ),
+                  Expanded(
+                    flex: 5,
+                    child:
+                        QRView(key: qrKey, onQRViewCreated: _onQRViewCreated),
                   ),
+                  Expanded(
+                      flex: 1,
+                      child: Center(
+                          child: Text(
+                        'Scan Result: $qrCodeData',
+                        style: TextStyle(fontSize: 18),
+                      ))),
+                  Expanded(
+                      flex: 1,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                              onPressed: () {
+                                if (qrCodeData.isNotEmpty) {
+                                  Clipboard.setData(
+                                      ClipboardData(text: qrCodeData));
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content:
+                                              Text('Copied to Clipboard')));
+                                  // _handleCheckIn();
+                                }
+                              },
+                              child: Text('Copy')),
+                        ],
+                      )),
                   SizedBox(width: 20),
                   ElevatedButton(
                     child: Text('Absent'),
