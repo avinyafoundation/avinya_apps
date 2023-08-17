@@ -51,6 +51,7 @@ class _CampusAttendanceManagementSystemState
         '/avinya_types',
         '/#access_token',
         '/person_attendance_report',
+        '/duty_participants',
       ],
       guard: _guard,
       initialRoute: '/attendance_marker',
@@ -120,6 +121,8 @@ class _CampusAttendanceManagementSystemState
     final personAttendanceReportRoute = ParsedRoute(
         '/person_attendance_report', '/person_attendance_report', {}, {});
 
+    final dutyParticipantsRoute = ParsedRoute(
+        '/duty_participants','/duty_participants', {}, {});
 
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
@@ -138,9 +141,11 @@ class _CampusAttendanceManagementSystemState
       return dailyAttendanceReportRoute;
     } else if (signedIn && from == weeklyPaymentReportRoute) {
       return weeklyPaymentReportRoute;
-    }else if(signedIn && from == personAttendanceReportRoute){
-       return personAttendanceReportRoute;
-    }
+    } else if (signedIn && from == personAttendanceReportRoute){
+      return personAttendanceReportRoute;
+    } else if (signedIn && from == dutyParticipantsRoute){
+      return dutyParticipantsRoute; 
+    } 
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {
       return ParsedRoute('/attendance_marker', '/attendance_marker', {}, {});

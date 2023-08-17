@@ -182,3 +182,49 @@ mutation updateEvaluations($evaluation: Evaluation!)
         updated
     }       
 }
+
+query getDutyParticipants{
+   duty_participants{
+    id
+    activity {
+        id
+        name
+        description  
+    }
+    person {
+        preferred_name
+        digital_id
+        organization {
+            name {
+                name_en
+            }
+            description
+        }
+    }
+    role
+    start_date
+    end_date
+   }
+}
+
+mutation createDutyForParticipant($dutyparticipant: DutyParticipant!){
+    
+    add_duty_for_participant(dutyparticipant:$dutyparticipant){
+       id
+       activity_id
+       person_id
+       role
+       start_date
+       end_date
+       created
+    }
+}
+
+query getActivitiesByAvinyaType($avinya_type_id: Int!) {
+    activities_by_avinya_type(avinya_type_id:$avinya_type_id){
+        id
+        name
+        description
+        notes
+    }
+}

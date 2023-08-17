@@ -398,5 +398,71 @@ service / on new http:Listener(9091) {
                 ":: Detail: " + getActivityInstanceEvaluationsResponse.detail().toString());
         }
     }
+
+    resource function get duty_participants() returns DutyParticipant[]|error {
+        GetDutyParticipantsResponse|graphql:ClientError getDutyParticipantsResponse = globalDataClient->getDutyParticipants();
+        if(getDutyParticipantsResponse is GetDutyParticipantsResponse) {
+            DutyParticipant[] dutyParticipants = [];
+            foreach var duty_participant in getDutyParticipantsResponse.duty_participants {
+                DutyParticipant|error dutyParticipant = duty_participant.cloneWithType(DutyParticipant);
+                if(dutyParticipant is DutyParticipant) {
+                    dutyParticipants.push(dutyParticipant);
+                } else {
+                    log:printError("Error while processing Application record received",dutyParticipant);
+                    return error("Error while processing Application record received: " + dutyParticipant.message() + 
+                        ":: Detail: " + dutyParticipant.detail().toString());
+                }
+            }
+
+            return dutyParticipants;
+            
+        } else {
+            log:printError("Error while getting application", getDutyParticipantsResponse );
+            return error("Error while getting application: " + getDutyParticipantsResponse .message() + 
+                ":: Detail: " + getDutyParticipantsResponse.detail().toString());
+        }
+    }
+
+    resource function post duty_for_participant (@http:Payload DutyParticipant dutyParticipant) returns DutyParticipant|error {
+        CreateDutyForParticipantResponse|graphql:ClientError createDutyForParticipantResponse = globalDataClient->createDutyForParticipant(dutyParticipant);
+        if(createDutyForParticipantResponse is CreateDutyForParticipantResponse) {
+            DutyParticipant|error duty_for_participant_record = createDutyForParticipantResponse.add_duty_for_participant.cloneWithType(DutyParticipant);
+            if(duty_for_participant_record is DutyParticipant) {
+                return duty_for_participant_record;
+            } else {
+                log:printError("Error while processing Application record received", duty_for_participant_record);
+                return error("Error while processing Application record received: " + duty_for_participant_record.message() + 
+                    ":: Detail: " + duty_for_participant_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", createDutyForParticipantResponse);
+            return error("Error while creating application: " + createDutyForParticipantResponse.message() + 
+                ":: Detail: " + createDutyForParticipantResponse.detail().toString());
+        }
+    }
+
+    resource function get activities_by_avinya_type/[int avinya_type_id]() returns Activity[]|error {
+        GetActivitiesByAvinyaTypeResponse|graphql:ClientError getActivitiesByAvinyaTypeResponse = globalDataClient->getActivitiesByAvinyaType(avinya_type_id);
+        if(getActivitiesByAvinyaTypeResponse is GetActivitiesByAvinyaTypeResponse) {
+            Activity[] activitiesByAvinyaType = [];
+            foreach var activity_by_avinya_type  in getActivitiesByAvinyaTypeResponse.activities_by_avinya_type {
+                Activity|error activityByAvinyaType = activity_by_avinya_type.cloneWithType(Activity);
+                if(activityByAvinyaType is Activity) {
+                    activitiesByAvinyaType.push(activityByAvinyaType);
+                } else {
+                    log:printError("Error while processing Application record received",activityByAvinyaType);
+                    return error("Error while processing Application record received: " + activityByAvinyaType.message() + 
+                        ":: Detail: " + activityByAvinyaType.detail().toString());
+                }
+            }
+
+            return activitiesByAvinyaType;
+            
+        } else {
+            log:printError("Error while getting application", getActivitiesByAvinyaTypeResponse );
+            return error("Error while getting application: " + getActivitiesByAvinyaTypeResponse .message() + 
+                ":: Detail: " + getActivitiesByAvinyaTypeResponse.detail().toString());
+        }
+    }
     
 }

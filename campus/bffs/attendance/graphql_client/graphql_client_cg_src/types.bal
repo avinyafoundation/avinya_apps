@@ -147,6 +147,20 @@ public type Consumable record {
     string? manufacturer?;
 };
 
+public type DutyParticipant record {
+    string? end_date?;
+    string? role?;
+    Activity? activity?;
+    Person? person?;
+    string? created?;
+    int? activity_id?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+    string? start_date?;
+};
+
 public type EducationExperience record {
     string? end_date?;
     int[]? evaluation_id?;
@@ -247,6 +261,7 @@ public type Organization record {
 public type Person record {
     int? permanent_address_id?;
     string? street_address?;
+    string? bank_branch?;
     string? bank_account_number?;
     string? notes?;
     int[]? parent_student?;
@@ -257,7 +272,6 @@ public type Person record {
     string? id_no?;
     string? jwt_email?;
     string? bank_name?;
-    string? bank_branch?;
     int? id?;
     string? email?;
     string? created?;
@@ -266,6 +280,7 @@ public type Person record {
     string? passport_no?;
     string? record_type?;
     Address? mailing_address?;
+    string? branch_code?;
     int[]? child_student?;
     string? bank_account_name?;
     int? avinya_phone?;
@@ -273,6 +288,7 @@ public type Person record {
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    string? academy_org_name?;
     string? asgardeo_id?;
     string? updated?;
     string? preferred_name?;
@@ -308,6 +324,7 @@ public type ResourceAllocation record {
     string? created?;
     int? asset_id?;
     string? record_type?;
+    ResourceProperty[]? resource_properties?;
     boolean? requested?;
     boolean? approved?;
     int? organization_id?;
@@ -605,4 +622,52 @@ public type UpdateEvaluationsResponse record {|
         int? activity_instance_id;
         string? updated;
     |}? update_evaluation;
+|};
+
+public type GetDutyParticipantsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string? name;
+            string? description;
+        |}? activity;
+        record {|
+            string? preferred_name;
+            string? digital_id;
+            record {|
+                record {|
+                    string name_en;
+                |} name;
+                string? description;
+            |}? organization;
+        |}? person;
+        string? role;
+        string? start_date;
+        string? end_date;
+    |}[] duty_participants;
+|};
+
+public type CreateDutyForParticipantResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_id;
+        int? person_id;
+        string? role;
+        string? start_date;
+        string? end_date;
+        string? created;
+    |}? add_duty_for_participant;
+|};
+
+public type GetActivitiesByAvinyaTypeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? name;
+        string? description;
+        string? notes;
+    |}[]? activities_by_avinya_type;
 |};

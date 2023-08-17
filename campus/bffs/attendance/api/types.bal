@@ -182,6 +182,7 @@ public type Person record {
     string? passport_no?;
     string? record_type?;
     Address? mailing_address?;
+    string? branch_code?;
     int[]? child_student?;
     string? bank_account_name?;
     int? avinya_phone?;
@@ -189,6 +190,7 @@ public type Person record {
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    string? academy_org_name?;
     string? asgardeo_id?;
     string? updated?;
     string? preferred_name?;
@@ -226,6 +228,18 @@ public type Vacancy record {
     int? head_count?;
     int? id?;
     string? record_type?;
+};
+
+public type DutyParticipant record {
+    string? end_date?;
+    string? role?;
+    string? created?;
+    int? activity_id?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+    string? start_date?;
 };
 
 public type GetAvinyaTypesResponse record {|
@@ -465,4 +479,52 @@ public type UpdateEvaluationsResponse record {|
         int? activity_instance_id;
         string? updated;
     |}? update_evaluation;
+|};
+
+public type GetDutyParticipantsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string? name;
+            string? description;
+        |}? activity;
+        record {|
+            string? preferred_name;
+            string? digital_id;
+            record {|
+                record {|
+                    string name_en;
+                |} name;
+                string? description;
+            |}? organization;
+        |}? person;
+        string? role;
+        string? start_date;
+        string? end_date;
+    |}[] duty_participants;
+|};
+
+public type CreateDutyForParticipantResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_id;
+        int? person_id;
+        string? role;
+        string? start_date;
+        string? end_date;
+        string? created;
+    |}? add_duty_for_participant;
+|};
+
+public type GetActivitiesByAvinyaTypeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? name;
+        string? description;
+        string? notes;
+    |}[] activities_by_avinya_type;
 |};

@@ -163,4 +163,25 @@ public isolated client class GraphqlClient {
         json|error row_count = check responseData.delete_evaluation;
         return row_count;
     }
+
+    remote isolated function getDutyParticipants() returns GetDutyParticipantsResponse|graphql:ClientError {
+        string query = string `query getDutyParticipants {duty_participants {id activity {id name description} person {preferred_name digital_id organization {name {name_en} description}} role start_date end_date}}`;
+        map<anydata> variables = {};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetDutyParticipantsResponse> check performDataBinding(graphqlResponse, GetDutyParticipantsResponse);
+    }
+    remote isolated function createDutyForParticipant(DutyParticipant dutyparticipant) returns CreateDutyForParticipantResponse|graphql:ClientError {
+        string query = string `mutation createDutyForParticipant($dutyparticipant:DutyParticipant!) {add_duty_for_participant(dutyparticipant:$dutyparticipant) {id activity_id person_id role start_date end_date created}}`;
+        map<anydata> variables = {"dutyparticipant": dutyparticipant};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <CreateDutyForParticipantResponse> check performDataBinding(graphqlResponse, CreateDutyForParticipantResponse);
+    }
+
+    remote isolated function getActivitiesByAvinyaType(int avinya_type_id) returns GetActivitiesByAvinyaTypeResponse|graphql:ClientError {
+        string query = string `query getActivitiesByAvinyaType($avinya_type_id:Int!) {activities_by_avinya_type(avinya_type_id:$avinya_type_id) {id name description notes}}`;
+        map<anydata> variables = {"avinya_type_id": avinya_type_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetActivitiesByAvinyaTypeResponse> check performDataBinding(graphqlResponse, GetActivitiesByAvinyaTypeResponse);
+    }
+    
 }
