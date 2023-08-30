@@ -9,6 +9,7 @@ import 'package:attendance/screens/weekly_payment_report.dart';
 import 'package:attendance/screens/person_attendance_report.dart';
 import 'package:attendance/screens/duty_participants.dart';
 import 'package:attendance/screens/duty_attendance_marker.dart';
+import 'package:attendance/screens/qr_attendance_marker.dart';
 
 import '../routing.dart';
 import '../widgets/fade_transition_page.dart';
@@ -48,6 +49,11 @@ class SMSScaffoldBody extends StatelessWidget {
             key: ValueKey('attendance_marker'),
             child: AttendanceMarkerScreen(),
           )
+        else if (currentRoute.pathTemplate.startsWith('/qr_attendance_marker'))
+          const FadeTransitionPage<void>(
+            key: ValueKey('qr_attendance_marker'),
+            child: QrAttendanceMarkerScreen(),
+          )
         else if (currentRoute.pathTemplate
             .startsWith('/bulk_attendance_marker'))
           const FadeTransitionPage<void>(
@@ -65,10 +71,11 @@ class SMSScaffoldBody extends StatelessWidget {
             key: ValueKey('weekly_payment_report'),
             child: WeeklyPaymentReportScreen(),
           )
-        else if(currentRoute.pathTemplate.startsWith('/person_attendance_report'))
+        else if (currentRoute.pathTemplate
+            .startsWith('/person_attendance_report'))
           const FadeTransitionPage<void>(
             key: ValueKey('person_attendance_report'),
-            child: PersonAttendanceReportScreen(),                                
+            child: PersonAttendanceReportScreen(),
           )
         else if (currentRoute.pathTemplate.startsWith('/duty_participants'))
           const FadeTransitionPage<void>(

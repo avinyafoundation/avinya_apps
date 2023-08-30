@@ -111,12 +111,12 @@ Future<http.Response> createEvaluation(List<Evaluation> evaluations) async {
     Uri.parse(AppConfig.admissionsApplicationBffApiUrl + '/evaluations'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.admissionsApplicationBffApiKey,
+      // 'Authorization': 'Bearer ' + AppConfig.admissionsApplicationBffApiKey,
     },
     body: jsonEncode(
         evaluations.map((evaluation) => evaluation.toJson()).toList()),
   );
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     return response;
   } else {
     throw Exception('Failed to create Evaluation.');

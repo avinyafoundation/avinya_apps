@@ -5,6 +5,7 @@ import 'package:attendance/data/evaluation.dart';
 // import 'package:attendance/widgets/evaluation_list.dart';
 import 'package:gallery/avinya/attendance/lib/widgets/evaluation_list.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gallery/avinya/attendance/lib/widgets/qr_image.dart';
 
 class AttendanceMarker extends StatefulWidget {
   @override
@@ -18,6 +19,9 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
   List<ActivityAttendance> _personAttendanceToday = [];
   List<Evaluation> _fechedEvaluations = [];
 
+  String sign_in_time = "ee";
+  String qrCodeData = "";
+
   Future<void> _handleCheckIn() async {
     var activityInstance =
         await campusAttendanceSystemInstance.getCheckinActivityInstance(
@@ -30,8 +34,16 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
       in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
     ));
     await refreshPersonActivityAttendanceToday();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: ((context) {
+          return QRImage(sign_in_time);
+        }),
+      ),
+    );
     setState(() {
-      //_isCheckedIn = true;
+      qrCodeData = sign_in_time;
     });
     print('Checked in for today.');
   }
@@ -193,6 +205,21 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
                       Text('Checked in for today at ' +
                           _personAttendanceToday[0].sign_in_time!),
                     SizedBox(width: 20),
+                    IconButton(
+                      icon: Icon(Icons.qr_code),
+                      onPressed: () {
+                        // Navigate to the QR code view screen when the button is clicked
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return QRImage(qrCodeData);
+                            },
+                          ),
+                        );
+                      },
+                      tooltip: 'View QR Code',
+                    ),
                   ],
                 ),
               if (_isCheckedIn && !_isCheckedOut)
