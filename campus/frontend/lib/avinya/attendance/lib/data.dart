@@ -10,3 +10,4 @@ export 'data/application.dart';
 export 'data/avinya_type.dart';
 export 'data/activity.dart';
 export 'data/duty_participant.dart';
+export 'data/duty_rotation_metadata.dart';

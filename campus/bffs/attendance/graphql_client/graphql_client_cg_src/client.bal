@@ -105,14 +105,14 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <UpdateEvaluationsResponse> check performDataBinding(graphqlResponse, UpdateEvaluationsResponse);
     }
-    remote isolated function getDutyParticipants() returns GetDutyParticipantsResponse|graphql:ClientError {
-        string query = string `query getDutyParticipants {duty_participants {id activity {id name description} person {preferred_name digital_id organization {name {name_en} description}} role start_date end_date}}`;
-        map<anydata> variables = {};
+    remote isolated function getDutyParticipants(int organization_id) returns GetDutyParticipantsResponse|graphql:ClientError {
+        string query = string `query getDutyParticipants($organization_id:Int!) {duty_participants(organization_id:$organization_id) {id activity {id name description} person {id preferred_name digital_id organization {name {name_en} description}} role}}`;
+        map<anydata> variables = {"organization_id": organization_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetDutyParticipantsResponse> check performDataBinding(graphqlResponse, GetDutyParticipantsResponse);
     }
     remote isolated function createDutyForParticipant(DutyParticipant dutyparticipant) returns CreateDutyForParticipantResponse|graphql:ClientError {
-        string query = string `mutation createDutyForParticipant($dutyparticipant:DutyParticipant!) {add_duty_for_participant(dutyparticipant:$dutyparticipant) {id activity_id person_id role start_date end_date created}}`;
+        string query = string `mutation createDutyForParticipant($dutyparticipant:DutyParticipant!) {add_duty_for_participant(dutyparticipant:$dutyparticipant) {id activity_id person_id role created}}`;
         map<anydata> variables = {"dutyparticipant": dutyparticipant};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <CreateDutyForParticipantResponse> check performDataBinding(graphqlResponse, CreateDutyForParticipantResponse);
@@ -122,5 +122,11 @@ public isolated client class GraphqlClient {
         map<anydata> variables = {"avinya_type_id": avinya_type_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetActivitiesByAvinyaTypeResponse> check performDataBinding(graphqlResponse, GetActivitiesByAvinyaTypeResponse);
+    }
+    remote isolated function updateDutyRotation(DutyRotationMetadata dutyRotation) returns UpdateDutyRotationResponse|graphql:ClientError {
+        string query = string `mutation updateDutyRotation($dutyRotation:DutyRotationMetadata!) {update_duty_rotation(duty_rotation:$dutyRotation) {id start_date end_date}}`;
+        map<anydata> variables = {"dutyRotation": dutyRotation};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <UpdateDutyRotationResponse> check performDataBinding(graphqlResponse, UpdateDutyRotationResponse);
     }
 }

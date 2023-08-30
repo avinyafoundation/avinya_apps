@@ -315,8 +315,6 @@ input DutyParticipant {
   person_id: Int
   person: Person
   role: String
-  start_date: String
-  end_date: String
   created: String
   updated: String
 }
@@ -328,10 +326,21 @@ type DutyParticipantData {
   activity: ActivityData
   activity_id: Int
   role: String
-  start_date: String
-  end_date: String
   created: String
   updated: String
+}
+
+type DutyRotationData {
+  id: Int
+  start_date: String
+  end_date: String
+}
+
+input DutyRotationMetadata {
+  record_type: String = ""
+  id: Int
+  start_date: String
+  end_date: String
 }
 
 input EducationExperience {
@@ -553,6 +562,8 @@ type Mutation {
   add_inventory(inventory: Inventory!): InventoryData
   update_inventory(inventory: Inventory!): InventoryData
   add_duty_for_participant(dutyparticipant: DutyParticipant!): DutyParticipantData
+  delete_duty_for_participant(id: Int!): Int
+  update_duty_rotation(duty_rotation: DutyRotationMetadata!): DutyRotationData
 }
 
 input Organization {
@@ -780,7 +791,7 @@ type Query {
   inventory(id: Int!): InventoryData
   inventories: [InventoryData!]!
   resource_allocations_report(organization_id: Int, avinya_type_id: Int): [ResourceAllocationData!]!
-  duty_participants: [DutyParticipantData!]!
+  duty_participants(organization_id: Int): [DutyParticipantData!]!
   activities_by_avinya_type(avinya_type_id: Int): [ActivityData!]
 }
 

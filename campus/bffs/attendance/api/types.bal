@@ -231,14 +231,21 @@ public type Vacancy record {
 };
 
 public type DutyParticipant record {
-    string? end_date?;
     string? role?;
+    Activity? activity?;
+    Person? person?;
     string? created?;
     int? activity_id?;
     int? id?;
     string? updated?;
     string? record_type?;
     int? person_id?;
+};
+
+public type DutyRotationMetadata record {
+    string? end_date?;
+    int? id?;
+    string? record_type?;
     string? start_date?;
 };
 
@@ -491,6 +498,7 @@ public type GetDutyParticipantsResponse record {|
             string? description;
         |}? activity;
         record {|
+            int? id;
             string? preferred_name;
             string? digital_id;
             record {|
@@ -501,8 +509,6 @@ public type GetDutyParticipantsResponse record {|
             |}? organization;
         |}? person;
         string? role;
-        string? start_date;
-        string? end_date;
     |}[] duty_participants;
 |};
 
@@ -513,8 +519,6 @@ public type CreateDutyForParticipantResponse record {|
         int? activity_id;
         int? person_id;
         string? role;
-        string? start_date;
-        string? end_date;
         string? created;
     |}? add_duty_for_participant;
 |};
@@ -527,4 +531,13 @@ public type GetActivitiesByAvinyaTypeResponse record {|
         string? description;
         string? notes;
     |}[] activities_by_avinya_type;
+|};
+
+public type UpdateDutyRotationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? start_date;
+        string? end_date;
+    |}? update_duty_rotation;
 |};

@@ -21,8 +21,6 @@ class DutyParticipant{
   int? person_id;
   Person? person;
   String? role;
-  String? start_date;
-  String? end_date;
   String? created;
 
   DutyParticipant({
@@ -32,22 +30,30 @@ class DutyParticipant{
     this.person_id,
     this.person,
     this.role,
-    this.start_date,
-    this.end_date,
     this.created,
   });
 
   factory DutyParticipant.fromJson(Map<String,dynamic>  json){
    log(json.toString());
+
+   Activity? activityObj;
+   Person? personObj;
+
+   if(json['activity'] != null){
+      activityObj = Activity.fromJson(json['activity']);
+   }
+
+   if(json['person'] != null){
+      personObj = Person.fromJson(json['person']);
+   }
+
    return DutyParticipant(
      id: json['id'],
      activity_id: json['activity_id'],
-     activity: Activity.fromJson(json['activity']),
+     activity: activityObj,
      person_id: json['person_id'],
-     person: Person.fromJson(json['person']),
+     person: personObj,
      role: json['role'],
-     start_date: json['start_date'],
-     end_date: json['end_date'],
      created: json['created'],
    );
   }
@@ -59,18 +65,16 @@ class DutyParticipant{
         if (person_id != null) 'person_id': person_id,
         if (person != null) 'person': person,
         if (role != null) 'role':  role,
-        if (start_date != null) 'start_date': start_date,
-        if (end_date != null) 'end_date': end_date,
         if (created !=null) 'created':created,
 
       };
 
 }
 
-Future<List<DutyParticipant>> fetchDutyParticipants() async{
+Future<List<DutyParticipant>> fetchDutyParticipants(int organization_id) async{
 
   final response = await http.get(
-     Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/duty_participants'),
+     Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/duty_participants/$organization_id'),
      headers:<String,String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'accept': 'application/json',
@@ -85,12 +89,12 @@ Future<List<DutyParticipant>> fetchDutyParticipants() async{
         .toList();
     return fetchDutyForParticipants;
   } else {
-    throw Exception('Failed to load duty participants');
+    throw Exception('Failed to load duty participants for organization ID $organization_id');
   }
 }
 
 
-Future<http.Response> createDutyForParticipant(DutyParticipant dutyParticipant) async{
+Future<DutyParticipant> createDutyForParticipant(DutyParticipant dutyParticipant) async{
 
   final response = await http.post(
     Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/duty_for_participant'),
@@ -100,9 +104,25 @@ Future<http.Response> createDutyForParticipant(DutyParticipant dutyParticipant) 
     },
     body: jsonEncode(dutyParticipant.toJson()),
   );
-  if (response.statusCode == 200) {
-    return response;
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    return DutyParticipant.fromJson(jsonDecode(response.body));
   } else {
     throw Exception('Failed to create duty for participant.');
   }
 } 
+
+Future<int> deleteDutyForParticipant(int id) async {
+  final response = await http.delete(
+    Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/duty_for_participant/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    return int.parse(response.body);
+  } else {
+    throw Exception('Failed to delete Duty For Participant.');
+  }
+}

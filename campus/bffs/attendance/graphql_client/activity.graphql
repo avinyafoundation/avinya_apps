@@ -183,39 +183,36 @@ mutation updateEvaluations($evaluation: Evaluation!)
     }       
 }
 
-query getDutyParticipants{
-   duty_participants{
-    id
-    activity {
+query getDutyParticipants($organization_id: Int!) {
+    duty_participants(organization_id:$organization_id) {
+      id
+      activity{
         id
         name
         description  
-    }
-    person {
+      }
+      person{
+        id
         preferred_name
         digital_id
-        organization {
-            name {
+        organization{
+            name{
                 name_en
             }
             description
         }
+      }
+      role
     }
-    role
-    start_date
-    end_date
-   }
 }
 
-mutation createDutyForParticipant($dutyparticipant: DutyParticipant!){
-    
+mutation createDutyForParticipant($dutyparticipant: DutyParticipant!)
+{
     add_duty_for_participant(dutyparticipant:$dutyparticipant){
        id
        activity_id
        person_id
        role
-       start_date
-       end_date
        created
     }
 }
@@ -226,5 +223,14 @@ query getActivitiesByAvinyaType($avinya_type_id: Int!) {
         name
         description
         notes
+    }
+}
+
+mutation updateDutyRotation($dutyRotation:DutyRotationMetadata!)
+{
+    update_duty_rotation(duty_rotation:$dutyRotation){
+        id
+        start_date
+        end_date
     }
 }

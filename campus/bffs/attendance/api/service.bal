@@ -399,8 +399,8 @@ service / on new http:Listener(9091) {
         }
     }
 
-    resource function get duty_participants() returns DutyParticipant[]|error {
-        GetDutyParticipantsResponse|graphql:ClientError getDutyParticipantsResponse = globalDataClient->getDutyParticipants();
+    resource function get duty_participants/[int organization_id]() returns DutyParticipant[]|error {
+        GetDutyParticipantsResponse|graphql:ClientError getDutyParticipantsResponse = globalDataClient->getDutyParticipants(organization_id);
         if(getDutyParticipantsResponse is GetDutyParticipantsResponse) {
             DutyParticipant[] dutyParticipants = [];
             foreach var duty_participant in getDutyParticipantsResponse.duty_participants {
@@ -464,5 +464,28 @@ service / on new http:Listener(9091) {
                 ":: Detail: " + getActivitiesByAvinyaTypeResponse.detail().toString());
         }
     }
-    
+
+    resource function delete duty_for_participant/[int id]() returns json|error {
+        json|error delete_count = globalDataClient->deleteDutyForParticipant(id);
+        return  delete_count;
+    }
+
+
+    resource function put update_duty_rotation (@http:Payload DutyRotationMetadata dutyRotation) returns DutyRotationMetadata|error {
+        UpdateDutyRotationResponse|graphql:ClientError updateDutyRotationResponse = globalDataClient->updateDutyRotation(dutyRotation);
+        if(updateDutyRotationResponse is  UpdateDutyRotationResponse) {
+            DutyRotationMetadata|error duty_rotation_record = updateDutyRotationResponse.update_duty_rotation.cloneWithType(DutyRotationMetadata);
+            if(duty_rotation_record is  DutyRotationMetadata) {
+                return duty_rotation_record;
+            } else {
+                log:printError("Error while processing Application record received", duty_rotation_record);
+                return error("Error while processing Application record received: " + duty_rotation_record.message() + 
+                    ":: Detail: " + duty_rotation_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while updating application", updateDutyRotationResponse);
+            return error("Error while updating application: " + updateDutyRotationResponse.message() + 
+                ":: Detail: " + updateDutyRotationResponse.detail().toString());
+        }
+    }
 }

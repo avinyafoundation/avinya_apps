@@ -52,6 +52,7 @@ class _CampusAttendanceManagementSystemState
         '/#access_token',
         '/person_attendance_report',
         '/duty_participants',
+        '/duty_attendance_marker',
       ],
       guard: _guard,
       initialRoute: '/attendance_marker',
@@ -124,6 +125,9 @@ class _CampusAttendanceManagementSystemState
     final dutyParticipantsRoute = ParsedRoute(
         '/duty_participants','/duty_participants', {}, {});
 
+    final dutyAttendanceMarkerRoute = ParsedRoute(
+        '/duty_attendance_marker','/duty_attendance_marker', {}, {});
+
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
     // log("_guard JWT sub ${jwt_sub}");
@@ -145,6 +149,8 @@ class _CampusAttendanceManagementSystemState
       return personAttendanceReportRoute;
     } else if (signedIn && from == dutyParticipantsRoute){
       return dutyParticipantsRoute; 
+    } else if (signedIn && from == dutyAttendanceMarkerRoute){
+      return dutyAttendanceMarkerRoute; 
     } 
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {

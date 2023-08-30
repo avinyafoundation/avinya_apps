@@ -16,6 +16,7 @@ class SMSScaffold extends StatelessWidget {
     '/weekly_payment_report',
     // '/person_attendance_report',
     '/duty_participants',
+    '/duty_attendance_marker',
   ];
 
   static const studentPageNames = [
@@ -56,6 +57,10 @@ class SMSScaffold extends StatelessWidget {
         AdaptiveScaffoldDestination(
           title: 'Assign duties',
           icon: Icons.work,
+        ),
+        AdaptiveScaffoldDestination(
+          title: 'Duty Attendance Marker',
+          icon: Icons.people,
         ),
       ];
     } else {
