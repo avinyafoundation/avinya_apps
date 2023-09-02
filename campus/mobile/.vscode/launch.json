@@ -25,6 +25,18 @@
             // ]
         },
         {
+            "name": "debug pysical device",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "deviceId": "TECNO KG5j",
+            "runTestsOnDevice": false,
+            // "args": [
+            //     "--flavor",
+            //     "development"
+            // ]
+        },
+        {
             "name": "mobile (release mode)",
             "request": "launch",
             "type": "dart",
