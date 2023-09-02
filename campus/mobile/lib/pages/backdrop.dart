@@ -7,7 +7,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:mobile/auth.dart';
 import 'package:mobile/constants.dart';
 import 'package:mobile/data/gallery_options.dart';
 import 'package:mobile/layout/adaptive.dart';
@@ -15,6 +17,7 @@ import 'package:mobile/pages/home.dart';
 import 'package:mobile/pages/login.dart';
 import 'package:mobile/pages/settings.dart';
 import 'package:mobile/pages/settings_icon/icon.dart' as settings_icon;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../data/campus_apps_portal.dart';
 import 'dart:async';
 
@@ -37,6 +40,7 @@ RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class _BackdropState extends State<Backdrop>
     with TickerProviderStateMixin, RouteAware {
+  bool signedIn = false;
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();

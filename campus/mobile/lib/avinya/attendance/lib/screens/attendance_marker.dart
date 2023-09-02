@@ -25,22 +25,21 @@ class _AttendanceMarkerScreenState extends State<AttendanceMarkerScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text('Attendance Marker'),
+          title: const Text('Attendance Marker'),
         ),
         body: SingleChildScrollView(
           child: Center(
             child: Column(
               children: [
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 AttendanceMarker(),
-                SizedBox(height: 20),
-                Text('Person Attendance Report'),
-                SizedBox(height: 5),
-                Container(
-                  width: 500,
-                  height: 500,
-                  child: PersonAttendanceMarkerReport()
-                ),
+                const SizedBox(height: 20),
+                const Text('Person Attendance Report'),
+                const SizedBox(height: 5),
+                const SizedBox(
+                    width: 500,
+                    height: 500,
+                    child: PersonAttendanceMarkerReport()),
               ],
             ),
           ),

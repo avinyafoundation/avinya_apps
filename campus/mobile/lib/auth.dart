@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 // import 'dart:html';
+import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_html/html.dart';
 
@@ -18,17 +19,18 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 /// A mock authentication service
 class CampusAppsPortalAuth extends ChangeNotifier {
   bool _signedIn = false;
-  var _openid_tokens;
 
   Future<bool> getSignedIn() async {
-    log("_guard signed in uuuuuu");
-    if (_signedIn)
-      return _signedIn; // already signed in -- todo - remove before production release
-    // var tokens = window.localStorage['openid_client:tokens'];
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String accessToken = prefs.getString('access_token') ?? '';
     String refreshToken = prefs.getString('refresh_token') ?? '';
     String idToken = prefs.getString('id_token') ?? '';
+
+    log("_guard signed in uuuuuu");
+    if (_signedIn)
+      return _signedIn; // already signed in -- todo - remove before production release
+    // var tokens = window.localStorage['openid_client:tokens'];
+
     if (accessToken.isNotEmpty && idToken.isNotEmpty) {
       log("_guard signed in truetrue");
       // _openid_tokens = json.decode(tokens);
@@ -196,6 +198,48 @@ class CampusAppsPortalAuth extends ChangeNotifier {
 
   @override
   int get hashCode => _signedIn.hashCode;
+}
+
+Future<void> authenticate(Uri uri, String clientId, List<String> scopes,
+    String redirectURL, String discoveryUrl) async {
+  const FlutterAppAuth flutterAppAuth = FlutterAppAuth();
+
+  try {
+    final AuthorizationTokenResponse? result =
+        await flutterAppAuth.authorizeAndExchangeCode(
+      AuthorizationTokenRequest(
+        clientId,
+        redirectURL,
+        discoveryUrl: discoveryUrl,
+        promptValues: ['login'],
+        scopes: scopes,
+      ),
+    );
+
+    print('Access token bla bla bla: ${result?.accessToken}');
+    String accessToken = result?.accessToken ?? '';
+    String refreshToken = result?.refreshToken ?? '';
+    String idToken = result?.idToken ?? '';
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access_token', accessToken);
+    await prefs.setString('refresh_token', refreshToken);
+    await prefs.setString('id_token', idToken);
+
+    // final _auth = CampusAppsPortalAuth();
+    // final signedIn = await _auth.getSignedIn();
+
+    // setState(() {
+    //   _isUserLoggedIn = true;
+    //   _idToken = result?.idToken;
+    //   _accessToken = result?.accessToken;
+    //   _pageIndex = 2;
+    // });
+  } catch (e, s) {
+    print('Error while login to the system: $e - stack: $s');
+    // setState(() {
+    //   _isUserLoggedIn = false;
+    // });
+  }
 }
 
 class SMSAuthScope extends InheritedNotifier<CampusAppsPortalAuth> {

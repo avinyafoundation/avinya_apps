@@ -1,6 +1,6 @@
 {
-    "campusProfileBffApiUrl" : "http://10.0.2.2:9090",
-    "campusAttendanceBffApiUrl" : "http://10.0.2.2:9091",
+    "campusProfileBffApiUrl" : "http://192.168.8.192:9090",
+    "campusAttendanceBffApiUrl" : "http://192.168.8.192:9091",
     "campusPctiNotesBffApiUrl" : "http://10.0.2.2:9092",
     "campusPctiFeedbackBffApiUrl" : "http://10.0.2.2:9093",
     "campusAssetsBffApiUrl" : "http://10.0.2.2:9094",

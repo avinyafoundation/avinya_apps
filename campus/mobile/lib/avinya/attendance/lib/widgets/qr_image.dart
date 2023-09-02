@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QRImage extends StatelessWidget {
-  final String sign_in_time;
+  final String data;
 
-  const QRImage(this.sign_in_time, {Key? key}) : super(key: key);
+  const QRImage(this.data, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,8 +15,7 @@ class QRImage extends StatelessWidget {
       ),
       body: Center(
         child: QrImage(
-          data:
-              sign_in_time, // Use the sign_in_time string directly as the data.
+          data: data, // Use the sign_in_time string directly as the data.
           size: 280,
           // You can include embeddedImageStyle Property if you
           // wanna embed an image from your Asset folder

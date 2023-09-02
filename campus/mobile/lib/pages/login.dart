@@ -1,10 +1,12 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:mobile/auth.dart';
 import 'package:mobile/config/app_config.dart';
 import 'package:flutter/material.dart';
 // import 'package:openid_client/openid_client_browser.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
+import 'package:mobile/data/campus_apps_portal.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const FlutterAppAuth flutterAppAuth = FlutterAppAuth();
@@ -204,6 +206,9 @@ class _LogInScreenState extends State<LoginPage> {
       await prefs.setString('access_token', accessToken);
       await prefs.setString('refresh_token', refreshToken);
       await prefs.setString('id_token', idToken);
+
+      // final _auth = CampusAppsPortalAuth();
+      // final signedIn = await _auth.getSignedIn();
 
       // setState(() {
       //   _isUserLoggedIn = true;
