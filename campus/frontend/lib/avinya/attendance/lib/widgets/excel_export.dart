@@ -9,13 +9,15 @@ class ExcelExport extends StatefulWidget {
   final List<String?> columnNames;
   final List<Person> fetchedStudentList;
   final Function() updateExcelState;
+  final bool isFetching;
 
   const ExcelExport(
       {Key? key,
       required this.fetchedAttendance,
       required this.columnNames,
       required this.fetchedStudentList,
-      required this.updateExcelState})
+      required this.updateExcelState,
+      required this.isFetching})
       : super(key: key);
 
   @override
@@ -29,6 +31,15 @@ class _ExcelExportState extends State<ExcelExport> {
   List<String?> columnNamesWithoutDates = [];
 
   static String generateTransactionCode(DateTime date) {
+    String formattedDate = DateFormat('yy').format(date);
+
+    // Generate the transaction code
+    final transactionCode = '0${formattedDate}-Salaries';
+
+    return transactionCode;
+  }
+
+  static String generateWeek(DateTime date) {
     // Create a DateTime object for the first day of the given year
     DateTime firstDayOfYear = DateTime(date.year, 1, 1);
 
@@ -38,12 +49,10 @@ class _ExcelExportState extends State<ExcelExport> {
     // Calculate the week number by dividing the difference in days by 7 and adding 1
     int weekNumber = (diffDays / 7).ceil() + 1;
 
-    String formattedDate = DateFormat('yy').format(date);
-
     // Generate the transaction code
-    final transactionCode = '0${formattedDate}-Salaries-W$weekNumber';
+    final week = 'Student stipend-W$weekNumber';
 
-    return transactionCode;
+    return week;
   }
 
   DateTime getNextWeekMonday(DateTime date) {
@@ -98,13 +107,14 @@ class _ExcelExportState extends State<ExcelExport> {
         "Referance No",
         "Staff Account Name",
         "Bank Name",
-        "Branch Name",
+        "Bank Branch",
         "Staff Credit Account No",
         "Transaction Code",
         "Amount",
         "YYYY",
         "MM",
-        "DD"
+        "DD",
+        "Remarks"
       ]);
     }
 
@@ -151,7 +161,7 @@ class _ExcelExportState extends State<ExcelExport> {
     }
     sheet.setColWidth(0, 10);
     sheet.setColWidth(1, 25);
-    sheet.setColWidth(2, 22);
+    sheet.setColWidth(2, 26);
     sheet.setColWidth(3, 20);
     sheet.setColWidth(4, 25);
     sheet.setColWidth(5, 26);
@@ -159,6 +169,7 @@ class _ExcelExportState extends State<ExcelExport> {
     sheet.setColWidth(7, 25);
     sheet.setColWidth(8, 25);
     sheet.setColWidth(9, 25);
+    sheet.setColWidth(10, 25);
 
     sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0)).value =
         "Avinya Foundation Student Payment Report From ${fromDate} to ${toDate}";
@@ -167,6 +178,10 @@ class _ExcelExportState extends State<ExcelExport> {
         .cellStyle = organizationHeaderStyle;
 
     if (_fetchedStudentList.isNotEmpty && columnNames.length > 0) {
+      _fetchedStudentList.removeWhere((student) =>
+          student.bank_account_name == null ||
+          student.bank_account_name!.isEmpty);
+
       for (var index = 0; index < _fetchedStudentList.length; index++) {
         var person = _fetchedStudentList[index];
 
@@ -202,8 +217,8 @@ class _ExcelExportState extends State<ExcelExport> {
 
         var generatedTransactionCode =
             generateTransactionCode(DateTime.parse(toDate!));
-        var generatedNextWeekMonday =
-            getNextWeekMonday(DateTime.parse(toDate!));
+        var generatedWeek = generateWeek(DateTime.parse(toDate));
+        var generatedNextWeekMonday = getNextWeekMonday(DateTime.parse(toDate));
 
         sheet
             .cell(
@@ -241,6 +256,15 @@ class _ExcelExportState extends State<ExcelExport> {
                 CellIndex.indexByColumnRow(columnIndex: 9, rowIndex: index + 2))
             .cellStyle = rowCellsStyle;
 
+        sheet
+            .cell(CellIndex.indexByColumnRow(
+                columnIndex: 10, rowIndex: index + 2))
+            .value = generatedWeek;
+        sheet
+            .cell(CellIndex.indexByColumnRow(
+                columnIndex: 10, rowIndex: index + 2))
+            .cellStyle = rowCellsStyle;
+
         int presentCount = 0;
         for (final attendance in _fetchedAttendance) {
           if (attendance.person_id == person.id) {
@@ -267,10 +291,13 @@ class _ExcelExportState extends State<ExcelExport> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ElevatedButton(
-        child: Text('Export to Excel'),
-        onPressed: exportToExcel,
+    return IgnorePointer(
+      ignoring: widget.isFetching,
+      child: FloatingActionButton(
+        child: Icon(Icons.file_download),
+        onPressed: () {
+          exportToExcel();
+        },
       ),
     );
   }

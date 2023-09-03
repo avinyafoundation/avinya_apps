@@ -20,19 +20,25 @@ final GraphqlClient globalDataClient = check new (GLOBAL_DATA_API_URL,
     config = initClientConfig()
 );
 
-
 # A service representing a network-accessible API
-# bound to port `9090`.
-service / on new http:Listener(9090) {
+# bound to port `9095`.
+@http:ServiceConfig {
+    cors: {
+        allowOrigins: ["*"]
+    }
+}
+
+service / on new http:Listener(9095) {
 
     # Creates a student applicant Person record
     # + person - the input Person record
     # + return - Student record with persisted data
     resource function post student_applicant(@http:Payload Person person) returns Person|error {
         CreateStudentApplicantResponse|graphql:ClientError createStudentApplicantResponse = globalDataClient->createStudentApplicant(person);
-
+// log:printInfo("Evaluations created successfully: " + createStudentApplicantResponse.toString());
         if(createStudentApplicantResponse is CreateStudentApplicantResponse) {
             Person|error person_record = createStudentApplicantResponse.add_student_applicant.cloneWithType(Person);
+            log:printInfo("createStudentApplicantResponse " + createStudentApplicantResponse.toString());
             if(person_record is Person) {
                 return person_record;
             } else {
@@ -96,17 +102,19 @@ service / on new http:Listener(9090) {
         }
     }
 
-    // resource function post address (@http:Payload Address address) returns Address|error {
-    //     CreateAddressResponse|graphql:ClientError createAddressResponse = globalDataClient->createAddress(address);
-    //     if(createAddressResponse is CreateAddressResponse) {
-    //         Address|error address_record = createAddressResponse.add_address.cloneWithType(Address);
-    //         if(address_record is Address) {
-    //             return address_record;
-    //         } else {
-    //             log:printError("Error while processing Application record received", address_record);
-    //             return error("Error while processing Application record received: " + address_record.message() + 
-    //                 ":: Detail: " + address_record.detail().toString());
-    //         }
+    // resource function post address (@http:Payload Address address) returns json|error {
+    //     json|graphql:ClientError createAddressResponse = globalDataClient->createAddress(address);
+    //     if(createAddressResponse is json) {
+    //         log:printInfo("Address created successfully: " + createAddressResponse.toString());
+    //         return createAddressResponse;
+    //         // Address|error address_record = createAddressResponse.add_address.cloneWithType(Address);
+    //         // if(address_record is Address) {
+    //         //     return address_record;
+    //         // } else {
+    //         //     log:printError("Error while processing Application record received", address_record);
+    //         //     return error("Error while processing Application record received: " + address_record.message() + 
+    //         //         ":: Detail: " + address_record.detail().toString());
+    //         // }
     //     } else {
     //         log:printError("Error while creating application", createAddressResponse);
     //         return error("Error while creating application: " + createAddressResponse.message() + 
@@ -153,6 +161,18 @@ service / on new http:Listener(9090) {
             log:printError("Error while getting application", getApplicationResponse);
             return error("Error while getting application: " + getApplicationResponse.message() + 
                 ":: Detail: " + getApplicationResponse.detail().toString());
+        }
+    }
+
+    # Get activity instance details for active admissions cycle
+    # + return - activity instance details for the active admissions cycle
+    resource function get active_activity_instance() returns ActivityInstance|error {
+        GetActiveActivityInstanceResponse|graphql:ClientError getActiveActivityInstanceResponse = globalDataClient->getActiveActivityInstance();
+        if(getActiveActivityInstanceResponse is json) {
+            return getActiveActivityInstanceResponse.cloneWithType(ActivityInstance);
+        } else {
+            log:printError("Error while getting application", getActiveActivityInstanceResponse);
+            return error("Error while getting application: " + getActiveActivityInstanceResponse.message());
         }
     }
 

@@ -1,4 +1,6 @@
 {
-    "sms_api_url": "http://localhost:9090",
-    "admissionsApplicationBffApiUrl": "https://3a907137-52a3-4196-9e0d-22d054ea5789-dev.e1-us-east-azure.choreoapis.dev/gkwb/application-bff-api/0.33.0"
+    "admissionsApplicationBffApiUrl": "http://localhost:9095",
+    "choreo_sts_endpoint" : "https://sts.choreo.dev/oauth2/token",
+    "asgardeo_token_endpoint" : "https://api.asgardeo.io/t/avinyafoundation/oauth2/token",
+    "logout_url" : "https://api.asgardeo.io/t/avinyafoundation/oidc/logout"
 }

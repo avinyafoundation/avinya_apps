@@ -16,7 +16,6 @@ Future<void> main() async {
   // Use to setHashUrlStrategy() to use "/#/" in the address bar (default). Use
   // setPathUrlStrategy() to use the path. You may need to configure your web
   // server to redirect all paths to index.html.
-  //
   // On mobile platforms, both functions are no-ops.
   setHashUrlStrategy();
   // setPathUrlStrategy();
@@ -25,19 +24,50 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  await AppConfig.forEnvironment('dev');
-  AppConfig.choreoSTSClientID = await const String.fromEnvironment(
-      'choreo_sts_client_id',
-      defaultValue: 'undefined');
-  AppConfig.asgardeoClientId = await const String.fromEnvironment(
-      'asgardeo_client_id',
-      defaultValue: 'undefined');
+  String? currentEnvironment = Constants.currentEnvironment;
+
+  if (currentEnvironment == 'prod') {
+    // get variables from prod environment config.json
+    await AppConfig.forEnvironment('prod');
+    AppConfig.choreoSTSClientID = Constants.choreoSTSClientID;
+    AppConfig.asgardeoClientId = Constants.asgardeoClientId;
+  } else if (currentEnvironment == 'stag') {
+    // get variables from stag environment config.json
+    await AppConfig.forEnvironment('stag');
+    AppConfig.choreoSTSClientID = Constants.choreoSTSClientID;
+    AppConfig.asgardeoClientId = Constants.asgardeoClientId;
+  } else if (currentEnvironment == 'dev-cloud') {
+    // get variables from dev-cloud environment config.json
+    await AppConfig.forEnvironment('dev-cloud');
+    AppConfig.choreoSTSClientID = Constants.choreoSTSClientID;
+    AppConfig.asgardeoClientId = Constants.asgardeoClientId;
+  } else {
+    await AppConfig.forEnvironment('dev');
+  }
 
   log(AppConfig.admissionsApplicationBffApiUrl);
   log(AppConfig.choreoSTSClientID);
   log(AppConfig.asgardeoClientId);
 
   runApp(const AdmissionsManagementSystem());
+}
+
+/// Environment variables and shared app constants.
+abstract class Constants {
+  static const String currentEnvironment = String.fromEnvironment(
+    'ENV',
+    defaultValue: '',
+  );
+
+  static const String choreoSTSClientID = String.fromEnvironment(
+    'choreo_sts_client_id',
+    defaultValue: '',
+  );
+
+  static const String asgardeoClientId = String.fromEnvironment(
+    'asgardeo_client_id',
+    defaultValue: '',
+  );
 }
 
 const double windowWidth = 480;

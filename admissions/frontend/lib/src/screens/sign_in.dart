@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:ShoolManagementSystem/src/config/app_config.dart';
 import 'package:flutter/material.dart';
@@ -34,16 +33,29 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     log("in signin build -- asgardeoClientId is :" +
         AppConfig.asgardeoClientId);
-    int count = 0;
-    while (_clientId.isEmpty && count < 10) {
-      log(count.toString() + " in Auth -- asgardeoClientId is empty");
-      count++;
-      if (count > 10) {
-        break;
+    // int count = 0;
+    // while (_clientId.isEmpty && count < 10) {
+    //   log(count.toString() + " in Auth -- asgardeoClientId is empty");
+    //   count++;
+    //   if (count > 10) {
+    //     break;
+    //   }
+    //   sleep(Duration(seconds: 1));
+    //   _clientId = AppConfig.asgardeoClientId;
+    // }
+    Future.delayed(Duration.zero, () {
+      int count = 0;
+      while (_clientId.isEmpty && count < 10) {
+        log(count.toString() + " in Auth -- asgardeoClientId is empty");
+        count++;
+        if (count > 10) {
+          break;
+        }
+        Future.delayed(Duration(seconds: 1), () {
+          _clientId = AppConfig.asgardeoClientId;
+        });
       }
-      sleep(Duration(seconds: 1));
-      _clientId = AppConfig.asgardeoClientId;
-    }
+    });
     return Scaffold(
       appBar: AppBar(
         title: Text("Sign in"),

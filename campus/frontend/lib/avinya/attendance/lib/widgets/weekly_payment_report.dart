@@ -5,9 +5,13 @@ import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:attendance/data/activity_attendance.dart';
 import 'package:gallery/data/person.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class WeeklyPaymentReport extends StatefulWidget {
-  const WeeklyPaymentReport({Key? key, required this.title}) : super(key: key);
+  const WeeklyPaymentReport(
+      {Key? key, required this.title, required this.updateDateRangeForExcel})
+      : super(key: key);
+  final Function(DateTime, DateTime) updateDateRangeForExcel;
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -30,6 +34,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
   List<ActivityAttendance> _fetchedAttendanceAfterSchool = [];
   List<Person> _fetchedStudentList = [];
   Organization? _fetchedOrganization;
+  bool _isFetching = true;
 
   //calendar specific variables
   DateTime _focusedDay = DateTime.now();
@@ -42,7 +47,6 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
   List<Map<String, bool>> attendanceList = [];
   var _selectedValue;
   var activityId = 0;
-  var afterSchoolActivityId = 0;
 
   late String formattedStartDate;
   late String formattedEndDate;
@@ -67,18 +71,33 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
         campusAppsPortalInstance.getUserPerson().organization!.id;
 
     if (parentOrgId != null) {
-      _fetchedExcelReportData =
-          await getClassActivityAttendanceReportByParentOrg(
-              parentOrgId,
-              activityId,
-              DateFormat('yyyy-MM-dd').format(startOfWeek),
-              DateFormat('yyyy-MM-dd').format(endOfWeek));
-      _fetchedStudentList = await fetchStudentList(parentOrgId);
-
       setState(() {
-        this._fetchedExcelReportData = _fetchedExcelReportData;
-        this._fetchedStudentList = _fetchedStudentList;
+        _isFetching = true; // Set _isFetching to true before starting the fetch
       });
+
+      try {
+        final fetchedExcelReportData =
+            await getClassActivityAttendanceReportByParentOrg(
+          parentOrgId,
+          activityId,
+          DateFormat('yyyy-MM-dd').format(startOfWeek),
+          DateFormat('yyyy-MM-dd').format(endOfWeek),
+        );
+        final fetchedStudentList = await fetchStudentList(parentOrgId);
+
+        setState(() {
+          _fetchedExcelReportData = fetchedExcelReportData;
+          _fetchedStudentList = fetchedStudentList;
+          _isFetching =
+              false; // Set _isFetching to false after the fetch completes
+        });
+      } catch (error) {
+        // Handle any errors that occur during the fetch
+        setState(() {
+          _isFetching = false; // Set _isFetching to false in case of error
+        });
+        // Perform error handling, e.g., show an error message
+      }
     }
   }
 
@@ -88,9 +107,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
     var today = DateTime.now();
     if (campusAppsPortalInstance.isTeacher) {
       activityId = campusAppsPortalInstance.activityIds['homeroom']!;
-      afterSchoolActivityId =
-          campusAppsPortalInstance.activityIds['after-school']!;
-      selectWeek(today, afterSchoolActivityId);
+      selectWeek(today, activityId);
     } else if (campusAppsPortalInstance.isSecurity)
       activityId = campusAppsPortalInstance.activityIds['arrival']!;
     selectWeek(today, activityId);
@@ -102,6 +119,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
       columnNames: columnNames,
       fetchedStudentList: _fetchedStudentList,
       updateExcelState: updateExcelState,
+      isFetching: _isFetching,
     );
   }
 
@@ -120,6 +138,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
   }
 
   void updateDateRange(_rangeStart, _rangeEnd) async {
+    widget.updateDateRangeForExcel(_rangeStart, _rangeEnd);
     int? parentOrgId =
         campusAppsPortalInstance.getUserPerson().organization!.id;
     if (_fetchedOrganization != null) {
@@ -130,29 +149,43 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
           DateFormat('yyyy-MM-dd').format(_rangeEnd));
     }
     if (parentOrgId != null) {
-      _fetchedExcelReportData =
-          await getClassActivityAttendanceReportByParentOrg(
-              parentOrgId,
-              activityId,
-              DateFormat('yyyy-MM-dd').format(_rangeStart),
-              DateFormat('yyyy-MM-dd').format(_rangeEnd));
-    }
-    setState(() {
-      final startDate = _rangeStart ?? _selectedDay;
-      final endDate = _rangeEnd ?? _selectedDay;
-      final formatter = DateFormat('MMM d, yyyy');
-      final formattedStartDate = formatter.format(startDate!);
-      final formattedEndDate = formatter.format(endDate!);
-      this.formattedStartDate = formattedStartDate;
-      this.formattedEndDate = formattedEndDate;
-      this._fetchedStudentList = _fetchedStudentList;
-      if (this._selectedValue != null) {
-        refreshState(this._selectedValue);
+      setState(() {
+        _isFetching = true; // Set _isFetching to true before starting the fetch
+      });
+      try {
+        _fetchedExcelReportData =
+            await getClassActivityAttendanceReportByParentOrg(
+                parentOrgId,
+                activityId,
+                DateFormat('yyyy-MM-dd').format(_rangeStart),
+                DateFormat('yyyy-MM-dd').format(_rangeEnd));
+        setState(() {
+          final startDate = _rangeStart ?? _selectedDay;
+          final endDate = _rangeEnd ?? _selectedDay;
+          final formatter = DateFormat('MMM d, yyyy');
+          final formattedStartDate = formatter.format(startDate!);
+          final formattedEndDate = formatter.format(endDate!);
+          this.formattedStartDate = formattedStartDate;
+          this.formattedEndDate = formattedEndDate;
+          this._fetchedStudentList = _fetchedStudentList;
+          if (this._selectedValue != null) {
+            refreshState(this._selectedValue);
+          }
+        });
+      } catch (error) {
+        // Handle any errors that occur during the fetch
+        setState(() {
+          _isFetching = false; // Set _isFetching to false in case of error
+        });
+        // Perform error handling, e.g., show an error message
       }
-    });
+    }
   }
 
   void refreshState(Organization? newValue) async {
+    setState(() {
+      _isFetching = true; // Set _isFetching to true before starting the fetch
+    });
     var cols =
         columnNames.map((label) => DataColumn(label: Text(label!))).toList();
     _selectedValue = newValue!;
@@ -163,9 +196,9 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
         _fetchedOrganization!.id!,
         activityId,
         DateFormat('yyyy-MM-dd')
-            .format(DateFormat('MMMM d, yyyy').parse(this.formattedStartDate)),
+            .format(DateFormat('MMM d, yyyy').parse(this.formattedStartDate)),
         DateFormat('yyyy-MM-dd')
-            .format(DateFormat('MMMM d, yyyy').parse(this.formattedEndDate)));
+            .format(DateFormat('MMM d, yyyy').parse(this.formattedEndDate)));
     if (_fetchedAttendance.length > 0) {
       // Add null check here
       // Process attendance data here
@@ -201,40 +234,10 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
         }
       }
     }
-    if (campusAppsPortalInstance.isTeacher) {
-      _fetchedAttendanceAfterSchool =
-          await getClassActivityAttendanceReportForPayment(
-              _fetchedOrganization!.id!,
-              afterSchoolActivityId,
-              DateFormat('yyyy-MM-dd').format(
-                  DateFormat('MMMM d, yyyy').parse(this.formattedStartDate)),
-              DateFormat('yyyy-MM-dd').format(
-                  DateFormat('MMMM d, yyyy').parse(this.formattedEndDate)));
-      _fetchedAttendanceAfterSchool =
-          await getClassActivityAttendanceReportForPayment(
-              _fetchedOrganization!.id!,
-              afterSchoolActivityId,
-              DateFormat('yyyy-MM-dd').format(
-                  DateFormat('MMMM d, yyyy').parse(this.formattedStartDate)),
-              DateFormat('yyyy-MM-dd').format(
-                  DateFormat('MMMM d, yyyy').parse(this.formattedEndDate)));
-      if (_fetchedAttendanceAfterSchool.length == 0)
-        _fetchedAttendanceAfterSchool = new List.filled(
-            _fetchedOrganization!.people.length,
-            new ActivityAttendance(person_id: -1));
-      else {
-        for (int i = 0; i < _fetchedOrganization!.people.length; i++) {
-          if (_fetchedAttendanceAfterSchool.indexWhere((attendance) =>
-                  attendance.person_id == _fetchedOrganization!.people[i].id) ==
-              -1) {
-            _fetchedAttendanceAfterSchool
-                .add(new ActivityAttendance(person_id: -1));
-          }
-        }
-      }
-    }
+
     setState(() {
       _fetchedOrganization;
+      this._isFetching = false;
       _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
           updateSelected);
     });
@@ -244,6 +247,14 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
   Widget build(BuildContext context) {
     var cols =
         columnNames.map((label) => DataColumn(label: Text(label!))).toList();
+
+    ExcelExport(
+      fetchedAttendance: _fetchedExcelReportData,
+      columnNames: columnNames,
+      fetchedStudentList: _fetchedStudentList,
+      updateExcelState: updateExcelState,
+      isFetching: _isFetching,
+    );
 
     return SingleChildScrollView(
       child: campusAppsPortalPersonMetaDataInstance
@@ -290,12 +301,12 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                                                   activityId,
                                                   DateFormat('yyyy-MM-dd')
                                                       .format(DateFormat(
-                                                              'MMMM d, yyyy')
+                                                              'MMM d, yyyy')
                                                           .parse(this
                                                               .formattedStartDate)),
                                                   DateFormat('yyyy-MM-dd')
                                                       .format(DateFormat(
-                                                              'MMMM d, yyyy')
+                                                              'MMM d, yyyy')
                                                           .parse(this
                                                               .formattedEndDate)));
                                           if (_fetchedAttendance.length > 0) {
@@ -360,67 +371,6 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                                               }
                                             }
                                           }
-                                          if (campusAppsPortalInstance
-                                              .isTeacher) {
-                                            _fetchedAttendanceAfterSchool =
-                                                await getClassActivityAttendanceReportForPayment(
-                                                    _fetchedOrganization!.id!,
-                                                    afterSchoolActivityId,
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateFormat(
-                                                                'MMMM d, yyyy')
-                                                            .parse(this
-                                                                .formattedStartDate)),
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateFormat(
-                                                                'MMMM d, yyyy')
-                                                            .parse(this
-                                                                .formattedEndDate)));
-                                            _fetchedAttendanceAfterSchool =
-                                                await getClassActivityAttendanceReportForPayment(
-                                                    _fetchedOrganization!.id!,
-                                                    afterSchoolActivityId,
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateFormat(
-                                                                'MMMM d, yyyy')
-                                                            .parse(this
-                                                                .formattedStartDate)),
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateFormat(
-                                                                'MMMM d, yyyy')
-                                                            .parse(this
-                                                                .formattedEndDate)));
-                                            if (_fetchedAttendanceAfterSchool
-                                                    .length ==
-                                                0)
-                                              _fetchedAttendanceAfterSchool =
-                                                  new List.filled(
-                                                      _fetchedOrganization!
-                                                          .people.length,
-                                                      new ActivityAttendance(
-                                                          person_id: -1));
-                                            else {
-                                              for (int i = 0;
-                                                  i <
-                                                      _fetchedOrganization!
-                                                          .people.length;
-                                                  i++) {
-                                                if (_fetchedAttendanceAfterSchool
-                                                        .indexWhere((attendance) =>
-                                                            attendance
-                                                                .person_id ==
-                                                            _fetchedOrganization!
-                                                                .people[i]
-                                                                .id) ==
-                                                    -1) {
-                                                  _fetchedAttendanceAfterSchool
-                                                      .add(
-                                                          new ActivityAttendance(
-                                                              person_id: -1));
-                                                }
-                                              }
-                                            }
-                                          }
                                           setState(() {
                                             _fetchedOrganization;
                                             _data = MyData(
@@ -445,73 +395,89 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                     ),
                     SizedBox(width: 20),
                     ElevatedButton(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal:
-                                20), // Customize the color to your liking
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.calendar_today, color: Colors.black),
-                            SizedBox(width: 10),
-                            Text(
-                              '${this.formattedStartDate} - ${this.formattedEndDate}',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                          ],
-                        ),
-                      ),
                       style: ButtonStyle(
-                        // increase the fontSize
                         textStyle: MaterialStateProperty.all(
                           TextStyle(fontSize: 20),
                         ),
-                        elevation: MaterialStateProperty.all(
-                            20), // increase the elevation
-                        // Add outline around button
+                        elevation: MaterialStateProperty.all(20),
                         backgroundColor:
                             MaterialStateProperty.all(Colors.greenAccent),
                         foregroundColor:
                             MaterialStateProperty.all(Colors.black),
                       ),
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => WeekPicker(
-                                updateDateRange, formattedStartDate)),
+                      onPressed: _isFetching
+                          ? null
+                          : () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => WeekPicker(
+                                        updateDateRange, formattedStartDate)),
+                              ),
+                      child: Container(
+                        height: 50, // Adjust the height as needed
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (_isFetching)
+                              Padding(
+                                padding: EdgeInsets.only(right: 10),
+                                child: SpinKitFadingCircle(
+                                  color: Colors
+                                      .black, // Customize the color of the indicator
+                                  size:
+                                      20, // Customize the size of the indicator
+                                ),
+                              ),
+                            if (!_isFetching)
+                              Icon(Icons.calendar_today, color: Colors.black),
+                            SizedBox(width: 10),
+                            Text(
+                              '${this.formattedStartDate} - ${this.formattedEndDate}',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(width: 20),
-                    ExcelExport(
-                      fetchedAttendance: _fetchedExcelReportData,
-                      columnNames: columnNames,
-                      fetchedStudentList: _fetchedStudentList,
-                      updateExcelState: updateExcelState,
-                    ),
                   ],
                 ),
                 SizedBox(height: 16.0),
                 SizedBox(height: 32.0),
-                Wrap(children: [
-                  (cols.length > 2)
-                      ? PaginatedDataTable(
-                          showCheckboxColumn: false,
-                          source: _data,
-                          columns: cols,
-                          // header: const Center(child: Text('Daily Attendance')),
-                          columnSpacing: 100,
-                          horizontalMargin: 60,
-                          rowsPerPage: 22,
-                        )
-                      : Container(
-                          margin: EdgeInsets.all(20), // Add margin here
-                          child: Text('No attendance data found'),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (_isFetching)
+                      Container(
+                        margin: EdgeInsets.only(top: 180),
+                        child: SpinKitCircle(
+                          color: (Colors
+                              .blue), // Customize the color of the indicator
+                          size: 50, // Customize the size of the indicator
                         ),
-                ]),
+                      )
+                    else if (cols.length > 2)
+                      PaginatedDataTable(
+                        showCheckboxColumn: false,
+                        source: _data,
+                        columns: cols,
+                        // header: const Center(child: Text('Daily Attendance')),
+                        columnSpacing: 100,
+                        horizontalMargin: 60,
+                        rowsPerPage: 22,
+                      )
+                    else
+                      Container(
+                        margin: EdgeInsets.all(20),
+                        child: Text('No attendance data found'),
+                      ),
+                  ],
+                )
               ],
             ),
     );

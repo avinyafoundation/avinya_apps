@@ -89,8 +89,15 @@ Future<List<ResourceAllocation>> fetchResourceAllocation(int id) async {
 }
 
 Future<List<ResourceAllocation>> fetchResourceAllocations(int personId) async {
-  final response = await http.get(Uri.parse(
-      '${AppConfig.campusAssetsBffApiUrl}/resource_allocation_by_person?personId=$personId'));
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAssetsBffApiUrl}/resource_allocation_by_person?personId=$personId'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
 
   if (response.statusCode == 200) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
@@ -109,6 +116,8 @@ Future<http.Response> createResourceAllocation(
     Uri.parse('${AppConfig.campusAssetsBffApiUrl}/resource_allocation'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
     body: jsonEncode(resourceAllocation.toJson()),
   );
