@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile/avinya/attendance/lib/data/attendance_data.dart';
 import '../data.dart';
 import '../data/activity_attendance.dart';
@@ -36,6 +37,7 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
     activity_instance_id: 0,
     person_id: 0,
     preferred_name: '',
+    organization: '',
     sign_in_time: '',
     sign_out_time: '',
     in_marked_by: '',
@@ -84,7 +86,7 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
     _personAttendanceToday = await getPersonActivityAttendanceToday(
         qrCodeData.person_id!,
         campusAppsPortalInstance.activityIds['homeroom']!);
-    if (_personAttendanceToday.length == 1) {
+    if (_personAttendanceToday.length == 1 && qrCodeData.sign_out_time != '') {
       setState(() {
         isFirstTime = true;
       });
@@ -95,6 +97,7 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
         sign_out_time: DateTime.now().toString(),
         out_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
       ));
+      await refreshPersonActivityAttendanceToday();
     } else {
       setState(() {
         markedAttendance = true;
@@ -192,71 +195,109 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
                     ),
                     const SizedBox(height: 20),
                     if (!inValidQr) ...[
-                      // ignore: prefer_is_empty
-                      // if (!isFirstTime) ...[
-                      //   Column(
-                      //     mainAxisAlignment: MainAxisAlignment.center,
-                      //     children: [
-                      //       Text(
-                      //           'Checked out for today at ${_personAttendanceToday[1].sign_out_time!}'),
-                      //       const SizedBox(width: 20),
-                      //     ],
-                      //   ),
-                      // ]
-                      if (qrCodeData.person_id != 0) ...[
+                      if (qrCodeData.preferred_name != '' &&
+                          qrCodeData.sign_out_time != '') ...[
                         Column(
                           children: [
-                            // Text(
-                            //   'Person ID: ${qrCodeData.person_id}',
-                            //   style: const TextStyle(fontSize: 18),
-                            // ),
-                            Text(
-                              'Student Name: ${qrCodeData.preferred_name}',
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                            Text(
-                              'Check-Out Time: ${qrCodeData.sign_out_time}',
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                            if (markedAttendance) const SizedBox(height: 20),
-                            const Text(
-                              'Check-Out completed successfully!',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold,
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(15), // Add padding
+                              color: Colors.lightBlue, // Add a background color
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Student Name: ${qrCodeData.preferred_name}',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors
+                                          .white, // Change text color to contrast with background
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Text(
+                                    'Class: ${qrCodeData.organization}',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Text(
+                                    'Check-Out Time: ${DateFormat('MMM d, y, h:mm a').format(DateTime.parse(qrCodeData.sign_out_time))}',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
+                            if (markedAttendance)
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(16.0),
+                                color: Colors.green,
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle,
+                                      size: 32.0,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(width: 8.0),
+                                    Text(
+                                      'Check-Out completed successfully!',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
                           ],
                         ),
                       ],
-                      // if (_isCheckedOut && _isCheckedIn) ...[
-                      //   Column(
-                      //     mainAxisAlignment: MainAxisAlignment.center,
-                      //     children: [
-                      //       const Text('Attendance Marked for Today.'),
-                      //       if (_personAttendanceToday.isNotEmpty)
-                      //         Text(
-                      //             'Checked in at ${_personAttendanceToday[0].sign_in_time!}'),
-                      //       if (_personAttendanceToday.length > 1)
-                      //         Text(
-                      //             'Checked out at ${_personAttendanceToday[1].sign_out_time!}'),
-                      //       const SizedBox(width: 20),
-                      //     ],
-                      //   ),
-                      // ],
                       ...[
                         if (qrCodeData.person_id == 0 && isFirstTime)
-                          const Text(
-                            'Scan QR Code to Mark Attendance',
-                            style: TextStyle(fontSize: 18),
-                          ),
+                          Container(
+                            width: double.infinity,
+                            color: Colors.blue,
+                            padding: const EdgeInsets.all(16.0),
+                            child: const Center(
+                              child: Text(
+                                'Scan QR Code to Mark Attendance',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          )
                       ],
                     ] else ...[
-                      const Text(
-                        'Invalid QR Code',
-                        style: TextStyle(fontSize: 18),
-                      ),
+                      Container(
+                        width: double.infinity,
+                        color: Colors.red,
+                        padding: const EdgeInsets.all(16.0),
+                        child: const Center(
+                          child: Text(
+                            'Invalid QR Code',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      )
                     ],
                   ],
                 ),

@@ -37,6 +37,18 @@
             // ]
         },
         {
+            "name": "debug pysical samsung",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "deviceId": "SM M017F",
+            "runTestsOnDevice": false,
+            // "args": [
+            //     "--flavor",
+            //     "development"
+            // ]
+        },
+        {
             "name": "mobile (release mode)",
             "request": "launch",
             "type": "dart",
