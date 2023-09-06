@@ -34,8 +34,10 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
       activity_instance_id: activityInstance.id,
       person_id: campusAppsPortalInstance.getUserPerson().id,
       preferred_name: campusAppsPortalInstance.getUserPerson().preferred_name,
+      organization:
+          campusAppsPortalInstance.getUserPerson().organization!.description,
       sign_in_time: DateTime.now().toString(),
-      sign_out_time: null,
+      sign_out_time: '',
       in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
     );
     // call the API to check-in
@@ -75,8 +77,10 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
         activity_instance_id: activityInstance.id,
         person_id: campusAppsPortalInstance.getUserPerson().id,
         preferred_name: campusAppsPortalInstance.getUserPerson().preferred_name,
+        organization:
+            campusAppsPortalInstance.getUserPerson().organization!.description,
         sign_in_time: _personAttendanceToday[0].sign_in_time.toString(),
-        sign_out_time: null,
+        sign_out_time: '',
         in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
       );
     } else {
@@ -84,6 +88,8 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
         activity_instance_id: activityInstance.id,
         person_id: campusAppsPortalInstance.getUserPerson().id,
         preferred_name: campusAppsPortalInstance.getUserPerson().preferred_name,
+        organization:
+            campusAppsPortalInstance.getUserPerson().organization!.description,
         sign_in_time: _personAttendanceToday[0].sign_in_time.toString(),
         sign_out_time: _personAttendanceToday[1].sign_out_time.toString(),
         in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
@@ -113,8 +119,10 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
       activity_instance_id: activityInstance.id,
       person_id: campusAppsPortalInstance.getUserPerson().id,
       preferred_name: campusAppsPortalInstance.getUserPerson().preferred_name,
-      sign_in_time: DateTime.now().toString(),
-      sign_out_time: null,
+      organization:
+          campusAppsPortalInstance.getUserPerson().organization!.description,
+      sign_in_time: '',
+      sign_out_time: DateTime.now().toString(),
       in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
     );
     // call the API to check-out
@@ -156,11 +164,14 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
     }
 
     if (!_isCheckedIn) {
-      var activityInstance =
+      // var activityInstance =
+      //     await campusAttendanceSystemInstance.getCheckinActivityInstance(
+      //         campusAppsPortalInstance.activityIds['school-day']!);
+      var activityInstanceForAbsent =
           await campusAttendanceSystemInstance.getCheckinActivityInstance(
-              campusAppsPortalInstance.activityIds['school-day']!);
+              campusAppsPortalInstance.activityIds['homeroom']!);
       _fechedEvaluations =
-          await getActivityInstanceEvaluations(activityInstance.id!);
+          await getActivityInstanceEvaluations(activityInstanceForAbsent.id!);
 
       if (_fechedEvaluations.indexWhere((element) =>
               element.evaluator_id ==
