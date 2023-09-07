@@ -40,11 +40,11 @@ class SMSScaffold extends StatelessWidget {
         campusAppsPortalInstance.isFoundation) {
       destinations = const [
         AdaptiveScaffoldDestination(
-          title: 'Self Attendance Marker',
+          title: 'Self Attendance',
           icon: Icons.person_outline,
         ),
         AdaptiveScaffoldDestination(
-          title: 'Attendance Marker by QR',
+          title: 'QR Marker',
           icon: Icons.qr_code_scanner,
         ),
         // AdaptiveScaffoldDestination(
@@ -52,7 +52,7 @@ class SMSScaffold extends StatelessWidget {
         //   icon: Icons.people,
         // ),
         AdaptiveScaffoldDestination(
-          title: 'Daily Attendance Report',
+          title: 'Daily Report',
           icon: Icons.summarize,
         ),
         // AdaptiveScaffoldDestination(
@@ -75,7 +75,7 @@ class SMSScaffold extends StatelessWidget {
           icon: Icons.person_outline,
         ),
         AdaptiveScaffoldDestination(
-          title: 'Person Payment Report',
+          title: 'Payment Report',
           icon: Icons.summarize,
         ),
       ];
@@ -85,7 +85,14 @@ class SMSScaffold extends StatelessWidget {
       body: AdaptiveNavigationScaffold(
         selectedIndex: selectedIndex,
         appBar: AppBar(
-          title: const Text('Avinya Academy - Campus Attendance Portal'),
+          leading: Padding(
+            padding: const EdgeInsets.all(18.0),
+            child: Image.asset(
+              'assets/images/app_logo.png',
+              width: 120,
+              height: 40,
+            ),
+          ),
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.logout),
@@ -151,7 +158,7 @@ class SMSScaffold extends StatelessWidget {
                   applicationName: AppConfig.applicationName,
                   applicationVersion: AppConfig.applicationVersion);
             }),
-        const Text("© 2023, Avinya Foundation."),
+        // Text("© 2023, Avinya Foundation."),
       ],
     );
   }

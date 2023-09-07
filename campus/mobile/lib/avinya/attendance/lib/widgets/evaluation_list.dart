@@ -1,5 +1,7 @@
 import 'package:attendance/data/evaluation.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/avinya/attendance/lib/data/campus_attendance_system.dart';
+import 'package:mobile/data/campus_apps_portal.dart';
 
 class EvaluationList extends StatefulWidget {
   const EvaluationList({super.key, this.onTap});
@@ -450,6 +452,9 @@ class _AddEvaluationPageState extends State<AddEvaluationPage> {
   }
 
   Future<void> _addEvaluation(BuildContext context) async {
+    var activityInstanceForAbsent =
+        await campusAttendanceSystemInstance.getCheckinActivityInstance(
+            campusAppsPortalInstance.activityIds['homeroom']!);
     try {
       if (_formKey.currentState!.validate()) {
         final Evaluation evaluation = Evaluation(
@@ -457,8 +462,7 @@ class _AddEvaluationPageState extends State<AddEvaluationPage> {
             evaluator_id: int.parse(_evaluator_id_Controller.text),
             evaluation_criteria_id:
                 int.parse(_evaluation_criteria_id_Controller.text),
-            activity_instance_id:
-                int.parse(_activity_instance_id_Controller.text),
+            activity_instance_id: activityInstanceForAbsent.id,
             response: _response_Controller.text,
             notes: _notes_Controller.text,
             grade: int.parse(_grade_Controller.text));
@@ -820,6 +824,9 @@ class _EditEvaluationPageState extends State<EditEvaluationPage> {
   }
 
   Future<void> _editEvaluation(BuildContext context) async {
+    var activityInstanceForAbsent =
+        await campusAttendanceSystemInstance.getCheckinActivityInstance(
+            campusAppsPortalInstance.activityIds['homeroom']!);
     try {
       if (_formKey.currentState!.validate()) {
         final Evaluation evaluation = Evaluation(
@@ -828,8 +835,7 @@ class _EditEvaluationPageState extends State<EditEvaluationPage> {
             evaluator_id: int.parse(_evaluator_id_Controller.text),
             evaluation_criteria_id:
                 int.parse(_evaluation_criteria_id_Controller.text),
-            activity_instance_id:
-                int.parse(_activity_instance_id_Controller.text),
+            activity_instance_id: activityInstanceForAbsent.id,
             grade: int.parse(_grade_Controller.text),
             response: _response_Controller.text,
             notes: _notes_Controller.text);

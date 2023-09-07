@@ -75,7 +75,7 @@ class SMSScaffold extends StatelessWidget {
       body: AdaptiveNavigationScaffold(
         selectedIndex: selectedIndex,
         appBar: AppBar(
-          title: const Text('Avinya Academy - Campus Attendance Portal'),
+          title: const Text('Campus Attendance'),
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.logout),

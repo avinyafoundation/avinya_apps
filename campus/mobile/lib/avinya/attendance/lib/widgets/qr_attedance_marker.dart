@@ -1,7 +1,12 @@
 // ignore_for_file: non_constant_identifier_names, unused_element, use_build_context_synchronously, use_key_in_widget_constructors, library_private_types_in_public_api
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile/avinya/attendance/lib/data/attendance_data.dart';
+import 'package:mobile/avinya/attendance/lib/widgets/qr_attedance_checkin.dart';
+import 'package:mobile/avinya/attendance/lib/widgets/qr_attedance_checkout.dart';
 import '../data.dart';
 import '../data/activity_attendance.dart';
 import 'package:attendance/data/evaluation.dart';
@@ -19,6 +24,8 @@ class _QrAttendanceMarkerState extends State<QrAttendanceMarker> {
   bool _isCheckedIn = false;
   bool _isCheckedOut = false;
   bool _isAbsent = false;
+  bool markedAttendance = true;
+  bool inValidQr = false;
   List<ActivityAttendance> _personAttendanceToday = [];
   List<Evaluation> _fechedEvaluations = [];
 
@@ -26,7 +33,24 @@ class _QrAttendanceMarkerState extends State<QrAttendanceMarker> {
 
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
-  String qrCodeData = "";
+  AttendanceData qrCodeData = AttendanceData(
+    activity_instance_id: 0,
+    person_id: 0,
+    preferred_name: '',
+    organization: '',
+    sign_in_time: '',
+    sign_out_time: '',
+    in_marked_by: '',
+  );
+  var activityId = 0;
+  var afterSchoolActivityId = 0;
+  @override
+  void initState() {
+    super.initState();
+    activityId = campusAppsPortalInstance.activityIds['homeroom']!;
+    afterSchoolActivityId =
+        campusAppsPortalInstance.activityIds['after-school']!;
+  }
 
   @override
   void dispose() {
@@ -37,34 +61,43 @@ class _QrAttendanceMarkerState extends State<QrAttendanceMarker> {
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
-      setState(() {
-        qrCodeData = scanData.code!;
-      });
+      try {
+        AttendanceData deserializedQrCodeData =
+            AttendanceData.fromJson(jsonDecode(scanData.code!));
+
+        setState(() {
+          qrCodeData = deserializedQrCodeData;
+          inValidQr = false;
+        });
+      } catch (e) {
+        setState(() {
+          inValidQr = true;
+        });
+      }
     });
   }
 
   Future<void> _handleCheckIn() async {
     var activityInstance =
         await campusAttendanceSystemInstance.getCheckinActivityInstance(
-            campusAppsPortalInstance.activityIds['school-day']);
-    // call the API to check-in
-    await createActivityAttendance(ActivityAttendance(
-      activity_instance_id: activityInstance.id,
-      person_id: campusAppsPortalInstance.getUserPerson().id,
-      sign_in_time: DateTime.now().toString(),
-      in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
-    ));
+            campusAppsPortalInstance.activityIds['homeroom']);
+
+    _personAttendanceToday = await getPersonActivityAttendanceToday(
+        qrCodeData.person_id!,
+        campusAppsPortalInstance.activityIds['homeroom']!);
+    if (_personAttendanceToday.isEmpty) {
+      // call the API to check-in
+      await createActivityAttendance(ActivityAttendance(
+        activity_instance_id: activityInstance.id,
+        person_id: qrCodeData.person_id,
+        sign_in_time: DateTime.now().toString(),
+        in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
+      ));
+    }
+
     await refreshPersonActivityAttendanceToday();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: ((context) {
-          return QRImage(sign_in_time);
-        }),
-      ),
-    );
     setState(() {
-      qrCodeData = sign_in_time;
+      markedAttendance = true;
     });
     print('Checked in for today.');
   }
@@ -90,8 +123,8 @@ class _QrAttendanceMarkerState extends State<QrAttendanceMarker> {
   Future<List<ActivityAttendance>>
       refreshPersonActivityAttendanceToday() async {
     _personAttendanceToday = await getPersonActivityAttendanceToday(
-        campusAppsPortalInstance.getUserPerson().id!,
-        campusAppsPortalInstance.activityIds['school-day']!);
+        qrCodeData.person_id!,
+        campusAppsPortalInstance.activityIds['homeroom']!);
     if (_personAttendanceToday.isNotEmpty) {
       _isCheckedIn = _personAttendanceToday[0].sign_in_time != null;
     }
@@ -99,24 +132,24 @@ class _QrAttendanceMarkerState extends State<QrAttendanceMarker> {
       _isCheckedOut = _personAttendanceToday[1].sign_out_time != null;
     }
 
-    if (!_isCheckedIn) {
-      var activityInstance =
-          await campusAttendanceSystemInstance.getCheckinActivityInstance(
-              campusAppsPortalInstance.activityIds['school-day']!);
-      _fechedEvaluations =
-          await getActivityInstanceEvaluations(activityInstance.id!);
+    // if (!_isCheckedIn) {
+    //   var activityInstance =
+    //       await campusAttendanceSystemInstance.getCheckinActivityInstance(
+    //           campusAppsPortalInstance.activityIds['homeroom']!);
+    //   _fechedEvaluations =
+    //       await getActivityInstanceEvaluations(activityInstance.id!);
 
-      if (_fechedEvaluations.indexWhere((element) =>
-              element.evaluator_id ==
-              campusAppsPortalInstance.getUserPerson().id!) ==
-          -1) {
-        _isCheckedIn = false;
-      } else {
-        _isCheckedIn = true;
-        _isCheckedOut = true;
-        _isAbsent = true;
-      }
-    }
+    //   if (_fechedEvaluations.indexWhere((element) =>
+    //           element.evaluator_id ==
+    //           qrCodeData.person_id!) ==
+    //       -1) {
+    //     _isCheckedIn = false;
+    //   } else {
+    //     _isCheckedIn = true;
+    //     _isCheckedOut = true;
+    //     _isAbsent = true;
+    //   }
+    // }
 
     return _personAttendanceToday;
   }
@@ -134,166 +167,67 @@ class _QrAttendanceMarkerState extends State<QrAttendanceMarker> {
             _isCheckedOut = snapshot.data![1].sign_out_time != null;
           }
           return SingleChildScrollView(
-              child: Column(
-            children: [
-              if (!_isCheckedIn)
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  // ElevatedButton(
-                  //   child: Text('Check-In'),
-                  //   onPressed: _handleCheckIn,
-                  //   style: ButtonStyle(
-                  //     // increase the fontSize
-                  //     textStyle: MaterialStateProperty.all(
-                  //       TextStyle(fontSize: 20),
-                  //     ),
-                  //     elevation: MaterialStateProperty.all(
-                  //         20), // increase the elevation
-                  //     // Add outline around button
-                  //     backgroundColor:
-                  //         MaterialStateProperty.all(Colors.greenAccent),
-                  //     foregroundColor: MaterialStateProperty.all(Colors.black),
-                  //   ),
-                  // ),
-                  Expanded(
-                    flex: 5,
-                    child:
-                        QRView(key: qrKey, onQRViewCreated: _onQRViewCreated),
-                  ),
-                  Expanded(
-                      flex: 1,
-                      child: Center(
-                          child: Text(
-                        'Scan Result: $qrCodeData',
-                        style: const TextStyle(fontSize: 18),
-                      ))),
-                  Expanded(
-                      flex: 1,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton(
-                              onPressed: () {
-                                if (qrCodeData.isNotEmpty) {
-                                  Clipboard.setData(
-                                      ClipboardData(text: qrCodeData));
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content:
-                                              Text('Copied to Clipboard')));
-                                  // _handleCheckIn();
-                                }
-                              },
-                              child: const Text('Copy')),
-                        ],
-                      )),
-                  const SizedBox(width: 20),
-                  ElevatedButton(
-                    onPressed: () async {
-                      var activityInstance =
-                          await campusAttendanceSystemInstance
-                              .getCheckinActivityInstance(
-                                  campusAppsPortalInstance
-                                      .activityIds['school-day']!);
-                      var evaluation = Evaluation(
-                        evaluator_id:
-                            campusAppsPortalInstance.getUserPerson().id,
-                        evaluatee_id:
-                            campusAppsPortalInstance.getUserPerson().id,
-                        activity_instance_id: activityInstance.id,
-                        grade: 0,
-                        evaluation_criteria_id: 54,
-                        response: "Unexcused absence",
-                      );
-                      var result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AddEvaluationPage(
-                                  evaluation: evaluation,
-                                )),
-                      );
-                      if (result != null) {
-                        await refreshPersonActivityAttendanceToday();
-                        setState(() {});
-                      }
-                      // _fetchedEvaluations =
-                      //             await getActivityInstanceEvaluations(
-                      //                             activityInstance.id!);
-                      //             setState(() {});
-                    },
-                    style: ButtonStyle(
-                      textStyle: MaterialStateProperty.all(
-                          const TextStyle(fontSize: 20)),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.blue),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
-                    ),
-                    child: const Text('Absent'),
-                  ),
-                ]),
-              if (_isCheckedOut && !_isAbsent)
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Attendance marked for today.'),
-                    if (_personAttendanceToday.isNotEmpty)
-                      Text(
-                          'Checked in at ${_personAttendanceToday[0].sign_in_time!}'),
-                    if (_personAttendanceToday.length > 1)
-                      Text(
-                          'Checked out at ${_personAttendanceToday[1].sign_out_time!}'),
-                    const SizedBox(width: 20),
-                  ],
-                )
-              else if (_isAbsent)
-                const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [Text('Attendance marked as Absent today.')],
-                )
-              else if (_isCheckedIn)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (_personAttendanceToday.isNotEmpty)
-                      Text(
-                          'Checked in for today at ${_personAttendanceToday[0].sign_in_time!}'),
-                    const SizedBox(width: 20),
-                    IconButton(
-                      icon: const Icon(Icons.qr_code),
+                  SizedBox(
+                    width: 150,
+                    child: ElevatedButton(
                       onPressed: () {
-                        // Navigate to the QR code view screen when the button is clicked
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) {
-                              return QRImage(qrCodeData);
-                            },
-                          ),
+                              builder: (context) => QrAttendanceCheckIn()),
                         );
                       },
-                      tooltip: 'View QR Code',
+                      style: ButtonStyle(
+                        // increase the fontSize
+                        textStyle: MaterialStateProperty.all(
+                          const TextStyle(fontSize: 20),
+                        ),
+                        elevation: MaterialStateProperty.all(
+                            20), // increase the elevation
+                        // Add outline around button
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.greenAccent),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.black),
+                      ),
+                      child: const Text('Check-In'),
                     ),
-                  ],
-                ),
-              if (_isCheckedIn && !_isCheckedOut)
-                ElevatedButton(
-                  onPressed: _handleCheckOut,
-                  style: ButtonStyle(
-                    // increase the fontSize
-                    textStyle: MaterialStateProperty.all(
-                      const TextStyle(fontSize: 20),
-                    ),
-                    elevation:
-                        MaterialStateProperty.all(20), // increase the elevation
-                    // Add outline around button
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.orangeAccent),
-                    foregroundColor: MaterialStateProperty.all(Colors.black),
                   ),
-                  child: const Text('Check-Out'),
-                ),
-            ],
-          ));
+                  const SizedBox(width: 20),
+                  SizedBox(
+                    width: 150,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => QrAttendanceCheckOut()),
+                        );
+                      },
+                      style: ButtonStyle(
+                        // increase the fontSize
+                        textStyle: MaterialStateProperty.all(
+                          const TextStyle(fontSize: 20),
+                        ),
+                        elevation: MaterialStateProperty.all(
+                            20), // increase the elevation
+                        // Add outline around button
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.blueAccent),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.black),
+                      ),
+                      child: const Text('Check-Out'),
+                    ),
+                  ),
+                ]),
+              ],
+            ),
+          );
         } else if (snapshot.hasError) {
           return Text('${snapshot.error}');
         }

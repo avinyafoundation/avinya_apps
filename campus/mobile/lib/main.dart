@@ -6,6 +6,7 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
+import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:mobile/auth.dart';
 import 'package:mobile/constants.dart';
 import 'package:mobile/data/campus_apps_portal.dart';
@@ -14,6 +15,7 @@ import 'package:mobile/pages/backdrop.dart';
 import 'package:mobile/pages/splash.dart';
 import 'package:mobile/routes.dart';
 import 'package:mobile/themes/gallery_theme_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:google_fonts/google_fonts.dart' as google_fonts;
 import 'package:sizer/sizer.dart';
 import 'package:url_strategy/url_strategy.dart';
@@ -53,6 +55,23 @@ void main() async {
     await AppConfig.forEnvironment('dev');
   }
 
+  String _clientId = AppConfig.asgardeoClientId;
+  final String _issuerUrl = AppConfig.asgardeoTokenEndpoint;
+  final String _redirectUrl = AppConfig.redirectURL;
+  final String _discoveryUrl = AppConfig.asgardeoDiscoveryURL;
+
+  final List<String> _scopes = <String>[
+    'openid',
+    'profile',
+    'email',
+    'groups',
+    'address',
+    'phone'
+  ];
+
+  await authenticate(
+      Uri.parse(_issuerUrl), _clientId, _scopes, _redirectUrl, _discoveryUrl);
+
   // google_fonts.GoogleFonts.config.allowRuntimeFetching = false;
   GalleryApp galleryApp = GalleryApp();
   campusAppsPortalInstance.setAuth(galleryApp._auth);
@@ -80,6 +99,48 @@ abstract class Constants {
     'asgardeo_client_id',
     defaultValue: '',
   );
+}
+
+Future<void> authenticate(Uri uri, String clientId, List<String> scopes,
+    String redirectURL, String discoveryUrl) async {
+  const FlutterAppAuth flutterAppAuth = FlutterAppAuth();
+
+  try {
+    final AuthorizationTokenResponse? result =
+        await flutterAppAuth.authorizeAndExchangeCode(
+      AuthorizationTokenRequest(
+        clientId,
+        redirectURL,
+        discoveryUrl: discoveryUrl,
+        promptValues: ['login'],
+        scopes: scopes,
+      ),
+    );
+
+    print('Access token bla bla bla: ${result?.accessToken}');
+    String accessToken = result?.accessToken ?? '';
+    String refreshToken = result?.refreshToken ?? '';
+    String idToken = result?.idToken ?? '';
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access_token', accessToken);
+    await prefs.setString('refresh_token', refreshToken);
+    await prefs.setString('id_token', idToken);
+
+    // final _auth = CampusAppsPortalAuth();
+    // final signedIn = await _auth.getSignedIn();
+
+    // setState(() {
+    //   _isUserLoggedIn = true;
+    //   _idToken = result?.idToken;
+    //   _accessToken = result?.accessToken;
+    //   _pageIndex = 2;
+    // });
+  } catch (e, s) {
+    print('Error while login to the system: $e - stack: $s');
+    // setState(() {
+    //   _isUserLoggedIn = false;
+    // });
+  }
 }
 
 class GalleryApp extends StatefulWidget {
