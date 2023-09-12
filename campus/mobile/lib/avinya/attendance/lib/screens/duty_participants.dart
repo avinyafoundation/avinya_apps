@@ -17,8 +17,11 @@ class _DutyParticipantsScreenState extends State<DutyParticipantsScreen> {
         title: Text("Duty Participants"),
       ),
       body: SingleChildScrollView(
-          child: Container(            
-           child: AssignDutyForParticipant(),     
+          child: Container(    
+           child:Column(children: [
+           Container(child: AssignDutyForParticipant()),
+           ],
+           )     
           ), 
       ),
 

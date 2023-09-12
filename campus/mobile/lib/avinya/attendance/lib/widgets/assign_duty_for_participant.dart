@@ -51,10 +51,21 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
     super.dispose();
   }
 
-  bool hasLeaderRoleWithActivity(String? activityName){
+  bool hasLeaderRoleWithActivity(String? activityName,String? allocatedRole){
+    print('duty participants : ${_dutyParticipants}');
+    bool hasLeaderRoleWithActivity;
 
-    return _dutyParticipants.any((participant)=>
-      participant.activity?.name == activityName && participant.role == 'leader');
+    if(allocatedRole == "leader"){
+      hasLeaderRoleWithActivity = _dutyParticipants.any((participant)=>participant.activity?.name == activityName && participant.role == 'leader');
+     
+      if(hasLeaderRoleWithActivity){
+        return true;
+      }else{
+        return false;
+      }   
+    }else{
+         return  false;
+    }
   }
 
   Future<List<DutyParticipant>> loadDutyParticipantsData(int organization_id) async{
@@ -163,84 +174,104 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                   //       ),
                   // );
 
-                 //}if(snapshot.hasData){
+                 //}
+                 if(snapshot.hasData){
 
-                 return ListView.builder(
-                        shrinkWrap: true,                
-                        itemCount: _activitiesNames.length,
-                        itemBuilder: (context,tableIndex){
-                       // print('table index:{$tableIndex}');
-                        _dutyRelatedParticipantsFilterAndStore.clear();
-                        _dutyParticipants = (snapshot.data as List<DutyParticipant>);
-                        _dutyRelatedParticipantsFilterAndStore = _dutyParticipants.where((filterParticipant)=>filterParticipant.activity!.name ==  _activitiesNames[tableIndex]).toList();
-                       // print('dutyRelatedParticipantsFilterAndStore: ${_dutyRelatedParticipantsFilterAndStore}');
-                       // print('length is: ${_dutyRelatedParticipantsFilterAndStore.length}');
-                        return  Container(
-                            width: 800,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                for (var org in campusAppsPortalInstance
-                                    .getUserPerson()
-                                    .organization!
-                                    .child_organizations)  
-                                  
-                                  if (org.child_organizations.length > 0)                             
-                                          Row(
-                                              
-                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                              children: <Widget>[
-                                                Flexible(                                                                             
-                                                    child: Row(
-                                                     children: [
-                                                        Icon(
-                                                          Icons.work_outline,
-                                                          size: 25,
-                                                          color: Colors.blueAccent,
-                                                        ),
-                                                        SizedBox(
-                                                         width: 10,
-                                                        ),
-                                                        Text(
-                                                      '${_activitiesNames[tableIndex]}',
-                                                       overflow: TextOverflow.ellipsis,
-                                                       style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold)
-                                                      )
-                                                     ],
-                                                    ),
-                                                  ),
-                                                Flexible(
-                                                    child: buildClassDropDownButton(org,tableIndex,_dutyParticipants)
-                                                  ),
-                                                Flexible(
-                                                    child: buildPersonDropDownButton(tableIndex)
-                                                  ),
-                                                Flexible(
-                                                    child: buildRoleDropDownButton(tableIndex)
-                                                  ),
-                                                
-                                              ],
+                 return SingleChildScrollView(
+                   child: ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,                
+                          itemCount: _activitiesNames.length,
+                          itemBuilder: (context,tableIndex){
+                         // print('table index:{$tableIndex}');
+                          _dutyRelatedParticipantsFilterAndStore.clear();
+                          _dutyParticipants = (snapshot.data as List<DutyParticipant>);
+                          _dutyRelatedParticipantsFilterAndStore = _dutyParticipants.where((filterParticipant)=>filterParticipant.activity!.name ==  _activitiesNames[tableIndex]).toList();
+                         // print('dutyRelatedParticipantsFilterAndStore: ${_dutyRelatedParticipantsFilterAndStore}');
+                         // print('length is: ${_dutyRelatedParticipantsFilterAndStore.length}');
+                          return  Container(
+                              width: 1200,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  for (var org in campusAppsPortalInstance
+                                      .getUserPerson()
+                                      .organization!
+                                      .child_organizations)  
+                                    
+                                    if (org.child_organizations.length > 0)                             
+                                            SingleChildScrollView(
+                                              scrollDirection: Axis.horizontal,
+                                              child: Row(
+                                                  
+                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                  children: <Widget>[                                                
+                                                                                                                              
+                                                       Container(
+                                                         
+                                                         child: Row(
+                                                           children: [
+                                                              Icon(
+                                                                Icons.work_outline,
+                                                                size: 25,
+                                                                color: Colors.blueAccent,
+                                                              ),
+                                                              SizedBox(
+                                                               width: 10,
+                                                              ),
+                                                              Text(
+                                                            '${_activitiesNames[tableIndex]}',
+                                                             overflow: TextOverflow.clip,
+                                                             style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold)
+                                                            )
+                                                           ],
+                                                          ),
+                                                       ), 
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),                                                   
+                                                    Container(                                                  
+                                                        child: buildClassDropDownButton(org,tableIndex,_dutyParticipants)
+                                                      ),   
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),                                          
+                                                    Container(
+                                                        
+                                                        child: buildPersonDropDownButton(tableIndex)
+                                                      ),
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),   
+                                                    Container(
+                                                        
+                                                        child: buildRoleDropDownButton(tableIndex)
+                                                      ),
+                                                    
+                                                  ],
+                                                ),
                                             ),        
-                                    buildTable(_dutyRelatedParticipantsFilterAndStore,tableIndex,_dutyParticipants),
-                                    SizedBox(
-                                      height: 30,
-                                    )
-                              ],
-                              
-                            ),
-                        );
-                    },    
-                  );
-              // }
+                                      buildTable(_dutyRelatedParticipantsFilterAndStore,tableIndex,_dutyParticipants),
+                                      SizedBox(
+                                        height: 30,
+                                      )
+                                ],
+                                
+                              ),
+                          );
+                      },    
+                    ),
+                 );
+              }
               //}
-              // return Container(
-              //               margin: EdgeInsets.only(top: 10),
-              //               child: SpinKitCircle(
-              //                 color: (Colors
-              //                     .blue),
-              //                 size: 70, 
-              //               ),
-              //     );
+              return Container(
+                            margin: EdgeInsets.only(top: 10),
+                            child: SpinKitCircle(
+                              color: (Colors
+                                  .blue),
+                              size: 70, 
+                            ),
+                  );
              },
             ),
           ],
@@ -257,7 +288,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Container(
-              width: 950,
+              width:  950,
               child: DataTable(
                 columns: [
                   DataColumn(
@@ -453,13 +484,15 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
         String? personDigitalId = _selectedPersonValues[tableIndex];
         Person? person =  _dropDownPersonList[tableIndex].firstWhere((personObject) => personObject.digital_id == personDigitalId);
 
-        bool hasLeaderRole = hasLeaderRoleWithActivity(activityName);
-
         var dutyForParticipant = DutyParticipant(
         activity_id: activity.id,
         person_id: person.id,
         role: allocatedRole,
        );
+
+       bool hasLeaderRole = hasLeaderRoleWithActivity(activityName,allocatedRole);
+
+       print('has a leader role ${hasLeaderRole}');
 
         if(!hasLeaderRole){
             var result = await  createDutyForParticipant(dutyForParticipant);
