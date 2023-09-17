@@ -42,10 +42,6 @@ class SMSScaffold extends StatelessWidget {
           icon: Icons.person_outline,
         ),
         AdaptiveScaffoldDestination(
-          title: 'Attendance Marker by QR',
-          icon: Icons.qr_code_scanner,
-        ),
-        AdaptiveScaffoldDestination(
           title: 'Bulk Attendance Marker',
           icon: Icons.people,
         ),
