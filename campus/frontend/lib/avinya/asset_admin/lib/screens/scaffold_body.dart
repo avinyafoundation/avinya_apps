@@ -1,7 +1,7 @@
 // import 'package:ShoolManagementSystem/src/screens/assets.dart';
 // import 'package:ShoolManagementSystem/src/screens/resource_allocations.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery/avinya/asset/lib/screens/resource_allocations.dart';
+import 'package:asset_admin/screens/resource_allocation_report.dart';
 
 import '../routing.dart';
 import '../widgets/fade_transition_page.dart';
@@ -25,13 +25,11 @@ class SMSScaffoldBody extends StatelessWidget {
       key: navigatorKey,
       onPopPage: (route, dynamic result) => route.didPop(result),
       pages: [
-        if (currentRoute.pathTemplate.startsWith('/resource_allocations') ||
-            currentRoute.pathTemplate == '/')
+       if (currentRoute.pathTemplate.startsWith('/resource_allocation_report'))
           const FadeTransitionPage<void>(
-            key: ValueKey('assets'),
-            child: ResourceAllocationsScreen(),
+            key: ValueKey('resource_allocation_report'),
+            child: ResourceAllocationReportScreen(),
           )
-
         // Avoid building a Navigator with an empty `pages` list when the
         // RouteState is set to an unexpected path, such as /signin.
         //

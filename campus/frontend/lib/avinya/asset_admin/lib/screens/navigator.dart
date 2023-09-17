@@ -7,7 +7,7 @@ import 'dart:developer';
 // import 'package:asset/screens/avinya_type_details.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery/avinya/asset_admin/lib/screens/resource_allocation_details.dart';
+// import 'package:gallery/avinya/asset_admin/lib/screens/resource_allocation_details.dart';
 
 //import '../auth.dart';
 import '../../../../auth.dart';
@@ -48,12 +48,12 @@ class _SMSNavigatorState extends State<SMSNavigator> {
     //       (at) => at.id.toString() == routeState.route.parameters['id']);
     // }
 
-    ResourceAllocation? selectedResourceAllocation;
-    if (pathTemplate == '/resource_allocations/:id') {
-      selectedResourceAllocation =
-          campusConfigSystemInstance.resourceAllocations?.firstWhereOrNull(
-              (at) => at.id.toString() == routeState.route.parameters['id']);
-    }
+    // ResourceAllocation? selectedResourceAllocation;
+    // if (pathTemplate == '/resource_allocations/:id') {
+    //   selectedResourceAllocation =
+    //       campusConfigSystemInstance.resourceAllocations?.firstWhereOrNull(
+    //           (at) => at.id.toString() == routeState.route.parameters['id']);
+    // }
 
     if (pathTemplate == '/#access_token') {
       log('Navigator $routeState.route.parameters.toString()');
@@ -90,7 +90,7 @@ class _SMSNavigatorState extends State<SMSNavigator> {
                 var signedIn = await authState.signIn(
                     credentials.username, credentials.password);
                 if (signedIn) {
-                  await routeState.go('/resource_allocations');
+                  await routeState.go('/resource_allocation_report');
                 }
               },
             ),
@@ -103,13 +103,13 @@ class _SMSNavigatorState extends State<SMSNavigator> {
           ),
           // Add an additional page to the stack if the user is viewing a book
           // or an author
-          if (selectedResourceAllocation != null)
-            MaterialPage<void>(
-              key: _assetDetailsKey,
-              child: ResourceAllocationDetailsScreen(
-                resourceAllocation: selectedResourceAllocation,
-              ),
-            )
+          // if (selectedResourceAllocation != null)
+          //   MaterialPage<void>(
+          //     key: _assetDetailsKey,
+          //     child: ResourceAllocationDetailsScreen(
+          //       resourceAllocation: selectedResourceAllocation,
+          //     ),
+          //   )
 
           // else if (selectedEmployee != null)
           //   MaterialPage<void>(

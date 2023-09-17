@@ -164,6 +164,18 @@ service / on new http:Listener(9095) {
         }
     }
 
+    # Get activity instance details for active admissions cycle
+    # + return - activity instance details for the active admissions cycle
+    resource function get active_activity_instance() returns ActivityInstance|error {
+        GetActiveActivityInstanceResponse|graphql:ClientError getActiveActivityInstanceResponse = globalDataClient->getActiveActivityInstance();
+        if(getActiveActivityInstanceResponse is json) {
+            return getActiveActivityInstanceResponse.cloneWithType(ActivityInstance);
+        } else {
+            log:printError("Error while getting application", getActiveActivityInstanceResponse);
+            return error("Error while getting application: " + getActiveActivityInstanceResponse.message());
+        }
+    }
+
     # Get vacancies for a named organization 
     # + org_name - the name of the organization to get vacancies for
     # + return - vacancies for the named organization including the sub-org hierarchy

@@ -63,10 +63,11 @@ class SMSScaffoldBody extends StatelessWidget {
             key: ValueKey('weekly_payment_report'),
             child: WeeklyPaymentReportScreen(),
           )
-        else if(currentRoute.pathTemplate.startsWith('/person_attendance_report'))
+        else if (currentRoute.pathTemplate
+            .startsWith('/person_attendance_report'))
           const FadeTransitionPage<void>(
             key: ValueKey('person_attendance_report'),
-            child: PersonAttendanceReportScreen(),                                
+            child: PersonAttendanceReportScreen(),
           )
         // Avoid building a Navigator with an empty `pages` list when the
         // RouteState is set to an unexpected path, such as /signin.

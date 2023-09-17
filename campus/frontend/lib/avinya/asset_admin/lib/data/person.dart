@@ -18,6 +18,7 @@ class Person {
   int? avinya_type_id;
   String? passport_no;
   int? permanent_address_id;
+  String? digital_id;
   int? mailing_address_id;
   String? nic_no;
   String? id_no;
@@ -41,6 +42,7 @@ class Person {
     this.avinya_type_id,
     this.passport_no,
     this.permanent_address_id,
+    this.digital_id,
     this.mailing_address_id,
     this.nic_no,
     this.id_no,
@@ -66,6 +68,7 @@ class Person {
       avinya_type_id: json['avinya_type_id'],
       passport_no: json['passport_no'],
       permanent_address_id: json['permanent_address_id'],
+      digital_id: json['digital_id'],
       mailing_address_id: json['mailing_address_id'],
       nic_no: json['nic_no'],
       id_no: json['id_no'],
@@ -94,6 +97,8 @@ class Person {
         if (passport_no != null) 'passport_no': passport_no,
         if (permanent_address_id != null)
           'permanent_address_id': permanent_address_id,
+        if(digital_id !=null)
+          'digital_id' : digital_id,
         if (mailing_address_id != null)
           'mailing_address_id': mailing_address_id,
         if (nic_no != null) 'nic_no': nic_no,

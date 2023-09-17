@@ -50,6 +50,10 @@ class _ApplyScreenState extends State<ApplyScreen> {
   late FocusNode _full_name_FocusNode;
   late TextEditingController _preferred_name_Controller;
   late FocusNode _preferred_name_FocusNode;
+  late TextEditingController _first_name_Controller;
+  late FocusNode _first_name_FocusNode;
+  late TextEditingController _last_name_Controller;
+  late FocusNode _last_name_FocusNode;
   late TextEditingController _email_Controller;
   late FocusNode _email_FocusNode;
   late TextEditingController _phone_Controller;
@@ -148,6 +152,10 @@ class _ApplyScreenState extends State<ApplyScreen> {
     _full_name_FocusNode = FocusNode();
     _preferred_name_Controller = TextEditingController();
     _preferred_name_FocusNode = FocusNode();
+    _first_name_Controller = TextEditingController();
+    _first_name_FocusNode = FocusNode();
+    _last_name_Controller = TextEditingController();
+    _last_name_FocusNode = FocusNode();
     _email_Controller = TextEditingController();
     _email_FocusNode = FocusNode();
     _phone_Controller = TextEditingController();
@@ -166,6 +174,10 @@ class _ApplyScreenState extends State<ApplyScreen> {
     _full_name_FocusNode.dispose();
     _preferred_name_Controller.dispose();
     _preferred_name_FocusNode.dispose();
+    _first_name_Controller.dispose();
+    _first_name_FocusNode.dispose();
+    _last_name_Controller.dispose();
+    _last_name_FocusNode.dispose();
     _email_Controller.dispose();
     _email_FocusNode.dispose();
     _phone_Controller.dispose();
@@ -309,15 +321,37 @@ class _ApplyScreenState extends State<ApplyScreen> {
                   },
                   validator: _mandatoryValidator,
                 ),
+                // TextFormField(
+                //   controller: _preferred_name_Controller,
+                //   decoration: const InputDecoration(
+                //       labelText: 'Preferred name *',
+                //       contentPadding: EdgeInsets.symmetric(vertical: 2),
+                //       hintText: 'Enter the name you preferr to be called',
+                //       helperText: 'e.g. John'),
+                //   onFieldSubmitted: (_) {
+                //     _preferred_name_FocusNode.requestFocus();
+                //   },
+                //   validator: _mandatoryValidator,
+                // ),
                 TextFormField(
-                  controller: _preferred_name_Controller,
+                  controller: _first_name_Controller,
                   decoration: const InputDecoration(
-                      labelText: 'Preferred name *',
-                      contentPadding: EdgeInsets.symmetric(vertical: 2),
-                      hintText: 'Enter the name you preferr to be called',
+                      labelText: 'Preferred First name *',
+                      hintText: 'Enter the first name you preferr to be called',
                       helperText: 'e.g. John'),
                   onFieldSubmitted: (_) {
-                    _preferred_name_FocusNode.requestFocus();
+                    _first_name_FocusNode.requestFocus();
+                  },
+                  validator: _mandatoryValidator,
+                ),
+                TextFormField(
+                  controller: _last_name_Controller,
+                  decoration: const InputDecoration(
+                      labelText: 'Preferred Last name *',
+                      hintText: 'Enter your last name',
+                      helperText: 'e.g. Smith'),
+                  onFieldSubmitted: (_) {
+                    _last_name_FocusNode.requestFocus();
                   },
                   validator: _mandatoryValidator,
                 ),
@@ -646,11 +680,14 @@ class _ApplyScreenState extends State<ApplyScreen> {
           // studentAddress = await createAddress(address);
 
           // log('studentAddress: ' + studentAddress.toString());
+          String preferredName =
+              '${_first_name_Controller.text} ${_last_name_Controller.text}';
+          preferredName = preferredName.trim();
 
           final Person person = Person(
             record_type: 'person',
             full_name: _full_name_Controller.text,
-            preferred_name: _preferred_name_Controller.text,
+            preferred_name: preferredName,
             sex: gender,
             phone: int.parse(phoneMaskTextInputFormatter.getUnmaskedText()),
             email: _email_Controller.text,
@@ -661,7 +698,8 @@ class _ApplyScreenState extends State<ApplyScreen> {
             jwt_email: admissionSystemInstance.getJWTEmail(),
             branch_code: selectedbranchcode,
             organization_id: organizationId,
-            date_of_birth: DateFormat('yyyy-MM-dd').format(dateOfBirth),
+            date_of_birth:
+                DateFormat('yyyy-MM-dd').format(dateOfBirth).toString(),
             parent_full_name: _parent_full_name_Controller.text,
             parent_phone:
                 int.parse(ParentphoneMaskTextInputFormatter.getUnmaskedText()),

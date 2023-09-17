@@ -4,7 +4,7 @@ import ballerina/log;
 public isolated client class GraphqlClient {
     final graphql:Client graphqlClient;
     public isolated function init(string serviceUrl, ConnectionConfig config = {}) returns graphql:ClientError? {
-        graphql:ClientConfiguration graphqlClientConfig = {timeout: config.timeout, forwarded: config.forwarded, poolConfig: config.poolConfig, compression: config.compression, circuitBreaker: config.circuitBreaker, retryConfig: config.retryConfig, validation: config.validation};
+        graphql:ClientConfiguration graphqlClientConfig = {auth: config.oauth2ClientCredentialsGrantConfig, timeout: config.timeout, forwarded: config.forwarded, poolConfig: config.poolConfig, compression: config.compression, circuitBreaker: config.circuitBreaker, retryConfig: config.retryConfig, validation: config.validation};
         do {
             if config.http1Settings is ClientHttp1Settings {
                 ClientHttp1Settings settings = check config.http1Settings.ensureType(ClientHttp1Settings);
@@ -35,6 +35,7 @@ public isolated client class GraphqlClient {
     full_name,
     sex,
     organization_id,
+    date_of_birth,
     phone,
     email,
     avinya_type_id,
@@ -50,7 +51,7 @@ public isolated client class GraphqlClient {
         return <CreateStudentApplicantResponse> check performDataBinding(graphqlResponse, CreateStudentApplicantResponse);
     }
     remote isolated function createStudentApplicantConsent(ApplicantConsent consent) returns CreateStudentApplicantConsentResponse|graphql:ClientError {
-        string query = string `mutation createStudentApplicantConsent($consent:ApplicantConsent!) {add_student_applicant_consent(applicantConsent:$consent) {organization_id avinya_type_id person_id application_id name date_of_birth done_ol ol_year distance_to_school phone email information_correct_consent agree_terms_consent}}`;
+        string query = string `mutation createStudentApplicantConsent($consent:ApplicantConsent!) {add_student_applicant_consent(applicantConsent:$consent) {organization_id avinya_type_id person_id application_id name date_of_birth done_ol ol_year done_al al_year al_stream distance_to_school phone email information_correct_consent agree_terms_consent}}`;
         map<anydata> variables = {"consent": consent};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <CreateStudentApplicantConsentResponse> check performDataBinding(graphqlResponse, CreateStudentApplicantConsentResponse);
@@ -78,6 +79,12 @@ public isolated client class GraphqlClient {
         map<anydata> variables = {"person_id": person_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetApplicationResponse> check performDataBinding(graphqlResponse, GetApplicationResponse);
+    }
+
+    remote isolated function getActiveActivityInstance() returns GetActiveActivityInstanceResponse|graphql:ClientError {
+        string query = string `query getActiveActivityInstance() {application() {id activity_id name place_id organization_id daily_sequence weekly_sequence monthly_sequence description notes start_time end_time created updated}}`;
+        json graphqlResponse = check self.graphqlClient->executeWithType(query);
+        return <GetActiveActivityInstanceResponse> check performDataBinding(graphqlResponse, GetActiveActivityInstanceResponse);
     }
     remote isolated function getStudentApplicant(string jwt_sub_id) returns GetStudentApplicantResponse|graphql:ClientError {
         string query = string `query getStudentApplicant($jwt_sub_id:String!) {student_applicant(jwt_sub_id:$jwt_sub_id) {asgardeo_id full_name preferred_name email phone jwt_sub_id jwt_email}}`;

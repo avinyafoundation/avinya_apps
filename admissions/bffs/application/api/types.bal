@@ -85,9 +85,12 @@ public type ApplicantConsent record {
     int? avinya_type_id?;
     boolean? agree_terms_consent?;
     boolean? active?;
-    boolean? done_ol?;
+    string? done_ol?;
     int? application_id?;
     int? ol_year?;
+    string? done_al;
+    int? al_year;
+    string? al_stream;
     string? record_type?;
     boolean? information_correct_consent?;
     int? phone?;
@@ -386,8 +389,11 @@ public type CreateStudentApplicantConsentResponse record {|
         int? avinya_type_id;
         string? name;
         string? date_of_birth;
-        boolean? done_ol;
+        string? done_ol;
         int? ol_year;
+        string? done_al;
+        int? al_year;
+        string? al_stream;   
         int? distance_to_school;
         int? phone;
         string? email;
@@ -401,6 +407,7 @@ public type CreateStudentApplicantResponse record {|
     record {|
         string? preferred_name;
         string? full_name;
+        string? date_of_birth;
         string? sex;
         int? phone;
         string? email;
@@ -498,6 +505,26 @@ public type GetApplicationResponse record {|
             string? updated;
         |}[]? statuses;
     |}? application;
+|};
+
+public type GetActiveActivityInstanceResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int id?;
+        int? activity_id;
+        string? name;
+        int? place_id;
+        int? organization_id;
+        int? daily_sequence;
+        int? weekly_sequence;
+        int? monthly_sequence;
+        string? description;
+        string? notes;
+        string? start_time;
+        string? end_time;
+        string? created;
+        string? updated;
+    |}? activeActivityInstance;
 |};
 
 public type GetStudentApplicantResponse record {|
