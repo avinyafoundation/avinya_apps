@@ -37,6 +37,29 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
 
   Future<void> toggleAttendance(
       int person_id, bool value, bool sign_in, bool after_school) async {
+    // handle activity id fetch case
+
+    _fetchedOrganization = await fetchOrganization(_selectedValue.id!);
+
+    _fetchedAttendance = await getClassActivityAttendanceToday(
+        _fetchedOrganization!.id!, activityId);
+    if (_fetchedAttendance.length == 0)
+      _fetchedAttendance = new List.filled(
+          _fetchedOrganization!.people.length *
+              2, // add 2 records for eign in and out
+          new ActivityAttendance(person_id: -1));
+    else {
+      for (int i = 0; i < _fetchedOrganization!.people.length; i++) {
+        if (_fetchedAttendance.indexWhere((attendance) =>
+                attendance.person_id == _fetchedOrganization!.people[i].id) ==
+            -1) {
+          // add 2 records for sing in and out
+          _fetchedAttendance.add(new ActivityAttendance(person_id: -1));
+          _fetchedAttendance.add(new ActivityAttendance(person_id: -1));
+        }
+      }
+    }
+
     // handle after achool
     if (after_school) {
       if (activityInstanceAfterSchool.id == -1) {
@@ -111,7 +134,8 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
 
     if (value == false) {
       if (index != -1) {
-        deletePersonActivityAttendance(_fetchedAttendance[index].person_id!);
+        // deletePersonActivityAttendance(_fetchedAttendance[index].id!);
+        deleteActivityAttendance(_fetchedAttendance[index].id!);
       }
       if (sign_in)
         _fetchedAttendance[index] =
