@@ -213,4 +213,22 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetAvinyaTypeByAssetResponse> check performDataBinding(graphqlResponse, GetAvinyaTypeByAssetResponse);
     }
+    remote isolated function getResourceAllocationReport(int organization_id, int avinya_type_id) returns GetResourceAllocationReportResponse|graphql:ClientError {
+        string query = string `query getResourceAllocationReport($organization_id:Int!,$avinya_type_id:Int!) {resource_allocations_report(organization_id:$organization_id,avinya_type_id:$avinya_type_id) {id requested approved allocated asset {id name manufacturer model serial_number registration_number description} resource_properties {property value} organization {id description name {name_en}} person {id preferred_name digital_id} quantity start_date end_date}}`;
+        map<anydata> variables = {"organization_id": organization_id, "avinya_type_id": avinya_type_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetResourceAllocationReportResponse> check performDataBinding(graphqlResponse, GetResourceAllocationReportResponse);
+    }
+    remote isolated function getOrganizationsByAvinyaType(int avinya_type) returns GetOrganizationsByAvinyaTypeResponse|graphql:ClientError {
+        string query = string `query getOrganizationsByAvinyaType($avinya_type:Int!) {organizations_by_avinya_type(avinya_type:$avinya_type) {id name {name_en} description}}`;
+        map<anydata> variables = {"avinya_type": avinya_type};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetOrganizationsByAvinyaTypeResponse> check performDataBinding(graphqlResponse, GetOrganizationsByAvinyaTypeResponse);
+    }
+    remote isolated function getAvinyaTypes() returns GetAvinyaTypesResponse|graphql:ClientError {
+        string query = string `query getAvinyaTypes {avinya_types {id active name global_type foundation_type focus level description}}`;
+        map<anydata> variables = {};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetAvinyaTypesResponse> check performDataBinding(graphqlResponse, GetAvinyaTypesResponse);
+    }
 }

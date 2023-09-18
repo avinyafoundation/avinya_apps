@@ -174,7 +174,6 @@ Future<Person> createPerson(Person person) async {
     Uri.parse(AppConfig.admissionsApplicationBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.admissionsApplicationBffApiKey,
     },
     body: jsonEncode(person.toJson()),
   );

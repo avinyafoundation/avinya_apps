@@ -581,3 +581,63 @@ query getAvinyaTypeByAsset{
         level
     }
 }
+
+query getResourceAllocationReport($organization_id: Int!,$avinya_type_id: Int!) {
+    resource_allocations_report(organization_id: $organization_id,avinya_type_id: $avinya_type_id){
+        id
+        requested
+        approved
+        allocated
+        asset{
+            id
+            name
+            manufacturer
+            model
+            serial_number
+            registration_number
+            description
+        }
+        resource_properties{
+            property
+            value
+        }
+        organization{
+            id
+            description
+            name{
+                name_en
+            }
+        }
+        person{
+            id
+            preferred_name
+            digital_id
+        }
+        quantity
+        start_date
+        end_date
+    }      
+}
+
+query getOrganizationsByAvinyaType($avinya_type: Int!) {
+    organizations_by_avinya_type(avinya_type:$avinya_type) {
+        id    
+        name{
+            name_en
+        }
+        description
+    }       
+}
+
+query getAvinyaTypes {
+    avinya_types {
+        id
+        active
+        name
+        global_type
+        foundation_type
+        focus
+        level
+        description
+    }
+}

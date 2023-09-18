@@ -11,6 +11,7 @@ import 'scaffold_body.dart';
 class SMSScaffold extends StatelessWidget {
   static const pageNames = [
     '/attendance_marker',
+    // '/qr_attendance_marker',
     '/bulk_attendance_marker/classes',
     '/daily_attendance_report',
     '/weekly_payment_report',
@@ -37,7 +38,7 @@ class SMSScaffold extends StatelessWidget {
         campusAppsPortalInstance.isFoundation) {
       destinations = const [
         AdaptiveScaffoldDestination(
-          title: 'Attendance Marker',
+          title: 'Self Attendance Marker',
           icon: Icons.person_outline,
         ),
         AdaptiveScaffoldDestination(
@@ -117,17 +118,14 @@ class SMSScaffold extends StatelessWidget {
         ),
         body: const SMSScaffoldBody(),
         onDestinationSelected: (idx) {
-     
-        if(campusAppsPortalInstance.isTeacher ||
-           campusAppsPortalInstance.isSecurity ||
-           campusAppsPortalInstance.isFoundation){
-
+          if (campusAppsPortalInstance.isTeacher ||
+              campusAppsPortalInstance.isSecurity ||
+              campusAppsPortalInstance.isFoundation) {
             routeState.go(pageNames[idx]);
-
-         }else{
+          } else {
             routeState.go(studentPageNames[idx]);
-         }
-       },
+          }
+        },
         destinations: destinations,
       ),
       persistentFooterButtons: [
@@ -145,20 +143,15 @@ class SMSScaffold extends StatelessWidget {
   }
 
   int _getSelectedIndex(String pathTemplate) {
-
     int index;
 
-    if(campusAppsPortalInstance.isTeacher ||
-       campusAppsPortalInstance.isSecurity ||
-       campusAppsPortalInstance.isFoundation){
-
+    if (campusAppsPortalInstance.isTeacher ||
+        campusAppsPortalInstance.isSecurity ||
+        campusAppsPortalInstance.isFoundation) {
       index = pageNames.indexOf(pathTemplate);
-
-      }else{
-          
-      index =  studentPageNames.indexOf(pathTemplate);
-
-      }
+    } else {
+      index = studentPageNames.indexOf(pathTemplate);
+    }
 
     if (index >= 0)
       return index;

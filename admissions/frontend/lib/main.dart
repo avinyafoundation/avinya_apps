@@ -16,7 +16,6 @@ Future<void> main() async {
   // Use to setHashUrlStrategy() to use "/#/" in the address bar (default). Use
   // setPathUrlStrategy() to use the path. You may need to configure your web
   // server to redirect all paths to index.html.
-  //
   // On mobile platforms, both functions are no-ops.
   setHashUrlStrategy();
   // setPathUrlStrategy();

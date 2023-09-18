@@ -4,4 +4,4 @@
 
 const String loginRoute = '/shrine/login';
 const String homeRoute = '/shrine';
-const String assetadminRoute = '/admin/asset';
+const String assetadminRoute = '/resource_allocation_report';
