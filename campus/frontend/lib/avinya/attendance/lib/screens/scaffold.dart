@@ -11,7 +11,7 @@ import 'scaffold_body.dart';
 class SMSScaffold extends StatelessWidget {
   static const pageNames = [
     '/attendance_marker',
-    '/qr_attendance_marker',
+    // '/qr_attendance_marker',
     '/bulk_attendance_marker/classes',
     '/daily_attendance_report',
     '/weekly_payment_report',
