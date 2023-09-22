@@ -234,3 +234,13 @@ mutation updateDutyRotation($dutyRotation:DutyRotationMetadata!)
         end_date
     }
 }
+
+mutation updateDutyRotation($dutyRotation:DutyRotationMetaDetails!)
+{
+    update_duty_rotation_metadata(duty_rotation:$dutyRotation){
+        id
+        start_date
+        end_date
+        organization_id
+    }
+}

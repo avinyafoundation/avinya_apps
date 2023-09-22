@@ -105,10 +105,18 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
         child: Column(
           children: [
             SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                _startDateSelected && _endDateSelected 
+                   ? SizedBox()
+                   : Text(
+                      'Please select both start and end dates',
+                      style: TextStyle(color: Colors.red),  
+                   ),
+                SizedBox(
+                height: 10,
+                ),
                 Container(
                   width: 300,
                   child: TextField(
@@ -141,13 +149,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
               ),
             ),
             SizedBox(
-                height: 50,
-              ),
-            _startDateSelected && _endDateSelected 
-              ? SizedBox()
-              : Text(
-                'Please select both start and end dates',
-                style: TextStyle(color: Colors.red),  
+                height: 20,
               ),
             FutureBuilder(
               future:loadDutyParticipantsData(campusAppsPortalInstance.getUserPerson().organization!.id!),         
@@ -201,10 +203,10 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                     
                                     if (org.child_organizations.length > 0)                             
                                             SingleChildScrollView(
-                                              scrollDirection: Axis.horizontal,
-                                              child: Row(
+                                              child: Column(
                                                   
                                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: <Widget>[                                                
                                                                                                                               
                                                        Container(
@@ -222,32 +224,77 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                                               Text(
                                                             '${_activitiesNames[tableIndex]}',
                                                              overflow: TextOverflow.clip,
-                                                             style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold)
+                                                             style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)
                                                             )
                                                            ],
                                                           ),
                                                        ), 
                                                     SizedBox(
-                                                      width: 10,
+                                                      height: 15,
                                                     ),                                                   
-                                                    Container(                                                  
-                                                        child: buildClassDropDownButton(org,tableIndex,_dutyParticipants)
-                                                      ),   
-                                                    SizedBox(
-                                                      width: 10,
-                                                    ),                                          
-                                                    Container(
-                                                        
-                                                        child: buildPersonDropDownButton(tableIndex)
-                                                      ),
-                                                    SizedBox(
-                                                      width: 10,
+                                                    Row(
+                                                      children:[
+                                                        SizedBox(
+                                                          width: 20,
+                                                        ),
+                                                        Text(
+                                                            'Select a class :',
+                                                             overflow: TextOverflow.clip,
+                                                             style: TextStyle(fontSize: 15,fontWeight: FontWeight.normal)
+                                                        ),
+                                                        SizedBox(
+                                                          width: 40,
+                                                        ),
+                                                        Container(
+                                                          width: 110,                                                  
+                                                          child: buildClassDropDownButton(org,tableIndex,_dutyParticipants)
+                                                        ),
+                                                      ]
                                                     ),   
-                                                    Container(
-                                                        
-                                                        child: buildRoleDropDownButton(tableIndex)
-                                                      ),
-                                                    
+                                                    SizedBox(
+                                                      height: 15,
+                                                    ),                                          
+                                                    Row(
+                                                      children: [ 
+                                                        SizedBox(
+                                                          width: 20,
+                                                        ),
+                                                        Text(
+                                                            'Select a person :',
+                                                             overflow: TextOverflow.clip,
+                                                             style: TextStyle(fontSize: 15,fontWeight: FontWeight.normal)
+                                                        ),
+                                                        SizedBox(
+                                                          width: 45,
+                                                        ),                                                      
+                                                        Container(
+                                                          width: 110,        
+                                                          child: buildPersonDropDownButton(tableIndex)
+                                                        ),
+                                                      ]
+                                                    ),
+                                                    SizedBox(
+                                                      height: 14,
+                                                    ),   
+                                                    Row(
+                                                      children: [
+                                                        SizedBox(
+                                                          width: 20,
+                                                        ),
+                                                        Text(
+                                                            'Select a role :',
+                                                             overflow: TextOverflow.clip,
+                                                             style: TextStyle(fontSize: 15,fontWeight: FontWeight.normal)
+                                                        ),
+                                                        SizedBox(
+                                                          width: 40,
+                                                        ),    
+                                                        Container(
+                                                            width: 110,
+                                                            child: buildRoleDropDownButton(tableIndex)
+                                                        ),
+                                                      ],
+                                                    ),                                                
                                                   ],
                                                 ),
                                             ),        
@@ -624,7 +671,7 @@ Future<void> _selectStartDate(BuildContext context) async{
     if(picked !=null){
       print(picked);
       String formattedDate = 
-             DateFormat('yyyy-MM-dd').format(picked);
+             picked.toUtc().toIso8601String();
       print(formattedDate);
       
       setState(() {
@@ -650,7 +697,7 @@ Future<void> _selectEndDate(BuildContext context) async{
     if(picked !=null){
       print(picked);
       String formattedDate = 
-             DateFormat('yyyy-MM-dd').format(picked);
+             picked.toUtc().toIso8601String();
       print(formattedDate);
 
       setState(() {

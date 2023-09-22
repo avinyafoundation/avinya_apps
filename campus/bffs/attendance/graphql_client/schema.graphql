@@ -165,8 +165,11 @@ input ApplicantConsent {
   application_id: Int
   name: String
   date_of_birth: String
-  done_ol: Boolean
+  done_ol: String
   ol_year: Int
+  done_al: String
+  al_year: Int
+  al_stream: String
   distance_to_school: Int
   phone: Int
   email: String
@@ -184,8 +187,11 @@ type ApplicantConsentData {
   id: Int
   email: String
   date_of_birth: String
-  done_ol: Boolean
+  done_ol: String
   ol_year: Int
+  done_al: String
+  al_year: Int
+  al_stream: String
   distance_to_school: Int
   information_correct_consent: Boolean
   agree_terms_consent: Boolean
@@ -330,17 +336,19 @@ type DutyParticipantData {
   updated: String
 }
 
-type DutyRotationData {
+type DutyRotationMetaData {
   id: Int
   start_date: String
   end_date: String
+  organization_id: Int
 }
 
-input DutyRotationMetadata {
+input DutyRotationMetaDetails {
   record_type: String = ""
   id: Int
   start_date: String
   end_date: String
+  organization_id: Int
 }
 
 input EducationExperience {
@@ -563,7 +571,7 @@ type Mutation {
   update_inventory(inventory: Inventory!): InventoryData
   add_duty_for_participant(dutyparticipant: DutyParticipant!): DutyParticipantData
   delete_duty_for_participant(id: Int!): Int
-  update_duty_rotation(duty_rotation: DutyRotationMetadata!): DutyRotationData
+  update_duty_rotation_metadata(duty_rotation: DutyRotationMetaDetails!): DutyRotationMetaData
 }
 
 input Organization {
@@ -780,6 +788,7 @@ type Query {
   consumable(id: Int!): ConsumableData
   consumableByUpdate(updated: String, avinya_type_id: Int): [ConsumableData!]
   consumables: [ConsumableData!]!
+  activeActivityInstance: [ActivityInstanceData!]!
   resource_property(id: Int!): ResourcePropertyData
   resource_properties: [ResourcePropertyData!]!
   supply(id: Int!): SupplyData
@@ -793,6 +802,7 @@ type Query {
   resource_allocations_report(organization_id: Int, avinya_type_id: Int): [ResourceAllocationData!]!
   duty_participants(organization_id: Int): [DutyParticipantData!]!
   activities_by_avinya_type(avinya_type_id: Int): [ActivityData!]
+  duty_rotation_metadata_by_organization(organization_id: Int): DutyRotationMetaData
 }
 
 input ResourceAllocation {
