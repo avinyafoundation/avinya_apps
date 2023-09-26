@@ -226,18 +226,18 @@ query getActivitiesByAvinyaType($avinya_type_id: Int!) {
     }
 }
 
-mutation updateDutyRotation($dutyRotation:DutyRotationMetadata!)
+mutation updateDutyRotationMetaData($dutyRotation:DutyRotationMetaDetails!)
 {
-    update_duty_rotation(duty_rotation:$dutyRotation){
+    update_duty_rotation_metadata(duty_rotation:$dutyRotation){
         id
         start_date
         end_date
+        organization_id
     }
 }
 
-mutation updateDutyRotation($dutyRotation:DutyRotationMetaDetails!)
-{
-    update_duty_rotation_metadata(duty_rotation:$dutyRotation){
+query getDutyRotationMetadataByOrganization($organization_id: Int!){
+    duty_rotation_metadata_by_organization(organization_id: $organization_id){
         id
         start_date
         end_date

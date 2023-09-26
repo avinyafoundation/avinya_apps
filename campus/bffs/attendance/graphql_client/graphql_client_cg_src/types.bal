@@ -81,11 +81,13 @@ public type Address record {
 
 public type ApplicantConsent record {
     string? date_of_birth?;
+    string? al_stream?;
     string? created?;
     int? avinya_type_id?;
     boolean? agree_terms_consent?;
     boolean? active?;
-    boolean? done_ol?;
+    int? al_year?;
+    string? done_ol?;
     int? application_id?;
     int? ol_year?;
     string? record_type?;
@@ -96,6 +98,7 @@ public type ApplicantConsent record {
     int? id?;
     int? distance_to_school?;
     string? updated?;
+    string? done_al?;
     string? email?;
     int? person_id?;
 };
@@ -159,8 +162,9 @@ public type DutyParticipant record {
     int? person_id?;
 };
 
-public type DutyRotationMetadata record {
+public type DutyRotationMetaDetails record {
     string? end_date?;
+    int? organization_id?;
     int? id?;
     string? record_type?;
     string? start_date?;
@@ -674,11 +678,22 @@ public type GetActivitiesByAvinyaTypeResponse record {|
     |}[]? activities_by_avinya_type;
 |};
 
-public type UpdateDutyRotationResponse record {|
+public type UpdateDutyRotationMetaDataResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
         string? start_date;
         string? end_date;
-    |}? update_duty_rotation;
+        int? organization_id;
+    |}? update_duty_rotation_metadata;
+|};
+
+public type GetDutyRotationMetadataByOrganizationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? start_date;
+        string? end_date;
+        int? organization_id;
+    |}? duty_rotation_metadata_by_organization;
 |};

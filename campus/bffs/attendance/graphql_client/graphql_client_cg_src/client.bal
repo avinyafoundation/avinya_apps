@@ -123,10 +123,16 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetActivitiesByAvinyaTypeResponse> check performDataBinding(graphqlResponse, GetActivitiesByAvinyaTypeResponse);
     }
-    remote isolated function updateDutyRotation(DutyRotationMetadata dutyRotation) returns UpdateDutyRotationResponse|graphql:ClientError {
-        string query = string `mutation updateDutyRotation($dutyRotation:DutyRotationMetadata!) {update_duty_rotation(duty_rotation:$dutyRotation) {id start_date end_date}}`;
+    remote isolated function updateDutyRotationMetaData(DutyRotationMetaDetails dutyRotation) returns UpdateDutyRotationMetaDataResponse|graphql:ClientError {
+        string query = string `mutation updateDutyRotationMetaData($dutyRotation:DutyRotationMetaDetails!) {update_duty_rotation_metadata(duty_rotation:$dutyRotation) {id start_date end_date organization_id}}`;
         map<anydata> variables = {"dutyRotation": dutyRotation};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <UpdateDutyRotationResponse> check performDataBinding(graphqlResponse, UpdateDutyRotationResponse);
+        return <UpdateDutyRotationMetaDataResponse> check performDataBinding(graphqlResponse, UpdateDutyRotationMetaDataResponse);
+    }
+    remote isolated function getDutyRotationMetadataByOrganization(int organization_id) returns GetDutyRotationMetadataByOrganizationResponse|graphql:ClientError {
+        string query = string `query getDutyRotationMetadataByOrganization($organization_id:Int!) {duty_rotation_metadata_by_organization(organization_id:$organization_id) {id start_date end_date organization_id}}`;
+        map<anydata> variables = {"organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetDutyRotationMetadataByOrganizationResponse> check performDataBinding(graphqlResponse, GetDutyRotationMetadataByOrganizationResponse);
     }
 }

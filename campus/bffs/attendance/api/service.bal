@@ -471,21 +471,39 @@ service / on new http:Listener(9091) {
     }
 
 
-    resource function put update_duty_rotation (@http:Payload DutyRotationMetadata dutyRotation) returns DutyRotationMetadata|error {
-        UpdateDutyRotationResponse|graphql:ClientError updateDutyRotationResponse = globalDataClient->updateDutyRotation(dutyRotation);
-        if(updateDutyRotationResponse is  UpdateDutyRotationResponse) {
-            DutyRotationMetadata|error duty_rotation_record = updateDutyRotationResponse.update_duty_rotation.cloneWithType(DutyRotationMetadata);
-            if(duty_rotation_record is  DutyRotationMetadata) {
-                return duty_rotation_record;
+    resource function put update_duty_rotation_metadata(@http:Payload DutyRotationMetaDetails dutyRotationMetadata) returns DutyRotationMetaDetails|error {
+        UpdateDutyRotationMetaDataResponse|graphql:ClientError updateDutyRotationMetaDataResponse = globalDataClient->updateDutyRotationMetaData(dutyRotationMetadata);
+        if(updateDutyRotationMetaDataResponse is  UpdateDutyRotationMetaDataResponse) {
+            DutyRotationMetaDetails|error duty_rotation__meta_data_record = updateDutyRotationMetaDataResponse.update_duty_rotation_metadata.cloneWithType(DutyRotationMetaDetails);
+            if(duty_rotation__meta_data_record is  DutyRotationMetaDetails) {
+                return duty_rotation__meta_data_record;
             } else {
-                log:printError("Error while processing Application record received", duty_rotation_record);
-                return error("Error while processing Application record received: " + duty_rotation_record.message() + 
-                    ":: Detail: " + duty_rotation_record.detail().toString());
+                log:printError("Error while processing Application record received", duty_rotation__meta_data_record);
+                return error("Error while processing Application record received: " + duty_rotation__meta_data_record.message() + 
+                    ":: Detail: " + duty_rotation__meta_data_record.detail().toString());
             }
         } else {
-            log:printError("Error while updating application", updateDutyRotationResponse);
-            return error("Error while updating application: " + updateDutyRotationResponse.message() + 
-                ":: Detail: " + updateDutyRotationResponse.detail().toString());
+            log:printError("Error while updating application", updateDutyRotationMetaDataResponse);
+            return error("Error while updating application: " + updateDutyRotationMetaDataResponse.message() + 
+                ":: Detail: " + updateDutyRotationMetaDataResponse.detail().toString());
+        }
+    }
+
+    resource function get duty_rotation_metadata_by_organization/[int organization_id]() returns DutyRotationMetaDetails|error {
+        GetDutyRotationMetadataByOrganizationResponse|graphql:ClientError getDutyRotationMetadataByOrganizationResponse = globalDataClient->getDutyRotationMetadataByOrganization(organization_id);
+        if(getDutyRotationMetadataByOrganizationResponse is GetDutyRotationMetadataByOrganizationResponse) {
+            DutyRotationMetaDetails|error duty_rotation_metadata_by_organization_record = getDutyRotationMetadataByOrganizationResponse.duty_rotation_metadata_by_organization.cloneWithType(DutyRotationMetaDetails);
+            if(duty_rotation_metadata_by_organization_record is DutyRotationMetaDetails) {
+                return duty_rotation_metadata_by_organization_record;
+            } else {
+                log:printError("Error while processing Application record received", duty_rotation_metadata_by_organization_record);
+                return error("Error while processing Application record received: " + duty_rotation_metadata_by_organization_record.message() + 
+                    ":: Detail: " + duty_rotation_metadata_by_organization_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", getDutyRotationMetadataByOrganizationResponse);
+            return error("Error while creating application: " + getDutyRotationMetadataByOrganizationResponse.message() + 
+                ":: Detail: " + getDutyRotationMetadataByOrganizationResponse.detail().toString());
         }
     }
 }

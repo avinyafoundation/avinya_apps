@@ -28,18 +28,20 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
   List<String?> _activitiesNames = [];
   List<DutyParticipant> _dutyRelatedParticipantsFilterAndStore = []; //filter And Store duty Relavant Participants
   List<String> _dropDownRoleList = ['leader','member'];
+  late DutyRotationMetaDetails rotationMetaDetails;
 
   late TextEditingController  _startDate;
   late TextEditingController _endDate;
 
-  bool _startDateSelected = false;
-  bool _endDateSelected = false;
+  bool _startDateSelected = true;
+  bool _endDateSelected = true;
 
 
   @override
   void initState(){
    super.initState();
    loadActivitiesByAvinyaType();
+   loadRotationMetadetails();
     _startDate = TextEditingController();
     _endDate = TextEditingController();
   }
@@ -74,6 +76,16 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
     return await fetchDutyParticipants(organization_id);
   }
 
+  Future<void> loadRotationMetadetails() async{
+    rotationMetaDetails = await fetchDutyRotationMetadataByOrganization(campusAppsPortalInstance.getUserPerson().organization!.id!);
+  
+    DateTime parsedStartDate = DateTime.parse(rotationMetaDetails.start_date!).toLocal();
+    DateTime parsedEndDate = DateTime.parse(rotationMetaDetails.end_date!).toLocal();
+    _startDate.text = DateFormat('yyyy-MM-dd').format(parsedStartDate);
+    _endDate.text = DateFormat('yyyy-MM-dd').format(parsedEndDate);
+  
+  }
+
   Future<void> loadActivitiesByAvinyaType() async{
 
     _activitiesByAvinyaType = await fetchActivitiesByAvinyaType(91); //load avinya type =91(work) related activities
@@ -100,8 +112,8 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
-        //height: MediaQuery.of(context).size.height,
         child: Column(
           children: [
             SingleChildScrollView(
@@ -154,29 +166,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
             FutureBuilder(
               future:loadDutyParticipantsData(campusAppsPortalInstance.getUserPerson().organization!.id!),         
               builder:(BuildContext context,snapshot){
-               if (snapshot.connectionState == ConnectionState.waiting) {
-                // return Container(
-                //             margin: EdgeInsets.only(top: 10),
-                //             child: SpinKitCircle(
-                //               color: (Colors
-                //                   .blue), 
-                //               size: 70,
-                //             ),
-                //         );
-                        
-               }
-               //if (snapshot.connectionState == ConnectionState.done) {
-                 
-                  // if(snapshot.hasError){
-                    
-                  //   return Center(
-                  //       child: Text(
-                  //         'An ${snapshot.error} occurred',
-                  //         style: const TextStyle(fontSize: 18, color: Colors.red),
-                  //       ),
-                  // );
 
-                 //}
                  if(snapshot.hasData){
 
                  return SingleChildScrollView(
@@ -204,8 +194,6 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                     if (org.child_organizations.length > 0)                             
                                             SingleChildScrollView(
                                               child: Column(
-                                                  
-                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: <Widget>[                                                
                                                                                                                               
@@ -235,63 +223,63 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                                     Row(
                                                       children:[
                                                         SizedBox(
-                                                          width: 20,
+                                                          width: 10,
                                                         ),
                                                         Text(
                                                             'Select a class :',
                                                              overflow: TextOverflow.clip,
                                                              style: TextStyle(fontSize: 15,fontWeight: FontWeight.normal)
                                                         ),
-                                                        SizedBox(
-                                                          width: 40,
-                                                        ),
-                                                        Container(
-                                                          width: 110,                                                  
+                                                        
+                                                       Container( 
+                                                          margin: EdgeInsets.only(left: 30.0),
+                                                          width: 120,                                            
                                                           child: buildClassDropDownButton(org,tableIndex,_dutyParticipants)
                                                         ),
                                                       ]
                                                     ),   
                                                     SizedBox(
-                                                      height: 15,
+                                                      height: 25,
                                                     ),                                          
                                                     Row(
                                                       children: [ 
                                                         SizedBox(
-                                                          width: 20,
+                                                          width: 10,
                                                         ),
                                                         Text(
                                                             'Select a person :',
                                                              overflow: TextOverflow.clip,
                                                              style: TextStyle(fontSize: 15,fontWeight: FontWeight.normal)
-                                                        ),
+                                                        ), 
                                                         SizedBox(
-                                                          width: 45,
-                                                        ),                                                      
-                                                        Container(
-                                                          width: 110,        
-                                                          child: buildPersonDropDownButton(tableIndex)
+                                                          width: 20.0,
+                                                        ),                                            
+                                                        Flexible(     
+                                                          child: Container(
+                                                            width: 240,
+                                                            child: buildPersonDropDownButton(tableIndex)
+                                                          ),
                                                         ),
                                                       ]
                                                     ),
                                                     SizedBox(
-                                                      height: 14,
+                                                      height: 20,
                                                     ),   
                                                     Row(
                                                       children: [
                                                         SizedBox(
-                                                          width: 20,
+                                                          width: 10,
                                                         ),
                                                         Text(
                                                             'Select a role :',
                                                              overflow: TextOverflow.clip,
                                                              style: TextStyle(fontSize: 15,fontWeight: FontWeight.normal)
                                                         ),
-                                                        SizedBox(
-                                                          width: 40,
-                                                        ),    
-                                                        Container(
-                                                            width: 110,
-                                                            child: buildRoleDropDownButton(tableIndex)
+                                                           
+                                                        Container( 
+                                                          margin: EdgeInsets.only(left: 40.0),
+                                                          width: 100, 
+                                                          child: buildRoleDropDownButton(tableIndex)
                                                         ),
                                                       ],
                                                     ),                                                
@@ -579,7 +567,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                         textAlign: TextAlign.center,
                        ),
                        Text(
-                        "You can't add another participant with a leader role.",
+                        "You can't add another participant with a leader role.If you'd like to add this participant as a leader, please remove the current leader first.",
                         textAlign: TextAlign.center,
                        ),
                     ],
@@ -670,19 +658,18 @@ Future<void> _selectStartDate(BuildContext context) async{
     );
     if(picked !=null){
       print(picked);
-      String formattedDate = 
-             picked.toUtc().toIso8601String();
+      String formattedDate = DateFormat('yyyy-MM-dd').format(picked);
       print(formattedDate);
       
       setState(() {
         _startDate.text = formattedDate;
-        _startDateSelected= true;  // Set to true when start date is selected
+        _startDateSelected= true;  
       });
     }else if(picked == null){
       setState(() {
          String formattedDate = '';
         _startDate.text = formattedDate;
-        _startDateSelected = false;  // Set to true when start date is selected
+        _startDateSelected = false;  
       });
     }
 }
@@ -696,8 +683,8 @@ Future<void> _selectEndDate(BuildContext context) async{
     );
     if(picked !=null){
       print(picked);
-      String formattedDate = 
-             picked.toUtc().toIso8601String();
+      String formattedDate = DateFormat('yyyy-MM-dd').format(picked);
+    
       print(formattedDate);
 
       setState(() {
@@ -705,24 +692,21 @@ Future<void> _selectEndDate(BuildContext context) async{
         _endDateSelected = true;  // Set to true when end date is selected
       });
 
-      var dutyRotationMetadata = DutyRotationMetadata(
-         id: 1,
-         start_date: _startDate.text,
-         end_date:_endDate.text ,
+      var dutyRotationMetadata = DutyRotationMetaDetails(
+         id: rotationMetaDetails.id,
+         start_date:DateTime.parse(_startDate.text).toUtc().toIso8601String(),
+         end_date:DateTime.parse(_endDate.text).toUtc().toIso8601String(),
+         organization_id: campusAppsPortalInstance.getUserPerson().organization!.id!,
        );
 
-        var result = await updateDutyRotation(dutyRotationMetadata);
+        var result = await updateDutyRotationMetadata(dutyRotationMetadata);
         print("update duty rotation ${result}");
-        if(result.id !=null){
-          _startDate.text = '';
-          _endDate.text = '';
-        }
 
     }else if(picked == null){
       setState(() {
          String formattedDate = '';
         _endDate.text = formattedDate;
-        _endDateSelected= false;  // Set to true when start date is selected
+        _endDateSelected= false;  
       });
     }
 }
