@@ -45,9 +45,11 @@ public type ActivityParticipant record {
 
 public type ActivityParticipantAttendance record {
     int? activity_instance_id?;
+    string? in_marked_by?;
     string? created?;
     string? sign_in_time?;
     int? id?;
+    string? out_marked_by?;
     string? updated?;
     string? record_type?;
     int? person_id?;
@@ -157,17 +159,18 @@ public type EducationExperience record {
 
 public type Evaluation record {
     int[]? parent_evaluations?;
-    int? activity_instance_id?;
     string? notes?;
     int? evaluatee_id?;
+    string? created?;
+    int[]? child_evaluations?;
+    string? record_type?;
+    int? activity_instance_id?;
     int? evaluation_criteria_id?;
     string? response?;
-    int[]? child_evaluations?;
     int? evaluator_id?;
     int? grade?;
     int? id?;
     string? updated?;
-    string? record_type?;
 };
 
 public type EvaluationCriteria record {
@@ -244,6 +247,7 @@ public type Organization record {
 public type Person record {
     int? permanent_address_id?;
     string? street_address?;
+    string? bank_branch?;
     string? bank_account_number?;
     string? notes?;
     int[]? parent_student?;
@@ -273,6 +277,7 @@ public type Person record {
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
+    int? academy_org_id?;
 };
 
 public type Prospect record {
@@ -303,6 +308,7 @@ public type ResourceAllocation record {
     string? created?;
     int? asset_id?;
     string? record_type?;
+    ResourceProperty[]? resource_properties?;
     boolean? requested?;
     boolean? approved?;
     int? organization_id?;
@@ -983,4 +989,67 @@ public type GetAvinyaTypeByAssetResponse record {|
         boolean active;
         int? level;
     |}[] avinya_types_by_asset;
+|};
+
+public type GetResourceAllocationReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        boolean? requested;
+        boolean? approved;
+        boolean? allocated;
+        record {|
+            int? id;
+            string? name;
+            string? manufacturer;
+            string? model;
+            string? serial_number;
+            string? registration_number;
+            string? description;
+        |}? asset;
+        record {|
+            string? property;
+            string? value;
+        |}[] resource_properties;
+        record {|
+            int? id;
+            string? description;
+            record {|
+                string name_en;
+            |} name;
+        |}? organization;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? digital_id;
+        |}? person;
+        int? quantity;
+        string? start_date;
+        string? end_date;
+    |}[] resource_allocations_report;
+|};
+
+public type GetOrganizationsByAvinyaTypeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string name_en;
+        |} name;
+        string? description;
+    |}[] organizations_by_avinya_type;
+|};
+
+public type GetAvinyaTypesResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        boolean active;
+        string? name;
+        string global_type;
+        string? foundation_type;
+        string? focus;
+        int? level;
+        string? description;
+    |}[] avinya_types;
 |};

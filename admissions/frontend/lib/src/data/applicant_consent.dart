@@ -9,7 +9,10 @@ class ApplicantConsent {
   String? created;
   int? avinya_type_id;
   bool? agree_terms_consent;
-  bool? done_ol;
+  String? done_ol;
+  String? done_al;
+  int? al_year;
+  String? al_stream;
   int? application_id;
   int? ol_year;
   String? record_type;
@@ -28,6 +31,9 @@ class ApplicantConsent {
     this.avinya_type_id,
     this.agree_terms_consent,
     this.done_ol,
+    this.done_al,
+    this.al_year,
+    this.al_stream,
     this.application_id,
     this.ol_year,
     this.record_type,
@@ -48,6 +54,9 @@ class ApplicantConsent {
       avinya_type_id: json['avinya_type_id'],
       agree_terms_consent: json['agree_terms_consent'],
       done_ol: json['done_ol'],
+      done_al: json['done_al'],
+      al_year: json['al_year'],
+      al_stream: json['al_stream'],
       application_id: json['application_id'],
       ol_year: json['ol_year'],
       record_type: json['record_type'],
@@ -69,6 +78,9 @@ class ApplicantConsent {
         if (agree_terms_consent != null)
           'agree_terms_consent': agree_terms_consent,
         if (done_ol != null) 'done_ol': done_ol,
+        if (done_al != null) 'done_al': done_al,
+        if (al_year != null) 'al_year': al_year,
+        if (al_stream != null) 'al_stream': al_stream,
         if (application_id != null) 'application_id': application_id,
         if (ol_year != null) 'ol_year': ol_year,
         if (record_type != null) 'record_type': record_type,
@@ -94,7 +106,7 @@ Future<List<ApplicantConsent>> fetchApplicantConsents() async {
     },
   );
 
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
     List<ApplicantConsent> applicantConsents = await resultsJson
         .map<ApplicantConsent>((json) => ApplicantConsent.fromJson(json))
@@ -116,7 +128,7 @@ Future<ApplicantConsent> fetchApplicantConsent(String id) async {
     },
   );
 
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
     ApplicantConsent applicantConsent = await resultsJson
         .map<ApplicantConsent>((json) => ApplicantConsent.fromJson(json));
@@ -136,7 +148,7 @@ Future<http.Response> createApplicantConsent(
     },
     body: jsonEncode(applicantConsent.toJson()),
   );
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     return response;
   } else {
     throw Exception('Failed to create ApplicantConsent.');
@@ -149,11 +161,11 @@ Future<http.Response> updateApplicantConsent(
     Uri.parse(AppConfig.admissionsApplicationBffApiUrl + '/applicant_consent'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.admissionsApplicationBffApiKey,
+      // 'Authorization': 'Bearer ' + AppConfig.admissionsApplicationBffApiKey,
     },
     body: jsonEncode(applicantConsent.toJson()),
   );
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     return response;
   } else {
     throw Exception('Failed to update ApplicantConsent.');
@@ -170,7 +182,7 @@ Future<http.Response> deleteApplicantConsent(String id) async {
     },
   );
 
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     return response;
   } else {
     throw Exception('Failed to delete ApplicantConsent.');

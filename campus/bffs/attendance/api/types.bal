@@ -53,6 +53,7 @@ public type ActivityParticipantAttendance record {
     string? sign_out_time?;
     string? in_marked_by?;
     string? out_marked_by?;
+    string? description?;
 };
 
 public type ActivitySequencePlan record {
@@ -389,6 +390,39 @@ public type GetClassAttendanceReportResponse record {|
         string? in_marked_by;
         string? out_marked_by;
     |}[] class_attendance_report;
+|};
+
+public type GetLateAttendanceReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        record {|
+            int? id;
+        |}? person;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+    |}[] late_attendance_report;
+|};
+
+public type GetLateAttendanceReportResponseForParentOrg record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        record {|
+            int? id;
+        |}? person;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+        string? description;
+    |}[] late_attendance_report;
 |};
 
 public type GetPersonAttendanceReportResponse record {|

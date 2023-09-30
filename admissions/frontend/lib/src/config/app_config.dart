@@ -3,17 +3,17 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 
 class AppConfig {
-  static String apiUrl = 'http://localhost:8080';
-  static String admissionsApplicationBffApiUrl = 'http://localhost:6060';
+  static String apiUrl = '';
+  static String admissionsApplicationBffApiUrl = '';
   static String admissionsApplicationBffApiKey = '';
-  static String choreoSTSEndpoint = "https://sts.choreo.dev/oauth2/token";
+  static String choreoSTSEndpoint = "";
   static String choreoSTSClientID = "";
-  static String asgardeoTokenEndpoint =
-      "https://api.asgardeo.io/t/avinyafoundation/oauth2/token";
+  static String asgardeoTokenEndpoint = "";
   static String asgardeoClientId = "";
   static var apiTokens = null;
   static String applicationName = 'Avinya Academy Student Admissions Portal';
   static String applicationVersion = '0.2.1';
+  static String asgardeoLogoutUrl = '';
 
   //AppConfig({required this.apiUrl});
 
@@ -31,6 +31,9 @@ class AppConfig {
     // decode our json
     final json = jsonDecode(contents);
     admissionsApplicationBffApiUrl = json['admissionsApplicationBffApiUrl'];
+    choreoSTSEndpoint = json['choreo_sts_endpoint'];
+    asgardeoTokenEndpoint = json['asgardeo_token_endpoint'];
+    asgardeoLogoutUrl = json['logout_url'];
 
     // convert our JSON into an instance of our AppConfig class
     return AppConfig();

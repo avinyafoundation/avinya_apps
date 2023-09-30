@@ -13,3 +13,4 @@ export 'data/supply.dart';
 export 'data/inventory.dart';
 export 'data/organization.dart';
 export 'data/resource_allocation.dart';
+export 'data/resource_property.dart';

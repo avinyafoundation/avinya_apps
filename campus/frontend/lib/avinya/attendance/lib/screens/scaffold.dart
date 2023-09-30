@@ -13,7 +13,14 @@ class SMSScaffold extends StatelessWidget {
     '/attendance_marker',
     '/bulk_attendance_marker/classes',
     '/daily_attendance_report',
-    '/weekly_payment_report'
+    '/late_attendance_report',
+    '/weekly_payment_report',
+    '/person_attendance_report',
+  ];
+
+  static const studentPageNames = [
+    '/attendance_marker',
+    '/person_attendance_report',
   ];
 
   const SMSScaffold({
@@ -31,7 +38,7 @@ class SMSScaffold extends StatelessWidget {
         campusAppsPortalInstance.isFoundation) {
       destinations = const [
         AdaptiveScaffoldDestination(
-          title: 'Attendance Marker',
+          title: 'Self Attendance Marker',
           icon: Icons.person_outline,
         ),
         AdaptiveScaffoldDestination(
@@ -43,8 +50,12 @@ class SMSScaffold extends StatelessWidget {
           icon: Icons.summarize,
         ),
         AdaptiveScaffoldDestination(
+          title: 'Late Attendance Report',
+          icon: Icons.watch_later,
+        ),
+        AdaptiveScaffoldDestination(
           title: 'Weekly Payment Report',
-          icon: Icons.summarize,
+          icon: Icons.paid,
         ),
       ];
     } else {
@@ -52,6 +63,10 @@ class SMSScaffold extends StatelessWidget {
         AdaptiveScaffoldDestination(
           title: 'Attendance Marker',
           icon: Icons.person_outline,
+        ),
+        AdaptiveScaffoldDestination(
+          title: 'Person Payment Report',
+          icon: Icons.summarize,
         ),
       ];
     }
@@ -107,7 +122,13 @@ class SMSScaffold extends StatelessWidget {
         ),
         body: const SMSScaffoldBody(),
         onDestinationSelected: (idx) {
-          routeState.go(pageNames[idx]);
+          if (campusAppsPortalInstance.isTeacher ||
+              campusAppsPortalInstance.isSecurity ||
+              campusAppsPortalInstance.isFoundation) {
+            routeState.go(pageNames[idx]);
+          } else {
+            routeState.go(studentPageNames[idx]);
+          }
         },
         destinations: destinations,
       ),
@@ -126,7 +147,16 @@ class SMSScaffold extends StatelessWidget {
   }
 
   int _getSelectedIndex(String pathTemplate) {
-    int index = pageNames.indexOf(pathTemplate);
+    int index;
+
+    if (campusAppsPortalInstance.isTeacher ||
+        campusAppsPortalInstance.isSecurity ||
+        campusAppsPortalInstance.isFoundation) {
+      index = pageNames.indexOf(pathTemplate);
+    } else {
+      index = studentPageNames.indexOf(pathTemplate);
+    }
+
     if (index >= 0)
       return index;
     else
