@@ -81,11 +81,13 @@ public type Address record {
 
 public type ApplicantConsent record {
     string? date_of_birth?;
+    string? al_stream?;
     string? created?;
     int? avinya_type_id?;
     boolean? agree_terms_consent?;
     boolean? active?;
-    boolean? done_ol?;
+    int? al_year?;
+    string? done_ol?;
     int? application_id?;
     int? ol_year?;
     string? record_type?;
@@ -96,6 +98,7 @@ public type ApplicantConsent record {
     int? id?;
     int? distance_to_school?;
     string? updated?;
+    string? done_al?;
     string? email?;
     int? person_id?;
 };
@@ -247,6 +250,7 @@ public type Organization record {
 public type Person record {
     int? permanent_address_id?;
     string? street_address?;
+    string? bank_branch?;
     string? bank_account_number?;
     string? notes?;
     int[]? parent_student?;
@@ -257,7 +261,6 @@ public type Person record {
     string? id_no?;
     string? jwt_email?;
     string? bank_name?;
-    string? bank_branch?;
     int? id?;
     string? email?;
     string? created?;
@@ -266,6 +269,7 @@ public type Person record {
     string? passport_no?;
     string? record_type?;
     Address? mailing_address?;
+    string? branch_code?;
     int[]? child_student?;
     string? bank_account_name?;
     int? avinya_phone?;
@@ -273,6 +277,7 @@ public type Person record {
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    string? academy_org_name?;
     string? asgardeo_id?;
     string? updated?;
     string? preferred_name?;
@@ -308,6 +313,7 @@ public type ResourceAllocation record {
     string? created?;
     int? asset_id?;
     string? record_type?;
+    ResourceProperty[]? resource_properties?;
     boolean? requested?;
     boolean? approved?;
     int? organization_id?;
@@ -530,6 +536,21 @@ public type GetClassAttendanceReportResponse record {|
         string? in_marked_by;
         string? out_marked_by;
     |}[]? class_attendance_report;
+|};
+
+public type GetLateAttendanceReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+        |}? person;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+    |}[]? late_attendance_report;
 |};
 
 public type GetPersonAttendanceReportResponse record {|

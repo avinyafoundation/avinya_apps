@@ -37,10 +37,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
   @override
   void initState() {
     super.initState();
-    if (campusAppsPortalInstance.isTeacher) {
-      activityId = campusAppsPortalInstance.activityIds['homeroom']!;
-    } else if (campusAppsPortalInstance.isSecurity)
-      activityId = campusAppsPortalInstance.activityIds['arrival']!;
+    activityId = campusAppsPortalInstance.activityIds['homeroom']!;
   }
 
   @override
@@ -99,7 +96,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                                           await getClassActivityAttendanceReport(
                                               _fetchedOrganization!.id!,
                                               activityId,
-                                              250);
+                                              10000);
                                       if (_fetchedAttendance.length > 0) {
                                         // Add null check here
                                         // Process attendance data here

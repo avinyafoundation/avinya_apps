@@ -11,9 +11,9 @@ import 'scaffold_body.dart';
 class SMSScaffold extends StatelessWidget {
   static const pageNames = [
     '/attendance_marker',
-    // '/qr_attendance_marker',
     '/bulk_attendance_marker/classes',
     '/daily_attendance_report',
+    '/late_attendance_report',
     '/weekly_payment_report',
     '/person_attendance_report',
   ];
@@ -50,8 +50,12 @@ class SMSScaffold extends StatelessWidget {
           icon: Icons.summarize,
         ),
         AdaptiveScaffoldDestination(
+          title: 'Late Attendance Report',
+          icon: Icons.watch_later,
+        ),
+        AdaptiveScaffoldDestination(
           title: 'Weekly Payment Report',
-          icon: Icons.summarize,
+          icon: Icons.paid,
         ),
       ];
     } else {
