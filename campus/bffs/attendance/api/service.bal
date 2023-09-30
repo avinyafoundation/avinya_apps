@@ -292,6 +292,54 @@ service / on new http:Listener(9091) {
         }
     }
 
+          resource function get late_attendance_report_date/[int organization_id]/[int activity_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendance[]|error {
+        GetLateAttendanceReportResponse|graphql:ClientError getLateAttendanceReportResponse = globalDataClient->getLateAttendanceReportByDate(organization_id, activity_id, from_date, to_date);
+        if(getLateAttendanceReportResponse is GetLateAttendanceReportResponse) {
+            ActivityParticipantAttendance[] activityParticipantAttendances = [];
+            foreach var attendace_record in getLateAttendanceReportResponse.late_attendance_report {
+                ActivityParticipantAttendance|error activityParticipantAttendance = attendace_record.cloneWithType(ActivityParticipantAttendance);
+                if(activityParticipantAttendance is ActivityParticipantAttendance) {
+                    activityParticipantAttendances.push(activityParticipantAttendance);
+                } else {
+                    log:printError("Error while processing Application record received", activityParticipantAttendance);
+                    return error("Error while processing Application record received: " + activityParticipantAttendance.message() + 
+                        ":: Detail: " + activityParticipantAttendance.detail().toString());
+                }
+            }
+
+            return activityParticipantAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getLateAttendanceReportResponse);
+            return error("Error while creating application: " + getLateAttendanceReportResponse.message() + 
+                ":: Detail: " + getLateAttendanceReportResponse.detail().toString());
+        }
+    }
+
+    resource function get late_attendance_report_by_parent_org/[int parent_organization_id]/[int activity_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendance[]|error {
+        GetLateAttendanceReportResponseForParentOrg|graphql:ClientError getLateAttendanceReportResponse = globalDataClient->getLateAttendanceReportByParentOrg(parent_organization_id, activity_id, from_date, to_date);
+        if(getLateAttendanceReportResponse is GetLateAttendanceReportResponseForParentOrg) {
+            ActivityParticipantAttendance[] activityParticipantAttendances = [];
+            foreach var attendace_record in getLateAttendanceReportResponse.late_attendance_report {
+                ActivityParticipantAttendance|error activityParticipantAttendance = attendace_record.cloneWithType(ActivityParticipantAttendance);
+                if(activityParticipantAttendance is ActivityParticipantAttendance) {
+                    activityParticipantAttendances.push(activityParticipantAttendance);
+                } else {
+                    log:printError("Error while processing Application record received", activityParticipantAttendance);
+                    return error("Error while processing Application record received: " + activityParticipantAttendance.message() + 
+                        ":: Detail: " + activityParticipantAttendance.detail().toString());
+                }
+            }
+
+            return activityParticipantAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getLateAttendanceReportResponse);
+            return error("Error while creating application: " + getLateAttendanceReportResponse.message() + 
+                ":: Detail: " + getLateAttendanceReportResponse.detail().toString());
+        }
+    }
+
     resource function get person_attendance_report/[int person_id]/[int activity_id]/[int result_limit]() returns ActivityParticipantAttendance[]|error {
         GetPersonAttendanceReportResponse|graphql:ClientError getPersonAttendanceReportResponse = globalDataClient->getPersonAttendanceReport(person_id, activity_id, result_limit);
         if(getPersonAttendanceReportResponse is GetPersonAttendanceReportResponse) {

@@ -165,8 +165,11 @@ input ApplicantConsent {
   application_id: Int
   name: String
   date_of_birth: String
-  done_ol: Boolean
+  done_ol: String
   ol_year: Int
+  done_al: String
+  al_year: Int
+  al_stream: String
   distance_to_school: Int
   phone: Int
   email: String
@@ -184,11 +187,18 @@ type ApplicantConsentData {
   id: Int
   email: String
   date_of_birth: String
-  done_ol: Boolean
+  done_ol: String
   ol_year: Int
+  done_al: String
+  al_year: Int
+  al_stream: String
   distance_to_school: Int
   information_correct_consent: Boolean
   agree_terms_consent: Boolean
+  application_id: Int
+  person_id: Int
+  avinya_type_id: Int
+  organization_id: Int
 }
 
 input Application {
@@ -237,6 +247,7 @@ type AssetData {
   registration_number: String
   description: String
   avinya_type: AvinyaTypeData
+  avinya_type_id: Int
   created: String
   updated: String
 }
@@ -452,6 +463,8 @@ input Inventory {
 
 type InventoryData {
   id: Int
+  avinya_type: AvinyaTypeData
+  avinya_type_id: Int
   asset: AssetData
   consumable: ConsumableData
   organization: OrganizationData
@@ -587,6 +600,8 @@ input Person {
   bank_account_number: String
   bank_account_name: String
   academy_org_id: Int
+  academy_org_name: String
+  branch_code: String
 }
 
 type PersonData {
@@ -621,6 +636,8 @@ type PersonData {
   bank_account_number: String
   bank_account_name: String
   academy_org_id: Int
+  organization_id: Int
+  branch_code: String
 }
 
 type PlaceData {
@@ -689,6 +706,8 @@ type Query {
   organization_structure(name: String, id: Int): OrganizationStructureData
   organizations(level: Int!): OrganizationStructureData
   organization(name: String, id: Int): OrganizationData
+  organizations_by_avinya_type(avinya_type: Int): [OrganizationData!]
+  student_list_by_parent(id: Int): [PersonData!]
   person(name: String, id: Int): PersonData
   person_by_digital_id(id: String): PersonData
   prospect(email: String, phone: Int): ProspectData
@@ -720,7 +739,8 @@ type Query {
   class_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_today(person_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int): [ActivityParticipantAttendanceData!]
-  class_attendance_report(organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
+  class_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
+  late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
   supplier(id: Int!): SupplierData
@@ -728,6 +748,7 @@ type Query {
   consumable(id: Int!): ConsumableData
   consumableByUpdate(updated: String, avinya_type_id: Int): [ConsumableData!]
   consumables: [ConsumableData!]!
+  activeActivityInstance: [ActivityInstanceData!]!
   resource_property(id: Int!): ResourcePropertyData
   resource_properties: [ResourcePropertyData!]!
   supply(id: Int!): SupplyData
@@ -738,6 +759,7 @@ type Query {
   resource_allocations: [ResourceAllocationData!]!
   inventory(id: Int!): InventoryData
   inventories: [InventoryData!]!
+  resource_allocations_report(organization_id: Int, avinya_type_id: Int): [ResourceAllocationData!]!
 }
 
 input ResourceAllocation {
@@ -755,6 +777,7 @@ input ResourceAllocation {
   end_date: String
   created: String
   updated: String
+  resource_properties: [ResourceProperty!]
 }
 
 type ResourceAllocationData {
@@ -771,6 +794,7 @@ type ResourceAllocationData {
   end_date: String
   created: String
   updated: String
+  resource_properties: [ResourcePropertyData!]!
 }
 
 input ResourceProperty {
