@@ -111,11 +111,7 @@ class _WeeklyPaymentReportScreenState extends State<WeeklyPaymentReportScreen>
   void initState() {
     super.initState();
     var today = DateTime.now();
-    if (campusAppsPortalInstance.isTeacher) {
-      activityId = campusAppsPortalInstance.activityIds['homeroom']!;
-      selectWeek(today, activityId);
-    } else if (campusAppsPortalInstance.isSecurity)
-      activityId = campusAppsPortalInstance.activityIds['arrival']!;
+    activityId = campusAppsPortalInstance.activityIds['homeroom']!;
     selectWeek(today, activityId);
   }
 
