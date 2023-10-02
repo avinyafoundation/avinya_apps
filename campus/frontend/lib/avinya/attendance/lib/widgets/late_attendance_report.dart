@@ -36,7 +36,6 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
   DateTime? _selectedDay;
 
   late DataTableSource _data;
-  List<String?> columnNames = [];
   List<Map<String, bool>> attendanceList = [];
   var _selectedValue;
   var activityId = 0;
@@ -66,8 +65,7 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
-        _selectedValue, updateSelected);
+    _data = MyData(_fetchedAttendance, _selectedValue, updateSelected);
     DateRangePicker(updateDateRange, formattedStartDate);
   }
 
@@ -112,10 +110,7 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
     });
     int? parentOrgId =
         campusAppsPortalInstance.getUserPerson().organization!.id;
-    var cols =
-        columnNames.map((label) => DataColumn(label: Text(label!))).toList();
     _selectedValue = newValue ?? null;
-    // print(newValue.id);
 
     if (_selectedValue == null) {
       _fetchedStudentList = await fetchOrganizationForAll(parentOrgId!);
@@ -146,13 +141,6 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
           DateFormat('yyyy-MM-dd')
               .format(DateFormat('MMM d, yyyy').parse(this.formattedEndDate)));
     }
-    columnNames.clear();
-    List<String?> names = _fetchedAttendance
-        .map((attendance) => attendance.sign_in_time?.split(" ")[0])
-        .where((name) => name != null) // Filter out null values
-        .toList();
-    columnNames.addAll(names);
-    columnNames.sort((a, b) => b!.compareTo(a!));
 
     String? newSelectedVal;
     if (_selectedValue != null) {
@@ -162,8 +150,7 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
     setState(() {
       _fetchedOrganization;
       this._isFetching = false;
-      _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
-          newSelectedVal, updateSelected);
+      _data = MyData(_fetchedAttendance, newSelectedVal, updateSelected);
     });
   }
 
@@ -211,9 +198,6 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
 
   @override
   Widget build(BuildContext context) {
-    var cols =
-        columnNames.map((label) => DataColumn(label: Text(label!))).toList();
-
     return SingleChildScrollView(
       child: campusAppsPortalPersonMetaDataInstance
               .getGroups()
@@ -296,29 +280,6 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
                                                             .parse(this
                                                                 .formattedEndDate)));
                                           }
-
-                                          if (_fetchedAttendance.length > 0) {
-                                            // Add null check here
-                                            // Process attendance data here
-                                            columnNames.clear();
-                                            List<String?> names =
-                                                _fetchedAttendance
-                                                    .map((attendance) =>
-                                                        attendance.sign_in_time
-                                                            ?.split(" ")[0])
-                                                    .where((name) =>
-                                                        name !=
-                                                        null) // Filter out null values
-                                                    .toList();
-                                            columnNames.addAll(names);
-                                          } else {
-                                            columnNames.clear();
-                                          }
-
-                                          cols = columnNames
-                                              .map((label) => DataColumn(
-                                                  label: Text(label!)))
-                                              .toList();
                                           if (_selectedValue == null) {
                                             setState(() {
                                               if (_fetchedOrganization !=
@@ -342,8 +303,6 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
                                               _fetchedStudentList;
                                               _data = MyData(
                                                   _fetchedAttendance,
-                                                  columnNames,
-                                                  _fetchedOrganization,
                                                   _selectedValue,
                                                   updateSelected);
                                             });
@@ -353,8 +312,6 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
                                               _fetchedStudentList;
                                               _data = MyData(
                                                   _fetchedAttendance,
-                                                  columnNames,
-                                                  _fetchedOrganization,
                                                   _selectedValue.description,
                                                   updateSelected);
                                             });
@@ -450,7 +407,7 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
                           size: 50, // Customize the size of the indicator
                         ),
                       )
-                    else if (cols.length > 0)
+                    else if (_fetchedAttendance.length > 0)
                       PaginatedDataTable(
                         showCheckboxColumn: false,
                         source: _data,
@@ -474,35 +431,18 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
 }
 
 class MyData extends DataTableSource {
-  MyData(this._fetchedAttendance, this.columnNames, this._fetchedOrganization,
-      this._selectedValue, this.updateSelected);
+  MyData(this._fetchedAttendance, this._selectedValue, this.updateSelected);
 
   final List<ActivityAttendance> _fetchedAttendance;
-  final List<String?> columnNames;
-  final Organization? _fetchedOrganization;
+  // final List<String?> columnNames;
+  // final Organization? _fetchedOrganization;
   final String? _selectedValue;
   final Function(int, bool, List<bool>) updateSelected;
 
-  List<String> getDatesFromMondayToToday() {
-    DateTime now = DateTime.now();
-    DateTime previousMonday = now.subtract(Duration(days: now.weekday - 1));
-    DateTime currentDate = DateTime(now.year, now.month, now.day);
-
-    List<String> dates = [];
-    for (DateTime date = previousMonday;
-        date.isBefore(currentDate);
-        date = date.add(Duration(days: 1))) {
-      if (date.weekday != DateTime.saturday &&
-          date.weekday != DateTime.sunday) {
-        dates.add(DateFormat('yyyy-MM-dd').format(date));
-      }
-    }
-
-    return dates;
-  }
-
   List<int?> selectedPersonIds = [];
   String? lastProcessedDate;
+  int? lastProcessedPersonId;
+  List<String?> lastProcessedDates = [];
   @override
   DataRow? getRow(int index) {
     if (index == 0 && _selectedValue == null) {
@@ -517,68 +457,46 @@ class MyData extends DataTableSource {
       );
     }
 
-    final dateRegex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
-    final dateFormatter = DateFormat('yyyy-MM-dd');
-    List<String> validDates = [];
+    if (_fetchedAttendance.length > 0 && index <= _fetchedAttendance.length) {
+      var date = _fetchedAttendance[index - 1].sign_in_time!.split(" ")[0];
 
-    for (var element in columnNames) {
-      if (dateRegex.hasMatch(element!)) {
-        try {
-          dateFormatter.parseStrict(element);
-          validDates.add(element);
-        } catch (e) {
-          // Handle the exception or continue to the next element
-        }
-      }
-    }
-
-    if (_fetchedOrganization != null &&
-        _fetchedOrganization!.people.isNotEmpty &&
-        validDates.length > 0 &&
-        index <= validDates.length) {
-      var date = validDates[index - 1];
       List<DataCell> cells = [];
       if (_selectedValue == null) {
         cells = List<DataCell>.filled(6, DataCell.empty);
       } else {
         cells = List<DataCell>.filled(5, DataCell.empty);
       }
+      var lateSignInTime =
+          DateTime.parse(_fetchedAttendance[index - 1].sign_in_time!);
+      var officeStartTime = DateTime.parse("$date 07:30:00");
+      var lateBy = lateSignInTime.difference(officeStartTime).inMinutes;
 
-      cells[0] = DataCell(Text(date));
-      for (final person in _fetchedOrganization!.people) {
-        // Check if the person has already been selected
-
-        for (final attendance in _fetchedAttendance) {
-          if (attendance.person_id == person.id &&
-              attendance.sign_in_time!.startsWith(date)) {
-            var lateSignInTime = DateTime.parse(attendance.sign_in_time!);
-            var officeStartTime = DateTime.parse("$date 07:30:00");
-            var lateBy = lateSignInTime.difference(officeStartTime).inMinutes;
-
-            if (lateBy > 0) if (selectedPersonIds.contains(person.id)) {
-              break; // Skip to the next iteration if already selected
-            }
-            if (_selectedValue == null) {
-              cells[1] = DataCell(Text(person.preferred_name!));
-              cells[2] = DataCell(Text(person.digital_id.toString()));
-              cells[3] = DataCell(Text(attendance.description.toString()));
-              var formattedTime = DateFormat('hh:mm a').format(lateSignInTime);
-              cells[4] = DataCell(Text(formattedTime));
-              cells[5] = DataCell(Text(lateBy.toString() + " minutes"));
-            } else {
-              cells[1] = DataCell(Text(person.preferred_name!));
-              cells[2] = DataCell(Text(person.digital_id.toString()));
-              var formattedTime = DateFormat('hh:mm a').format(lateSignInTime);
-              cells[3] = DataCell(Text(formattedTime));
-              cells[4] = DataCell(Text(lateBy.toString() + " minutes"));
-            }
-
-            // Add the person ID to the set of selected IDs
-            selectedPersonIds.add(person.id);
-
-            return DataRow(cells: cells);
-          }
+      if (lateBy > 0) {
+        if (_selectedValue == null) {
+          cells[0] = DataCell(
+              Text(_fetchedAttendance[index - 1].sign_in_time!.split(" ")[0]));
+          cells[1] =
+              DataCell(Text(_fetchedAttendance[index - 1].preferred_name!));
+          cells[2] = DataCell(
+              Text(_fetchedAttendance[index - 1].digital_id.toString()));
+          cells[3] = DataCell(
+              Text(_fetchedAttendance[index - 1].description.toString()));
+          var formattedTime = DateFormat('hh:mm a').format(lateSignInTime);
+          cells[4] = DataCell(Text(formattedTime));
+          cells[5] = DataCell(Text(lateBy.toString() + " minutes"));
+        } else {
+          cells[0] = DataCell(
+              Text(_fetchedAttendance[index - 1].sign_in_time!.split(" ")[0]));
+          cells[1] =
+              DataCell(Text(_fetchedAttendance[index - 1].preferred_name!));
+          cells[2] = DataCell(
+              Text(_fetchedAttendance[index - 1].digital_id.toString()));
+          var formattedTime = DateFormat('hh:mm a').format(lateSignInTime);
+          cells[3] = DataCell(Text(formattedTime));
+          cells[4] = DataCell(Text(lateBy.toString() + " minutes"));
         }
+
+        return DataRow(cells: cells);
       }
 
       print(cells.length);
@@ -593,9 +511,7 @@ class MyData extends DataTableSource {
   @override
   int get rowCount {
     int count = 0;
-    if (_fetchedOrganization != null) {
-      count = _fetchedAttendance.length + 1;
-    }
+    count = _fetchedAttendance.length + 1;
     return count;
   }
 
