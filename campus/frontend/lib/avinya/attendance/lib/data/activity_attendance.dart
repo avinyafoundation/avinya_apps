@@ -20,6 +20,7 @@ class ActivityAttendance {
   String? preferred_name;
   String? digital_id;
 
+
   ActivityAttendance({
     this.id,
     this.activity_instance_id,
@@ -34,6 +35,7 @@ class ActivityAttendance {
     this.description,
     this.preferred_name,
     this.digital_id,
+
   });
 
   factory ActivityAttendance.fromJson(Map<String, dynamic> json) {

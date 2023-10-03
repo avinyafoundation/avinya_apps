@@ -198,6 +198,7 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
 
   @override
   Widget build(BuildContext context) {
+
     return SingleChildScrollView(
       child: campusAppsPortalPersonMetaDataInstance
               .getGroups()
@@ -280,6 +281,7 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
                                                             .parse(this
                                                                 .formattedEndDate)));
                                           }
+
                                           if (_selectedValue == null) {
                                             setState(() {
                                               if (_fetchedOrganization !=
@@ -434,8 +436,6 @@ class MyData extends DataTableSource {
   MyData(this._fetchedAttendance, this._selectedValue, this.updateSelected);
 
   final List<ActivityAttendance> _fetchedAttendance;
-  // final List<String?> columnNames;
-  // final Organization? _fetchedOrganization;
   final String? _selectedValue;
   final Function(int, bool, List<bool>) updateSelected;
 
@@ -459,7 +459,6 @@ class MyData extends DataTableSource {
 
     if (_fetchedAttendance.length > 0 && index <= _fetchedAttendance.length) {
       var date = _fetchedAttendance[index - 1].sign_in_time!.split(" ")[0];
-
       List<DataCell> cells = [];
       if (_selectedValue == null) {
         cells = List<DataCell>.filled(6, DataCell.empty);
