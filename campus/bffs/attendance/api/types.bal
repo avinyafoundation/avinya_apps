@@ -54,6 +54,8 @@ public type ActivityParticipantAttendance record {
     string? in_marked_by?;
     string? out_marked_by?;
     string? description?;
+    string? preferred_name?;
+    string? digital_id?;
 };
 
 public type ActivitySequencePlan record {
@@ -405,6 +407,8 @@ public type GetLateAttendanceReportResponse record {|
         string? sign_out_time;
         string? in_marked_by;
         string? out_marked_by;
+        string? preferred_name;
+        string? digital_id;
     |}[] late_attendance_report;
 |};
 
@@ -422,6 +426,8 @@ public type GetLateAttendanceReportResponseForParentOrg record {|
         string? in_marked_by;
         string? out_marked_by;
         string? description;
+        string? preferred_name;
+        string? digital_id;
     |}[] late_attendance_report;
 |};
 
