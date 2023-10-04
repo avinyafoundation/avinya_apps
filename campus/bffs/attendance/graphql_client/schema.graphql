@@ -572,6 +572,7 @@ type Mutation {
   add_duty_for_participant(dutyparticipant: DutyParticipant!): DutyParticipantData
   delete_duty_for_participant(id: Int!): Int
   update_duty_rotation_metadata(duty_rotation: DutyRotationMetaDetails!): DutyRotationMetaData
+  add_duty_attendance(duty_attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
 }
 
 input Organization {
@@ -803,6 +804,9 @@ type Query {
   duty_participants(organization_id: Int): [DutyParticipantData!]!
   activities_by_avinya_type(avinya_type_id: Int): [ActivityData!]
   duty_rotation_metadata_by_organization(organization_id: Int): DutyRotationMetaData
+  duty_participants_by_duty_activity_id(organization_id: Int, duty_activity_id: Int): [DutyParticipantData!]!
+  duty_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
+  duty_participant(person_id: Int): DutyParticipantData
 }
 
 input ResourceAllocation {

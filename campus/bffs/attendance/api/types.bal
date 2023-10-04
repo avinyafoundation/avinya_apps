@@ -553,3 +553,75 @@ public type GetDutyRotationMetadataByOrganizationResponse record {|
         int? organization_id;
     |}? duty_rotation_metadata_by_organization;
 |};
+
+public type GetDutyParticipantsByDutyActivityIdResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string? name;
+            string? description;
+        |}? activity;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? digital_id;
+            record {|
+                record {|
+                    string name_en;
+                |} name;
+                string? description;
+            |}? organization;
+        |}? person;
+        string? role;
+    |}[] duty_participants_by_duty_activity_id;
+|};
+
+public type AddDutyAttendanceResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_instance_id;
+        int? person_id;
+        string? sign_in_time;
+        string? in_marked_by;
+        string? created;
+    |}? add_duty_attendance;
+|};
+
+public type GetDutyAttendanceTodayResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? in_marked_by;
+        string? created;
+    |}[] duty_attendance_today;
+|};
+
+public type GetDutyParticipantResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string? name;
+            string? description;
+        |}? activity;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? digital_id;
+            record {|
+                record {|
+                    string name_en;
+                |} name;
+                string? description;
+            |}? organization;
+        |}? person;
+        string? role;
+    |}? duty_participant;
+|};

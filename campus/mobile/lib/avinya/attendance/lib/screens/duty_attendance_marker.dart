@@ -23,7 +23,11 @@ class _DutyAttendanceMarkerScreenState extends State<DutyAttendanceMarkerScreen>
       ),
       body: SingleChildScrollView(
           child: Container(            
-           child: DutyAttendanceMarker(),     
+           child: Column(
+             children: [
+               DutyAttendanceMarker(),
+             ],
+           ),     
           ), 
       ),
 

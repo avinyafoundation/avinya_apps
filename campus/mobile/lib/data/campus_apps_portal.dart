@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:mobile/avinya/attendance/lib/data/duty_participant.dart';
 import 'package:mobile/data/person.dart';
 
 import '../auth.dart';
@@ -33,6 +34,8 @@ class CampusAppsPortal {
   bool isTeacher = false;
   bool isFoundation = false;
   bool isGroupFetched = false;
+
+  DutyParticipant leaderParticipant = new DutyParticipant();
 
   final activityIds = {
     'school-day': 1,
@@ -100,6 +103,14 @@ class CampusAppsPortal {
 
   Person getUserPerson() {
     return userPerson;
+  }
+
+  void setLeaderParticipant(DutyParticipant dutyLeaderParticipant){
+    leaderParticipant = dutyLeaderParticipant;
+  }
+
+  DutyParticipant getLeaderParticipant(){
+    return leaderParticipant;
   }
 
   // void setApplication(Application? application) {
@@ -196,6 +207,16 @@ class CampusAppsPortal {
           if (isSecurity || isTeacher || isFoundation || isStudent) {
             isGroupFetched = true;
           }
+
+          if(isStudent){
+            DutyParticipant dutyParticipant =  await fetchDutyParticipant(person.id!);
+            
+            if(dutyParticipant.role == 'leader'){
+                  campusAppsPortalInstance.setLeaderParticipant(dutyParticipant);
+            }
+
+          }
+
         }
       }
     } catch (e) {

@@ -534,14 +534,20 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
             print("add participant for duty result : ${result.id}");
        
             if(result.id != null){     
-               _selectedRoleValues[tableIndex] = null;
-               _selectedPersonValues[tableIndex] = null;
-              _selectedClassValues[tableIndex] = null;      
+               _selectedRoleValues[tableIndex] = null;    //clear the drop down 
+               _selectedPersonValues[tableIndex] = null;  //clear the drop down 
+              _selectedClassValues[tableIndex] = null;    //clear the drop down 
            }
+           setState(() {});
         }else{
            showDialog(
              context: context,
              builder: (BuildContext context) {
+                    
+               _selectedRoleValues[tableIndex] = null; //clear the drop down 
+               _selectedPersonValues[tableIndex] = null;  //clear the drop down 
+               _selectedClassValues[tableIndex] = null;      //clear the drop down 
+           
              return Container(
               width: 300,
               height: 100,

@@ -17,12 +17,17 @@ class SMSScaffold extends StatelessWidget {
     // '/weekly_payment_report',
     // '/person_attendance_report',
     '/duty_participants',
-    '/duty_attendance_marker',
   ];
 
   static const studentPageNames = [
     '/attendance_marker',
     '/person_attendance_report',
+  ];
+
+  static const leaderParticipantPageNames = [
+     '/attendance_marker',
+     '/person_attendance_report',
+     '/duty_attendance_marker',
   ];
 
   const SMSScaffold({
@@ -63,12 +68,27 @@ class SMSScaffold extends StatelessWidget {
           title: 'Assign duties',
           icon: Icons.work,
         ),
-        AdaptiveScaffoldDestination(
-          title: 'Duty Attendance Marker',
-          icon: Icons.people,
-        ),
       ];
-    } else {
+    }else if(campusAppsPortalInstance.isStudent 
+      && campusAppsPortalInstance.getLeaderParticipant().role == 'leader'){
+         
+      destinations = const[
+        AdaptiveScaffoldDestination(
+          title: 'Attendance Marker',
+          icon: Icons.person_outline,
+        ),
+        AdaptiveScaffoldDestination(
+          title: 'Payment Report',
+          icon: Icons.summarize,
+        ),
+        AdaptiveScaffoldDestination(
+           title: 'Duty Attendance Marker',
+           icon: Icons.people,
+        ),
+         
+       ];  
+      } 
+    else {
       destinations = const [
         AdaptiveScaffoldDestination(
           title: 'Attendance Marker',
@@ -143,7 +163,12 @@ class SMSScaffold extends StatelessWidget {
               campusAppsPortalInstance.isSecurity ||
               campusAppsPortalInstance.isFoundation) {
             routeState.go(pageNames[idx]);
-          } else {
+          }else if(campusAppsPortalInstance.isStudent 
+            && campusAppsPortalInstance.getLeaderParticipant().role == 'leader'){
+
+            routeState.go(leaderParticipantPageNames[idx]);
+
+          }else {
             routeState.go(studentPageNames[idx]);
           }
         },
@@ -170,7 +195,12 @@ class SMSScaffold extends StatelessWidget {
         campusAppsPortalInstance.isSecurity ||
         campusAppsPortalInstance.isFoundation) {
       index = pageNames.indexOf(pathTemplate);
-    } else {
+      
+    }else if(campusAppsPortalInstance.isStudent 
+            && campusAppsPortalInstance.getLeaderParticipant().role == 'leader'){
+      
+      index = leaderParticipantPageNames.indexOf(pathTemplate);
+    }else {
       index = studentPageNames.indexOf(pathTemplate);
     }
 
