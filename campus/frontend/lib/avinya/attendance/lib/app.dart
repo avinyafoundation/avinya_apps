@@ -53,6 +53,7 @@ class _CampusAttendanceManagementSystemState
         '/person_attendance_report',
         '/duty_participants',
         '/duty_attendance_marker',
+        '/late_attendance_report',
         '/qr_attendance_marker'
       ],
       guard: _guard,
@@ -122,6 +123,8 @@ class _CampusAttendanceManagementSystemState
 
     final personAttendanceReportRoute = ParsedRoute(
         '/person_attendance_report', '/person_attendance_report', {}, {});
+    final lateAttendanceReportRoute = ParsedRoute(
+        '/late_attendance_report', '/late_attendance_report', {}, {});
 
     final dutyParticipantsRoute = ParsedRoute(
         '/duty_participants','/duty_participants', {}, {});
@@ -155,6 +158,9 @@ class _CampusAttendanceManagementSystemState
     } else if (signedIn && from == dutyAttendanceMarkerRoute){
       return dutyAttendanceMarkerRoute; 
     }else if (signedIn && from == qrAttendanceMarkerRoute) {
+    } else if (signedIn && from == lateAttendanceReportRoute) {
+      return lateAttendanceReportRoute;
+    } else if (signedIn && from == qrAttendanceMarkerRoute) {
       return qrAttendanceMarkerRoute;
     }
     // Go to /application if the user is signed in and tries to go to /signin.

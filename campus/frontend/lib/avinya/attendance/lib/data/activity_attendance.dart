@@ -16,6 +16,10 @@ class ActivityAttendance {
   String? out_marked_by;
   bool? selected = false;
   int? person;
+  String? description;
+  String? preferred_name;
+  String? digital_id;
+
 
   ActivityAttendance({
     this.id,
@@ -28,6 +32,10 @@ class ActivityAttendance {
     this.in_marked_by,
     this.out_marked_by,
     this.person,
+    this.description,
+    this.preferred_name,
+    this.digital_id,
+
   });
 
   factory ActivityAttendance.fromJson(Map<String, dynamic> json) {
@@ -41,6 +49,9 @@ class ActivityAttendance {
       sign_out_time: json['sign_out_time'],
       in_marked_by: json['in_marked_by'],
       out_marked_by: json['out_marked_by'],
+      preferred_name: json['preferred_name'],
+      digital_id: json['digital_id'],
+      description: json['description'],
       person: json['person'] != null ? json['person']['id'] : null,
     );
   }
@@ -56,6 +67,9 @@ class ActivityAttendance {
         if (sign_out_time != null) 'sign_out_time': sign_out_time,
         if (in_marked_by != null) 'in_marked_by': in_marked_by,
         if (out_marked_by != null) 'out_marked_by': out_marked_by,
+        if (preferred_name != null) 'preferred_name': preferred_name,
+        if (digital_id != null) 'digital_id': digital_id,
+        if (description != null) 'description': description,
         if (person != null) 'person': person,
       };
 }
@@ -253,5 +267,57 @@ Future<List<ActivityAttendance>> getClassActivityAttendanceReportByParentOrg(
   } else {
     throw Exception(
         'Failed to get Activity Participant Attendance report for activity $activity_id');
+  }
+}
+
+Future<List<ActivityAttendance>> getLateAttendanceReportByParentOrg(
+    int parent_organization_id,
+    int activity_id,
+    String from_date,
+    String to_date) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/late_attendance_report_by_parent_org/$parent_organization_id/$activity_id/$from_date/$to_date'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Activity Participant Attendance report for activity $activity_id');
+  }
+}
+
+Future<List<ActivityAttendance>> getLateAttendanceReportByDate(
+    int organization_id,
+    int activity_id,
+    String from_date,
+    String to_date) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/late_attendance_report_date/$organization_id/$activity_id/$from_date/$to_date'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Activity Participant Attendance report for organization ID $organization_id and activity $activity_id');
   }
 }
