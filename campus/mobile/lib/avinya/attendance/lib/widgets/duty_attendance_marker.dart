@@ -23,9 +23,7 @@ class _DutyAttendanceMarkerState extends State<DutyAttendanceMarker> {
 
 var workActivityId = 0;
 var workActivityInstance = ActivityInstance(id: -1);
-Activity? _selectedDutyTypeValue;
 
-List<Activity>  _activitiesByAvinyaType = [];
 List<DutyParticipant> _dutyParticipants = [];
 List<ActivityAttendance> _fetchedDutyAttendance = [];
 List<Evaluation> _fetchedEvaluations = [];
@@ -36,7 +34,6 @@ List<bool> selectedRows = [];
   @override
   void initState(){
    super.initState();
-   loadActivitiesByAvinyaType();
    workActivityId = campusAppsPortalInstance.activityIds['work']!;
    loadDutyParticipants();   
    loadDutyAttendance();
@@ -104,7 +101,7 @@ List<bool> selectedRows = [];
             evaluatee_id: dutyParticipant.person!.id,
             evaluator_id: campusAppsPortalInstance.getUserPerson().id,
             evaluation_criteria_id: 54,
-            activity_instance_id: workActivityInstance.id,  //activity_instance_id: activityInstanceForAbsent.id,
+            activity_instance_id: workActivityInstance.id,  
             response: "absence",
             notes: "",
             grade: 0
@@ -123,21 +120,16 @@ List<bool> selectedRows = [];
   }
 
 
-  Future<void> loadActivitiesByAvinyaType() async{  
-
-    final activities = await fetchActivitiesByAvinyaType(91);//load avinya type =91(work) related activities
-    setState(() {
-      _activitiesByAvinyaType = activities;
-    });
-  }
-
   Future<void> loadDutyParticipants() async{  
 
-    print("leader activity id:${campusAppsPortalInstance.getLeaderParticipant().activity!.id!}");
-    print("organization id:${campusAppsPortalInstance.getUserPerson().organization!.parent_organizations}");
+    int? parentOrganizationId =  campusAppsPortalInstance.getUserPerson().
+                                   organization!.parent_organizations[0].parent_organizations[0].id;
+
+    
 
     final dutyParticipants = await fetchDutyParticipantsByDutyActivityId(
-                 campusAppsPortalInstance.getUserPerson().organization!.id!,campusAppsPortalInstance.getLeaderParticipant().activity!.id!);
+                 parentOrganizationId!,campusAppsPortalInstance.getLeaderParticipant().activity!.id!);
+
     setState(() {
       _dutyParticipants = dutyParticipants;
     });
@@ -145,8 +137,11 @@ List<bool> selectedRows = [];
 
   Future<void> loadDutyAttendance() async{  
 
+    int? parentOrganizationId =  campusAppsPortalInstance.getUserPerson().
+                                   organization!.parent_organizations[0].parent_organizations[0].id;
+
     final dutyAttendance = await getDutyAttendanceToday(
-                campusAppsPortalInstance.getUserPerson().organization!.id!,workActivityId);
+                parentOrganizationId!,workActivityId);
     setState(() {
       _fetchedDutyAttendance = dutyAttendance;
     });
@@ -216,7 +211,7 @@ List<bool> selectedRows = [];
               SizedBox(
                   width: 20,
                 ),
-              //buildDutyDropDownButton(),
+              
               Text(
                   campusAppsPortalInstance.getLeaderParticipant().activity!.name!,
                   overflow: TextOverflow.ellipsis,
@@ -243,42 +238,6 @@ List<bool> selectedRows = [];
       ),
     );
   }
-
- Widget buildDutyDropDownButton(){
-
-   return DropdownButton<Activity>(
-    value:_selectedDutyTypeValue,
-    items: _activitiesByAvinyaType.map<DropdownMenuItem<Activity>>((Activity value){
-      return DropdownMenuItem<Activity>(
-       value: value,
-       child: Text(value.name.toString()),
-        );
-       },
-      ).toList(), 
-     onChanged:(Activity? newValue) async{
-        _selectedDutyTypeValue = newValue;
-
-        // _dutyParticipants =  await fetchDutyParticipantsByDutyActivityId(
-        //          campusAppsPortalInstance.getUserPerson().organization!.id!,_selectedDutyTypeValue!.id!);
-
-        // _fetchedDutyAttendance = await getDutyAttendanceToday(
-        //         campusAppsPortalInstance.getUserPerson().organization!.id!,workActivityId);
-
-        // if (workActivityInstance.id == -1) {
-        //       workActivityInstance  =  await campusAttendanceSystemInstance
-        //                             .getCheckinActivityInstance(
-        //                             workActivityId);
-        // }
-
-        
-        //  _fetchedEvaluations = await getActivityInstanceEvaluations(workActivityInstance.id!);
-
-        setState(() {});      
-       },     
-      );
-  }
-
-
 
 Widget buildTable(){
     return Card(
@@ -411,9 +370,7 @@ Widget buildTable(){
                                    // Handle the selected time here.
                                    print('Selected Time: $selectedTime');
                                   await submitDutyAttendance(participant);
-                                  // loadDutyParticipants();   
-                                  // loadDutyAttendance();
-                                  // loadEvaluations();
+                                 
                                   setState(() {});
                                 },
                                 initialTime:null,
@@ -440,12 +397,9 @@ Widget buildTable(){
                               onChanged: (bool? value) async{
                                   await  toggleAbsent(participant,value!);  
 
-                                  // loadDutyParticipants();   
-                                  // loadDutyAttendance();
-
-                                  // _fetchedEvaluations =
-                                  //               await getActivityInstanceEvaluations(
-                                  //                   workActivityInstance.id!);
+                                  _fetchedEvaluations =
+                                                await getActivityInstanceEvaluations(
+                                                    workActivityInstance.id!);
                                     setState(() {});
                                 },
                               )
@@ -456,12 +410,9 @@ Widget buildTable(){
                               onChanged: (bool? value) async{
                                   await  toggleAbsent(participant,value!); 
 
-                                  // loadDutyParticipants();   
-                                  // loadDutyAttendance();
-
-                                  // _fetchedEvaluations =
-                                  //               await getActivityInstanceEvaluations(
-                                  //                   workActivityInstance.id!);
+                                  _fetchedEvaluations =
+                                                await getActivityInstanceEvaluations(
+                                                    workActivityInstance.id!);
                                   setState(() {});
                                 },
                               )
@@ -510,7 +461,7 @@ class _TimePickerCellState extends State<TimePickerCell> {
   @override
   Widget build(BuildContext context) {
 
-    //_selectedTime == null ? widget.initialTime:_selectedTime?.format(context);
+    
 
     if(widget.initialTime !=null){
       _selectedTime = widget.initialTime;

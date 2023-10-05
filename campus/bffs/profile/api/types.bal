@@ -457,6 +457,9 @@ public type GetPersonResponse record {|
             |}[]? child_organizations;
             record {|
                 int? id;
+                record {|
+                    int? id;
+                |}[]? parent_organizations;
             |}[]? parent_organizations;
         |}? organization;
         record {|

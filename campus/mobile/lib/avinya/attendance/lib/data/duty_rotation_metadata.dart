@@ -69,6 +69,7 @@ Future<DutyRotationMetaDetails> fetchDutyRotationMetadataByOrganization(int orga
     print(dutyRotationMetaDetails.toJson());
     return dutyRotationMetaDetails;
   } else {
+    print("response message:${response.body.toString()}");
     throw Exception('Failed to load duty rotation metadata');
   }
 }

@@ -149,7 +149,7 @@ Future<List<DutyParticipant>> fetchDutyParticipantsByDutyActivityId(int organiza
   }
 }
 
-Future<DutyParticipant> fetchDutyParticipant(int personId) async {
+Future<DutyParticipant?> fetchDutyParticipant(int personId) async {
   final response = await http.get(
     Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/duty_participant/$personId'),
     headers: <String, String>{
@@ -163,6 +163,6 @@ Future<DutyParticipant> fetchDutyParticipant(int personId) async {
     DutyParticipant dutyParticipant = DutyParticipant.fromJson(json.decode(response.body));
     return dutyParticipant;
   } else {
-    throw Exception('Failed to load Duty Participant');
+    return null;
   }
 }
