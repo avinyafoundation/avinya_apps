@@ -1,18 +1,16 @@
 // ignore_for_file: non_constant_identifier_names, unused_element, use_build_context_synchronously, use_key_in_widget_constructors, library_private_types_in_public_api
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/avinya/attendance/lib/data/attendance_data.dart';
 import '../data.dart';
 import '../data/activity_attendance.dart';
 import 'package:attendance/data/evaluation.dart';
-// import 'package:attendance/widgets/evaluation_list.dart';
-import 'package:mobile/avinya/attendance/lib/widgets/evaluation_list.dart';
-import 'package:mobile/avinya/attendance/lib/widgets/qr_image.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class QrAttendanceCheckIn extends StatefulWidget {
   @override
@@ -25,12 +23,12 @@ class _QrAttendanceCheckInState extends State<QrAttendanceCheckIn> {
   bool _isAbsent = false;
   bool markedAttendance = false;
   bool inValidQr = false;
-  bool isFirstTime = true;
+  bool isFetching = false;
   List<ActivityAttendance> _personAttendanceToday = [];
   List<Evaluation> _fechedEvaluations = [];
 
   String sign_in_time = "ee";
-
+  Timer? _debounceTimer;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
   AttendanceData qrCodeData = AttendanceData(
@@ -64,19 +62,31 @@ class _QrAttendanceCheckInState extends State<QrAttendanceCheckIn> {
       try {
         AttendanceData deserializedQrCodeData =
             AttendanceData.fromJson(jsonDecode(scanData.code!));
-
-        setState(() {
-          qrCodeData = deserializedQrCodeData;
-          inValidQr = false;
-        });
-        if (qrCodeData.person_id != 0) {
-          _handleCheckIn();
+        if (!isFetching) {
+          setState(() {
+            qrCodeData = deserializedQrCodeData;
+            inValidQr = false;
+            isFetching = true;
+          });
+          if (qrCodeData.person_id != 0) {
+            _performCheckIn();
+          }
         }
       } catch (e) {
         setState(() {
           inValidQr = true;
         });
       }
+    });
+  }
+
+  Future<void> _performCheckIn() async {
+    if (_debounceTimer != null && _debounceTimer!.isActive) {
+      // If a timer is already active, cancel it to reset the debounce period
+      _debounceTimer!.cancel();
+    }
+    _debounceTimer = Timer(const Duration(seconds: 5), () {
+      _handleCheckIn();
     });
   }
 
@@ -96,10 +106,14 @@ class _QrAttendanceCheckInState extends State<QrAttendanceCheckIn> {
         sign_in_time: DateTime.now().toString(),
         in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
       ));
+      setState(() {
+        markedAttendance = true;
+        isFetching = false;
+      });
     } else {
       setState(() {
         markedAttendance = true;
-        isFirstTime = false;
+        isFetching = false;
       });
     }
 
@@ -137,25 +151,6 @@ class _QrAttendanceCheckInState extends State<QrAttendanceCheckIn> {
       _isCheckedOut = _personAttendanceToday[1].sign_out_time != null;
     }
 
-    // if (!_isCheckedIn) {
-    //   var activityInstance =
-    //       await campusAttendanceSystemInstance.getCheckinActivityInstance(
-    //           campusAppsPortalInstance.activityIds['homeroom']!);
-    //   _fechedEvaluations =
-    //       await getActivityInstanceEvaluations(activityInstance.id!);
-
-    //   if (_fechedEvaluations.indexWhere((element) =>
-    //           element.evaluator_id ==
-    //           qrCodeData.person_id!) ==
-    //       -1) {
-    //     _isCheckedIn = false;
-    //   } else {
-    //     _isCheckedIn = true;
-    //     _isCheckedOut = true;
-    //     _isAbsent = true;
-    //   }
-    // }
-
     return _personAttendanceToday;
   }
 
@@ -191,9 +186,19 @@ class _QrAttendanceCheckInState extends State<QrAttendanceCheckIn> {
                       ),
                     ),
                     const SizedBox(height: 20),
+                    if (isFetching)
+                      Container(
+                        margin: const EdgeInsets.only(top: 10),
+                        child: const SpinKitCircle(
+                          color: (Colors
+                              .blue), // Customize the color of the indicator
+                          size: 50, // Customize the size of the indicator
+                        ),
+                      ),
                     if (!inValidQr) ...[
                       if (qrCodeData.person_id != 0 &&
-                          qrCodeData.sign_in_time != '') ...[
+                          qrCodeData.sign_in_time != '' &&
+                          markedAttendance) ...[
                         Column(
                           children: [
                             Container(
