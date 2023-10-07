@@ -28,7 +28,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
   List<String?> _activitiesNames = [];
   List<DutyParticipant> _dutyRelatedParticipantsFilterAndStore = []; //filter And Store duty Relavant Participants
   List<String> _dropDownRoleList = ['leader','member'];
-  late DutyRotationMetaDetails rotationMetaDetails;
+  late DutyRotationMetaDetails _rotationMetaDetails;
 
   late TextEditingController  _startDate;
   late TextEditingController _endDate;
@@ -77,12 +77,21 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
   }
 
   Future<void> loadRotationMetadetails() async{
-    rotationMetaDetails = await fetchDutyRotationMetadataByOrganization(campusAppsPortalInstance.getUserPerson().organization!.id!);
+    _rotationMetaDetails = await fetchDutyRotationMetadataByOrganization(campusAppsPortalInstance.getUserPerson().organization!.id!);
   
-    DateTime parsedStartDate = DateTime.parse(rotationMetaDetails.start_date!).toLocal();
-    DateTime parsedEndDate = DateTime.parse(rotationMetaDetails.end_date!).toLocal();
-    _startDate.text = DateFormat('yyyy-MM-dd').format(parsedStartDate);
-    _endDate.text = DateFormat('yyyy-MM-dd').format(parsedEndDate);
+   if(_rotationMetaDetails.start_date!=null && _rotationMetaDetails.end_date !=null){
+
+       DateTime parsedStartDate = DateTime.parse(_rotationMetaDetails.start_date!).toLocal();
+       DateTime parsedEndDate = DateTime.parse(_rotationMetaDetails.end_date!).toLocal();
+       _startDate.text = DateFormat('yyyy-MM-dd').format(parsedStartDate);
+       _endDate.text = DateFormat('yyyy-MM-dd').format(parsedEndDate);
+   
+   }else{
+      setState(() {
+        _startDateSelected = false;
+       _endDateSelected = false;
+      });
+   }
   
   }
 
@@ -438,12 +447,8 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
           person.digital_id == dutyParticipant.person?.digital_id));
 
         setState(() {
-          print('new organization value:${newValue.name!.name_en}');
          _selectedClassValues[tableIndex] = newValue;
          _dropDownPersonList[tableIndex] = _fetchedOrganization!.people;
-          print('table index(class drop down button):${tableIndex}');
-          print('selected class array values(class drop down button):${_selectedClassValues}');
-          print('selected class values:${ _selectedClassValues[tableIndex]}');
 
         });
     },
@@ -699,14 +704,16 @@ Future<void> _selectEndDate(BuildContext context) async{
       });
 
       var dutyRotationMetadata = DutyRotationMetaDetails(
-         id: rotationMetaDetails.id,
+         id: _rotationMetaDetails.id ?? 0,
          start_date:DateTime.parse(_startDate.text).toUtc().toIso8601String(),
          end_date:DateTime.parse(_endDate.text).toUtc().toIso8601String(),
          organization_id: campusAppsPortalInstance.getUserPerson().organization!.id!,
        );
-
+        print("duty rotation meta data: ${dutyRotationMetadata}");
         var result = await updateDutyRotationMetadata(dutyRotationMetadata);
         print("update duty rotation ${result}");
+        
+        _rotationMetaDetails = await fetchDutyRotationMetadataByOrganization(campusAppsPortalInstance.getUserPerson().organization!.id!);
 
     }else if(picked == null){
       setState(() {

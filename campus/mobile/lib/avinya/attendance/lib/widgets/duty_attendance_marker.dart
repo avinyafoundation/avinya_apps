@@ -41,7 +41,7 @@ List<bool> selectedRows = [];
   }
 
 
-  Future<void> submitDutyAttendance(DutyParticipant dutyParticipant) async{
+  Future<void> submitDutyAttendance(DutyParticipant dutyParticipant,TimeOfDay selectedTime) async{
 
     if (workActivityInstance.id == -1) {
       workActivityInstance = await campusAttendanceSystemInstance
@@ -76,7 +76,7 @@ List<bool> selectedRows = [];
     activityAttendance = ActivityAttendance(
           activity_instance_id: workActivityInstance.id,
           person_id: dutyParticipant.person!.id,
-          sign_in_time: DateTime.now().toString(),
+          sign_in_time: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, selectedTime.hour, selectedTime.minute).toString(),
           in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
         );
     
@@ -369,7 +369,7 @@ Widget buildTable(){
                                 onTimeSelected: (TimeOfDay selectedTime) async{
                                    // Handle the selected time here.
                                    print('Selected Time: $selectedTime');
-                                  await submitDutyAttendance(participant);
+                                  await submitDutyAttendance(participant,selectedTime);
                                  
                                   setState(() {});
                                 },

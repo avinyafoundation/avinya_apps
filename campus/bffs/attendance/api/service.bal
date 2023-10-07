@@ -548,11 +548,13 @@ service / on new http:Listener(9091) {
                 return error("Error while processing Application record received: " + duty_rotation_metadata_by_organization_record.message() + 
                     ":: Detail: " + duty_rotation_metadata_by_organization_record.detail().toString());
             }
-        } else {
-            log:printError("Error while creating application", getDutyRotationMetadataByOrganizationResponse);
-            return error("Error while creating application: " + getDutyRotationMetadataByOrganizationResponse.message() + 
-                ":: Detail: " + getDutyRotationMetadataByOrganizationResponse.detail().toString());
-        }
+
+        }else if(getDutyRotationMetadataByOrganizationResponse is graphql:ClientError){
+
+            DutyRotationMetaDetails duty ={ end_date: (),start_date: (),organization_id:(),id:()};
+                
+            return duty;
+       } 
     }
 
     
@@ -633,10 +635,11 @@ service / on new http:Listener(9091) {
                 return error("Error while processing Application record received: " + duty_participant_record.message() + 
                     ":: Detail: " + duty_participant_record.detail().toString());
             }
-        } else {
-            log:printError("Error while creating application", getDutyParticipantResponse);
-            return error("Error while creating application: " + getDutyParticipantResponse.message() + 
-                ":: Detail: " + getDutyParticipantResponse.detail().toString());
-        }
+        }else if(getDutyParticipantResponse is graphql:ClientError){
+
+            DutyParticipant dutyParticipant ={ role: (),activity: (),person:(),id:()};
+                
+            return dutyParticipant;
+       }        
     }
 }
