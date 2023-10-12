@@ -126,3 +126,43 @@ Future<int> deleteDutyForParticipant(int id) async {
     throw Exception('Failed to delete Duty For Participant.');
   }
 }
+
+Future<List<DutyParticipant>> fetchDutyParticipantsByDutyActivityId(int organization_id,int duty_activity_id) async{
+
+  final response = await http.get(
+     Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/duty_participants_by_duty_activity_id/$organization_id/$duty_activity_id'),
+     headers:<String,String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'accept': 'application/json',
+        'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+     },
+  );
+
+   if (response.statusCode == 200) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<DutyParticipant> fetchDutyForParticipants = await resultsJson
+        .map<DutyParticipant>((json) => DutyParticipant.fromJson(json))
+        .toList();
+    return fetchDutyForParticipants;
+  } else {
+    throw Exception('Failed to load duty participants for organization ID $organization_id and duty activity ID $duty_activity_id');
+  }
+}
+
+Future<DutyParticipant?> fetchDutyParticipant(int personId) async {
+  final response = await http.get(
+    Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/duty_participant/$personId'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    DutyParticipant dutyParticipant = DutyParticipant.fromJson(json.decode(response.body));
+    return dutyParticipant;
+  } else {
+    return null;
+  }
+}

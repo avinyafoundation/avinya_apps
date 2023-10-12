@@ -131,6 +131,7 @@ class _CampusAttendanceManagementSystemState
 
     final dutyAttendanceMarkerRoute = ParsedRoute(
         '/duty_attendance_marker','/duty_attendance_marker', {}, {});
+
     final qrAttendanceMarkerRoute =
         ParsedRoute('/qr_attendance_marker', '/qr_attendance_marker', {}, {});
 

@@ -9,7 +9,7 @@ import 'package:attendance/screens/weekly_payment_report.dart';
 import 'package:attendance/screens/person_attendance_report.dart';
 import 'package:attendance/screens/duty_participants.dart';
 import 'package:attendance/screens/duty_attendance_marker.dart';
-import 'package:attendance/screens/qr_attendance_marker.dart';
+//import 'package:attendance/screens/qr_attendance_marker.dart';
 import 'package:attendance/screens/late_attendance_report.dart';
 
 import '../routing.dart';
@@ -86,7 +86,7 @@ class SMSScaffoldBody extends StatelessWidget {
           )
         else if (currentRoute.pathTemplate.startsWith('/duty_attendance_marker'))
           const FadeTransitionPage<void>(
-            key: ValueKey('duty_participants'),
+            key: ValueKey('duty_participants_attendance_marker'),
             child: DutyAttendanceMarkerScreen(),                                
           )
         // Avoid building a Navigator with an empty `pages` list when the
