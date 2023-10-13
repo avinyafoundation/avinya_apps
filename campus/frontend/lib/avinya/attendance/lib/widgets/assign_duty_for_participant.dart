@@ -1,7 +1,10 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:attendance/data.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gallery/constants.dart';
+import 'package:gallery/layout/adaptive.dart';
 import 'package:intl/intl.dart';
 
 
@@ -122,15 +125,16 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
   @override
   Widget build(BuildContext context) {
 
+    final isDesktop = isDisplayDesktop(context);
+
     return Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+          if(isDesktop)
             Container(
                     margin: EdgeInsets.only(left: 17.0),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
+                    child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                         _startDateSelected && _endDateSelected 
@@ -172,9 +176,53 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                         ],
                                 
                       ),
-                    ),
-                  ),
-              
+                  )
+          else
+              Container(
+                    margin: EdgeInsets.only(left: 17.0),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                        _startDateSelected && _endDateSelected 
+                           ? SizedBox()
+                           : Text(
+                              'Please select both start and end dates',
+                              style: TextStyle(color: Colors.red),  
+                           ),
+                        SizedBox(
+                        height: 10,
+                        ),
+                        Container(
+                          width: 300,
+                          child: TextField(
+                            controller: _startDate,
+                            decoration: InputDecoration(
+                              icon: Icon(Icons.calendar_today),
+                              labelText: "Rotation Start Date"
+                            ),
+                            readOnly: true,
+                            onTap:  () => _selectStartDate(context),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Container(
+                          width: 300,
+                          child: TextField(
+                            controller: _endDate,
+                            decoration: InputDecoration(
+                            icon: Icon(Icons.calendar_today),
+                            labelText: "Rotation End Date"
+                            ),
+                            readOnly: true,
+                            onTap:  () => _selectEndDate(context),
+                          ),
+                        ),
+                        ],
+                                
+                      ),
+                  ),  
             SizedBox(
                 height: 30,
               ),
@@ -210,9 +258,9 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                     
                                     if (org.child_organizations.length > 0)                             
                                             Container(
-                                              child: SingleChildScrollView(
-                                                scrollDirection: Axis.horizontal,
-                                                child: Column(
+                                              // child: SingleChildScrollView(
+                                              //   scrollDirection: Axis.horizontal,
+                                              child: Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: <Widget>[                                                
                                                                                                                                 
@@ -230,19 +278,27 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                                                 SizedBox(
                                                                  width: 10,
                                                                 ),
-                                                                Text(
-                                                              '${_activitiesNames[tableIndex]}',
-                                                               overflow: TextOverflow.clip,
-                                                               style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)
-                                                              )
+                                                                Flexible(
+                                                                  flex: 2,
+                                                                  child: Container(
+                                                                   width: 200,
+                                                                   child: Text(
+                                                                      '${_activitiesNames[tableIndex]}',
+                                                                       overflow: TextOverflow.clip,
+                                                                       style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)
+                                                                      )
+                                                                  ),
+                                                                ),
                                                              ],
                                                             ),
                                                          ), 
                                                       SizedBox(
                                                         height: 20,
                                                       ), 
-                                                    SingleChildScrollView(
-                                                      child: Row(
+                                                    //SingleChildScrollView(
+                                                      //child:
+                                              if(isDesktop)
+                                                    Row(
                                                       mainAxisAlignment: MainAxisAlignment.start,
                                                       children:[                                                     
                                                        SizedBox(
@@ -283,13 +339,17 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                                                  style: TextStyle(fontSize: 15,fontWeight: FontWeight.normal)
                                                             ), 
                                                             SizedBox(
-                                                              width: 20.0,
+                                                              width: 20,
                                                             ),                                                
-                                                            Container(
-                                                                margin: EdgeInsets.only(left: 10.0),
-                                                                width: 240,
-                                                                child: buildPersonDropDownButton(tableIndex)
+                                                            
+                                                            ConstrainedBox(
+                                                              constraints: BoxConstraints(
+                                                                minWidth: 120,
+                                                                maxWidth: 240,
                                                               ),
+                                                              child: buildPersonDropDownButton(tableIndex), 
+                                                            )
+                                                              
                                                           ]
                                                         ),
                                                       ),
@@ -312,18 +372,126 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                                                
                                                             Container( 
                                                               margin: EdgeInsets.only(left: 10.0),
-                                                              width: 100, 
+                                                              width: 120, 
                                                               child: buildRoleDropDownButton(tableIndex)
                                                             ),
                                                           ],
                                                         ),
                                                       ),
+
                                                       ] 
+                                                    )
+                                              else
+                                                Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children:[                                                     
+                                                       SizedBox(
+                                                        child:  
+                                                         Row(
+                                                          mainAxisAlignment: MainAxisAlignment.start,
+                                                          children:[
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            Flexible(
+                                                              flex: 1,
+                                                              child: Container(
+                                                                width: 100,
+                                                                child: Text(
+                                                                    'Select a class :',
+                                                                     overflow: TextOverflow.clip,
+                                                                     style: TextStyle(fontSize: 15,fontWeight: FontWeight.normal)
+                                                                ),
+                                                              ),
+                                                            ),
+                                                           SizedBox(
+                                                              width: 20,
+                                                            ),           
+                                                           Container( 
+                                                              margin: EdgeInsets.only(left: 10.0),
+                                                              width: 120,                                            
+                                                              child: buildClassDropDownButton(org,tableIndex,_dutyParticipants)
+                                                            ),
+                                                          ]
+                                                        ),  
+                                                      ), 
+                                                      SizedBox(
+                                                          width: 10,
                                                       ),
-                                                    ),                                               
+                                                      SizedBox(
+                                                       child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.start,
+                                                          children: [ 
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            Flexible(
+                                                              flex: 1,
+                                                              child: Container(
+                                                                width: 100,
+                                                                child: Text(
+                                                                    'Select a person :',
+                                                                     overflow: TextOverflow.clip,
+                                                                     style: TextStyle(fontSize: 15,fontWeight: FontWeight.normal)
+                                                                ),
+                                                              ),
+                                                            ), 
+                                                            SizedBox(
+                                                              width: 30,
+                                                            ),                                                
+                                                            
+                                                            ConstrainedBox(
+                                                              constraints: BoxConstraints(
+                                                                minWidth: 120,
+                                                                maxWidth: 240,
+                                                              ), 
+                                                              child: buildPersonDropDownButton(tableIndex)    
+                                                            ),
+                                                          ]
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                          width: 5,
+                                                        ),  
+                                                      SizedBox(
+                                                        child: 
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.start,
+                                                          children: [
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            Flexible(
+                                                              flex: 1,
+                                                              child: Container(
+                                                                width: 100,
+                                                                child: Text(
+                                                                    'Select a role :',
+                                                                     overflow: TextOverflow.clip,
+                                                                     style: TextStyle(fontSize: 15,fontWeight: FontWeight.normal)
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 20,
+                                                            ),                                                              
+                                                            Container( 
+                                                              margin: EdgeInsets.only(left: 10.0),
+                                                              width: 120, 
+                                                              child: buildRoleDropDownButton(tableIndex)
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+
+                                                      ] 
+                                                    ),
+                                              //else block close
+                                                    
+                                                    //),
                                                     ],
                                                   ),
-                                              ),
+                                              //),
                                             ),        
                                    
                                       SingleChildScrollView(
