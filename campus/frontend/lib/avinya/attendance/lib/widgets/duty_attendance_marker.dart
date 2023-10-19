@@ -188,6 +188,7 @@ List<bool> selectedRows = [];
 
     return Container(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
                   height: 60,
@@ -195,7 +196,7 @@ List<bool> selectedRows = [];
           Row(
             children: [
               SizedBox(
-                width: 40,
+                width: 17,
               ),
               Icon(
                 IconData(0xe6f2, fontFamily: 'MaterialIcons'),
@@ -232,13 +233,20 @@ List<bool> selectedRows = [];
           ),
           SizedBox(
                     height: 30,
-              ),  
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Container(
-              child:  _dutyParticipants.isEmpty ? SizedBox(): buildTable(),  
-            )
-          ),            
+              ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,       
+          child:Row(
+            children: [
+              SizedBox(
+                width: 15,
+              ), 
+              Container(
+                  child:  _dutyParticipants.isEmpty ? SizedBox(): buildTable(),  
+              )           
+             ],
+           ),    
+          ),        
         ],
       ),
     );

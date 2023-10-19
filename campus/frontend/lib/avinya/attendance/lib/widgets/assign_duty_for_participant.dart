@@ -101,16 +101,14 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
   Future<void> loadActivitiesByAvinyaType() async{
 
     _activitiesByAvinyaType = await fetchActivitiesByAvinyaType(91); //load avinya type =91(work) related activities
+    _activitiesByAvinyaType.removeWhere((activity) => activity.name == 'work');
     _activitiesNames = _activitiesByAvinyaType.map((activities) => activities.name).toList();
 
     _dropDownPersonList = List.generate(_activitiesNames.length,(index) =>[]);
     _selectedClassValues = List.generate(_activitiesNames.length, (index) => null);
     _selectedPersonValues = List.generate(_activitiesNames.length, (index) => null);
     _selectedRoleValues = List.generate(_activitiesNames.length,(index)=>null);
-
-    print(' _dropDownPersonList value:${_dropDownPersonList}');
-    print('_selectedClassValues value:${_selectedClassValues}');
-    print('_selectedPersonValues value:${_selectedPersonValues}');
+    
   }
 
 
@@ -134,18 +132,12 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
           if(isDesktop)
             Container(
                     margin: EdgeInsets.only(left: 17.0),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                        _startDateSelected && _endDateSelected 
-                           ? SizedBox()
-                           : Text(
-                              'Please select both start and end dates',
-                              style: TextStyle(color: Colors.red),  
-                           ),
-                        SizedBox(
-                        height: 10,
-                        ),
+                       
+                     Row(
+                      children:[
                         Container(
                           width: 300,
                           child: TextField(
@@ -173,9 +165,21 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                             onTap:  () => _selectEndDate(context),
                           ),
                         ),
-                        ],
-                                
+                       ],
                       ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                     Container(
+                       margin: EdgeInsets.only(left: 200),
+                       child: _startDateSelected && _endDateSelected 
+                             ? SizedBox()
+                             : Text(
+                                'Please select both start and end dates',
+                                style: TextStyle(color: Colors.red),  
+                             ),
+                     ),
+                      ],),
                   )
           else
               Container(
@@ -183,12 +187,6 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                        _startDateSelected && _endDateSelected 
-                           ? SizedBox()
-                           : Text(
-                              'Please select both start and end dates',
-                              style: TextStyle(color: Colors.red),  
-                           ),
                         SizedBox(
                         height: 10,
                         ),
@@ -219,8 +217,19 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                             onTap:  () => _selectEndDate(context),
                           ),
                         ),
-                        ],
-                                
+                         SizedBox(
+                          height: 20,
+                        ),
+                         Container(
+                           margin: EdgeInsets.only(left: 30),
+                           child: _startDateSelected && _endDateSelected 
+                             ? SizedBox()
+                             : Text(
+                                'Please select both start and end dates',
+                                style: TextStyle(color: Colors.red),  
+                             ),
+                         ),
+                        ],                              
                       ),
                   ),  
             SizedBox(
@@ -242,8 +251,6 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                           _dutyRelatedParticipantsFilterAndStore.clear();
                           _dutyParticipants = (snapshot.data as List<DutyParticipant>);
                           _dutyRelatedParticipantsFilterAndStore = _dutyParticipants.where((filterParticipant)=>filterParticipant.activity!.name ==  _activitiesNames[tableIndex]).toList();
-                         // print('dutyRelatedParticipantsFilterAndStore: ${_dutyRelatedParticipantsFilterAndStore}');
-                         // print('length is: ${_dutyRelatedParticipantsFilterAndStore.length}');
                           return  Container(
                               width: 1200,
                               margin: EdgeInsets.only(left: 10.0),
@@ -258,8 +265,6 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                     
                                     if (org.child_organizations.length > 0)                             
                                             Container(
-                                              // child: SingleChildScrollView(
-                                              //   scrollDirection: Axis.horizontal,
                                               child: Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: <Widget>[                                                
@@ -295,8 +300,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                                       SizedBox(
                                                         height: 20,
                                                       ), 
-                                                    //SingleChildScrollView(
-                                                      //child:
+                                                    
                                               if(isDesktop)
                                                     Row(
                                                       mainAxisAlignment: MainAxisAlignment.start,
@@ -486,12 +490,9 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
 
                                                       ] 
                                                     ),
-                                              //else block close
-                                                    
-                                                    //),
+                                             
                                                     ],
                                                   ),
-                                              //),
                                             ),        
                                    
                                       SingleChildScrollView(
@@ -513,7 +514,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                     ),
                  );
               }
-              //}
+            
               return Container(
                             margin: EdgeInsets.only(top: 10),
                             child: SpinKitCircle(
@@ -623,15 +624,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
   }
 
   Widget buildClassDropDownButton(Organization org,int tableIndex,List<DutyParticipant> dutyParticipants){
-  //  print("org name:${org}");
-  //  print("organization name in english: ${campusAppsPortalInstance.getUserPerson().organization!.name!.name_en!}");
-  //  print("organization: ${campusAppsPortalInstance.getUserPerson().organization}");
-  //  for(var org in campusAppsPortalInstance.getUserPerson().organization!.child_organizations){
-  //     print("org name(child organizations):${org.name!.name_en}");
-  //  }
-  //  for(var org in org.child_organizations){
-  //     print("org name(org.child_organizations):${org.name!.name_en}");
-  //  }
+  
    return DropdownButton<Organization>(
     value: _selectedClassValues[tableIndex],
     items: org.child_organizations.map<DropdownMenuItem<Organization>>((Organization  value){
@@ -664,8 +657,6 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
 
   Widget buildPersonDropDownButton(int tableIndex){
 
-  //if(_dropDownPersonList.isNotEmpty){
-
    return DropdownButton<String>(
     value:_selectedPersonValues[tableIndex],
     items: _dropDownPersonList[tableIndex].map<DropdownMenuItem<String>>((Person value){
@@ -686,19 +677,11 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
      
         setState(() {
           _selectedPersonValues[tableIndex] = newValue;
-          // print('table index(person drop down button):${tableIndex}');
-          // print('selected person array values(person drop down button):${_selectedPersonValues}');
-          // print('selected person values:${_selectedPersonValues[tableIndex]}');
-          // print('selected drop down array(person drop down button):${_dropDownPersonList}');
-          // print('selected drop down values(person drop down button):${_dropDownPersonList[tableIndex]}');
+          
         });
        },
       
       );
-  //  }else{
-  //    return Text('Choose a  option in the first dropdown activate the second drop down');
-  //  }
-  
   }
 
  Widget buildRoleDropDownButton(int tableIndex){
@@ -716,10 +699,6 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
        
         setState(() {
           _selectedRoleValues[tableIndex] = newValue;
-          // print('table index(Role drop down button):${tableIndex}');
-          // print('selected Role array values(Role drop down button):${_selectedRoleValues}');
-          // print('selected Role values:${_selectedRoleValues[tableIndex]}');
-         
         });
       
       if(_activitiesNames[tableIndex] !=null && _selectedRoleValues[tableIndex] !=null && _selectedPersonValues[tableIndex] !=null){
@@ -909,17 +888,34 @@ Future<void> _selectEndDate(BuildContext context) async{
         _endDateSelected = true;  // Set to true when end date is selected
       });
 
+     if(_startDateSelected && _endDateSelected){
+
+      DateTime originalStartDateTime = DateTime.parse(_startDate.text);
+      DateTime originalEndDateTime = DateTime.parse(_endDate.text);
+
       var dutyRotationMetadata = DutyRotationMetaDetails(
          id: _rotationMetaDetails.id ?? 0,
-         start_date:DateTime.parse(_startDate.text).toUtc().toIso8601String(),
-         end_date:DateTime.parse(_endDate.text).toUtc().toIso8601String(),
+         start_date:DateTime.utc(
+                      originalStartDateTime.year,
+                      originalStartDateTime.month,
+                      originalStartDateTime.day,
+                      0, 0, 0, 0, 0).toIso8601String(),
+
+         end_date:DateTime.utc(
+                      originalEndDateTime.year,
+                      originalEndDateTime.month,
+                      originalEndDateTime.day,
+                      0, 0, 0, 0, 0).toIso8601String(),
          organization_id: campusAppsPortalInstance.getUserPerson().organization!.id!,
        );
-        print("duty rotation meta data: ${dutyRotationMetadata}");
+        print("duty rotation meta data start date: ${dutyRotationMetadata.start_date}");
+        print("duty rotation meta data end  date: ${dutyRotationMetadata.end_date}");
         var result = await updateDutyRotationMetadata(dutyRotationMetadata);
         print("update duty rotation ${result}");
         
         _rotationMetaDetails = await fetchDutyRotationMetadataByOrganization(campusAppsPortalInstance.getUserPerson().organization!.id!);
+      
+     }
 
     }else if(picked == null){
       setState(() {
@@ -930,8 +926,4 @@ Future<void> _selectEndDate(BuildContext context) async{
     }
 }
 
-
-
 }
-
-

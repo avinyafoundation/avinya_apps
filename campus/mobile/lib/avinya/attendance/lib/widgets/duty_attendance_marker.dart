@@ -187,16 +187,17 @@ List<bool> selectedRows = [];
   Widget build(BuildContext context) {
 
     return Container(
+      margin: EdgeInsets.only(left: 10.0),
       child: Column(
         children: [
           SizedBox(
-                  height: 60,
+                  height: 20,
           ),
           Row(
             children: [
               
               Icon(
-                  Icons.work_outline,
+                  IconData(0xe6f2, fontFamily: 'MaterialIcons'),
                   size: 25,
                   color: Colors.blueAccent,
                 ),
@@ -223,7 +224,7 @@ List<bool> selectedRows = [];
             ],
           ),
           SizedBox(
-                    height: 50,
+                    height: 20,
               ),  
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
