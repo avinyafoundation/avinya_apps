@@ -53,6 +53,8 @@ class _CampusAttendanceManagementSystemState
         '/avinya_types',
         '/#access_token',
         '/person_attendance_report',
+        '/duty_participants',
+        '/duty_attendance_marker',
         '/late_attendance_report',
         '/qr_attendance_marker'
       ],
@@ -130,6 +132,12 @@ class _CampusAttendanceManagementSystemState
     final lateAttendanceReportRoute = ParsedRoute(
         '/late_attendance_report', '/late_attendance_report', {}, {});
 
+    final dutyParticipantsRoute = ParsedRoute(
+        '/duty_participants','/duty_participants', {}, {});
+
+    final dutyAttendanceMarkerRoute = ParsedRoute(
+        '/duty_attendance_marker','/duty_attendance_marker', {}, {});
+
     final qrAttendanceMarkerRoute =
         ParsedRoute('/qr_attendance_marker', '/qr_attendance_marker', {}, {});
 
@@ -152,8 +160,13 @@ class _CampusAttendanceManagementSystemState
       return dailyAttendanceReportRoute;
     } else if (signedIn && from == weeklyPaymentReportRoute) {
       return weeklyPaymentReportRoute;
-    } else if (signedIn && from == personAttendanceReportRoute) {
+    } else if (signedIn && from == personAttendanceReportRoute){
       return personAttendanceReportRoute;
+    } else if (signedIn && from == dutyParticipantsRoute){
+      return dutyParticipantsRoute; 
+    } else if (signedIn && from == dutyAttendanceMarkerRoute){
+      return dutyAttendanceMarkerRoute; 
+    }else if (signedIn && from == qrAttendanceMarkerRoute) {
     } else if (signedIn && from == lateAttendanceReportRoute) {
       return lateAttendanceReportRoute;
     } else if (signedIn && from == qrAttendanceMarkerRoute) {

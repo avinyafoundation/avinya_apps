@@ -8,6 +8,7 @@ import 'package:attendance/data/evaluation.dart';
 // import 'package:attendance/widgets/evaluation_list.dart';
 import 'dart:convert';
 import 'package:gallery/avinya/attendance/lib/widgets/evaluation_list.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gallery/avinya/attendance/lib/widgets/qr_image.dart';
 
 class AttendanceMarker extends StatefulWidget {
@@ -354,7 +355,14 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
         }
 
         // By default, show a loading spinner.
-        return const CircularProgressIndicator();
+        return  Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: SpinKitCircle(
+                          color: (Colors
+                              .blue), // Customize the color of the indicator
+                          size: 70, // Customize the size of the indicator
+                        ),
+            );
       },
     );
     //
