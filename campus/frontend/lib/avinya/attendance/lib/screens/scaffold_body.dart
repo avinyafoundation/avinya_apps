@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:attendance/screens/weekly_payment_report.dart';
 import 'package:attendance/screens/person_attendance_report.dart';
 import 'package:attendance/screens/late_attendance_report.dart';
+import 'package:attendance/screens/attendance_dashboard.dart';
 
 import '../routing.dart';
 import '../widgets/fade_transition_page.dart';
@@ -41,8 +42,15 @@ class SMSScaffoldBody extends StatelessWidget {
             key: ValueKey('activites'),
             child: ActivityScreen(),
           )
-        else if (currentRoute.pathTemplate.startsWith('/attendance_marker') ||
+        else if (currentRoute.pathTemplate
+                .startsWith('/attendance_dashboard') ||
             currentRoute.pathTemplate == '/')
+          const FadeTransitionPage<void>(
+            key: ValueKey('/'),
+            child: AttendanceDashboardScreen(),
+          )
+        else if (currentRoute.pathTemplate.startsWith('/attendance_marker') ||
+            currentRoute.pathTemplate == '/attendance_marker')
           const FadeTransitionPage<void>(
             key: ValueKey('attendance_marker'),
             child: AttendanceMarkerScreen(),

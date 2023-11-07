@@ -10,6 +10,7 @@ import 'scaffold_body.dart';
 
 class SMSScaffold extends StatelessWidget {
   static const pageNames = [
+    '/attendance_dashboard',
     '/attendance_marker',
     '/bulk_attendance_marker/classes',
     '/daily_attendance_report',
@@ -37,6 +38,10 @@ class SMSScaffold extends StatelessWidget {
         campusAppsPortalInstance.isSecurity ||
         campusAppsPortalInstance.isFoundation) {
       destinations = const [
+        AdaptiveScaffoldDestination(
+          title: 'Attendance Dashboard',
+          icon: Icons.dashboard,
+        ),
         AdaptiveScaffoldDestination(
           title: 'Self Attendance Marker',
           icon: Icons.person_outline,

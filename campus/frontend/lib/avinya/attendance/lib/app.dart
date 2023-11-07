@@ -3,6 +3,7 @@ import 'dart:developer';
 // import 'package:attendance/src/data/campus_attendance_system.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery/auth.dart';
+import 'package:gallery/data/campus_apps_portal.dart';
 
 // import 'auth.dart';
 import 'routing.dart';
@@ -42,6 +43,7 @@ class _CampusAttendanceManagementSystemState
         '/activity/:id',
         '/activity/new',
         '/activity/edit',
+        '/attendance_dashboard',
         '/attendance_marker',
         '/bulk_attendance_marker',
         '/bulk_attendance_marker/classes',
@@ -55,7 +57,9 @@ class _CampusAttendanceManagementSystemState
         '/qr_attendance_marker'
       ],
       guard: _guard,
-      initialRoute: '/attendance_marker',
+      initialRoute: campusAppsPortalInstance.isStudent
+          ? '/attendance_marker'
+          : '/attendance_dashboard',
     );
 
     _routeState = RouteState(_routeParser);
@@ -112,6 +116,8 @@ class _CampusAttendanceManagementSystemState
 
     final attendanceMarkerRoute =
         ParsedRoute('/attendance_marker', '/attendance_marker', {}, {});
+    final attendanceDashboardRoute =
+        ParsedRoute('/attendance_dashboard', '/attendance_dashboard', {}, {});
     final bulkAttendanceMarkerRoute = ParsedRoute(
         '/bulk_attendance_marker', '/bulk_attendance_marker', {}, {});
     final dailyAttendanceReportRoute = ParsedRoute(
@@ -138,6 +144,8 @@ class _CampusAttendanceManagementSystemState
       return activitiesRoute;
     } else if (signedIn && from == attendanceMarkerRoute) {
       return attendanceMarkerRoute;
+    } else if (signedIn && from == attendanceDashboardRoute) {
+      return attendanceDashboardRoute;
     } else if (signedIn && from == bulkAttendanceMarkerRoute) {
       return bulkAttendanceMarkerRoute;
     } else if (signedIn && from == dailyAttendanceReportRoute) {
@@ -153,7 +161,10 @@ class _CampusAttendanceManagementSystemState
     }
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {
-      return ParsedRoute('/attendance_marker', '/attendance_marker', {}, {});
+      campusAppsPortalInstance.isStudent
+          ? ParsedRoute('/attendance_marker', '/attendance_marker', {}, {})
+          : ParsedRoute(
+              '/attendance_dashboard', '/attendance_dashboard', {}, {});
     }
     log("_guard signed in2 $signedIn");
     // else if (signedIn && jwt_sub != null) {
@@ -166,7 +177,9 @@ class _CampusAttendanceManagementSystemState
     bool signedIn = await _auth.getSignedIn();
     log("_handleAuthStateChanged signed in $signedIn");
     if (!signedIn) {
-      _routeState.go('/attendance_marker');
+      campusAppsPortalInstance.isStudent
+          ? _routeState.go('/attendance_marker')
+          : _routeState.go('/attendance_dashboard');
     }
   }
 

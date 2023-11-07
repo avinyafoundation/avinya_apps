@@ -97,7 +97,8 @@ class _WeeklyPaymentReportScreenState extends State<WeeklyPaymentReportScreen>
           this.formattedStartDate = formattedStartDate;
           this.formattedEndDate = formattedEndDate;
           this._fetchedStudentList = _fetchedStudentList;
-          this.isFetching = false;
+          // this.isFetching = false;
+          this._fetchedExcelReportData = _fetchedExcelReportData;
         });
       } catch (e) {
         setState(() {
