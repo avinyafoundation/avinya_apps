@@ -87,6 +87,24 @@ Future<List<Activity>> fetchActivitys() async {
   }
 }
 
+Future<List<Activity>> fetchActivitiesByAvinyaType(int avinyaTypeID) async{
+
+final response = await http
+  .get(Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/activities_by_avinya_type/$avinyaTypeID'));
+
+  if (response.statusCode == 200){
+    var resultsJson = json.decode(response.body).cast<Map<String,dynamic>>();
+    List<Activity>  activitiesByAvinyaType = await resultsJson
+        .map<Activity>((json) => Activity.fromJson(json))
+        .toList();
+    
+    return activitiesByAvinyaType;
+
+  }else{
+    throw Exception('Failed to load Activities');
+  }
+}
+
 Future<Activity> fetchActivity(String name) async {
   final response = await http.get(
     Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/activity/$name'),

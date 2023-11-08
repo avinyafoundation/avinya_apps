@@ -1,9 +1,11 @@
 // ignore_for_file: non_constant_identifier_names, unused_element, use_build_context_synchronously, use_key_in_widget_constructors, library_private_types_in_public_api
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/avinya/attendance/lib/data/attendance_data.dart';
 import '../data.dart';
@@ -26,11 +28,12 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
   bool markedAttendance = false;
   bool inValidQr = false;
   bool isFirstTime = true;
+  bool isFetching = false;
   List<ActivityAttendance> _personAttendanceToday = [];
   List<Evaluation> _fechedEvaluations = [];
 
   String sign_in_time = "ee";
-
+  Timer? _debounceTimer;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
   AttendanceData qrCodeData = AttendanceData(
@@ -64,17 +67,30 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
       try {
         AttendanceData deserializedQrCodeData =
             AttendanceData.fromJson(jsonDecode(scanData.code!));
-
-        setState(() {
-          qrCodeData = deserializedQrCodeData;
-          inValidQr = false;
-        });
-        if (qrCodeData.person_id != 0) _handleCheckOut();
+        if (!isFetching) {
+          setState(() {
+            qrCodeData = deserializedQrCodeData;
+            inValidQr = false;
+            isFetching = true;
+          });
+          if (qrCodeData.person_id != 0) _performCheckOut();
+        }
       } catch (e) {
         setState(() {
           inValidQr = true;
         });
       }
+    });
+  }
+
+  Future<void> _performCheckOut() async {
+    if (_debounceTimer != null && _debounceTimer!.isActive) {
+      // If a timer is already active, cancel it to reset the debounce period
+      _debounceTimer!.cancel();
+    }
+
+    _debounceTimer = Timer(const Duration(seconds: 5), () {
+      _handleCheckOut();
     });
   }
 
@@ -89,6 +105,7 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
     if (_personAttendanceToday.length == 1 && qrCodeData.sign_out_time != '') {
       setState(() {
         isFirstTime = true;
+        isFetching = false;
       });
       // call the API to check-out
       await createActivityAttendance(ActivityAttendance(
@@ -97,11 +114,17 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
         sign_out_time: DateTime.now().toString(),
         out_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
       ));
-      await refreshPersonActivityAttendanceToday();
+      // await refreshPersonActivityAttendanceToday();
+      setState(() {
+        markedAttendance = true;
+        isFirstTime = false;
+        isFetching = false;
+      });
     } else {
       setState(() {
         markedAttendance = true;
         isFirstTime = false;
+        isFetching = false;
       });
     }
 
@@ -109,24 +132,6 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
 
     print('Checked in for today.');
   }
-
-  // Future<void> _handleCheckOut() async {
-  //   var activityInstance =
-  //       await campusAttendanceSystemInstance.getCheckoutActivityInstance(
-  //           campusAppsPortalInstance.activityIds['school-day']);
-  //   // call the API to check-out
-  //   await createActivityAttendance(ActivityAttendance(
-  //     activity_instance_id: activityInstance.id,
-  //     person_id: campusAppsPortalInstance.getUserPerson().id,
-  //     sign_out_time: DateTime.now().toString(),
-  //     out_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
-  //   ));
-  //   await refreshPersonActivityAttendanceToday();
-  //   setState(() {
-  //     //_isCheckedOut = true;
-  //   });
-  //   print('Checked out for today.');
-  // }
 
   Future<List<ActivityAttendance>>
       refreshPersonActivityAttendanceToday() async {
@@ -139,25 +144,6 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
     if (_personAttendanceToday.length > 1) {
       _isCheckedOut = _personAttendanceToday[1].sign_out_time != null;
     }
-
-    // if (!_isCheckedIn) {
-    //   var activityInstance =
-    //       await campusAttendanceSystemInstance.getCheckinActivityInstance(
-    //           campusAppsPortalInstance.activityIds['homeroom']!);
-    //   _fechedEvaluations =
-    //       await getActivityInstanceEvaluations(activityInstance.id!);
-
-    //   if (_fechedEvaluations.indexWhere((element) =>
-    //           element.evaluator_id ==
-    //           qrCodeData.person_id!) ==
-    //       -1) {
-    //     _isCheckedIn = false;
-    //   } else {
-    //     _isCheckedIn = true;
-    //     _isCheckedOut = true;
-    //     _isAbsent = true;
-    //   }
-    // }
 
     return _personAttendanceToday;
   }
@@ -194,9 +180,19 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
                       ),
                     ),
                     const SizedBox(height: 20),
+                    if (isFetching)
+                      Container(
+                        margin: const EdgeInsets.only(top: 10),
+                        child: const SpinKitCircle(
+                          color: (Colors
+                              .blue), // Customize the color of the indicator
+                          size: 50, // Customize the size of the indicator
+                        ),
+                      ),
                     if (!inValidQr) ...[
                       if (qrCodeData.preferred_name != '' &&
-                          qrCodeData.sign_out_time != '') ...[
+                          qrCodeData.sign_out_time != '' &&
+                          markedAttendance) ...[
                         Column(
                           children: [
                             Container(

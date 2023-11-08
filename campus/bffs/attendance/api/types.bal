@@ -185,6 +185,7 @@ public type Person record {
     string? passport_no?;
     string? record_type?;
     Address? mailing_address?;
+    string? branch_code?;
     int[]? child_student?;
     string? bank_account_name?;
     int? avinya_phone?;
@@ -192,6 +193,7 @@ public type Person record {
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    string? academy_org_name?;
     string? asgardeo_id?;
     string? updated?;
     string? preferred_name?;
@@ -229,6 +231,26 @@ public type Vacancy record {
     int? head_count?;
     int? id?;
     string? record_type?;
+};
+
+public type DutyParticipant record {
+    string? role?;
+    Activity? activity?;
+    Person? person?;
+    string? created?;
+    int? activity_id?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+};
+
+public type DutyRotationMetaDetails record {
+    string? end_date?;
+    int? organization_id?;
+    int? id?;
+    string? record_type?;
+    string? start_date?;
 };
 
 public type GetAvinyaTypesResponse record {|
@@ -505,4 +527,141 @@ public type UpdateEvaluationsResponse record {|
         int? activity_instance_id;
         string? updated;
     |}? update_evaluation;
+|};
+
+public type GetDutyParticipantsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string? name;
+            string? description;
+        |}? activity;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? digital_id;
+            record {|
+                record {|
+                    string name_en;
+                |} name;
+                string? description;
+            |}? organization;
+        |}? person;
+        string? role;
+    |}[] duty_participants;
+|};
+
+public type CreateDutyForParticipantResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_id;
+        int? person_id;
+        string? role;
+        string? created;
+    |}? add_duty_for_participant;
+|};
+
+public type GetActivitiesByAvinyaTypeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? name;
+        string? description;
+        string? notes;
+    |}[] activities_by_avinya_type;
+|};
+
+public type UpdateDutyRotationMetaDataResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? start_date;
+        string? end_date;
+        int? organization_id;
+    |}? update_duty_rotation_metadata;
+|};
+
+public type GetDutyRotationMetadataByOrganizationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? start_date;
+        string? end_date;
+        int? organization_id;
+    |}? duty_rotation_metadata_by_organization;
+|};
+
+public type GetDutyParticipantsByDutyActivityIdResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string? name;
+            string? description;
+        |}? activity;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? digital_id;
+            record {|
+                record {|
+                    string name_en;
+                |} name;
+                string? description;
+            |}? organization;
+        |}? person;
+        string? role;
+    |}[] duty_participants_by_duty_activity_id;
+|};
+
+public type AddDutyAttendanceResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_instance_id;
+        int? person_id;
+        string? sign_in_time;
+        string? in_marked_by;
+        string? created;
+    |}? add_duty_attendance;
+|};
+
+public type GetDutyAttendanceTodayResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? in_marked_by;
+        string? created;
+    |}[] duty_attendance_today;
+|};
+
+public type GetDutyParticipantResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string? name;
+            string? description;
+        |}? activity;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? digital_id;
+            record {|
+                record {|
+                    string name_en;
+                |} name;
+                string? description;
+            |}? organization;
+        |}? person;
+        string? role;
+    |}? duty_participant;
 |};

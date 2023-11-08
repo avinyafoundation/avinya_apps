@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:asset_admin/data.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ResourceAllocationReport extends StatefulWidget {
   const ResourceAllocationReport({super.key});
@@ -164,12 +165,20 @@ bool organizationsLoaded = false;
                                   );
                                  }).toList(),            
                         ),
-                        if (!organizationsLoaded &&  !campusAppsPortalInstance.isTeacher)
-                          CircularProgressIndicator(),
+                        if(!campusAppsPortalInstance.isTeacher)
+                        if (!organizationsLoaded)
+                          Container(
+                            margin: EdgeInsets.only(top: 10),
+                            child: SpinKitCircle(
+                            color: (Colors
+                              .blue), // Customize the color of the indicator
+                            size: 40, // Customize the size of the indicator
+                            ),
+                          ),
                           SizedBox(width: 20),
                   Container(
                     margin: EdgeInsets.only(
-                      left: 30, top: 20, bottom: 10),
+                      left: 10, top: 20, bottom: 10),
                     child: Row(
                       children: <Widget>[
                         Text('Select a Asset Type:'),
@@ -209,8 +218,14 @@ bool organizationsLoaded = false;
                                  }).toList(),            
                         ),
                          if (!assetTypesLoaded)
-                          CircularProgressIndicator(),
-                          
+                          Container(
+                            margin: EdgeInsets.only(top: 10),
+                            child: SpinKitCircle(
+                            color: (Colors
+                              .blue), // Customize the color of the indicator
+                            size: 40, // Customize the size of the indicator
+                           ),
+                          ),                        
                       ],
                     ),
                   ),

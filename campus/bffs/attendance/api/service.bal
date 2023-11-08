@@ -446,5 +446,200 @@ service / on new http:Listener(9091) {
                 ":: Detail: " + getActivityInstanceEvaluationsResponse.detail().toString());
         }
     }
+
+    resource function get duty_participants/[int organization_id]() returns DutyParticipant[]|error {
+        GetDutyParticipantsResponse|graphql:ClientError getDutyParticipantsResponse = globalDataClient->getDutyParticipants(organization_id);
+        if(getDutyParticipantsResponse is GetDutyParticipantsResponse) {
+            DutyParticipant[] dutyParticipants = [];
+            foreach var duty_participant in getDutyParticipantsResponse.duty_participants {
+                DutyParticipant|error dutyParticipant = duty_participant.cloneWithType(DutyParticipant);
+                if(dutyParticipant is DutyParticipant) {
+                    dutyParticipants.push(dutyParticipant);
+                } else {
+                    log:printError("Error while processing Application record received",dutyParticipant);
+                    return error("Error while processing Application record received: " + dutyParticipant.message() + 
+                        ":: Detail: " + dutyParticipant.detail().toString());
+                }
+            }
+
+            return dutyParticipants;
+            
+        } else {
+            log:printError("Error while getting application", getDutyParticipantsResponse );
+            return error("Error while getting application: " + getDutyParticipantsResponse .message() + 
+                ":: Detail: " + getDutyParticipantsResponse.detail().toString());
+        }
+    }
+
+    resource function post duty_for_participant (@http:Payload DutyParticipant dutyParticipant) returns DutyParticipant|error {
+        CreateDutyForParticipantResponse|graphql:ClientError createDutyForParticipantResponse = globalDataClient->createDutyForParticipant(dutyParticipant);
+        if(createDutyForParticipantResponse is CreateDutyForParticipantResponse) {
+            DutyParticipant|error duty_for_participant_record = createDutyForParticipantResponse.add_duty_for_participant.cloneWithType(DutyParticipant);
+            if(duty_for_participant_record is DutyParticipant) {
+                return duty_for_participant_record;
+            } else {
+                log:printError("Error while processing Application record received", duty_for_participant_record);
+                return error("Error while processing Application record received: " + duty_for_participant_record.message() + 
+                    ":: Detail: " + duty_for_participant_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", createDutyForParticipantResponse);
+            return error("Error while creating application: " + createDutyForParticipantResponse.message() + 
+                ":: Detail: " + createDutyForParticipantResponse.detail().toString());
+        }
+    }
+
+    resource function get activities_by_avinya_type/[int avinya_type_id]() returns Activity[]|error {
+        GetActivitiesByAvinyaTypeResponse|graphql:ClientError getActivitiesByAvinyaTypeResponse = globalDataClient->getActivitiesByAvinyaType(avinya_type_id);
+        if(getActivitiesByAvinyaTypeResponse is GetActivitiesByAvinyaTypeResponse) {
+            Activity[] activitiesByAvinyaType = [];
+            foreach var activity_by_avinya_type  in getActivitiesByAvinyaTypeResponse.activities_by_avinya_type {
+                Activity|error activityByAvinyaType = activity_by_avinya_type.cloneWithType(Activity);
+                if(activityByAvinyaType is Activity) {
+                    activitiesByAvinyaType.push(activityByAvinyaType);
+                } else {
+                    log:printError("Error while processing Application record received",activityByAvinyaType);
+                    return error("Error while processing Application record received: " + activityByAvinyaType.message() + 
+                        ":: Detail: " + activityByAvinyaType.detail().toString());
+                }
+            }
+
+            return activitiesByAvinyaType;
+            
+        } else {
+            log:printError("Error while getting application", getActivitiesByAvinyaTypeResponse );
+            return error("Error while getting application: " + getActivitiesByAvinyaTypeResponse .message() + 
+                ":: Detail: " + getActivitiesByAvinyaTypeResponse.detail().toString());
+        }
+    }
+
+    resource function delete duty_for_participant/[int id]() returns json|error {
+        json|error delete_count = globalDataClient->deleteDutyForParticipant(id);
+        return  delete_count;
+    }
+
+
+    resource function put update_duty_rotation_metadata(@http:Payload DutyRotationMetaDetails dutyRotationMetadata) returns DutyRotationMetaDetails|error {
+        UpdateDutyRotationMetaDataResponse|graphql:ClientError updateDutyRotationMetaDataResponse = globalDataClient->updateDutyRotationMetaData(dutyRotationMetadata);
+        if(updateDutyRotationMetaDataResponse is  UpdateDutyRotationMetaDataResponse) {
+            DutyRotationMetaDetails|error duty_rotation__meta_data_record = updateDutyRotationMetaDataResponse.update_duty_rotation_metadata.cloneWithType(DutyRotationMetaDetails);
+            if(duty_rotation__meta_data_record is  DutyRotationMetaDetails) {
+                return duty_rotation__meta_data_record;
+            } else {
+                log:printError("Error while processing Application record received", duty_rotation__meta_data_record);
+                return error("Error while processing Application record received: " + duty_rotation__meta_data_record.message() + 
+                    ":: Detail: " + duty_rotation__meta_data_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while updating application", updateDutyRotationMetaDataResponse);
+            return error("Error while updating application: " + updateDutyRotationMetaDataResponse.message() + 
+                ":: Detail: " + updateDutyRotationMetaDataResponse.detail().toString());
+        }
+    }
+
+    resource function get duty_rotation_metadata_by_organization/[int organization_id]() returns DutyRotationMetaDetails|error {
+        GetDutyRotationMetadataByOrganizationResponse|graphql:ClientError getDutyRotationMetadataByOrganizationResponse = globalDataClient->getDutyRotationMetadataByOrganization(organization_id);
+        if(getDutyRotationMetadataByOrganizationResponse is GetDutyRotationMetadataByOrganizationResponse) {
+            DutyRotationMetaDetails|error duty_rotation_metadata_by_organization_record = getDutyRotationMetadataByOrganizationResponse.duty_rotation_metadata_by_organization.cloneWithType(DutyRotationMetaDetails);
+            if(duty_rotation_metadata_by_organization_record is DutyRotationMetaDetails) {
+                return duty_rotation_metadata_by_organization_record;
+            } else {
+                log:printError("Error while processing Application record received", duty_rotation_metadata_by_organization_record);
+                return error("Error while processing Application record received: " + duty_rotation_metadata_by_organization_record.message() + 
+                    ":: Detail: " + duty_rotation_metadata_by_organization_record.detail().toString());
+            }
+
+        }else if(getDutyRotationMetadataByOrganizationResponse is graphql:ClientError){
+
+            DutyRotationMetaDetails duty ={ end_date: (),start_date: (),organization_id:(),id:()};
+                
+            return duty;
+       } 
+    }
+
     
+    resource function get duty_participants_by_duty_activity_id/[int organization_id]/[int duty_activity_id]() returns DutyParticipant[]|error {
+        GetDutyParticipantsByDutyActivityIdResponse|graphql:ClientError getDutyParticipantsByDutyActivityIdResponse = globalDataClient->getDutyParticipantsByDutyActivityId(organization_id, duty_activity_id);
+        if(getDutyParticipantsByDutyActivityIdResponse is GetDutyParticipantsByDutyActivityIdResponse) {
+            DutyParticipant[] dutyParticipants = [];
+            foreach var duty_participant_by_duty_activity_id in getDutyParticipantsByDutyActivityIdResponse.duty_participants_by_duty_activity_id {
+                DutyParticipant|error dutyParticipantByDutyActivityId = duty_participant_by_duty_activity_id.cloneWithType(DutyParticipant);
+                if(dutyParticipantByDutyActivityId is DutyParticipant) {
+                    dutyParticipants.push(dutyParticipantByDutyActivityId);
+                } else {
+                    log:printError("Error while processing Application record received",dutyParticipantByDutyActivityId);
+                    return error("Error while processing Application record received: " + dutyParticipantByDutyActivityId.message() + 
+                        ":: Detail: " + dutyParticipantByDutyActivityId.detail().toString());
+                }
+            }
+
+            return dutyParticipants;
+            
+        } else {
+            log:printError("Error while getting application", getDutyParticipantsByDutyActivityIdResponse );
+            return error("Error while getting application: " + getDutyParticipantsByDutyActivityIdResponse .message() + 
+                ":: Detail: " + getDutyParticipantsByDutyActivityIdResponse.detail().toString());
+        }
+    }
+
+    resource function post duty_attendance (@http:Payload ActivityParticipantAttendance dutyAttendance) returns ActivityParticipantAttendance|error {
+        AddDutyAttendanceResponse|graphql:ClientError addDutyAttendanceResponse = globalDataClient->addDutyAttendance(dutyAttendance);
+        if(addDutyAttendanceResponse is AddDutyAttendanceResponse) {
+            ActivityParticipantAttendance|error duty_attendance_record = addDutyAttendanceResponse.add_duty_attendance.cloneWithType(ActivityParticipantAttendance);
+            if(duty_attendance_record is ActivityParticipantAttendance) {
+                return duty_attendance_record;
+            } else {
+                log:printError("Error while processing Application record received", duty_attendance_record);
+                return error("Error while processing Application record received: " + duty_attendance_record.message() + 
+                    ":: Detail: " + duty_attendance_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", addDutyAttendanceResponse);
+            return error("Error while creating application: " + addDutyAttendanceResponse.message() + 
+                ":: Detail: " + addDutyAttendanceResponse.detail().toString());
+        }
+    }
+
+    resource function get duty_attendance_today/[int organization_id]/[int activity_id]() returns ActivityParticipantAttendance[]|error {
+        GetDutyAttendanceTodayResponse|graphql:ClientError getDutyAttendanceTodayResponse = globalDataClient->getDutyAttendanceToday(organization_id, activity_id);
+        if(getDutyAttendanceTodayResponse is GetDutyAttendanceTodayResponse) {
+            ActivityParticipantAttendance[] dutyParticipantAttendances = [];
+            foreach var duty_attendance_record in getDutyAttendanceTodayResponse.duty_attendance_today {
+                ActivityParticipantAttendance|error dutyParticipantAttendance = duty_attendance_record.cloneWithType(ActivityParticipantAttendance);
+                if(dutyParticipantAttendance is ActivityParticipantAttendance) {
+                    dutyParticipantAttendances.push(dutyParticipantAttendance);
+                } else {
+                    log:printError("Error while processing Application record received", dutyParticipantAttendance);
+                    return error("Error while processing Application record received: " + dutyParticipantAttendance.message() + 
+                        ":: Detail: " + dutyParticipantAttendance.detail().toString());
+                }
+            }
+
+            return dutyParticipantAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getDutyAttendanceTodayResponse);
+            return error("Error while creating application: " + getDutyAttendanceTodayResponse.message() + 
+                ":: Detail: " + getDutyAttendanceTodayResponse.detail().toString());
+        }
+    }
+
+    resource function get duty_participant/[int person_id]() returns DutyParticipant|error {
+        GetDutyParticipantResponse|graphql:ClientError getDutyParticipantResponse = globalDataClient->getDutyParticipant(person_id);
+        if(getDutyParticipantResponse is GetDutyParticipantResponse) {
+            DutyParticipant|error duty_participant_record = getDutyParticipantResponse.duty_participant.cloneWithType(DutyParticipant);
+            if(duty_participant_record is DutyParticipant) {
+                return duty_participant_record;
+            } else {
+                log:printError("Error while processing Application record received",duty_participant_record);
+                return error("Error while processing Application record received: " + duty_participant_record.message() + 
+                    ":: Detail: " + duty_participant_record.detail().toString());
+            }
+        }else if(getDutyParticipantResponse is graphql:ClientError){
+
+            DutyParticipant dutyParticipant ={ role: (),activity: (),person:(),id:()};
+                
+            return dutyParticipant;
+       }        
+    }
 }
