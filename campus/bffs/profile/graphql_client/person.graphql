@@ -80,6 +80,9 @@ query getPerson($id:String!){
       }
       parent_organizations{
         id
+        parent_organizations{
+            id
+        }
       }
     }
     avinya_type {

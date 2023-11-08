@@ -79,7 +79,9 @@ void main() async {
   log('signedIn 1: $signedIn! ');
 
   signedIn = await galleryApp._auth.getSignedIn();
+  print("signed in real value : ${signedIn}");
   campusAppsPortalInstance.setSignedIn(signedIn);
+  print("signed in 2 real value : ${signedIn}");
   runApp(GalleryApp());
 }
 

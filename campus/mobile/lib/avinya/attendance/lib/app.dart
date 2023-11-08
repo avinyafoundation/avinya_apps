@@ -51,7 +51,9 @@ class _CampusAttendanceManagementSystemState
         '/avinya_types',
         '/#access_token',
         '/person_attendance_report',
-        '/qr_attendance_marker'
+        '/qr_attendance_marker',
+        '/duty_participants',
+        '/duty_attendance_marker',
       ],
       guard: _guard,
       initialRoute: '/attendance_marker',
@@ -124,6 +126,12 @@ class _CampusAttendanceManagementSystemState
     final qrAttendanceMarkerRoute =
         ParsedRoute('/qr_attendance_marker', '/qr_attendance_marker', {}, {});
 
+    final dutyParticipantsRoute = ParsedRoute(
+        '/duty_participants','/duty_participants', {}, {});
+
+    final dutyAttendanceMarkerRoute = ParsedRoute(
+        '/duty_attendance_marker','/duty_attendance_marker', {}, {});
+
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
     // log("_guard JWT sub ${jwt_sub}");
@@ -145,6 +153,10 @@ class _CampusAttendanceManagementSystemState
       return personAttendanceReportRoute;
     } else if (signedIn && from == qrAttendanceMarkerRoute) {
       return qrAttendanceMarkerRoute;
+    }else if (signedIn && from == dutyParticipantsRoute){
+      return dutyParticipantsRoute; 
+    } else if (signedIn && from == dutyAttendanceMarkerRoute){
+      return dutyAttendanceMarkerRoute; 
     }
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {
