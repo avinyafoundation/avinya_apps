@@ -275,7 +275,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                                                 SizedBox(
                                                                  width: 10,
                                                                 ),
-                                                                Icon(
+                                                                const Icon(
                                                                   IconData(0xe6f2, fontFamily: 'MaterialIcons'),
                                                                   size: 25,
                                                                   color: Colors.blueAccent,
