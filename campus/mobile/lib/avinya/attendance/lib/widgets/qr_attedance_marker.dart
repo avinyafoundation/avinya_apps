@@ -37,6 +37,7 @@ class _QrAttendanceMarkerState extends State<QrAttendanceMarker> {
     activity_instance_id: 0,
     person_id: 0,
     preferred_name: '',
+    organization: '',
     sign_in_time: '',
     sign_out_time: '',
     in_marked_by: '',
@@ -170,46 +171,58 @@ class _QrAttendanceMarkerState extends State<QrAttendanceMarker> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => QrAttendanceCheckIn()),
-                      );
-                    },
-                    style: ButtonStyle(
-                      // increase the fontSize
-                      textStyle: MaterialStateProperty.all(
-                        const TextStyle(fontSize: 20),
+                  SizedBox(
+                    width: 150,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => QrAttendanceCheckIn()),
+                        );
+                      },
+                      style: ButtonStyle(
+                        // increase the fontSize
+                        textStyle: MaterialStateProperty.all(
+                          const TextStyle(fontSize: 20),
+                        ),
+                        elevation: MaterialStateProperty.all(
+                            20), // increase the elevation
+                        // Add outline around button
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.greenAccent),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.black),
                       ),
-                      elevation: MaterialStateProperty.all(
-                          20), // increase the elevation
-                      // Add outline around button
-                      backgroundColor:
-                          MaterialStateProperty.all(Colors.greenAccent),
-                      foregroundColor: MaterialStateProperty.all(Colors.black),
+                      child: const Text('Check-In'),
                     ),
-                    child: const Text('Check-In'),
                   ),
                   const SizedBox(width: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => QrAttendanceCheckOut()),
-                      );
-                    },
-                    style: ButtonStyle(
-                      textStyle: MaterialStateProperty.all(
-                          const TextStyle(fontSize: 20)),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.blue),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
+                  SizedBox(
+                    width: 150,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => QrAttendanceCheckOut()),
+                        );
+                      },
+                      style: ButtonStyle(
+                        // increase the fontSize
+                        textStyle: MaterialStateProperty.all(
+                          const TextStyle(fontSize: 20),
+                        ),
+                        elevation: MaterialStateProperty.all(
+                            20), // increase the elevation
+                        // Add outline around button
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.blueAccent),
+                        foregroundColor:
+                            MaterialStateProperty.all(Colors.black),
+                      ),
+                      child: const Text('Check-Out'),
                     ),
-                    child: const Text('Check-Out'),
                   ),
                 ]),
               ],

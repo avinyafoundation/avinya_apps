@@ -1,9 +1,14 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:gallery/avinya/attendance/lib/data/attendance_data.dart';
 import '../data.dart';
 import '../data/activity_attendance.dart';
 import 'package:attendance/data/evaluation.dart';
 // import 'package:attendance/widgets/evaluation_list.dart';
+import 'dart:convert';
 import 'package:gallery/avinya/attendance/lib/widgets/evaluation_list.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gallery/avinya/attendance/lib/widgets/qr_image.dart';
 
 class AttendanceMarker extends StatefulWidget {
@@ -25,24 +30,84 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
     var activityInstance =
         await campusAttendanceSystemInstance.getCheckinActivityInstance(
             campusAppsPortalInstance.activityIds['school-day']);
-    // call the API to check-in
-    await createActivityAttendance(ActivityAttendance(
+
+    final AttendanceData data = AttendanceData(
       activity_instance_id: activityInstance.id,
       person_id: campusAppsPortalInstance.getUserPerson().id,
+      preferred_name: campusAppsPortalInstance.getUserPerson().preferred_name,
+      organization:
+          campusAppsPortalInstance.getUserPerson().organization!.description,
       sign_in_time: DateTime.now().toString(),
+      sign_out_time: '',
       in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
+    );
+    // call the API to check-in
+    await createActivityAttendance(ActivityAttendance(
+      activity_instance_id: data.activity_instance_id,
+      person_id: data.person_id,
+      sign_in_time: data.sign_in_time,
+      in_marked_by: data.in_marked_by,
     ));
+    String dataJson = jsonEncode(data);
     await refreshPersonActivityAttendanceToday();
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: ((context) {
-          return QRImage(sign_in_time);
+          return QRImage(dataJson);
         }),
       ),
     );
     setState(() {
-      qrCodeData = sign_in_time;
+      qrCodeData = dataJson;
+    });
+    print('Checked in for today.');
+  }
+
+  Future<void> _handleQr() async {
+    var activityInstance =
+        await campusAttendanceSystemInstance.getCheckinActivityInstance(
+            campusAppsPortalInstance.activityIds['school-day']);
+    _personAttendanceToday = await getPersonActivityAttendanceToday(
+        campusAppsPortalInstance.getUserPerson().id!,
+        campusAppsPortalInstance.activityIds['school-day']!);
+
+    final AttendanceData data;
+    if (_personAttendanceToday.length == 1) {
+      data = AttendanceData(
+        activity_instance_id: activityInstance.id,
+        person_id: campusAppsPortalInstance.getUserPerson().id,
+        preferred_name: campusAppsPortalInstance.getUserPerson().preferred_name,
+        organization:
+            campusAppsPortalInstance.getUserPerson().organization!.description,
+        sign_in_time: _personAttendanceToday[0].sign_in_time.toString(),
+        sign_out_time: '',
+        in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
+      );
+    } else {
+      data = AttendanceData(
+        activity_instance_id: activityInstance.id,
+        person_id: campusAppsPortalInstance.getUserPerson().id,
+        preferred_name: campusAppsPortalInstance.getUserPerson().preferred_name,
+        organization:
+            campusAppsPortalInstance.getUserPerson().organization!.description,
+        sign_in_time: _personAttendanceToday[0].sign_in_time.toString(),
+        sign_out_time: _personAttendanceToday[1].sign_out_time.toString(),
+        in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
+      );
+    }
+
+    String dataJson = jsonEncode(data);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: ((context) {
+          return QRImage(dataJson);
+        }),
+      ),
+    );
+    setState(() {
+      qrCodeData = dataJson;
     });
     print('Checked in for today.');
   }
@@ -51,6 +116,16 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
     var activityInstance =
         await campusAttendanceSystemInstance.getCheckoutActivityInstance(
             campusAppsPortalInstance.activityIds['school-day']);
+    final AttendanceData data = AttendanceData(
+      activity_instance_id: activityInstance.id,
+      person_id: campusAppsPortalInstance.getUserPerson().id,
+      preferred_name: campusAppsPortalInstance.getUserPerson().preferred_name,
+      organization:
+          campusAppsPortalInstance.getUserPerson().organization!.description,
+      sign_in_time: '',
+      sign_out_time: DateTime.now().toString(),
+      in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
+    );
     // call the API to check-out
     await createActivityAttendance(ActivityAttendance(
       activity_instance_id: activityInstance.id,
@@ -58,10 +133,22 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
       sign_out_time: DateTime.now().toString(),
       out_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
     ));
+    String dataJson = jsonEncode(data);
     await refreshPersonActivityAttendanceToday();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: ((context) {
+          return QRImage(dataJson);
+        }),
+      ),
+    );
     setState(() {
-      //_isCheckedOut = true;
+      qrCodeData = dataJson;
     });
+    // setState(() {
+    //   //_isCheckedOut = true;
+    // });
     print('Checked out for today.');
   }
 
@@ -70,7 +157,7 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
     _personAttendanceToday = await getPersonActivityAttendanceToday(
         campusAppsPortalInstance.getUserPerson().id!,
         campusAppsPortalInstance.activityIds['school-day']!);
-    if (_personAttendanceToday.length > 0) {
+    if (_personAttendanceToday.isNotEmpty) {
       _isCheckedIn = _personAttendanceToday[0].sign_in_time != null;
     }
     if (_personAttendanceToday.length > 1) {
@@ -78,11 +165,14 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
     }
 
     if (!_isCheckedIn) {
-      var activityInstance =
+      // var activityInstance =
+      //     await campusAttendanceSystemInstance.getCheckinActivityInstance(
+      //         campusAppsPortalInstance.activityIds['school-day']!);
+      var activityInstanceForAbsent =
           await campusAttendanceSystemInstance.getCheckinActivityInstance(
-              campusAppsPortalInstance.activityIds['school-day']!);
+              campusAppsPortalInstance.activityIds['homeroom']!);
       _fechedEvaluations =
-          await getActivityInstanceEvaluations(activityInstance.id!);
+          await getActivityInstanceEvaluations(activityInstanceForAbsent.id!);
 
       if (_fechedEvaluations.indexWhere((element) =>
               element.evaluator_id ==
@@ -105,7 +195,7 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
       future: refreshPersonActivityAttendanceToday(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          if (snapshot.data!.length > 0) {
+          if (snapshot.data!.isNotEmpty) {
             _isCheckedIn = snapshot.data![0].sign_in_time != null;
           }
           if (snapshot.data!.length > 1) {
@@ -117,12 +207,11 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
               if (!_isCheckedIn)
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   ElevatedButton(
-                    child: Text('Check-In'),
                     onPressed: _handleCheckIn,
                     style: ButtonStyle(
                       // increase the fontSize
                       textStyle: MaterialStateProperty.all(
-                        TextStyle(fontSize: 20),
+                        const TextStyle(fontSize: 20),
                       ),
                       elevation: MaterialStateProperty.all(
                           20), // increase the elevation
@@ -131,10 +220,10 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
                           MaterialStateProperty.all(Colors.greenAccent),
                       foregroundColor: MaterialStateProperty.all(Colors.black),
                     ),
+                    child: const Text('Check-In'),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                   ElevatedButton(
-                    child: Text('Absent'),
                     onPressed: () async {
                       var activityInstance =
                           await campusAttendanceSystemInstance
@@ -168,31 +257,59 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
                       //             setState(() {});
                     },
                     style: ButtonStyle(
-                      textStyle:
-                          MaterialStateProperty.all(TextStyle(fontSize: 20)),
+                      textStyle: MaterialStateProperty.all(
+                          const TextStyle(fontSize: 20)),
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.blue),
                       foregroundColor:
                           MaterialStateProperty.all<Color>(Colors.white),
                     ),
+                    child: const Text('Absent'),
                   ),
                 ]),
               if (_isCheckedOut && !_isAbsent)
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Attendance marked for today.'),
-                    if (_personAttendanceToday.length > 0)
-                      Text('Checked in at ' +
-                          _personAttendanceToday[0].sign_in_time!),
-                    if (_personAttendanceToday.length > 1)
-                      Text('Checked out at ' +
-                          _personAttendanceToday[1].sign_out_time!),
-                    SizedBox(width: 20),
+                    const Text('Attendance marked for today.'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (_personAttendanceToday.isNotEmpty)
+                          Text(
+                              'Checked in at ${_personAttendanceToday[0].sign_in_time!}'),
+                        const SizedBox(width: 20),
+                        IconButton(
+                          icon: const Icon(Icons.qr_code),
+                          onPressed: () {
+                            // Navigate to the QR code view screen when the button is clicked
+                            _handleQr();
+                          },
+                          tooltip: 'View QR Code',
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (_personAttendanceToday.length > 1)
+                          Text(
+                              'Checked out at ${_personAttendanceToday[1].sign_out_time!}'),
+                        const SizedBox(width: 20),
+                        IconButton(
+                          icon: const Icon(Icons.qr_code),
+                          onPressed: () {
+                            // Navigate to the QR code view screen when the button is clicked
+                            _handleQr();
+                          },
+                          tooltip: 'View QR Code',
+                        ),
+                      ],
+                    ),
                   ],
                 )
               else if (_isAbsent)
-                Column(
+                const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [Text('Attendance marked as Absent today.')],
                 )
@@ -200,22 +317,15 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (_personAttendanceToday.length > 0)
-                      Text('Checked in for today at ' +
-                          _personAttendanceToday[0].sign_in_time!),
-                    SizedBox(width: 20),
+                    if (_personAttendanceToday.isNotEmpty)
+                      Text(
+                          'Checked in for today at ${_personAttendanceToday[0].sign_in_time!}'),
+                    const SizedBox(width: 20),
                     IconButton(
-                      icon: Icon(Icons.qr_code),
+                      icon: const Icon(Icons.qr_code),
                       onPressed: () {
                         // Navigate to the QR code view screen when the button is clicked
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return QRImage(qrCodeData);
-                            },
-                          ),
-                        );
+                        _handleQr();
                       },
                       tooltip: 'View QR Code',
                     ),
@@ -223,12 +333,11 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
                 ),
               if (_isCheckedIn && !_isCheckedOut)
                 ElevatedButton(
-                  child: Text('Check-Out'),
                   onPressed: _handleCheckOut,
                   style: ButtonStyle(
                     // increase the fontSize
                     textStyle: MaterialStateProperty.all(
-                      TextStyle(fontSize: 20),
+                      const TextStyle(fontSize: 20),
                     ),
                     elevation:
                         MaterialStateProperty.all(20), // increase the elevation
@@ -237,6 +346,7 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
                         MaterialStateProperty.all(Colors.orangeAccent),
                     foregroundColor: MaterialStateProperty.all(Colors.black),
                   ),
+                  child: const Text('Check-Out'),
                 ),
             ],
           ));
@@ -245,7 +355,14 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
         }
 
         // By default, show a loading spinner.
-        return const CircularProgressIndicator();
+        return  Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: SpinKitCircle(
+                          color: (Colors
+                              .blue), // Customize the color of the indicator
+                          size: 70, // Customize the size of the indicator
+                        ),
+            );
       },
     );
     //

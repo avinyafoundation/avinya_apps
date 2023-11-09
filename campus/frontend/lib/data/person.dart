@@ -109,6 +109,32 @@ Future<Organization> fetchOrganization(int id) async {
   }
 }
 
+Future<List<Person>> fetchOrganizationForAll(int id) async {
+  final uri = Uri.parse(
+          AppConfig.campusProfileBffApiUrl + '/student_list_by_parent_org_id')
+      .replace(queryParameters: {
+    'id': [id.toString()]
+  });
+
+  final response = await http.get(
+    uri,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<Person> studentList =
+        await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
+    return studentList;
+  } else {
+    throw Exception('Failed to load Person');
+  }
+}
+
 class Person {
   int? id;
   String? record_type;

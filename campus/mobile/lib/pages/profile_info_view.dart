@@ -83,7 +83,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 color: kTextBlackColor,
                                 fontSize: SizerUtil.deviceType ==
                                         DeviceType.mobile
-                                    ? 16.sp
+                                    ? 12.sp
                                     : SizerUtil.deviceType == DeviceType.tablet
                                         ? 15.sp
                                         : SizerUtil.deviceType == DeviceType.web
@@ -100,7 +100,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 color: kTextBlackColor,
                                 fontSize: SizerUtil.deviceType ==
                                         DeviceType.mobile
-                                    ? 15.sp
+                                    ? 13.sp
                                     : SizerUtil.deviceType == DeviceType.tablet
                                         ? 14.sp
                                         : SizerUtil.deviceType == DeviceType.web
@@ -118,7 +118,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ProfileDetailRow(
-                      title: 'Registration Number',
+                      title: 'Reg. Number',
                       value:
                           '${userPerson.id == null ? 'N/A' : userPerson.id}'),
                   ProfileDetailRow(
@@ -142,7 +142,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ProfileDetailRow(
-                      title: 'Date of Admission',
+                      title: 'Admission Date',
                       value:
                           '${userPerson.created == null ? 'N/A' : DateFormat('d MMM, yyyy').format(DateTime.parse(userPerson.created!))}'),
                   // ProfileDetailRow(

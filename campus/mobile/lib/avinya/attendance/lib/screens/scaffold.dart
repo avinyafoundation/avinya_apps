@@ -16,11 +16,18 @@ class SMSScaffold extends StatelessWidget {
     '/daily_attendance_report',
     // '/weekly_payment_report',
     // '/person_attendance_report',
+    '/duty_participants',
   ];
 
   static const studentPageNames = [
     '/attendance_marker',
     '/person_attendance_report',
+  ];
+
+  static const leaderParticipantPageNames = [
+     '/attendance_marker',
+     '/person_attendance_report',
+     '/duty_attendance_marker',
   ];
 
   const SMSScaffold({
@@ -38,11 +45,11 @@ class SMSScaffold extends StatelessWidget {
         campusAppsPortalInstance.isFoundation) {
       destinations = const [
         AdaptiveScaffoldDestination(
-          title: 'Self Attendance Marker',
+          title: 'Self Attendance',
           icon: Icons.person_outline,
         ),
         AdaptiveScaffoldDestination(
-          title: 'Attendance Marker by QR',
+          title: 'QR Marker',
           icon: Icons.qr_code_scanner,
         ),
         // AdaptiveScaffoldDestination(
@@ -50,22 +57,45 @@ class SMSScaffold extends StatelessWidget {
         //   icon: Icons.people,
         // ),
         AdaptiveScaffoldDestination(
-          title: 'Daily Attendance Report',
+          title: 'Daily Report',
           icon: Icons.summarize,
         ),
         // AdaptiveScaffoldDestination(
         //   title: 'Weekly Payment Report',
         //   icon: Icons.summarize,
         // ),
+        AdaptiveScaffoldDestination(
+          title: 'Assign duties',
+          icon: Icons.work,
+        ),
       ];
-    } else {
+    }else if(campusAppsPortalInstance.isStudent 
+      && campusAppsPortalInstance.getLeaderParticipant().role == 'leader'){
+         
+      destinations = const[
+        AdaptiveScaffoldDestination(
+          title: 'Attendance Marker',
+          icon: Icons.person_outline,
+        ),
+        AdaptiveScaffoldDestination(
+          title: 'Payment Report',
+          icon: Icons.summarize,
+        ),
+        AdaptiveScaffoldDestination(
+           title: 'Duty Attendance Marker',
+           icon: Icons.people,
+        ),
+         
+       ];  
+      } 
+    else {
       destinations = const [
         AdaptiveScaffoldDestination(
           title: 'Attendance Marker',
           icon: Icons.person_outline,
         ),
         AdaptiveScaffoldDestination(
-          title: 'Person Payment Report',
+          title: 'Payment Report',
           icon: Icons.summarize,
         ),
       ];
@@ -75,7 +105,14 @@ class SMSScaffold extends StatelessWidget {
       body: AdaptiveNavigationScaffold(
         selectedIndex: selectedIndex,
         appBar: AppBar(
-          title: const Text('Avinya Academy - Campus Attendance Portal'),
+          leading: Padding(
+            padding: const EdgeInsets.all(18.0),
+            child: Image.asset(
+              'assets/images/app_logo.png',
+              width: 120,
+              height: 40,
+            ),
+          ),
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.logout),
@@ -126,7 +163,12 @@ class SMSScaffold extends StatelessWidget {
               campusAppsPortalInstance.isSecurity ||
               campusAppsPortalInstance.isFoundation) {
             routeState.go(pageNames[idx]);
-          } else {
+          }else if(campusAppsPortalInstance.isStudent 
+            && campusAppsPortalInstance.getLeaderParticipant().role == 'leader'){
+
+            routeState.go(leaderParticipantPageNames[idx]);
+
+          }else {
             routeState.go(studentPageNames[idx]);
           }
         },
@@ -141,7 +183,7 @@ class SMSScaffold extends StatelessWidget {
                   applicationName: AppConfig.applicationName,
                   applicationVersion: AppConfig.applicationVersion);
             }),
-        const Text("© 2023, Avinya Foundation."),
+        // Text("© 2023, Avinya Foundation."),
       ],
     );
   }
@@ -153,7 +195,12 @@ class SMSScaffold extends StatelessWidget {
         campusAppsPortalInstance.isSecurity ||
         campusAppsPortalInstance.isFoundation) {
       index = pageNames.indexOf(pathTemplate);
-    } else {
+      
+    }else if(campusAppsPortalInstance.isStudent 
+            && campusAppsPortalInstance.getLeaderParticipant().role == 'leader'){
+      
+      index = leaderParticipantPageNames.indexOf(pathTemplate);
+    }else {
       index = studentPageNames.indexOf(pathTemplate);
     }
 

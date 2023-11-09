@@ -29,7 +29,19 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "debug",
-            "deviceId": "TECNO KG5j",
+            "deviceId": "R9WR114BT3J",
+            "runTestsOnDevice": false,
+            // "args": [
+            //     "--flavor",
+            //     "development"
+            // ]
+        },
+        {
+            "name": "debug pysical samsung",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "deviceId": "SM A045F",
             "runTestsOnDevice": false,
             // "args": [
             //     "--flavor",

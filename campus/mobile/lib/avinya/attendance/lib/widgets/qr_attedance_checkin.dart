@@ -1,17 +1,16 @@
 // ignore_for_file: non_constant_identifier_names, unused_element, use_build_context_synchronously, use_key_in_widget_constructors, library_private_types_in_public_api
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile/avinya/attendance/lib/data/attendance_data.dart';
 import '../data.dart';
 import '../data/activity_attendance.dart';
 import 'package:attendance/data/evaluation.dart';
-// import 'package:attendance/widgets/evaluation_list.dart';
-import 'package:mobile/avinya/attendance/lib/widgets/evaluation_list.dart';
-import 'package:mobile/avinya/attendance/lib/widgets/qr_image.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class QrAttendanceCheckIn extends StatefulWidget {
   @override
@@ -24,18 +23,19 @@ class _QrAttendanceCheckInState extends State<QrAttendanceCheckIn> {
   bool _isAbsent = false;
   bool markedAttendance = false;
   bool inValidQr = false;
-  bool isFirstTime = true;
+  bool isFetching = false;
   List<ActivityAttendance> _personAttendanceToday = [];
   List<Evaluation> _fechedEvaluations = [];
 
   String sign_in_time = "ee";
-
+  Timer? _debounceTimer;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   QRViewController? controller;
   AttendanceData qrCodeData = AttendanceData(
     activity_instance_id: 0,
     person_id: 0,
     preferred_name: '',
+    organization: '',
     sign_in_time: '',
     sign_out_time: '',
     in_marked_by: '',
@@ -62,19 +62,31 @@ class _QrAttendanceCheckInState extends State<QrAttendanceCheckIn> {
       try {
         AttendanceData deserializedQrCodeData =
             AttendanceData.fromJson(jsonDecode(scanData.code!));
-
-        setState(() {
-          qrCodeData = deserializedQrCodeData;
-          inValidQr = false;
-        });
-        if (qrCodeData.person_id != 0) {
-          _handleCheckIn();
+        if (!isFetching) {
+          setState(() {
+            qrCodeData = deserializedQrCodeData;
+            inValidQr = false;
+            isFetching = true;
+          });
+          if (qrCodeData.person_id != 0) {
+            _performCheckIn();
+          }
         }
       } catch (e) {
         setState(() {
           inValidQr = true;
         });
       }
+    });
+  }
+
+  Future<void> _performCheckIn() async {
+    if (_debounceTimer != null && _debounceTimer!.isActive) {
+      // If a timer is already active, cancel it to reset the debounce period
+      _debounceTimer!.cancel();
+    }
+    _debounceTimer = Timer(const Duration(seconds: 5), () {
+      _handleCheckIn();
     });
   }
 
@@ -86,7 +98,7 @@ class _QrAttendanceCheckInState extends State<QrAttendanceCheckIn> {
     _personAttendanceToday = await getPersonActivityAttendanceToday(
         qrCodeData.person_id!,
         campusAppsPortalInstance.activityIds['homeroom']!);
-    if (_personAttendanceToday.isEmpty) {
+    if (_personAttendanceToday.isEmpty && qrCodeData.sign_in_time != '') {
       // call the API to check-in
       await createActivityAttendance(ActivityAttendance(
         activity_instance_id: activityInstance.id,
@@ -94,10 +106,14 @@ class _QrAttendanceCheckInState extends State<QrAttendanceCheckIn> {
         sign_in_time: DateTime.now().toString(),
         in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
       ));
+      setState(() {
+        markedAttendance = true;
+        isFetching = false;
+      });
     } else {
       setState(() {
         markedAttendance = true;
-        isFirstTime = false;
+        isFetching = false;
       });
     }
 
@@ -135,25 +151,6 @@ class _QrAttendanceCheckInState extends State<QrAttendanceCheckIn> {
       _isCheckedOut = _personAttendanceToday[1].sign_out_time != null;
     }
 
-    // if (!_isCheckedIn) {
-    //   var activityInstance =
-    //       await campusAttendanceSystemInstance.getCheckinActivityInstance(
-    //           campusAppsPortalInstance.activityIds['homeroom']!);
-    //   _fechedEvaluations =
-    //       await getActivityInstanceEvaluations(activityInstance.id!);
-
-    //   if (_fechedEvaluations.indexWhere((element) =>
-    //           element.evaluator_id ==
-    //           qrCodeData.person_id!) ==
-    //       -1) {
-    //     _isCheckedIn = false;
-    //   } else {
-    //     _isCheckedIn = true;
-    //     _isCheckedOut = true;
-    //     _isAbsent = true;
-    //   }
-    // }
-
     return _personAttendanceToday;
   }
 
@@ -189,76 +186,120 @@ class _QrAttendanceCheckInState extends State<QrAttendanceCheckIn> {
                       ),
                     ),
                     const SizedBox(height: 20),
+                    if (isFetching)
+                      Container(
+                        margin: const EdgeInsets.only(top: 10),
+                        child: const SpinKitCircle(
+                          color: (Colors
+                              .blue), // Customize the color of the indicator
+                          size: 50, // Customize the size of the indicator
+                        ),
+                      ),
                     if (!inValidQr) ...[
-                      // if (!isFirstTime) ...[
-                      //   Column(
-                      //     mainAxisAlignment: MainAxisAlignment.center,
-                      //     children: [
-                      //       Text(
-                      //           'Checked in for today at ${_personAttendanceToday[0].sign_in_time!}'),
-                      //       const SizedBox(width: 20),
-                      //     ],
-                      //   ),
-                      // ]
-                      if (qrCodeData.person_id != 0) ...[
+                      if (qrCodeData.person_id != 0 &&
+                          qrCodeData.sign_in_time != '' &&
+                          markedAttendance) ...[
                         Column(
                           children: [
-                            // Text(
-                            //   'QR Code Data:',
-                            //   style: TextStyle(
-                            //       fontSize: 18, fontWeight: FontWeight.bold),
-                            // ),
-                            // Text(
-                            //   'Person ID: ${qrCodeData.person_id}',
-                            //   style: const TextStyle(fontSize: 18),
-                            // ),
-                            Text(
-                              'Student Name: ${qrCodeData.preferred_name}',
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                            Text(
-                              'Check-In Time: ${qrCodeData.sign_in_time}',
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                            if (markedAttendance) const SizedBox(height: 20),
-                            const Text(
-                              'Check-In completed successfully!',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold,
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(15), // Add padding
+                              color: Colors.lightBlue, // Add a background color
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Student Name: ${qrCodeData.preferred_name}',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors
+                                          .white, // Change text color to contrast with background
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Text(
+                                    'Class: ${qrCodeData.organization}',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Text(
+                                    'Check-In Time: ${DateFormat('MMM d, y, h:mm a').format(DateTime.parse(qrCodeData.sign_in_time))}',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
+                            if (markedAttendance)
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(16.0),
+                                color: Colors.green,
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle,
+                                      size: 32.0,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(width: 8.0),
+                                    Text(
+                                      'Check-In completed successfully!',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
                           ],
                         ),
                       ],
-                      // if (_isCheckedOut && _isCheckedIn) ...[
-                      //   Column(
-                      //     mainAxisAlignment: MainAxisAlignment.center,
-                      //     children: [
-                      //       const Text('Attendance Marked for Today.'),
-                      //       if (_personAttendanceToday.isNotEmpty)
-                      //         Text(
-                      //             'Checked in at ${_personAttendanceToday[0].sign_in_time!}'),
-                      //       if (_personAttendanceToday.length > 1)
-                      //         Text(
-                      //             'Checked out at ${_personAttendanceToday[1].sign_out_time!}'),
-                      //       const SizedBox(width: 20),
-                      //     ],
-                      //   ),
-                      // ],
                       ...[
-                        if (qrCodeData.person_id == 0 && isFirstTime)
-                          const Text(
-                            'Scan QR Code to Mark Attendance',
-                            style: TextStyle(fontSize: 18),
-                          ),
+                        if (!markedAttendance && qrCodeData.person_id == 0)
+                          Container(
+                            width: double.infinity,
+                            color: Colors.blue,
+                            padding: const EdgeInsets.all(16.0),
+                            child: const Center(
+                              child: Text(
+                                'Scan QR Code to Mark Attendance',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          )
                       ],
                     ] else ...[
-                      const Text(
-                        'Invalid QR Code',
-                        style: TextStyle(fontSize: 18),
-                      ),
+                      Container(
+                        width: double.infinity,
+                        color: Colors.red,
+                        padding: const EdgeInsets.all(16.0),
+                        child: const Center(
+                          child: Text(
+                            'Invalid QR Code',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      )
                     ],
                   ],
                 ),

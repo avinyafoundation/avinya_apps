@@ -26,6 +26,7 @@ class _AttendanceMarkerScreenState extends State<AttendanceMarkerScreen> {
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: const Text('Attendance Marker'),
+          backgroundColor: Colors.lightBlue,
         ),
         body: SingleChildScrollView(
           child: Center(
