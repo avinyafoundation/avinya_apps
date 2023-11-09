@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:attendance/data/activity_attendance.dart';
@@ -423,15 +425,21 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                         ),
                       )
                   else if (_fetchedAttendance.length > 0)
-                     PaginatedDataTable(
-                          showCheckboxColumn: false,
-                          source: _data,
-                          columns: cols,
-                          // header: const Center(child: Text('Daily Attendance')),
-                          columnSpacing: 100,
-                          horizontalMargin: 60,
-                          rowsPerPage: 25,
-                        )
+                     ScrollConfiguration(
+                      behavior: ScrollConfiguration.of(context).copyWith(dragDevices: {
+                            PointerDeviceKind.touch,
+                            PointerDeviceKind.mouse,
+                      }),
+                       child: PaginatedDataTable(
+                            showCheckboxColumn: false,
+                            source: _data,
+                            columns: cols,
+                            // header: const Center(child: Text('Daily Attendance')),
+                            columnSpacing: 100,
+                            horizontalMargin: 60,
+                            rowsPerPage: 25,
+                          ),
+                     )
                   else
                       Container(
                         margin: EdgeInsets.all(20),
