@@ -2,7 +2,7 @@
 org = "avinyafoundation"
 name = "profile_bff"
 version = "1.1.0"
-distribution = "2201.3.0"
+distribution = "2201.5.0"
 
 [build-options]
 observabilityIncluded = true
