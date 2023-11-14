@@ -198,7 +198,7 @@ List<bool> selectedRows = [];
               SizedBox(
                 width: 17,
               ),
-              Icon(
+              const Icon(
                 IconData(0xe6f2, fontFamily: 'MaterialIcons'),
                 size: 25,
                 color: Colors.blueAccent,
