@@ -90,7 +90,13 @@ Future<List<Activity>> fetchActivitys() async {
 Future<List<Activity>> fetchActivitiesByAvinyaType(int avinyaTypeID) async{
 
 final response = await http
-  .get(Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/activities_by_avinya_type/$avinyaTypeID'));
+  .get(Uri.parse(AppConfig.campusAttendanceBffApiUrl + '/activities_by_avinya_type/$avinyaTypeID'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
 
   if (response.statusCode == 200){
     var resultsJson = json.decode(response.body).cast<Map<String,dynamic>>();
