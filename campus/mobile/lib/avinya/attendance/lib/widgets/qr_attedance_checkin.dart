@@ -98,7 +98,22 @@ class _QrAttendanceCheckInState extends State<QrAttendanceCheckIn> {
     _personAttendanceToday = await getPersonActivityAttendanceToday(
         qrCodeData.person_id!,
         campusAppsPortalInstance.activityIds['homeroom']!);
-    if (_personAttendanceToday.isEmpty && qrCodeData.sign_in_time != '') {
+
+    // Get the current date and time
+    DateTime today = DateTime.now();
+
+// Format the date as a string
+    String dateOnlyString = DateFormat('yyyy-MM-dd').format(today);
+    String formattedDate = DateFormat('yyyy-MM-dd').format(today);
+    if (qrCodeData.sign_in_time != '') {
+      DateTime dateTime = DateTime.parse(qrCodeData.sign_in_time);
+      dateOnlyString = DateFormat('yyyy-MM-dd').format(dateTime);
+    } else {
+      dateOnlyString = '';
+    }
+    if (_personAttendanceToday.isEmpty &&
+        qrCodeData.sign_in_time != '' &&
+        dateOnlyString == formattedDate) {
       // call the API to check-in
       await createActivityAttendance(ActivityAttendance(
         activity_instance_id: activityInstance.id,
@@ -165,6 +180,18 @@ class _QrAttendanceCheckInState extends State<QrAttendanceCheckIn> {
           }
           if (snapshot.data!.length > 1) {
             _isCheckedOut = snapshot.data![1].sign_out_time != null;
+          }
+          // Get the current date and time
+          DateTime today = DateTime.now();
+
+// Format the date as a string
+          String dateOnlyString = DateFormat('yyyy-MM-dd').format(today);
+          String formattedDate = DateFormat('yyyy-MM-dd').format(today);
+          if (qrCodeData.sign_in_time != '') {
+            DateTime dateTime = DateTime.parse(qrCodeData.sign_in_time);
+            dateOnlyString = DateFormat('yyyy-MM-dd').format(dateTime);
+          } else {
+            dateOnlyString = '';
           }
           return Scaffold(
             appBar: AppBar(
@@ -239,30 +266,57 @@ class _QrAttendanceCheckInState extends State<QrAttendanceCheckIn> {
                               ),
                             ),
                             if (markedAttendance)
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(16.0),
-                                color: Colors.green,
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.check_circle,
-                                      size: 32.0,
-                                      color: Colors.white,
-                                    ),
-                                    SizedBox(width: 8.0),
-                                    Text(
-                                      'Check-In completed successfully!',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                              if (dateOnlyString == formattedDate) ...[
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(16.0),
+                                  color: Colors.green,
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle,
+                                        size: 32.0,
                                         color: Colors.white,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              )
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        'Check-In completed successfully!',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ] else ...[
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(16.0),
+                                  color: Colors.red,
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.error,
+                                        size: 32.0,
+                                        color: Colors.white,
+                                      ),
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        'Check-In failed!',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ]
                           ],
                         ),
                       ],
