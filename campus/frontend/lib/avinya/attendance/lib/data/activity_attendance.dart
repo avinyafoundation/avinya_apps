@@ -104,7 +104,7 @@ Future<int> deleteActivityAttendance(int id) async {
   if (response.statusCode > 199 && response.statusCode < 300) {
     return int.parse(response.body);
   } else {
-    throw Exception('Failed to create Activity Participant Attendance.');
+    throw Exception('Failed to delete Activity Participant Attendance.');
   }
 }
 
