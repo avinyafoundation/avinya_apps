@@ -123,10 +123,6 @@ class _DailyDutyAttendanceReportState extends State<DailyDutyAttendanceReport> {
     var cols =
         columnNames.map((label) => DataColumn(label: Text(label!))).toList(); 
 
-    // _fetchedStudentList = await fetchOrganizationForAll(parentOrgId!);
-    //_fetchedOrganization = Organization();
-    //_fetchedOrganization!.people = _fetchedStudentList;
-    //_fetchedOrganization!.id = parentOrgId;
 
     _fetchedAttendance = await getLateAttendanceReportByParentOrg(
           parentOrgId!,
