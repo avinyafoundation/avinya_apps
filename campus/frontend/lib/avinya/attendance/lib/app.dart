@@ -56,7 +56,8 @@ class _CampusAttendanceManagementSystemState
         '/duty_participants',
         '/duty_attendance_marker',
         '/late_attendance_report',
-        '/qr_attendance_marker'
+        '/qr_attendance_marker',
+        '/daily_duty_attendance_report'
       ],
       guard: _guard,
       initialRoute: campusAppsPortalInstance.isStudent
@@ -140,6 +141,9 @@ class _CampusAttendanceManagementSystemState
 
     final qrAttendanceMarkerRoute =
         ParsedRoute('/qr_attendance_marker', '/qr_attendance_marker', {}, {});
+    
+    final dailyDutyAttendanceReportRoute =
+        ParsedRoute('/daily_duty_attendance_report', '/daily_duty_attendance_report', {}, {});
 
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
@@ -171,6 +175,8 @@ class _CampusAttendanceManagementSystemState
       return lateAttendanceReportRoute;
     } else if (signedIn && from == qrAttendanceMarkerRoute) {
       return qrAttendanceMarkerRoute;
+    } else if (signedIn && from == dailyDutyAttendanceReportRoute) {
+      return dailyDutyAttendanceReportRoute;
     }
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {

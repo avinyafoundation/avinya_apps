@@ -17,6 +17,7 @@ class SMSScaffold extends StatelessWidget {
     '/late_attendance_report',
     '/weekly_payment_report',
     '/duty_participants',
+    '/daily_duty_attendance_report',
   ];
 
   static const studentPageNames = [
@@ -72,6 +73,10 @@ class SMSScaffold extends StatelessWidget {
           title: 'Assign duties',
           icon: Icons.work,
         ),
+        AdaptiveScaffoldDestination(
+          title: 'Daily Duty Attendance Report',
+          icon: Icons.work_history,
+        ),
       ];
     }else if(campusAppsPortalInstance.isStudent 
       && campusAppsPortalInstance.getLeaderParticipant().role == 'leader'){
@@ -106,7 +111,7 @@ class SMSScaffold extends StatelessWidget {
 
     return Scaffold(
       body: AdaptiveNavigationScaffold(
-        bottomNavigationOverflow: 7,
+        bottomNavigationOverflow: 10,
         selectedIndex: selectedIndex,
         appBar: AppBar(
           title: const Text('Avinya Academy - Campus Attendance Portal'),

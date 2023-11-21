@@ -29,12 +29,15 @@ List<ActivityAttendance> _fetchedDutyAttendance = [];
 List<Evaluation> _fetchedEvaluations = [];
 List<bool> selectedRows = [];
 
+var parentOrganizationId = 0;
 
 
   @override
   void initState(){
    super.initState();
    workActivityId = campusAppsPortalInstance.activityIds['work']!;
+   parentOrganizationId =  campusAppsPortalInstance.getUserPerson().
+                                   organization!.parent_organizations[0].parent_organizations[0].id!;
    loadDutyParticipants();   
    loadDutyAttendance();
    loadEvaluations();
@@ -48,28 +51,6 @@ List<bool> selectedRows = [];
           .getCheckinActivityInstance(workActivityId);
     }
 
-    int index = -1;
-
-    index = _fetchedDutyAttendance.indexWhere((attendance) =>
-          attendance.person_id == dutyParticipant.person!.id && attendance.sign_in_time != null);
-
-    print(
-        'index: $index  person_id: ${dutyParticipant.person!.id}  _fetchedAttendance lenth ${_fetchedDutyAttendance.length}');
-
-    if (index == -1) {
-      index = _fetchedDutyAttendance
-          .indexWhere((attendance) => attendance.person_id == -1);
-      if (index == -1) {
-        print(
-            'index is still -1 => index: $index  person_id: ${dutyParticipant.person!.id} ');
-        // if index is still -1 then there is no empty slot
-        // so we need to create a new slot
-        _fetchedDutyAttendance.add(ActivityAttendance(
-            person_id: -1, sign_in_time: null, sign_out_time: null));
-        index = _fetchedDutyAttendance.length - 1;
-      }
-    }
-
    ActivityAttendance activityAttendance = ActivityAttendance(
           person_id: -1, sign_in_time: null, sign_out_time: null);
 
@@ -80,11 +61,27 @@ List<bool> selectedRows = [];
           in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
         );
     
+
+     var dutyAttendance = null;
+     dutyAttendance =  _fetchedDutyAttendance
+                .firstWhere(
+                  (attendance) =>
+                      attendance.person_id ==
+                          dutyParticipant.person!.id! &&
+                      attendance.sign_in_time !=
+                          null,
+                  orElse: () =>
+                    new ActivityAttendance(
+                      sign_in_time: null));
+                                           
+                                  
+    if(dutyAttendance.sign_in_time !=null){
+    await  deleteActivityAttendance(dutyAttendance.id!);
+    }
     
-    createDutyActivityAttendance(activityAttendance);
-
-    _fetchedDutyAttendance[index] = activityAttendance;
-
+    
+    await createDutyActivityAttendance(activityAttendance);
+    
   }
 
   Future<void> toggleAbsent(DutyParticipant dutyParticipant, bool value) async{
@@ -96,6 +93,25 @@ List<bool> selectedRows = [];
    }
 
    if(value == true){
+
+     var dutyAttendance =null;
+
+     dutyAttendance =  _fetchedDutyAttendance
+                .firstWhere(
+                  (attendance) =>
+                      attendance.person_id ==
+                          dutyParticipant.person!.id! &&
+                      attendance.sign_in_time !=
+                          null,
+                  orElse: () =>
+                    new ActivityAttendance(
+                      sign_in_time: null));
+                                           
+                                  
+    if(dutyAttendance.sign_in_time !=null){
+    await  deleteActivityAttendance(dutyAttendance.id!);
+    }
+
 
     final Evaluation evaluation = Evaluation(
             evaluatee_id: dutyParticipant.person!.id,
@@ -112,8 +128,13 @@ List<bool> selectedRows = [];
 
      var evaluation = _fetchedEvaluations.firstWhere((evaluation) =>
                                                     evaluation.evaluatee_id ==
-                                                    dutyParticipant.person!.id!); 
-     await deleteEvaluation(evaluation.id!.toString());
+                                                    dutyParticipant.person!.id!,
+                                                    orElse: () => new Evaluation(
+                                                  evaluatee_id: -1)); 
+
+    if(evaluation.evaluatee_id != null &&  evaluation.evaluatee_id != -1){
+      await deleteEvaluation(evaluation.id!.toString());
+    }
 
    }
 
@@ -122,13 +143,8 @@ List<bool> selectedRows = [];
 
   Future<void> loadDutyParticipants() async{  
 
-    int? parentOrganizationId =  campusAppsPortalInstance.getUserPerson().
-                                   organization!.parent_organizations[0].parent_organizations[0].id;
-
-    
-
     final dutyParticipants = await fetchDutyParticipantsByDutyActivityId(
-                 parentOrganizationId!,campusAppsPortalInstance.getLeaderParticipant().activity!.id!);
+                 parentOrganizationId,campusAppsPortalInstance.getLeaderParticipant().activity!.id!);
 
     setState(() {
       _dutyParticipants = dutyParticipants;
@@ -137,11 +153,9 @@ List<bool> selectedRows = [];
 
   Future<void> loadDutyAttendance() async{  
 
-    int? parentOrganizationId =  campusAppsPortalInstance.getUserPerson().
-                                   organization!.parent_organizations[0].parent_organizations[0].id;
-
     final dutyAttendance = await getDutyAttendanceToday(
-                parentOrganizationId!,workActivityId);
+                parentOrganizationId,workActivityId);
+
     setState(() {
       _fetchedDutyAttendance = dutyAttendance;
     });
@@ -163,14 +177,16 @@ List<bool> selectedRows = [];
 
   }
 
-
-
-
   TimeOfDay? _getInitialTime(DutyParticipant participant) {
     final attendance = _fetchedDutyAttendance.firstWhere(
       (attendance) =>
           attendance.person_id == participant.person!.id! &&
-          attendance.sign_in_time != null,);
+          attendance.sign_in_time != null,
+           orElse: () =>
+            new ActivityAttendance(
+              sign_in_time: null
+          )
+      );
 
     if (attendance.sign_in_time != null) {
       
@@ -305,7 +321,7 @@ Widget buildTable(){
 
                 rows: _dutyParticipants.map((participant){     
                     
-                    bool isAbsent = true;
+                    bool isAbsent = false;
                       if (_fetchedEvaluations
                                           .firstWhere(
                                               (evaluation) =>
@@ -315,7 +331,7 @@ Widget buildTable(){
                                                   evaluatee_id: -1))
                                           .evaluatee_id !=
                                       -1)  
-                          isAbsent = false;
+                          isAbsent = true;
 
                       return DataRow(
                         cells:[
@@ -359,39 +375,27 @@ Widget buildTable(){
                                          ),
                                 ),
                       
-                          if(_fetchedDutyAttendance.firstWhere((attendance) => 
-                                 attendance.person_id == participant.person!.id!
-                                 && attendance.sign_in_time != null,
-                                 orElse: () =>
-                                                new ActivityAttendance(
-                                                    person_id: -1)
-                                 ).person_id !=-1)
                             DataCell(
                               TimePickerCell(
-                                onTimeSelected: (TimeOfDay selectedTime){
-                                 // Handle the selected time here.
-                                 print('Selected Time: $selectedTime');
+                                onTimeSelected: (TimeOfDay selectedTime) async{
+  
+                                  await submitDutyAttendance(participant,selectedTime);
+
+                                  _fetchedDutyAttendance = await getDutyAttendanceToday(
+                                             parentOrganizationId,workActivityId);
+
+                                  _fetchedEvaluations =
+                                                await getActivityInstanceEvaluations(
+                                                    workActivityInstance.id!);
+                                 
+                                  setState(() {});
                                 },
                                 initialTime:_getInitialTime(participant),
                                 isButtonEnabled:isAbsent,
                              ),
-                               )
-                          else
-                            DataCell(
-                              TimePickerCell(
-                                onTimeSelected: (TimeOfDay selectedTime) async{
-                                   // Handle the selected time here.
-                                   print('Selected Time: $selectedTime');
-                                  await submitDutyAttendance(participant,selectedTime);
-                                 
-                                  setState(() {});
-                                },
-                                initialTime:null,
-                                isButtonEnabled:isAbsent,
-                              ),
-                            ),
-
-                          if (_fetchedEvaluations
+                               ),
+                              DataCell(Checkbox( // Add a Checkbox to the cell
+                              value: _fetchedEvaluations
                                           .firstWhere(
                                               (evaluation) =>
                                                   evaluation.evaluatee_id ==
@@ -399,29 +403,12 @@ Widget buildTable(){
                                               orElse: () => new Evaluation(
                                                   evaluatee_id: -1))
                                           .evaluatee_id !=
-                                      -1)  
-                              
-                            DataCell(Checkbox( // Add a Checkbox to the cell
-                              value: _fetchedEvaluations
-                                                .firstWhere((evaluation) =>
-                                                    evaluation.evaluatee_id ==
-                                                    participant.person!.id!)
-                                                .response!=null,
+                                          -1,
                               onChanged: (bool? value) async{
                                   await  toggleAbsent(participant,value!);  
 
-                                  _fetchedEvaluations =
-                                                await getActivityInstanceEvaluations(
-                                                    workActivityInstance.id!);
-                                    setState(() {});
-                                },
-                              )
-                            )
-                          else
-                            DataCell(Checkbox( // Add a Checkbox to the cell
-                              value: false,
-                              onChanged: (bool? value) async{
-                                  await  toggleAbsent(participant,value!); 
+                                  _fetchedDutyAttendance = await getDutyAttendanceToday(
+                                             parentOrganizationId,workActivityId);
 
                                   _fetchedEvaluations =
                                                 await getActivityInstanceEvaluations(
@@ -429,7 +416,7 @@ Widget buildTable(){
                                   setState(() {});
                                 },
                               )
-                           )
+                            )
                         ], 
                   );
                 }).toList(),
@@ -466,59 +453,60 @@ class _TimePickerCellState extends State<TimePickerCell> {
   void initState() {
     super.initState();
      _selectedTime = widget.initialTime;
-     
-   // Initialize _selectedTime with initialTime
   }
 
+  @override
+  void didChangeDependencies() {
+    
+    super.didChangeDependencies();
+  }
  
   @override
-  Widget build(BuildContext context) {
+  void didUpdateWidget(covariant TimePickerCell oldWidget) {
+    super.didUpdateWidget(oldWidget);
 
-    
-
-    if(widget.initialTime !=null){
-      _selectedTime = widget.initialTime;
-    }else if(widget.initialTime ==null){
-      _selectedTime = widget.initialTime;
+    // Check if the initialTime property has changed
+    if (widget.initialTime != oldWidget.initialTime) {
+      setState(() {
+        _selectedTime = widget.initialTime;
+      });
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     
 
     return Container(
-      width:  120,
-      height: 70,
-      child: Row(
-        children: [
-
-        if(_selectedTime !=null)
-          Text(
-             _selectedTime?.format(context) ?? '',
-          style: TextStyle(
-            color: _selectedTime != null ? Colors.black : Colors.grey,
-          )
+          height: 60,
+          child: Row(
+            children: [
+              ElevatedButton(
+                onPressed:widget.isButtonEnabled ? null:()async{
+                  final selectedTime = await showTimePicker(
+                    context: context, 
+                    initialTime: _selectedTime ?? TimeOfDay.now(),
+                  );
+        
+                  if(selectedTime !=null){
+                    setState(() {
+                      _selectedTime = selectedTime;
+                     
+                    });
+        
+                  widget.onTimeSelected(selectedTime);
+                  }
+                }, 
+                child: Container(
+                  width: 75,
+                  child: Text(
+                       _selectedTime != null ? _selectedTime!.format(context) : 'Pick a Time',
+                       textAlign: TextAlign.center,
+                      ),
+                ),
+              ),
+            ],
           ),
-
-        if(_selectedTime == null)
-          ElevatedButton(
-            onPressed: widget.isButtonEnabled ? () async{
-              final selectedTime = await showTimePicker(
-                context: context, 
-                initialTime: _selectedTime ?? TimeOfDay.now(),
-              );
-    
-              if(selectedTime !=null){
-                setState(() {
-                  _selectedTime = selectedTime;
-                 
-                });
-    
-              widget.onTimeSelected(selectedTime);
-              }
-            }:null, 
-            child: Text('Pick a Time'),
-          )
-        ],
-      ),
-    );
-
+        );
   }
 }
