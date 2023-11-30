@@ -496,7 +496,15 @@ class _TimePickerCellState extends State<TimePickerCell> {
         
                   widget.onTimeSelected(selectedTime);
                   }
-                }, 
+                },
+                style: ButtonStyle(
+                    textStyle: MaterialStateProperty.all(
+                        const TextStyle(fontSize: 12)),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.blue),
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                  ), 
                 child: Container(
                   width: 75,
                   child: Text(
