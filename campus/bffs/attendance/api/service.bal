@@ -642,4 +642,22 @@ service / on new http:Listener(9091) {
             return dutyParticipant;
        }        
     }
+
+    resource function post duty_evaluation (@http:Payload Evaluation dutyEvaluation) returns Evaluation|error {
+        CreateDutyEvaluationResponse|graphql:ClientError  addDutyEvaluationResponse = globalDataClient->createDutyEvaluation(dutyEvaluation);
+        if(addDutyEvaluationResponse is CreateDutyEvaluationResponse) {
+            Evaluation|error duty_evaluation_record = addDutyEvaluationResponse.add_duty_evaluation.cloneWithType(Evaluation);
+            if(duty_evaluation_record is Evaluation) {
+                return duty_evaluation_record;
+            } else {
+                log:printError("Error while processing Application record received", duty_evaluation_record);
+                return error("Error while processing Application record received: " + duty_evaluation_record.message() + 
+                    ":: Detail: " + duty_evaluation_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", addDutyEvaluationResponse);
+            return error("Error while creating application: " + addDutyEvaluationResponse.message() + 
+                ":: Detail: " + addDutyEvaluationResponse.detail().toString());
+        }
+    }
 }

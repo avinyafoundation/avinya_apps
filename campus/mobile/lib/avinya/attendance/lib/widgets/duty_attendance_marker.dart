@@ -43,43 +43,56 @@ var parentOrganizationId = 0;
   }
 
 
-  Future<void> submitDutyAttendance(DutyParticipant dutyParticipant,TimeOfDay selectedTime) async{
+  Future<void> submitDutyAttendance(DutyParticipant dutyParticipant,TimeOfDay selectedTime, bool sign_in) async{
 
-    if (workActivityInstance.id == -1) {
-      workActivityInstance = await campusAttendanceSystemInstance
-          .getCheckinActivityInstance(workActivityId);
-    }
+    _dutyParticipants =  await fetchDutyParticipantsByDutyActivityId(
+                 parentOrganizationId,campusAppsPortalInstance.getLeaderParticipant().activity!.id!);
 
-   ActivityAttendance activityAttendance = ActivityAttendance(
+    _fetchedDutyAttendance = await getDutyAttendanceToday(
+                parentOrganizationId,workActivityId);
+
+    ActivityAttendance dutyActivityAttendance = ActivityAttendance(
           person_id: -1, sign_in_time: null, sign_out_time: null);
 
-    activityAttendance = ActivityAttendance(
+
+    var dutyAttendance = null;
+
+    dutyAttendance = _fetchedDutyAttendance.firstWhere(
+      (attendance) =>
+          attendance.person_id == dutyParticipant.person!.id! &&
+         ( sign_in ? attendance.sign_in_time : attendance.sign_out_time) != null,
+           orElse: () =>
+            new ActivityAttendance(
+              sign_in_time: null,
+              sign_out_time: null,
+          ),
+      );
+
+    if(dutyAttendance.sign_in_time !=null || dutyAttendance.sign_out_time !=null ){
+        await  deleteActivityAttendance(dutyAttendance.id!);
+    }
+    
+    if(sign_in){
+
+      dutyActivityAttendance = ActivityAttendance(
           activity_instance_id: workActivityInstance.id,
           person_id: dutyParticipant.person!.id,
           sign_in_time: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, selectedTime.hour, selectedTime.minute).toString(),
           in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
         );
-    
-     var dutyAttendance = null;
-     dutyAttendance =  _fetchedDutyAttendance
-                .firstWhere(
-                  (attendance) =>
-                      attendance.person_id ==
-                          dutyParticipant.person!.id! &&
-                      attendance.sign_in_time !=
-                          null,
-                  orElse: () =>
-                    new ActivityAttendance(
-                      sign_in_time: null));
+  
+    }else{
 
-    if(dutyAttendance.sign_in_time !=null){
-     await  deleteActivityAttendance(dutyAttendance.id!);
+      dutyActivityAttendance = ActivityAttendance(
+          activity_instance_id: workActivityInstance.id,
+          person_id: dutyParticipant.person!.id,
+          sign_out_time: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, selectedTime.hour, selectedTime.minute).toString(),
+          out_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
+        );
     }
 
-    
-    await createDutyActivityAttendance(activityAttendance);
-
-  
+    await createDutyActivityAttendance(dutyActivityAttendance);
+   
   }
 
   Future<void> toggleAbsent(DutyParticipant dutyParticipant, bool value) async{
@@ -92,35 +105,40 @@ var parentOrganizationId = 0;
 
    if(value == true){
 
-     var dutyAttendance =null;
+     var signInDutyAttendance = null;
+     var signOutDutyAttendance = null;
 
-     dutyAttendance =  _fetchedDutyAttendance
-                .firstWhere(
-                  (attendance) =>
-                      attendance.person_id ==
-                          dutyParticipant.person!.id! &&
-                      attendance.sign_in_time !=
-                          null,
-                  orElse: () =>
-                    new ActivityAttendance(
-                      sign_in_time: null));
-                                           
+    _fetchedDutyAttendance.forEach((attendance) {
+      if( attendance.person_id == dutyParticipant.person!.id!){
+          if(attendance.sign_in_time !=null){
+           signInDutyAttendance = attendance;
+          }else if(attendance.sign_out_time !=null){
+           signOutDutyAttendance = attendance;
+          }
+      }
+    });
+
                                   
-    if(dutyAttendance.sign_in_time !=null){
-    await  deleteActivityAttendance(dutyAttendance.id!);
+    if(signInDutyAttendance !=null && signInDutyAttendance.sign_in_time !=null){
+
+    await  deleteActivityAttendance(signInDutyAttendance.id!);
     }
 
+    if(signOutDutyAttendance !=null && signOutDutyAttendance.sign_out_time !=null){
+
+    await  deleteActivityAttendance(signOutDutyAttendance.id!);
+    }
 
     final Evaluation evaluation = Evaluation(
             evaluatee_id: dutyParticipant.person!.id,
             evaluator_id: campusAppsPortalInstance.getUserPerson().id,
-            evaluation_criteria_id: 54,
+            evaluation_criteria_id: 110,
             activity_instance_id: workActivityInstance.id,  
             response: "absence",
             notes: "",
             grade: 0
           );
-    await createEvaluation([evaluation]);
+    await createDutyEvaluation(evaluation);
 
    }else if(value == false){
 
@@ -137,7 +155,6 @@ var parentOrganizationId = 0;
    }
 
   }
-
 
   Future<void> loadDutyParticipants() async{  
 
@@ -178,25 +195,37 @@ var parentOrganizationId = 0;
 
 
 
-  TimeOfDay? _getInitialTime(DutyParticipant participant) {
-    final attendance = _fetchedDutyAttendance.firstWhere(
+  TimeOfDay? _getInitialTime(DutyParticipant participant,bool isInTime) {
+
+    var dutyAttendance = null;
+    var initialTime = null;
+
+    dutyAttendance = _fetchedDutyAttendance.firstWhere(
       (attendance) =>
           attendance.person_id == participant.person!.id! &&
-          attendance.sign_in_time != null,
+         ( isInTime ? attendance.sign_in_time : attendance.sign_out_time) != null,
            orElse: () =>
             new ActivityAttendance(
-              sign_in_time: null
-          )
+              sign_in_time: null,
+              sign_out_time: null,
+          ),
       );
 
-    if (attendance.sign_in_time != null) {
+      initialTime = isInTime
+        ? dutyAttendance.sign_in_time
+        : dutyAttendance.sign_out_time;
+
+
+    print("initial time : ${initialTime}");
+
+    if (initialTime != null) {
       
-      final dateTime = DateTime.parse(attendance.sign_in_time.toString());
+      final dateTime = DateTime.parse(initialTime.toString());
       return TimeOfDay.fromDateTime(dateTime);
-    } else {
-      
-      return null;
+    
     }
+    
+    return null;
   }
 
 
@@ -216,7 +245,7 @@ var parentOrganizationId = 0;
               Icon(
                   IconData(0xe6f2, fontFamily: 'MaterialIcons'),
                   size: 25,
-                  color: Colors.blueAccent,
+                  color: Colors.deepPurpleAccent,
                 ),
               SizedBox(
                   width: 10,
@@ -267,7 +296,7 @@ Widget buildTable(){
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Container(
-              width:  1100,
+              width:  1200,
               child: DataTable(
                 columns: [
                   DataColumn(
@@ -296,7 +325,13 @@ Widget buildTable(){
                   ),
                   DataColumn(
                     label: Text(
-                           "Time",
+                           "In Time",
+                           style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold),
+                           ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                           "Out Time",
                            style: TextStyle(fontSize: 12,fontWeight: FontWeight.bold),
                            ),
                   ),
@@ -363,27 +398,102 @@ Widget buildTable(){
                                           ),   
                                          ),
                                 ),
-                      
+                           //In time
+                          if(_fetchedDutyAttendance
+                                        .firstWhere(
+                                            (attendance) =>
+                                                attendance.person_id ==
+                                                    participant.person!.id! &&
+                                                attendance.sign_in_time != null,
+                                            orElse: () =>
+                                                new ActivityAttendance(
+                                                    person_id: -1))
+                                        .person_id !=
+                                    -1)  
                             DataCell(
                               TimePickerCell(
                                 onTimeSelected: (TimeOfDay selectedTime) async{
   
-                                  await submitDutyAttendance(participant,selectedTime);
+                                  await submitDutyAttendance(participant,selectedTime,true);
 
                                   _fetchedDutyAttendance = await getDutyAttendanceToday(
                                              parentOrganizationId,workActivityId);
-
-                                  _fetchedEvaluations =
-                                                await getActivityInstanceEvaluations(
-                                                    workActivityInstance.id!);
                                  
                                   setState(() {});
                                 },
-                                initialTime:_getInitialTime(participant),
+                                initialTime:_getInitialTime(participant,true),
                                 isButtonEnabled:isAbsent,
-                             ),
-                               ),
-                              DataCell(Checkbox( // Add a Checkbox to the cell
+                                ),
+                              )
+                          else
+                            DataCell(
+                              TimePickerCell(
+                                onTimeSelected: (TimeOfDay selectedTime) async{
+  
+                                  await submitDutyAttendance(participant,selectedTime,true);
+
+                                  _fetchedDutyAttendance = await getDutyAttendanceToday(
+                                             parentOrganizationId,workActivityId);
+                                 
+                                  setState(() {});
+                                },
+                                initialTime:null,
+                                isButtonEnabled:isAbsent,
+                                ),
+                              ),
+                        //Out time
+                          if(_fetchedDutyAttendance
+                                        .firstWhere(
+                                            (attendance) =>
+                                                attendance.person_id ==
+                                                    participant.person!.id! &&
+                                                attendance.sign_out_time != null,
+                                            orElse: () =>
+                                                new ActivityAttendance(
+                                                    person_id: -1))
+                                        .person_id !=
+                                    -1)
+                            DataCell(
+                              TimePickerCell(
+                                onTimeSelected: (TimeOfDay selectedTime) async{
+  
+                                  await submitDutyAttendance(participant,selectedTime,false);
+
+                                 _fetchedDutyAttendance = await getDutyAttendanceToday(
+                                           parentOrganizationId,workActivityId);
+                                 
+                                setState(() {});
+                                },
+                                initialTime:_getInitialTime(participant,false),
+                                isButtonEnabled:isAbsent,
+                                ),
+                              )
+                          else
+                            DataCell(
+                              TimePickerCell(
+                                onTimeSelected: (TimeOfDay selectedTime) async{
+  
+                                  await submitDutyAttendance(participant,selectedTime,false);
+
+                                  _fetchedDutyAttendance = await getDutyAttendanceToday(
+                                            parentOrganizationId,workActivityId);
+                                 
+                                  setState(() {});
+                                },
+                                initialTime:null,
+                                isButtonEnabled:isAbsent,
+                                ),
+                            ),
+                          if (_fetchedEvaluations
+                                        .firstWhere(
+                                            (evaluation) =>
+                                                evaluation.evaluatee_id ==
+                                                participant.person!.id!,
+                                            orElse: () => new Evaluation(
+                                                evaluatee_id: -1))
+                                        .evaluatee_id !=
+                                    -1)
+                            DataCell(Checkbox( // Add a Checkbox to the cell
                               value: _fetchedEvaluations
                                           .firstWhere(
                                               (evaluation) =>
@@ -393,6 +503,22 @@ Widget buildTable(){
                                                   evaluatee_id: -1))
                                           .evaluatee_id !=
                                           -1,
+                              onChanged: (bool? value) async{
+                                  await  toggleAbsent(participant,value!);  
+
+                                  _fetchedDutyAttendance = await getDutyAttendanceToday(
+                                             parentOrganizationId,workActivityId);
+
+                                  _fetchedEvaluations =
+                                                await getActivityInstanceEvaluations(
+                                                    workActivityInstance.id!);
+                                  setState(() {});
+                                },
+                              )
+                            )
+                          else
+                            DataCell(Checkbox( // Add a Checkbox to the cell
+                              value: false,
                               onChanged: (bool? value) async{
                                   await  toggleAbsent(participant,value!);  
 
@@ -485,7 +611,25 @@ class _TimePickerCellState extends State<TimePickerCell> {
         
                   widget.onTimeSelected(selectedTime);
                   }
-                }, 
+                },
+                style:
+                  widget.isButtonEnabled 
+                  ? ButtonStyle(
+                    textStyle: MaterialStateProperty.all(
+                        const TextStyle(fontSize: 12)),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.grey),
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                  ): 
+                  ButtonStyle(
+                    textStyle: MaterialStateProperty.all(
+                        const TextStyle(fontSize: 12)),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.deepPurpleAccent),
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                  ), 
                 child: Container(
                   width: 85,
                   child: Text(

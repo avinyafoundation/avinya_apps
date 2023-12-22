@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../data.dart';
 import '../data/activity_attendance.dart';
 import 'package:mobile/data/evaluation.dart';
@@ -171,7 +172,7 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
                       textStyle:
                           MaterialStateProperty.all(TextStyle(fontSize: 20)),
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.blue),
+                          MaterialStateProperty.all<Color>(Colors.deepPurpleAccent),
                       foregroundColor:
                           MaterialStateProperty.all<Color>(Colors.white),
                     ),
@@ -245,7 +246,13 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
         }
 
         // By default, show a loading spinner.
-        return const CircularProgressIndicator();
+        return  Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: SpinKitCircle(
+                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
+                          size: 70, // Customize the size of the indicator
+                        ),
+            );
       },
     );
     //

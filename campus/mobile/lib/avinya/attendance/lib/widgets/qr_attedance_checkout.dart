@@ -163,7 +163,9 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
           return Scaffold(
             appBar: AppBar(
               title: const Text(
-                  'Check-Out by (QR)'), // Customize your app title here
+                  'Check-Out by (QR)',style: TextStyle(color: Colors.black)),
+              backgroundColor: Color.fromARGB(255, 236, 230, 253),
+              iconTheme: IconThemeData(color: Colors.black), // Customize your app title here
             ),
             body: Center(
               child: SingleChildScrollView(
@@ -184,8 +186,7 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
                       Container(
                         margin: const EdgeInsets.only(top: 10),
                         child: const SpinKitCircle(
-                          color: (Colors
-                              .blue), // Customize the color of the indicator
+                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
                           size: 50, // Customize the size of the indicator
                         ),
                       ),
@@ -198,7 +199,7 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.all(15), // Add padding
-                              color: Colors.lightBlue, // Add a background color
+                              color: Colors.deepPurpleAccent, // Add a background color
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -264,7 +265,7 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
                         if (qrCodeData.person_id == 0 && isFirstTime)
                           Container(
                             width: double.infinity,
-                            color: Colors.blue,
+                            color: Colors.deepPurpleAccent,
                             padding: const EdgeInsets.all(16.0),
                             child: const Center(
                               child: Text(
@@ -305,7 +306,13 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
         }
 
         // By default, show a loading spinner.
-        return const CircularProgressIndicator();
+         return  Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: SpinKitCircle(
+                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
+                          size: 70, // Customize the size of the indicator
+                        ),
+            );
       },
     );
     //

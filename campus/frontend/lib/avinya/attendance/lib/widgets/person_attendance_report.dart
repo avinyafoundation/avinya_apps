@@ -144,8 +144,7 @@ class _PersonAttendanceMarkerReportState
         return  Container(
                         margin: EdgeInsets.only(top: 10),
                         child: SpinKitCircle(
-                          color: (Colors
-                              .blue), // Customize the color of the indicator
+                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
                           size: 70, // Customize the size of the indicator
                         ),
             );

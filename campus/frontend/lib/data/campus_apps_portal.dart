@@ -214,7 +214,7 @@ class CampusAppsPortal {
           if(isStudent){
             DutyParticipant? dutyParticipant =  await fetchDutyParticipant(person.id!);
             
-            if( dutyParticipant !=null &&  dutyParticipant.role == 'leader'){
+            if( dutyParticipant !=null &&  (dutyParticipant.role == 'leader' || dutyParticipant.role == 'assistant-leader' )){
                   campusAppsPortalInstance.setLeaderParticipant(dutyParticipant);
             }
 

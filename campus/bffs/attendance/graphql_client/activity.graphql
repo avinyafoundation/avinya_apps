@@ -275,7 +275,9 @@ mutation addDutyAttendance($duty_attendance: ActivityParticipantAttendance!)
         activity_instance_id
         person_id
         sign_in_time
+        sign_out_time
         in_marked_by
+        out_marked_by
         created
     }
 }
@@ -286,7 +288,9 @@ query getDutyAttendanceToday($organization_id: Int!, $activity_id: Int!) {
         person_id
         activity_instance_id
         sign_in_time
+        sign_out_time
         in_marked_by
+        out_marked_by
         created
     }      
 }
@@ -311,5 +315,20 @@ query getDutyParticipant($person_id: Int!) {
             }
         }
         role
+    }
+}
+
+mutation createDutyEvaluation($duty_evaluation: Evaluation!)
+{
+    add_duty_evaluation(duty_evaluation:$duty_evaluation){
+        id
+        evaluatee_id
+        evaluator_id
+        evaluation_criteria_id
+        activity_instance_id
+        response
+        notes
+        grade
+        created
     }
 }

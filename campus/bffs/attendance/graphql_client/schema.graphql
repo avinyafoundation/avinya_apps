@@ -101,6 +101,22 @@ type ActivityParticipantAttendanceData {
   out_marked_by: String
 }
 
+type ActivityParticipantAttendanceDataForLateAttendance {
+  id: Int
+  activity_instance_id: Int
+  person_id: Int
+  person: PersonData
+  sign_in_time: String
+  description: String
+  preferred_name: String
+  digital_id: String
+  sign_out_time: String
+  created: String
+  updated: String
+  in_marked_by: String
+  out_marked_by: String
+}
+
 type ActivityParticipantData {
   id: Int
   activity_instance_id: Int
@@ -573,6 +589,7 @@ type Mutation {
   delete_duty_for_participant(id: Int!): Int
   update_duty_rotation_metadata(duty_rotation: DutyRotationMetaDetails!): DutyRotationMetaData
   add_duty_attendance(duty_attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
+  add_duty_evaluation(duty_evaluation: Evaluation!): EvaluationData
 }
 
 input Organization {
@@ -782,7 +799,7 @@ type Query {
   person_attendance_today(person_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int): [ActivityParticipantAttendanceData!]
   class_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
-  late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
+  late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceDataForLateAttendance!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
   supplier(id: Int!): SupplierData

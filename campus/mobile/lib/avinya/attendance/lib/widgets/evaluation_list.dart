@@ -312,7 +312,9 @@ class _AddEvaluationPageState extends State<AddEvaluationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Add Evaluation'),
+          title: const Text('Add Evaluation',style: TextStyle(color: Colors.black)),
+          backgroundColor: Color.fromARGB(255, 236, 230, 253),
+          iconTheme: IconThemeData(color: Colors.black),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -440,6 +442,7 @@ class _AddEvaluationPageState extends State<AddEvaluationPage> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.deepPurpleAccent,
           onPressed: () async {
             await _addEvaluation(context);
           },

@@ -107,7 +107,8 @@ void generateDutyParticipantsReportPdf() async{
   Widget build(BuildContext context) {
      return Scaffold(
       appBar: AppBar(
-        title: Text("Duty Participants"),
+        title: Text("Duty Participants",style: TextStyle(color: Colors.black)),
+        backgroundColor: Color.fromARGB(255, 236, 230, 253),
       ),
       body: SingleChildScrollView(
           child: Container(
@@ -121,6 +122,7 @@ void generateDutyParticipantsReportPdf() async{
       floatingActionButton: FloatingActionButton(
         tooltip: 'Duty Participants Report',
         child: Icon(Icons.download),
+        backgroundColor: Colors.deepPurpleAccent,
         onPressed: () async{
           generateDutyParticipantsReportPdf();
         }),

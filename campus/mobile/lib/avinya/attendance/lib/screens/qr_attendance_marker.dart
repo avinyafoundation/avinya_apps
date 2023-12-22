@@ -26,8 +26,8 @@ class _QrAttendanceMarkerScreenState extends State<QrAttendanceMarkerScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: const Text('Attendance Marker by QR Code'),
-          backgroundColor: Colors.lightBlue,
+          title: const Text('Attendance Marker by QR Code',style: TextStyle(color: Colors.black)),
+          backgroundColor: Color.fromARGB(255, 236, 230, 253),
         ),
         body: SingleChildScrollView(
           child: Center(
