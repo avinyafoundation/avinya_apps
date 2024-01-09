@@ -660,4 +660,53 @@ service / on new http:Listener(9091) {
                 ":: Detail: " + addDutyEvaluationResponse.detail().toString());
         }
     }
+
+    resource function get attendance_missed_by_security_by_org/[int organization_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendance[]|error {
+        GetAttendanceMissedBySecurityByOrgResponse|graphql:ClientError getAttendanceMissedBySecurityResponse = globalDataClient->getAttendanceMissedBySecurityByOrg(from_date, to_date, organization_id);
+        if(getAttendanceMissedBySecurityResponse is GetAttendanceMissedBySecurityByOrgResponse) {
+            ActivityParticipantAttendance[] activityParticipantAttendances = [];
+            foreach var attendance_record in getAttendanceMissedBySecurityResponse.attendance_missed_by_security {
+                ActivityParticipantAttendance|error activityParticipantAttendance = attendance_record.cloneWithType(ActivityParticipantAttendance);
+                if(activityParticipantAttendance is ActivityParticipantAttendance) {
+                    activityParticipantAttendances.push(activityParticipantAttendance);
+                } else {
+                    log:printError("Error while processing Application record received", activityParticipantAttendance);
+                    return error("Error while processing Application record received: " + activityParticipantAttendance.message() + 
+                        ":: Detail: " + activityParticipantAttendance.detail().toString());
+                }
+            }
+
+            return activityParticipantAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getAttendanceMissedBySecurityResponse);
+            return error("Error while creating application: " + getAttendanceMissedBySecurityResponse.message() + 
+                ":: Detail: " + getAttendanceMissedBySecurityResponse.detail().toString());
+        }
+    }
+
+    resource function get attendance_missed_by_security_by_parent_org/[int parent_organization_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendance[]|error {
+        GetAttendanceMissedBySecurityByParentOrgResponse|graphql:ClientError getAttendanceMissedBySecurityResponse = globalDataClient->getAttendanceMissedBySecurityByParentOrg(from_date,to_date,parent_organization_id);
+        if(getAttendanceMissedBySecurityResponse is GetAttendanceMissedBySecurityByParentOrgResponse) {
+            ActivityParticipantAttendance[] activityParticipantAttendances = [];
+            foreach var attendance_record in getAttendanceMissedBySecurityResponse.attendance_missed_by_security {
+                ActivityParticipantAttendance|error activityParticipantAttendance = attendance_record.cloneWithType(ActivityParticipantAttendance);
+                if(activityParticipantAttendance is ActivityParticipantAttendance) {
+                    activityParticipantAttendances.push(activityParticipantAttendance);
+                } else {
+                    log:printError("Error while processing Application record received", activityParticipantAttendance);
+                    return error("Error while processing Application record received: " + activityParticipantAttendance.message() + 
+                        ":: Detail: " + activityParticipantAttendance.detail().toString());
+                }
+            }
+
+            return activityParticipantAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getAttendanceMissedBySecurityResponse);
+            return error("Error while creating application: " + getAttendanceMissedBySecurityResponse.message() + 
+                ":: Detail: " + getAttendanceMissedBySecurityResponse.detail().toString());
+        }
+    }
+
 }

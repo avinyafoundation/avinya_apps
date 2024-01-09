@@ -684,3 +684,21 @@ public type CreateDutyEvaluationResponse record {|
         string? created;
     |}? add_duty_evaluation;
 |};
+
+public type GetAttendanceMissedBySecurityByOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? digital_id;
+        string? description;
+        string? sign_in_time;
+    |}[] attendance_missed_by_security;
+|};
+
+public type GetAttendanceMissedBySecurityByParentOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? digital_id;
+        string? description;
+        string? sign_in_time;
+    |}[] attendance_missed_by_security;
+|};
