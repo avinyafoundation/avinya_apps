@@ -806,3 +806,14 @@ public type GetAttendanceMissedBySecurityByParentOrgResponse record {|
         string? sign_in_time;
     |}[]? attendance_missed_by_security;
 |};
+
+public type GetDailyStudentsAttendanceByParentOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? description;
+        int? present_count;
+        int? total_student_count;
+        string? svg_src;
+        string? color;
+    |}[]? daily_students_attendance_by_parent_org;
+|};

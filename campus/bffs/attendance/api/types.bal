@@ -253,6 +253,15 @@ public type DutyRotationMetaDetails record {
     string? start_date?;
 };
 
+public type DailyActivityParticipantAttendanceByParentOrg record {
+    string? description;
+    int? present_count;
+    string? svg_src;
+    string? color;
+    string? record_type?;
+    int? total_student_count;
+};
+
 public type GetAvinyaTypesResponse record {|
     map<json?> __extensions?;
     record {|
@@ -701,4 +710,15 @@ public type GetAttendanceMissedBySecurityByParentOrgResponse record {|
         string? description;
         string? sign_in_time;
     |}[] attendance_missed_by_security;
+|};
+
+public type GetDailyStudentsAttendanceByParentOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? description;
+        int? present_count;
+        int? total_student_count;
+        string? svg_src;
+        string? color;
+    |}[] daily_students_attendance_by_parent_org;
 |};

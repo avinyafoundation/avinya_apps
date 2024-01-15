@@ -348,3 +348,13 @@ query getAttendanceMissedBySecurityByParentOrg($parent_organization_id: Int!, $f
         sign_in_time
     }      
 }
+
+query getDailyStudentsAttendanceByParentOrg($parent_organization_id: Int!) {
+    daily_students_attendance_by_parent_org(parent_organization_id: $parent_organization_id) {
+        description
+        present_count
+        total_student_count
+        svg_src
+        color
+    }      
+}

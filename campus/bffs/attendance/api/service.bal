@@ -709,4 +709,28 @@ service / on new http:Listener(9091) {
         }
     }
 
+    resource function get daily_students_attendance_by_parent_org/[int parent_organization_id]() returns DailyActivityParticipantAttendanceByParentOrg[]|error {
+        GetDailyStudentsAttendanceByParentOrgResponse|graphql:ClientError getDailyStudentsAttendanceResponse = globalDataClient->getDailyStudentsAttendanceByParentOrg(parent_organization_id);
+        if(getDailyStudentsAttendanceResponse is GetDailyStudentsAttendanceByParentOrgResponse) {
+            DailyActivityParticipantAttendanceByParentOrg[] dailyStudentsAttendances = [];
+            foreach var daily_students_attendance_record in getDailyStudentsAttendanceResponse.daily_students_attendance_by_parent_org {
+                DailyActivityParticipantAttendanceByParentOrg|error dailyStudentsAttendance = daily_students_attendance_record.cloneWithType(DailyActivityParticipantAttendanceByParentOrg);
+                if(dailyStudentsAttendance is DailyActivityParticipantAttendanceByParentOrg) {
+                    dailyStudentsAttendances.push(dailyStudentsAttendance);
+                } else {
+                    log:printError("Error while processing Application record received", dailyStudentsAttendance);
+                    return error("Error while processing Application record received: " + dailyStudentsAttendance.message() + 
+                        ":: Detail: " + dailyStudentsAttendance.detail().toString());
+                }
+            }
+
+            return dailyStudentsAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getDailyStudentsAttendanceResponse);
+            return error("Error while creating application: " + getDailyStudentsAttendanceResponse.message() + 
+                ":: Detail: " + getDailyStudentsAttendanceResponse.detail().toString());
+        }
+    }
+
 }
