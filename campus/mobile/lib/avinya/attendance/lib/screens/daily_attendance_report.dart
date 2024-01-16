@@ -32,7 +32,8 @@ class _DailyAttendanceReportScreenState
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("Daily Attendance Report"),
+        title: Text("Daily Attendance Report",style: TextStyle(color: Colors.black)),
+        backgroundColor: Color.fromARGB(255, 236, 230, 253),
       ),
       body: SingleChildScrollView(
         child: Container(

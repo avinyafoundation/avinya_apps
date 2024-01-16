@@ -217,7 +217,7 @@ class _QrAttendanceMarkerState extends State<QrAttendanceMarker> {
                             20), // increase the elevation
                         // Add outline around button
                         backgroundColor:
-                            MaterialStateProperty.all(Colors.blueAccent),
+                            MaterialStateProperty.all(Colors.deepPurpleAccent),
                         foregroundColor:
                             MaterialStateProperty.all(Colors.black),
                       ),

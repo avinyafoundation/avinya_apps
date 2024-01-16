@@ -275,7 +275,9 @@ mutation addDutyAttendance($duty_attendance: ActivityParticipantAttendance!)
         activity_instance_id
         person_id
         sign_in_time
+        sign_out_time
         in_marked_by
+        out_marked_by
         created
     }
 }
@@ -286,7 +288,9 @@ query getDutyAttendanceToday($organization_id: Int!, $activity_id: Int!) {
         person_id
         activity_instance_id
         sign_in_time
+        sign_out_time
         in_marked_by
+        out_marked_by
         created
     }      
 }
@@ -312,4 +316,45 @@ query getDutyParticipant($person_id: Int!) {
         }
         role
     }
+}
+
+mutation createDutyEvaluation($duty_evaluation: Evaluation!)
+{
+    add_duty_evaluation(duty_evaluation:$duty_evaluation){
+        id
+        evaluatee_id
+        evaluator_id
+        evaluation_criteria_id
+        activity_instance_id
+        response
+        notes
+        grade
+        created
+    }
+}
+
+query getAttendanceMissedBySecurityByOrg($organization_id: Int!, $from_date: String!, $to_date: String!) {
+    attendance_missed_by_security(organization_id:$organization_id, from_date: $from_date, to_date: $to_date) {
+        digital_id
+        description
+        sign_in_time
+    }      
+}
+
+query getAttendanceMissedBySecurityByParentOrg($parent_organization_id: Int!, $from_date: String!, $to_date: String!) {
+    attendance_missed_by_security(parent_organization_id: $parent_organization_id, from_date: $from_date, to_date: $to_date) {
+        digital_id
+        description
+        sign_in_time
+    }      
+}
+
+query getDailyStudentsAttendanceByParentOrg($parent_organization_id: Int!) {
+    daily_students_attendance_by_parent_org(parent_organization_id: $parent_organization_id) {
+        description
+        present_count
+        total_student_count
+        svg_src
+        color
+    }      
 }

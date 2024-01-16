@@ -1,6 +1,6 @@
 {
-    "campusProfileBffApiUrl" : "http://192.168.1.101:9090",
-    "campusAttendanceBffApiUrl" : "http://192.168.1.101:9091",
+    "campusProfileBffApiUrl" : "http://192.168.1.103:9090",
+    "campusAttendanceBffApiUrl" : "http://192.168.1.103:9091",
     "campusPctiNotesBffApiUrl" : "http://localhost:9092",
     "campusPctiFeedbackBffApiUrl" : "http://localhost:9093",
     "campusAssetsBffApiUrl" : "http://localhost:9094",

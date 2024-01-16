@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../data.dart';
 import '../data/activity_attendance.dart';
 import 'package:mobile/data/evaluation.dart';
@@ -297,7 +298,13 @@ class _QrAttendanceMarkerState extends State<QrAttendanceMarker> {
         }
 
         // By default, show a loading spinner.
-        return const CircularProgressIndicator();
+        return  Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: SpinKitCircle(
+                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
+                          size: 70, // Customize the size of the indicator
+                        ),
+            );
       },
     );
     //
