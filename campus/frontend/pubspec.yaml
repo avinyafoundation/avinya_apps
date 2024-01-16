@@ -58,6 +58,8 @@ dependencies:
   qr_flutter: 4.0.0
   qr_code_scanner: ^1.0.1
   flutter_date_range_picker: ^0.0.14
+  fl_chart: ^0.62.0
+
 
 dev_dependencies:
   flutter_test:
@@ -283,6 +285,7 @@ flutter:
     - assets/config/dev-cloud.json
     - assets/config/stag.json
     - assets/images/
+    - assets/icons/
 
   generate: true
   uses-material-design: true

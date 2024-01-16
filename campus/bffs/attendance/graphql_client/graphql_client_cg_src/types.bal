@@ -558,21 +558,6 @@ public type GetClassAttendanceReportResponse record {|
     |}[]? class_attendance_report;
 |};
 
-public type GetLateAttendanceReportResponse record {|
-    map<json?> __extensions?;
-    record {|
-        int? id;
-        record {|
-            int? id;
-        |}? person;
-        int? activity_instance_id;
-        string? sign_in_time;
-        string? sign_out_time;
-        string? in_marked_by;
-        string? out_marked_by;
-    |}[]? late_attendance_report;
-|};
-
 public type GetPersonAttendanceReportResponse record {|
     map<json?> __extensions?;
     record {|
@@ -783,4 +768,35 @@ public type GetDutyParticipantResponse record {|
         |}? person;
         string? role;
     |}? duty_participant;
+|};
+
+public type GetAttendanceDashboardResponse record {|
+    map<json?> __extensions?;
+    record {|
+        record {|
+            string? title;
+            int? numOfFiles;
+            string? svgSrc;
+            string? color;
+            int? percentage;
+        |}? attendance_dashboard_data;
+    |}[]? attendance_dashboard_data_by_date;
+|};
+
+public type GetLateAttendanceReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+        |}? person;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+        string? preferred_name;
+        string? digital_id;
+        int? person_id;
+    |}[]? late_attendance_report;
 |};

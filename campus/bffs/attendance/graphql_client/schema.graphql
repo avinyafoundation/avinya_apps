@@ -101,6 +101,22 @@ type ActivityParticipantAttendanceData {
   out_marked_by: String
 }
 
+type ActivityParticipantAttendanceDataForLateAttendance {
+  id: Int
+  activity_instance_id: Int
+  person_id: Int
+  person: PersonData
+  sign_in_time: String
+  description: String
+  preferred_name: String
+  digital_id: String
+  sign_out_time: String
+  created: String
+  updated: String
+  in_marked_by: String
+  out_marked_by: String
+}
+
 type ActivityParticipantData {
   id: Int
   activity_instance_id: Int
@@ -250,6 +266,20 @@ type AssetData {
   avinya_type_id: Int
   created: String
   updated: String
+}
+
+type AttendanceDashboardData {
+  record_type: String
+  title: String
+  numOfFiles: Int
+  svgSrc: String
+  color: String
+  percentage: Int
+}
+
+type AttendanceDashboardDataMain {
+  record_type: String
+  attendance_dashboard_data: AttendanceDashboardData
 }
 
 input AvinyaType {
@@ -782,7 +812,7 @@ type Query {
   person_attendance_today(person_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int): [ActivityParticipantAttendanceData!]
   class_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
-  late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
+  late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceDataForLateAttendance!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
   supplier(id: Int!): SupplierData
@@ -808,6 +838,7 @@ type Query {
   duty_participants_by_duty_activity_id(organization_id: Int, duty_activity_id: Int): [DutyParticipantData!]!
   duty_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   duty_participant(person_id: Int): DutyParticipantData
+  attendance_dashboard_data_by_date(organization_id: Int, parent_organization_id: Int, activity_id: Int, from_date: String = "", to_date: String = ""): [AttendanceDashboardDataMain!]
 }
 
 input ResourceAllocation {

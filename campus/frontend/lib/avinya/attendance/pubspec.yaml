@@ -35,6 +35,9 @@ dependencies:
   qr_flutter: ^4.0.0
   qr_code_scanner: ^1.0.1
   flutter_date_range_picker: ^0.0.14
+  flutter_svg: ^2.0.5
+  fl_chart: ^0.62.0
+
 
 dev_dependencies:
   flutter_lints: ^2.0.1

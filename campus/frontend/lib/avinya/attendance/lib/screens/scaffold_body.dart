@@ -12,7 +12,7 @@ import 'package:attendance/screens/duty_participants.dart';
 import 'package:attendance/screens/duty_attendance_marker.dart';
 //import 'package:attendance/screens/qr_attendance_marker.dart';
 import 'package:attendance/screens/late_attendance_report.dart';
-import 'package:attendance/screens/attendance_dashboard.dart';
+import 'package:attendance/screens/dashboard/dashboard_screen.dart';
 
 import '../routing.dart';
 import '../widgets/fade_transition_page.dart';
@@ -91,17 +91,19 @@ class SMSScaffoldBody extends StatelessWidget {
         else if (currentRoute.pathTemplate.startsWith('/duty_participants'))
           const FadeTransitionPage<void>(
             key: ValueKey('duty_participants'),
-            child: DutyParticipantsScreen(),                                
+            child: DutyParticipantsScreen(),
           )
-        else if (currentRoute.pathTemplate.startsWith('/duty_attendance_marker'))
+        else if (currentRoute.pathTemplate
+            .startsWith('/duty_attendance_marker'))
           const FadeTransitionPage<void>(
             key: ValueKey('duty_participants_attendance_marker'),
-            child: DutyAttendanceMarkerScreen(),                                
+            child: DutyAttendanceMarkerScreen(),
           )
-        else if (currentRoute.pathTemplate.startsWith('/daily_duty_attendance_report'))
+        else if (currentRoute.pathTemplate
+            .startsWith('/daily_duty_attendance_report'))
           const FadeTransitionPage<void>(
             key: ValueKey('daily_duty_attendance_report'),
-            child: DailyDutyAttendanceReportScreen(),                                
+            child: DailyDutyAttendanceReportScreen(),
           )
         // Avoid building a Navigator with an empty `pages` list when the
         // RouteState is set to an unexpected path, such as /signin.

@@ -159,4 +159,16 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetDutyParticipantResponse> check performDataBinding(graphqlResponse, GetDutyParticipantResponse);
     }
+    remote isolated function getAttendanceDashboard(string from_date, string to_date, int organization_id) returns GetAttendanceDashboardResponse|graphql:ClientError {
+        string query = string `query getAttendanceDashboard($organization_id:Int!,$from_date:String!,$to_date:String!) {attendance_dashboard_data_by_date(organization_id:$organization_id,from_date:$from_date,to_date:$to_date) {attendance_dashboard_data {title numOfFiles svgSrc color percentage}}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetAttendanceDashboardResponse> check performDataBinding(graphqlResponse, GetAttendanceDashboardResponse);
+    }
+    remote isolated function getLateAttendanceReport(string from_date, string to_date, int organization_id, int activity_id) returns GetLateAttendanceReportResponse|graphql:ClientError {
+        string query = string `query getLateAttendanceReport($organization_id:Int!,$activity_id:Int!,$from_date:String!,$to_date:String!) {late_attendance_report(organization_id:$organization_id,activity_id:$activity_id,from_date:$from_date,to_date:$to_date) {id person {id} activity_instance_id sign_in_time sign_out_time in_marked_by out_marked_by preferred_name digital_id person_id}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id, "activity_id": activity_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetLateAttendanceReportResponse> check performDataBinding(graphqlResponse, GetLateAttendanceReportResponse);
+    }
 }

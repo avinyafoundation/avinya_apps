@@ -642,4 +642,56 @@ service / on new http:Listener(9091) {
             return dutyParticipant;
        }        
     }
+           resource function get attendance_dashboard_card_data/[string from_date]/[string to_date]/[int organization_id]() returns AttendanceDashboardDataMain[]|error {
+            log:printInfo("Time parent_organization_id");
+            log:printInfo(organization_id.toString());
+        GetAttendanceDashboardResponse|graphql:ClientError getAttendanceDashboardResponse = globalDataClient->getAttendanceDashboard(from_date, to_date,organization_id);
+        log:printInfo((check getAttendanceDashboardResponse).toString());
+        if(getAttendanceDashboardResponse is GetAttendanceDashboardResponse) {
+            AttendanceDashboardDataMain[] attendanceDashboardDatas = [];
+            foreach var attendance_dashboard_record in getAttendanceDashboardResponse.attendance_dashboard_data_by_date {
+                log:printInfo("Time dddddddddddd");
+                log:printInfo((attendance_dashboard_record).toString());
+                AttendanceDashboardDataMain|error attendanceDashboardData = attendance_dashboard_record.cloneWithType(AttendanceDashboardDataMain);
+                if(attendanceDashboardData is AttendanceDashboardDataMain) {
+                    attendanceDashboardDatas.push(attendanceDashboardData);
+                } else {
+                    log:printError("Error while processing Application record received", attendanceDashboardData);
+                    return error("Error while processing Application record received: " + attendanceDashboardData.message() + 
+                        ":: Detail: " + attendanceDashboardData.detail().toString());
+                }
+            }
+
+            return attendanceDashboardDatas;
+            
+        }else if(getAttendanceDashboardResponse is graphql:ClientError){
+            AttendanceDashboardDataMain[] attendanceDashboardDatas = [];
+            return attendanceDashboardDatas;
+        }
+    }
+        resource function get attendance_dashboard_card_data_by_parent_org/[string from_date]/[string to_date]/[int parent_organization_id]() returns AttendanceDashboardDataMain[]|error {
+            log:printInfo("Time parent_organization_id");
+            log:printInfo(parent_organization_id.toString());
+        GetAttendanceDashboardResponse|graphql:ClientError getAttendanceDashboardResponse = globalDataClient->getAttendanceDashboardbyParentOrgId(from_date, to_date,parent_organization_id);
+        if(getAttendanceDashboardResponse is GetAttendanceDashboardResponse) {
+            AttendanceDashboardDataMain[] attendanceDashboardDatas = [];
+            foreach var attendance_dashboard_record in getAttendanceDashboardResponse.attendance_dashboard_data_by_date {
+                AttendanceDashboardDataMain|error attendanceDashboardData = attendance_dashboard_record.cloneWithType(AttendanceDashboardDataMain);
+                if(attendanceDashboardData is AttendanceDashboardDataMain) {
+                    attendanceDashboardDatas.push(attendanceDashboardData);
+                } else {
+                    log:printError("Error while processing Application record received", attendanceDashboardData);
+                    return error("Error while processing Application record received: " + attendanceDashboardData.message() + 
+                        ":: Detail: " + attendanceDashboardData.detail().toString());
+                }
+            }
+
+            return attendanceDashboardDatas;
+            
+        } else {
+            log:printError("Error while creating application", getAttendanceDashboardResponse);
+            return error("Error while creating application: " + getAttendanceDashboardResponse.message() + 
+                ":: Detail: " + getAttendanceDashboardResponse.detail().toString());
+        }
+    }
 }

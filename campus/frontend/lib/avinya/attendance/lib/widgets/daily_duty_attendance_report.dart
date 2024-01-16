@@ -20,13 +20,12 @@ class DailyDutyAttendanceReport extends StatefulWidget {
 class _DailyDutyAttendanceReportState extends State<DailyDutyAttendanceReport> {
   List<ActivityAttendance> _fetchedAttendance = [];
 
-  List<Activity>  _activitiesByAvinyaType = [];
+  List<Activity> _activitiesByAvinyaType = [];
   List<DutyParticipant> _dutyParticipantsData = [];
 
   bool _isFetching = true;
   var activityId = 0;
   bool _isDisplayErrorMessage = false;
-
 
   List<String?> columnNames = [];
 
@@ -48,16 +47,15 @@ class _DailyDutyAttendanceReportState extends State<DailyDutyAttendanceReport> {
     });
   }
 
-  Future<void> loadActivitiesByAvinyaType() async{
-
-    _activitiesByAvinyaType = await fetchActivitiesByAvinyaType(91); //load avinya type =91(work) related activities
+  Future<void> loadActivitiesByAvinyaType() async {
+    _activitiesByAvinyaType = await fetchActivitiesByAvinyaType(
+        91); //load avinya type =91(work) related activities
     _activitiesByAvinyaType.removeWhere((activity) => activity.name == 'work');
-    
   }
 
-  Future<void> loadDutyParticipantsData() async{
-
-    _dutyParticipantsData = await fetchDutyParticipants(campusAppsPortalInstance.getUserPerson().organization!.id!);
+  Future<void> loadDutyParticipantsData() async {
+    _dutyParticipantsData = await fetchDutyParticipants(
+        campusAppsPortalInstance.getUserPerson().organization!.id!);
   }
 
   @override
@@ -73,8 +71,8 @@ class _DailyDutyAttendanceReportState extends State<DailyDutyAttendanceReport> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _data = MyData(
-        _fetchedAttendance, columnNames, updateSelected,_activitiesByAvinyaType,_dutyParticipantsData);
+    _data = MyData(_fetchedAttendance, columnNames, updateSelected,
+        _activitiesByAvinyaType, _dutyParticipantsData);
     DateRangePicker(updateDateRange, formattedStartDate);
   }
 
@@ -121,75 +119,54 @@ class _DailyDutyAttendanceReportState extends State<DailyDutyAttendanceReport> {
         campusAppsPortalInstance.getUserPerson().organization!.id;
 
     var cols =
-        columnNames.map((label) => DataColumn(label: Text(label!))).toList(); 
-
+        columnNames.map((label) => DataColumn(label: Text(label!))).toList();
 
     _fetchedAttendance = await getLateAttendanceReportByParentOrg(
-          parentOrgId!,
-          activityId,
-          DateFormat('yyyy-MM-dd')
-              .format(DateFormat('MMM d, yyyy').parse(this.formattedStartDate)),
-          DateFormat('yyyy-MM-dd')
-              .format(DateFormat('MMM d, yyyy').parse(this.formattedEndDate)));
+        parentOrgId!,
+        activityId,
+        DateFormat('yyyy-MM-dd')
+            .format(DateFormat('MMM d, yyyy').parse(this.formattedStartDate)),
+        DateFormat('yyyy-MM-dd')
+            .format(DateFormat('MMM d, yyyy').parse(this.formattedEndDate)));
 
     if (_fetchedAttendance.length > 0) {
-                                
-        columnNames.clear();
-        List<String?> names = _fetchedAttendance
-            .map((attendance) => attendance
-                .sign_in_time
-                ?.split(" ")[0])
-            .where((name) =>
-                name !=
-                null) // Filter out null values
-            .toList();
-        columnNames.addAll(names);
-      } else {
-        columnNames.clear();
-     }
-      columnNames =
-                columnNames.toSet().toList();
-      columnNames.sort();
-      columnNames.insert(0, "Name");
-      columnNames.insert(1, "Digital ID");
-      cols = columnNames
-          .map((label) =>
-              DataColumn(label: Text(label!)))
+      columnNames.clear();
+      List<String?> names = _fetchedAttendance
+          .map((attendance) => attendance.sign_in_time?.split(" ")[0])
+          .where((name) => name != null) // Filter out null values
           .toList();
-      print(cols.length);
-      if (_fetchedAttendance.length == 0)
-              _fetchedAttendance = new List.filled(
-                  _dutyParticipantsData.length,
-                  new ActivityAttendance(
-                      person_id: -1));
-      else {
-        for (int i = 0;
-            i <
-                _dutyParticipantsData.length;
-            i++) {
-          if (_fetchedAttendance.indexWhere(
-                  (attendance) =>
-                      attendance.person_id ==
-                      _dutyParticipantsData[i].person!.id) ==
-              -1) {
-            _fetchedAttendance.add(
-                new ActivityAttendance(
-                    person_id: -1));
-          }
+      columnNames.addAll(names);
+    } else {
+      columnNames.clear();
+    }
+    columnNames = columnNames.toSet().toList();
+    columnNames.sort();
+    columnNames.insert(0, "Name");
+    columnNames.insert(1, "Digital ID");
+    cols = columnNames.map((label) => DataColumn(label: Text(label!))).toList();
+    print(cols.length);
+    if (_fetchedAttendance.length == 0)
+      _fetchedAttendance = new List.filled(
+          _dutyParticipantsData.length, new ActivityAttendance(person_id: -1));
+    else {
+      for (int i = 0; i < _dutyParticipantsData.length; i++) {
+        if (_fetchedAttendance.indexWhere((attendance) =>
+                attendance.person_id == _dutyParticipantsData[i].person!.id) ==
+            -1) {
+          _fetchedAttendance.add(new ActivityAttendance(person_id: -1));
         }
       }
+    }
 
     setState(() {
-
       this._isFetching = false;
-      _data = MyData(_fetchedAttendance, columnNames,
-          updateSelected,_activitiesByAvinyaType,_dutyParticipantsData);
+      _data = MyData(_fetchedAttendance, columnNames, updateSelected,
+          _activitiesByAvinyaType, _dutyParticipantsData);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    
     var cols =
         columnNames.map((label) => DataColumn(label: Text(label!))).toList();
 
@@ -295,7 +272,7 @@ class _DailyDutyAttendanceReportState extends State<DailyDutyAttendanceReport> {
                         // header: const Center(child: Text('Daily Attendance')),
                         columnSpacing: 100,
                         horizontalMargin: 60,
-                        rowsPerPage: 25,
+                        rowsPerPage: 125,
                       ),
                     )
                   else
@@ -311,193 +288,193 @@ class _DailyDutyAttendanceReportState extends State<DailyDutyAttendanceReport> {
 }
 
 class MyData extends DataTableSource {
-  MyData(this._fetchedAttendance, this.columnNames,
-      this.updateSelected,this._activitiesByAvinyaType,this._dutyParticipantsData) {
+  MyData(this._fetchedAttendance, this.columnNames, this.updateSelected,
+      this._activitiesByAvinyaType, this._dutyParticipantsData) {
     columnNames.sort((a, b) => b!.compareTo(a!));
   }
 
   final List<ActivityAttendance> _fetchedAttendance;
   final List<String?> columnNames;
-  final List<Activity>  _activitiesByAvinyaType;
+  final List<Activity> _activitiesByAvinyaType;
   List<DutyParticipant> _dutyParticipantsData;
   final Function(int, bool, List<bool>) updateSelected;
   List<DutyParticipant> filterParticularDutyActivityParticipants = [];
-  int listIndex=0;
-  int incrementActivityIdListIndex=0;
+  int listIndex = 0;
+  int incrementActivityIdListIndex = 0;
   Activity? activity;
 
   @override
   DataRow? getRow(int index) {
-
-  
-    if (index == 0 ) {
+    if (index == 0) {
       List<DataCell> cells = new List.filled(
         columnNames.toSet().toList().length,
         new DataCell(Container(child: Text("Absent"), color: Colors.red)),
       );
-        cells[0] = DataCell(Text(''));
-        cells[1] = DataCell(Text(''));
-        for (final date in columnNames) {
-          print("date ${date}");
-          if (columnNames.indexOf(date) == 0 ||
-              columnNames.indexOf(date) == 1) {
-            continue;
-          }
+      cells[0] = DataCell(Text(''));
+      cells[1] = DataCell(Text(''));
+      for (final date in columnNames) {
+        print("date ${date}");
+        if (columnNames.indexOf(date) == 0 || columnNames.indexOf(date) == 1) {
+          continue;
+        }
 
-          date == '$date 00:00:00';
-          cells[columnNames.indexOf(date)] = DataCell(Container(
+        date == '$date 00:00:00';
+        cells[columnNames.indexOf(date)] = DataCell(Container(
+          alignment: Alignment.center,
+          padding: EdgeInsets.all(8),
+          child: Text(DateFormat.EEEE().format(DateTime.parse(date!)),
+              style: TextStyle(
+                color: Color.fromARGB(255, 14, 72, 90),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              )),
+        ));
+      }
+
+      listIndex = 0;
+      incrementActivityIdListIndex = 0;
+
+      activity = _activitiesByAvinyaType[incrementActivityIdListIndex];
+
+      filterParticularDutyActivityParticipants = _dutyParticipantsData
+          .where((participant) => participant.activity!.id == activity!.id)
+          .toList();
+
+      return DataRow(
+        cells: cells,
+      );
+    }
+    if (index == 1) {
+      List<DataCell> cells = new List.filled(
+        columnNames.toSet().toList().length,
+        new DataCell(Container(
+            alignment: Alignment.center,
+            child: Text("",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                )))),
+      );
+
+      cells[0] = DataCell(Text(''));
+      cells[1] = DataCell(Container(
+        alignment: Alignment.center,
+        padding: EdgeInsets.all(8),
+        child: Text('${activity!.name}',
+            style: TextStyle(
+              color: Color.fromARGB(255, 14, 72, 90),
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            )),
+      ));
+      return DataRow(
+        color: MaterialStateProperty.all(Colors.blue[100]),
+        cells: cells,
+      );
+    }
+
+    if (_activitiesByAvinyaType.isNotEmpty &&
+        _dutyParticipantsData.isNotEmpty &&
+        columnNames.length > 0) {
+      if (listIndex < filterParticularDutyActivityParticipants.length) {
+        List<DataCell> cells = new List.filled(
+          columnNames.toSet().toList().length,
+          new DataCell(Container(
+              alignment: Alignment.center,
+              child: Text("Absent",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  )))),
+        );
+
+        var dutyParticipant =
+            filterParticularDutyActivityParticipants[listIndex];
+
+        cells[0] =
+            DataCell(Text(dutyParticipant.person!.preferred_name.toString()));
+        cells[1] =
+            DataCell(Text(dutyParticipant.person!.digital_id.toString()));
+
+        for (final attendance in _fetchedAttendance) {
+          if (attendance.person_id == dutyParticipant.person!.id) {
+            for (final date in columnNames) {
+              print(
+                  "split date:${dutyParticipant.person!.preferred_name}==${date}==,${attendance.sign_in_time!.split(" ")[0]}");
+              if (attendance.sign_in_time != null &&
+                  attendance.sign_in_time!.split(" ")[0] == date) {
+                cells[columnNames.indexOf(date)] = DataCell(Container(
+                    alignment: Alignment.center, child: Text("Present")));
+              }
+            }
+          }
+        }
+
+        listIndex++;
+
+        int numItems =
+            _dutyParticipantsData.length + _activitiesByAvinyaType.length;
+        List<bool> selected =
+            List<bool>.generate(numItems, (int index) => false);
+        return DataRow(
+          cells: cells,
+          onSelectChanged: (value) {
+            updateSelected(index, value!,
+                selected); // Call the callback to update the selected state
+          },
+          color: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+            if (states.contains(MaterialState.hovered)) {
+              return Colors.grey.withOpacity(0.4);
+            }
+            if (index.isEven) {
+              return Colors.grey.withOpacity(0.2);
+            }
+            return null;
+          }),
+        );
+      } else {
+        incrementActivityIdListIndex++;
+        if (incrementActivityIdListIndex < _activitiesByAvinyaType.length) {
+          filterParticularDutyActivityParticipants.clear();
+          activity = _activitiesByAvinyaType[incrementActivityIdListIndex];
+          filterParticularDutyActivityParticipants = _dutyParticipantsData
+              .where((participant) => participant.activity!.id == activity!.id)
+              .toList();
+          listIndex = 0;
+
+          List<DataCell> cells = new List.filled(
+            columnNames.toSet().toList().length,
+            new DataCell(Container(
+                alignment: Alignment.center,
+                child: Text("",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    )))),
+          );
+          cells[0] = DataCell(Text(''));
+          cells[1] = DataCell(Container(
             alignment: Alignment.center,
             padding: EdgeInsets.all(8),
-            child: Text(DateFormat.EEEE().format(DateTime.parse(date!)),
+            child: Text('${activity!.name}',
                 style: TextStyle(
                   color: Color.fromARGB(255, 14, 72, 90),
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 )),
           ));
-        }
-      
-      listIndex= 0;
-      incrementActivityIdListIndex=0;
-
-      activity = _activitiesByAvinyaType[incrementActivityIdListIndex];
-
-      filterParticularDutyActivityParticipants = 
-                            _dutyParticipantsData.where((participant) => participant.activity!.id == activity!.id)
-                            .toList();
-
-      return DataRow(
-        cells: cells,
-      );
-    }
-    if(index==1){
-       List<DataCell> cells = new List.filled(
-        columnNames.toSet().toList().length,
-        new DataCell(Container(
-            alignment: Alignment.center,
-            child: Text("",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                )))),
-      );
-
-        cells[0] = DataCell(Text(''));
-        cells[1] = DataCell(Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.all(8),
-          child: Text('${activity!.name}',
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 72, 90),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              )),
-        ));
-       return DataRow(
-        color: MaterialStateProperty.all(Colors.blue[100]),
-        cells: cells,
-      );
-    }
-
-  if(_activitiesByAvinyaType.isNotEmpty &&
-     _dutyParticipantsData.isNotEmpty &&  
-      columnNames.length > 0) {
-
-    if(listIndex < filterParticularDutyActivityParticipants.length){
-
-      List<DataCell> cells = new List.filled(
-        columnNames.toSet().toList().length,
-        new DataCell(Container(
-            alignment: Alignment.center,
-            child: Text("Absent",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                )))),
-      );
-
-      var dutyParticipant = filterParticularDutyActivityParticipants[listIndex];
-
-      cells[0] = DataCell(Text(dutyParticipant.person!.preferred_name.toString()));
-      cells[1] = DataCell(Text(dutyParticipant.person!.digital_id.toString()));
-
-      for (final attendance in _fetchedAttendance) {
-        if (attendance.person_id == dutyParticipant.person!.id) {
-          for (final date in columnNames) {
-            print("split date:${dutyParticipant.person!.preferred_name}==${date}==,${attendance.sign_in_time!.split(" ")[0]}");
-            if (attendance.sign_in_time != null &&
-                attendance.sign_in_time!.split(" ")[0] == date) {
-              cells[columnNames.indexOf(date)] = DataCell(Container(
-                  alignment: Alignment.center, child: Text("Present")));
-            }
-          }
+          return DataRow(
+            color: MaterialStateProperty.all(Colors.blue[100]),
+            cells: cells,
+          );
+        } else {
+          return null;
         }
       }
-
-
-      listIndex++;
-
-      int numItems = _dutyParticipantsData.length+_activitiesByAvinyaType.length;
-      List<bool> selected = List<bool>.generate(numItems, (int index) => false);
-      return DataRow(
-        cells: cells,
-        onSelectChanged: (value) {
-          updateSelected(index, value!,
-              selected); // Call the callback to update the selected state
-        },
-        color: MaterialStateProperty.resolveWith<Color?>(
-            (Set<MaterialState> states) {
-          if (states.contains(MaterialState.hovered)) {
-            return Colors.grey.withOpacity(0.4);
-          }
-          if (index.isEven) {
-            return Colors.grey.withOpacity(0.2);
-          }
-          return null;
-        }),
-      );
-    }else{
-     incrementActivityIdListIndex++;
-     if(incrementActivityIdListIndex < _activitiesByAvinyaType.length){
-
-      filterParticularDutyActivityParticipants.clear();
-      activity = _activitiesByAvinyaType[incrementActivityIdListIndex];
-      filterParticularDutyActivityParticipants = 
-                            _dutyParticipantsData.where((participant) => participant.activity!.id == activity!.id)
-                            .toList();
-      listIndex=0;
-      
-      List<DataCell> cells = new List.filled(columnNames.toSet().toList().length,new DataCell(Container(
-            alignment: Alignment.center,
-            child: Text("",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                )))),
-      );
-        cells[0] = DataCell(Text(''));
-        cells[1] = DataCell(Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.all(8),
-          child: Text('${activity!.name}',
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 72, 90),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              )),
-        ));
-        return DataRow(
-        color: MaterialStateProperty.all(Colors.blue[100]),
-        cells: cells,
-      );
-     }else{
-       return null;
-     }
-
     }
-  }  
-  return null;
-}
+    return null;
+  }
 
   @override
   // TODO: implement isRowCountApproximate
@@ -507,7 +484,7 @@ class MyData extends DataTableSource {
   // TODO: implement rowCount
   int get rowCount {
     int count = 0;
-    count = _dutyParticipantsData.length+1 ?? 0;
+    count = _dutyParticipantsData.length + 1 ?? 0;
     count += _activitiesByAvinyaType.length; //to facilitate additional rows
 
     return count;

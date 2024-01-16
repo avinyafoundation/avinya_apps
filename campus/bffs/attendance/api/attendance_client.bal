@@ -1,4 +1,5 @@
 import ballerina/graphql;
+import ballerina/log;
 
 public isolated client class GraphqlClient {
     final graphql:Client graphqlClient;
@@ -243,5 +244,23 @@ public isolated client class GraphqlClient {
         map<anydata> variables = {"person_id": person_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetDutyParticipantResponse> check performDataBinding(graphqlResponse, GetDutyParticipantResponse);
+    }
+
+    remote isolated function getAttendanceDashboard(string from_date, string to_date, int organization_id) returns GetAttendanceDashboardResponse|graphql:ClientError {
+        string query = string `query getAttendanceDashboard($organization_id:Int!,$from_date:String!,$to_date:String!) {attendance_dashboard_data_by_date(organization_id:$organization_id,from_date:$from_date,to_date:$to_date) {attendance_dashboard_data {title numOfFiles svgSrc color percentage}}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetAttendanceDashboardResponse> check performDataBinding(graphqlResponse, GetAttendanceDashboardResponse);
+    }
+    remote isolated function getAttendanceDashboardbyParentOrgId(string from_date, string to_date, int parent_organization_id) returns GetAttendanceDashboardResponse|graphql:ClientError {
+        log:printInfo("Time aaa");
+        log:printInfo("Time aaa" + from_date.toString() + " " + to_date.toString() + " " + parent_organization_id.toString());
+        string query = string `query getAttendanceDashboard($parent_organization_id:Int!,$from_date:String!,$to_date:String!) {attendance_dashboard_data_by_date(parent_organization_id:$parent_organization_id,from_date:$from_date,to_date:$to_date) {attendance_dashboard_data {title numOfFiles svgSrc color percentage}}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "parent_organization_id": parent_organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        log:printInfo("Time bbb");
+            string formattedJson = graphqlResponse.toString();
+log:printInfo("Formatted Response: " + formattedJson);
+        return <GetAttendanceDashboardResponse> check performDataBinding(graphqlResponse, GetAttendanceDashboardResponse);
     }
 }
