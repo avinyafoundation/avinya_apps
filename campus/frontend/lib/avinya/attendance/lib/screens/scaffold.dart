@@ -20,6 +20,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
   bool isAttendanceSectionHovered = false;
   bool isDutySectionHovered = false;
   bool isReportSectionHovered = false;
+  bool isDashboardHovered = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,30 +34,6 @@ class _SMSScaffoldState extends State<SMSScaffold> {
         campusAppsPortalInstance.isSecurity ||
         campusAppsPortalInstance.isFoundation) {
       attendanceMarkerDestinations = [
-        Material(
-          type: MaterialType.transparency,
-          child: Container(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
-            child: ListTile(
-              hoverColor: Colors.white.withOpacity(0.3),
-              leading: Icon(Icons.dashboard, color: Colors.white, size: 20.0),
-              title: Container(
-                transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                child: Text(
-                  "Attendance Dashboard",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                routeState.go('/attendance_dashboard');
-              },
-            ),
-          ),
-        ),
         Material(
           type: MaterialType.transparency,
           child: Container(
@@ -363,6 +340,51 @@ class _SMSScaffoldState extends State<SMSScaffold> {
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
+              MouseRegion(
+                onEnter: (_) {
+                  setState(() {
+                    isDashboardHovered = true;
+                  });
+                },
+                onExit: (_) {
+                  setState(() {
+                    isDashboardHovered = false;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isDashboardHovered
+                        ? Colors.white.withOpacity(0.3)
+                        : null,
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  margin: EdgeInsets.all(8.0),
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Container(
+                      child: ListTile(
+                        leading: Icon(Icons.dashboard,
+                            color: Colors.white, size: 20.0),
+                        title: Container(
+                          transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                          child: Text(
+                            "Attendance Dashboard",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context); // Close the drawer
+                          routeState.go('/attendance_dashboard');
+                        },
+                      ),
+                    ),
+                  ),
+                  // ),
+                ),
+              ),
               MouseRegion(
                 onEnter: (_) {
                   setState(() {
