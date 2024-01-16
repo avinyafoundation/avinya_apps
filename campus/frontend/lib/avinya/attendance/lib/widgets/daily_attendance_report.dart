@@ -419,8 +419,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                       Container(
                         margin: EdgeInsets.only(top: 180),
                         child: SpinKitCircle(
-                          color: (Colors
-                              .blue), // Customize the color of the indicator
+                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
                           size: 50, // Customize the size of the indicator
                         ),
                       )

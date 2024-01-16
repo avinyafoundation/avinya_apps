@@ -117,6 +117,12 @@ type ActivityParticipantAttendanceDataForLateAttendance {
   out_marked_by: String
 }
 
+type ActivityParticipantAttendanceMissedBySecurityData {
+  sign_in_time: String
+  description: String
+  digital_id: String
+}
+
 type ActivityParticipantData {
   id: Int
   activity_instance_id: Int
@@ -334,6 +340,14 @@ type ConsumableData {
   serial_number: String
   created: String
   updated: String
+}
+
+type DailyActivityParticipantAttendanceByParentOrgData {
+  description: String
+  present_count: Int
+  total_student_count: Int
+  svg_src: String
+  color: String
 }
 
 type DistrictData {
@@ -603,6 +617,7 @@ type Mutation {
   delete_duty_for_participant(id: Int!): Int
   update_duty_rotation_metadata(duty_rotation: DutyRotationMetaDetails!): DutyRotationMetaData
   add_duty_attendance(duty_attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
+  add_duty_evaluation(duty_evaluation: Evaluation!): EvaluationData
 }
 
 input Organization {
@@ -839,6 +854,8 @@ type Query {
   duty_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   duty_participant(person_id: Int): DutyParticipantData
   attendance_dashboard_data_by_date(organization_id: Int, parent_organization_id: Int, activity_id: Int, from_date: String = "", to_date: String = ""): [AttendanceDashboardDataMain!]
+  attendance_missed_by_security(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceMissedBySecurityData!]
+  daily_students_attendance_by_parent_org(parent_organization_id: Int): [DailyActivityParticipantAttendanceByParentOrgData!]
 }
 
 input ResourceAllocation {

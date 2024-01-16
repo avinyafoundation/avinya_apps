@@ -729,7 +729,9 @@ public type AddDutyAttendanceResponse record {|
         int? activity_instance_id;
         int? person_id;
         string? sign_in_time;
+        string? sign_out_time;
         string? in_marked_by;
+        string? out_marked_by;
         string? created;
     |}? add_duty_attendance;
 |};
@@ -741,7 +743,9 @@ public type GetDutyAttendanceTodayResponse record {|
         int? person_id;
         int? activity_instance_id;
         string? sign_in_time;
+        string? sign_out_time;
         string? in_marked_by;
+        string? out_marked_by;
         string? created;
     |}[]? duty_attendance_today;
 |};
@@ -799,4 +803,46 @@ public type GetLateAttendanceReportResponse record {|
         string? digital_id;
         int? person_id;
     |}[]? late_attendance_report;
+public type CreateDutyEvaluationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? evaluatee_id;
+        int? evaluator_id;
+        int? evaluation_criteria_id;
+        int? activity_instance_id;
+        string? response;
+        string? notes;
+        int? grade;
+        string? created;
+    |}? add_duty_evaluation;
+|};
+
+public type GetAttendanceMissedBySecurityByOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? digital_id;
+        string? description;
+        string? sign_in_time;
+    |}[]? attendance_missed_by_security;
+|};
+
+public type GetAttendanceMissedBySecurityByParentOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? digital_id;
+        string? description;
+        string? sign_in_time;
+    |}[]? attendance_missed_by_security;
+|};
+
+public type GetDailyStudentsAttendanceByParentOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? description;
+        int? present_count;
+        int? total_student_count;
+        string? svg_src;
+        string? color;
+    |}[]? daily_students_attendance_by_parent_org;
 |};

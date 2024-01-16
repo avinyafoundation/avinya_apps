@@ -179,3 +179,20 @@ Future<List<Evaluation>> getActivityInstanceEvaluations(
         'Failed to get rvaluations  for activity instance $activity_instance_id');
   }
 }
+
+Future<Evaluation> createDutyEvaluation(Evaluation dutyEvaluation) async{
+
+  final response = await http.post(
+    Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/duty_evaluation'),
+    headers:  <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+    body: jsonEncode(dutyEvaluation.toJson()),
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    return Evaluation.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception('Failed to create duty evaluation.');
+  }
+}

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:gallery/avinya/attendance/lib/data.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -19,6 +21,11 @@ class ActivityAttendance {
   String? description;
   String? preferred_name;
   String? digital_id;
+  int? present_count;
+  String? svg_src;
+  Color? color;
+  int? total_student_count;
+
 
 
   ActivityAttendance({
@@ -35,7 +42,10 @@ class ActivityAttendance {
     this.description,
     this.preferred_name,
     this.digital_id,
-
+    this.present_count,
+    this.svg_src,
+    this.color,
+    this.total_student_count
   });
 
   factory ActivityAttendance.fromJson(Map<String, dynamic> json) {
@@ -53,6 +63,10 @@ class ActivityAttendance {
       digital_id: json['digital_id'],
       description: json['description'],
       person: json['person'] != null ? json['person']['id'] : null,
+      present_count: json['present_count'],
+      svg_src: json['svg_src'],
+      color: _parseColor(json['color']),
+      total_student_count: json['total_student_count'],
     );
   }
 
@@ -72,7 +86,30 @@ class ActivityAttendance {
         if (description != null) 'description': description,
         if (person != null) 'person': person,
       };
+
+  static Color? _parseColor(String? colorString) {
+    if (colorString == null) {
+      return null;
+    }
+
+    final hexColorRegExp = RegExp(r'^#?([0-9a-fA-F]{6})$');
+    if (!hexColorRegExp.hasMatch(colorString)) {
+      // Invalid hex color code, handle accordingly
+      print("Invalid hex color code: $colorString");
+      return null; // or return a default color, like Colors.grey
+    }
+
+    try {
+      // Assuming colorString is a hex color representation
+      return Color(int.parse(colorString.replaceAll("#", ""), radix: 16));
+    } catch (e) {
+      // Handle the exception, e.g., return a default color or null
+      print("Error parsing color: $e");
+      return null; // or return a default color, like Colors.grey
+    }
+  }
 }
+
 
 Future<ActivityAttendance> createActivityAttendance(
     ActivityAttendance activityAttendance) async {
@@ -360,5 +397,79 @@ Future<List<ActivityAttendance>> getDutyAttendanceToday(
   } else {
     throw Exception(
         'Failed to get Duty Participant Attendance for org ID $organization_id and activity $activity_id for today.');
+  }
+}
+
+Future<List<ActivityAttendance>> getAttendanceMissedBySecurityByOrg(
+    int organization_id,
+    String from_date,
+    String to_date) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/attendance_missed_by_security_by_org/$organization_id/$from_date/$to_date'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Activity Participant Attendances missed by security');
+  }
+}
+
+Future<List<ActivityAttendance>> getAttendanceMissedBySecurityByParentOrg(
+    int parent_organization_id,
+    String from_date,
+    String to_date) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/attendance_missed_by_security_by_parent_org/$parent_organization_id/$from_date/$to_date'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Activity Participant Attendances missed by security');
+  }
+}
+
+Future<List<ActivityAttendance>> getDailyStudentsAttendanceByParentOrg(
+    int parent_organization_id,
+    ) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/daily_students_attendance_by_parent_org/$parent_organization_id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Activity Participant Attendances  by parent org');
   }
 }

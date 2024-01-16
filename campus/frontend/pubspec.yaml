@@ -60,6 +60,7 @@ dependencies:
   flutter_date_range_picker: ^0.0.14
   fl_chart: ^0.62.0
 
+  pdf: ^3.6.4
 
 dev_dependencies:
   flutter_test:
