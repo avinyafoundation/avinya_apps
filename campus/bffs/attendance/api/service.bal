@@ -733,4 +733,52 @@ service / on new http:Listener(9091) {
         }
     }
 
+    resource function get total_attendance_count_by_date_by_org/[int organization_id]/[string from_date]/[string to_date]() returns TotalAttendanceCountByDate[]|error {
+        GetTotalAttendanceCountByDateByOrgResponse|graphql:ClientError getTotalAttendanceCountResponse = globalDataClient->getTotalAttendanceCountByDateByOrg(from_date, to_date, organization_id);
+        if(getTotalAttendanceCountResponse is GetTotalAttendanceCountByDateByOrgResponse) {
+            TotalAttendanceCountByDate[] totalAttendances = [];
+            foreach var total_attendance_record in getTotalAttendanceCountResponse.total_attendance_count_by_date {
+                TotalAttendanceCountByDate|error totalAttendanceRecord = total_attendance_record.cloneWithType(TotalAttendanceCountByDate);
+                if(totalAttendanceRecord is TotalAttendanceCountByDate) {
+                    totalAttendances.push(totalAttendanceRecord);
+                } else {
+                    log:printError("Error while processing Application record received", totalAttendanceRecord);
+                    return error("Error while processing Application record received: " + totalAttendanceRecord.message() + 
+                        ":: Detail: " + totalAttendanceRecord.detail().toString());
+                }
+            }
+
+            return totalAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getTotalAttendanceCountResponse);
+            return error("Error while creating application: " + getTotalAttendanceCountResponse.message() + 
+                ":: Detail: " + getTotalAttendanceCountResponse.detail().toString());
+        }
+    }
+
+    resource function get total_attendance_count_by_date_by_parent_org/[int parent_organization_id]/[string from_date]/[string to_date]() returns TotalAttendanceCountByDate[]|error {
+        GetTotalAttendanceCountByParentOrgResponse|graphql:ClientError getTotalAttendanceCountResponse = globalDataClient->getTotalAttendanceCountByParentOrg(from_date,to_date,parent_organization_id);
+        if(getTotalAttendanceCountResponse is GetTotalAttendanceCountByParentOrgResponse) {
+            TotalAttendanceCountByDate[] totalAttendances = [];
+            foreach var total_attendance_record in getTotalAttendanceCountResponse.total_attendance_count_by_date {
+                TotalAttendanceCountByDate|error totalAttendanceRecord = total_attendance_record.cloneWithType(TotalAttendanceCountByDate);
+                if(totalAttendanceRecord is TotalAttendanceCountByDate) {
+                    totalAttendances.push(totalAttendanceRecord);
+                } else {
+                    log:printError("Error while processing Application record received", totalAttendanceRecord);
+                    return error("Error while processing Application record received: " + totalAttendanceRecord.message() + 
+                        ":: Detail: " + totalAttendanceRecord.detail().toString());
+                }
+            }
+
+            return totalAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getTotalAttendanceCountResponse);
+            return error("Error while creating application: " + getTotalAttendanceCountResponse.message() + 
+                ":: Detail: " + getTotalAttendanceCountResponse.detail().toString());
+        }
+    }
+
 }

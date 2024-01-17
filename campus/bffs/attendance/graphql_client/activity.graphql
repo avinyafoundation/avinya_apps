@@ -358,3 +358,17 @@ query getDailyStudentsAttendanceByParentOrg($parent_organization_id: Int!) {
         color
     }      
 }
+
+query getTotalAttendanceCountByDateByOrg($organization_id: Int!, $from_date: String!, $to_date: String!) {
+    total_attendance_count_by_date(organization_id:$organization_id, from_date: $from_date, to_date: $to_date) {
+        attendance_date
+        daily_total
+    }      
+}
+
+query getTotalAttendanceCountByParentOrg($parent_organization_id: Int!, $from_date: String!, $to_date: String!) {
+    total_attendance_count_by_date(parent_organization_id: $parent_organization_id, from_date: $from_date, to_date: $to_date) {
+        attendance_date
+        daily_total
+    }      
+}

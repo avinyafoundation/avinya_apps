@@ -183,4 +183,16 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetDailyStudentsAttendanceByParentOrgResponse> check performDataBinding(graphqlResponse, GetDailyStudentsAttendanceByParentOrgResponse);
     }
+    remote isolated function getTotalAttendanceCountByDateByOrg(string from_date, string to_date, int organization_id) returns GetTotalAttendanceCountByDateByOrgResponse|graphql:ClientError {
+        string query = string `query getTotalAttendanceCountByDateByOrg($organization_id:Int!,$from_date:String!,$to_date:String!) {total_attendance_count_by_date(organization_id:$organization_id,from_date:$from_date,to_date:$to_date) {attendance_date daily_total}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetTotalAttendanceCountByDateByOrgResponse> check performDataBinding(graphqlResponse, GetTotalAttendanceCountByDateByOrgResponse);
+    }
+    remote isolated function getTotalAttendanceCountByParentOrg(string from_date, string to_date, int parent_organization_id) returns GetTotalAttendanceCountByParentOrgResponse|graphql:ClientError {
+        string query = string `query getTotalAttendanceCountByParentOrg($parent_organization_id:Int!,$from_date:String!,$to_date:String!) {total_attendance_count_by_date(parent_organization_id:$parent_organization_id,from_date:$from_date,to_date:$to_date) {attendance_date daily_total}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "parent_organization_id": parent_organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetTotalAttendanceCountByParentOrgResponse> check performDataBinding(graphqlResponse, GetTotalAttendanceCountByParentOrgResponse);
+    }
 }
