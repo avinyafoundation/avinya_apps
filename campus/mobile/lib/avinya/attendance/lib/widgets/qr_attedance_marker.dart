@@ -3,16 +3,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mobile/avinya/attendance/lib/data/attendance_data.dart';
 import 'package:mobile/avinya/attendance/lib/widgets/qr_attedance_checkin.dart';
 import 'package:mobile/avinya/attendance/lib/widgets/qr_attedance_checkout.dart';
 import '../data.dart';
 import '../data/activity_attendance.dart';
 import 'package:attendance/data/evaluation.dart';
-// import 'package:attendance/widgets/evaluation_list.dart';
-import 'package:mobile/avinya/attendance/lib/widgets/evaluation_list.dart';
-import 'package:mobile/avinya/attendance/lib/widgets/qr_image.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QrAttendanceMarker extends StatefulWidget {

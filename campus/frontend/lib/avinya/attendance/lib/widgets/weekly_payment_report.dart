@@ -155,6 +155,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                 activityId,
                 DateFormat('yyyy-MM-dd').format(_rangeStart),
                 DateFormat('yyyy-MM-dd').format(_rangeEnd));
+        final fetchedStudentList = await fetchStudentList(parentOrgId);
         setState(() {
           final startDate = _rangeStart ?? _selectedDay;
           final endDate = _rangeEnd ?? _selectedDay;
@@ -163,7 +164,9 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
           final formattedEndDate = formatter.format(endDate!);
           this.formattedStartDate = formattedStartDate;
           this.formattedEndDate = formattedEndDate;
-          this._fetchedStudentList = _fetchedStudentList;
+          this._fetchedStudentList = fetchedStudentList;
+          this._fetchedExcelReportData = _fetchedExcelReportData;
+          _isFetching = false;
           if (this._selectedValue != null) {
             refreshState(this._selectedValue);
           }

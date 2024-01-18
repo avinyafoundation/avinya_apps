@@ -274,6 +274,20 @@ type AssetData {
   updated: String
 }
 
+type AttendanceDashboardData {
+  record_type: String
+  title: String
+  numOfFiles: Int
+  svgSrc: String
+  color: String
+  percentage: Int
+}
+
+type AttendanceDashboardDataMain {
+  record_type: String
+  attendance_dashboard_data: AttendanceDashboardData
+}
+
 input AvinyaType {
   record_type: String = ""
   id: Int
@@ -839,6 +853,7 @@ type Query {
   duty_participants_by_duty_activity_id(organization_id: Int, duty_activity_id: Int): [DutyParticipantData!]!
   duty_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   duty_participant(person_id: Int): DutyParticipantData
+  attendance_dashboard_data_by_date(organization_id: Int, parent_organization_id: Int, activity_id: Int, from_date: String = "", to_date: String = ""): [AttendanceDashboardDataMain!]
   attendance_missed_by_security(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceMissedBySecurityData!]
   daily_students_attendance_by_parent_org(parent_organization_id: Int): [DailyActivityParticipantAttendanceByParentOrgData!]
 }
