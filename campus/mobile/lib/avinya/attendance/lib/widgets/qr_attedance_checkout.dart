@@ -102,7 +102,22 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
     _personAttendanceToday = await getPersonActivityAttendanceToday(
         qrCodeData.person_id!,
         campusAppsPortalInstance.activityIds['homeroom']!);
-    if (_personAttendanceToday.length == 1 && qrCodeData.sign_out_time != '') {
+
+    // Get the current date and time
+    DateTime today = DateTime.now();
+
+// Format the date as a string
+    String dateOnlyString = DateFormat('yyyy-MM-dd').format(today);
+    String formattedDate = DateFormat('yyyy-MM-dd').format(today);
+    if (qrCodeData.sign_out_time != '') {
+      DateTime dateTime = DateTime.parse(qrCodeData.sign_out_time);
+      dateOnlyString = DateFormat('yyyy-MM-dd').format(dateTime);
+    } else {
+      dateOnlyString = '';
+    }
+    if (_personAttendanceToday.length == 1 &&
+        qrCodeData.sign_out_time != '' &&
+        dateOnlyString == formattedDate) {
       setState(() {
         isFirstTime = true;
         isFetching = false;
@@ -159,6 +174,18 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
           }
           if (snapshot.data!.length > 1) {
             _isCheckedOut = snapshot.data![1].sign_out_time != null;
+          }
+          // Get the current date and time
+          DateTime today = DateTime.now();
+
+// Format the date as a string
+          String dateOnlyString = DateFormat('yyyy-MM-dd').format(today);
+          String formattedDate = DateFormat('yyyy-MM-dd').format(today);
+          if (qrCodeData.sign_out_time != '') {
+            DateTime dateTime = DateTime.parse(qrCodeData.sign_out_time);
+            dateOnlyString = DateFormat('yyyy-MM-dd').format(dateTime);
+          } else {
+            dateOnlyString = '';
           }
           return Scaffold(
             appBar: AppBar(
@@ -234,30 +261,57 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
                               ),
                             ),
                             if (markedAttendance)
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(16.0),
-                                color: Colors.green,
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.check_circle,
-                                      size: 32.0,
-                                      color: Colors.white,
-                                    ),
-                                    SizedBox(width: 8.0),
-                                    Text(
-                                      'Check-Out completed successfully!',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                              if (dateOnlyString == formattedDate) ...[
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(16.0),
+                                  color: Colors.green,
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle,
+                                        size: 32.0,
                                         color: Colors.white,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              )
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        'Check-Out completed successfully!',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ] else ...[
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(16.0),
+                                  color: Colors.red,
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.error,
+                                        size: 32.0,
+                                        color: Colors.white,
+                                      ),
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        'Check-Out failed!',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ]
                           ],
                         ),
                       ],

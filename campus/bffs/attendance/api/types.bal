@@ -685,6 +685,29 @@ public type GetDutyParticipantResponse record {|
     |}? duty_participant;
 |};
 
+public type GetAttendanceDashboardResponse record {|
+    map<json?> __extensions?;
+    record {|
+        record {|
+            string title;
+            int numOfFiles;
+            string svgSrc;
+            string color;
+            decimal percentage;
+        |} attendance_dashboard_data;
+    |}[] attendance_dashboard_data_by_date;
+|};
+
+public type AttendanceDashboardData record {
+    string? title?;
+    int? numOfFiles?;
+    string? svgSrc?;
+    string? color?;
+    decimal? percentage?;
+};
+public type AttendanceDashboardDataMain record {
+    AttendanceDashboardData? attendance_dashboard_data?;
+};
 public type CreateDutyEvaluationResponse record {|
     map<json?> __extensions?;
     record {|
