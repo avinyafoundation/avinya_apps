@@ -1,12 +1,21 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-
 import '../constants.dart';
 
 class Chart extends StatelessWidget {
-  const Chart({
-    Key? key,
-  }) : super(key: key);
+  Chart(
+      {Key? key,
+      required this.fetchedPieChartData,
+      required this.totalStudentCount,
+      required this.totalAttendance})
+      : super(key: key);
+
+  final List fetchedPieChartData;
+  final int totalStudentCount;
+  final int totalAttendance;
+
+  late final List<PieChartSectionData> paiChartSelectionData =
+      generatePieChartSections(fetchedPieChartData);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +37,7 @@ class Chart extends StatelessWidget {
               children: [
                 SizedBox(height: defaultPadding),
                 Text(
-                  "29.1",
+                  "${totalAttendance.toString()}",
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -36,7 +45,7 @@ class Chart extends StatelessWidget {
                       ),
                 ),
                 Text(
-                  "of 128GB",
+                  "of ${totalStudentCount} Students",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 13,
@@ -52,35 +61,35 @@ class Chart extends StatelessWidget {
   }
 }
 
-List<PieChartSectionData> paiChartSelectionData = [
-  PieChartSectionData(
-    color: primaryColor,
-    value: 25,
-    showTitle: false,
-    radius: 25,
-  ),
-  PieChartSectionData(
-    color: Color(0xFF26E5FF),
-    value: 20,
-    showTitle: false,
-    radius: 22,
-  ),
-  PieChartSectionData(
-    color: Color(0xFFFFCF26),
-    value: 10,
-    showTitle: false,
-    radius: 19,
-  ),
-  PieChartSectionData(
-    color: Color(0xFFEE2727),
-    value: 15,
-    showTitle: false,
-    radius: 16,
-  ),
-  PieChartSectionData(
-    color: primaryColor.withOpacity(0.1),
-    value: 25,
-    showTitle: false,
-    radius: 13,
-  ),
-];
+List<PieChartSectionData> generatePieChartSections(List fetchedPieChartData) {
+  List<PieChartSectionData> pieChartSections = [];
+
+  fetchedPieChartData.forEach((attendance) {
+    // Assuming you want to use total_student_count for the value
+    double value = 0;
+    double totalStudentPerClass = 0;
+    int color = 0xFFFFA500;
+    if (attendance.present_count != null) {
+      value = attendance.present_count!.toDouble();
+      totalStudentPerClass = attendance.total_student_count!.toDouble();
+      color = attendance.color;
+    }
+
+    pieChartSections.add(
+      PieChartSectionData(
+        color: Color(color),
+        value: value,
+        showTitle: false,
+        radius: calculateRadius(value, totalStudentPerClass),
+      ),
+    );
+  });
+
+  return pieChartSections;
+}
+
+double calculateRadius(double value, double totalStudentPerClass) {
+  double radius = 0;
+  radius = (value * 40 / totalStudentPerClass);
+  return radius;
+}

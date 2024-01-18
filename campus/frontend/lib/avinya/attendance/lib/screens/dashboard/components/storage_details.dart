@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
-
+import 'package:attendance/data/activity_attendance.dart';
 import '../constants.dart';
 import 'chart.dart';
 import 'storage_info_card.dart';
 
 class StorageDetails extends StatelessWidget {
-  const StorageDetails({
-    Key? key,
-  }) : super(key: key);
+  const StorageDetails(
+      {Key? key,
+      required this.fetchedPieChartData,
+      required this.totalStudentCount,
+      required this.totalAttendance})
+      : super(key: key);
+
+  final List fetchedPieChartData;
+  final int totalStudentCount;
+  final int totalAttendance;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +28,7 @@ class StorageDetails extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Student Attendance by Class",
+            "Today's Student Attendance by Class",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
@@ -29,31 +36,31 @@ class StorageDetails extends StatelessWidget {
             ),
           ),
           SizedBox(height: defaultPadding),
-          Chart(),
-          StorageInfoCard(
-            svgSrc: "assets/icons/Documents.svg",
-            title: "Documents Files",
-            amountOfFiles: "1.3GB",
-            numOfFiles: 1328,
-          ),
-          StorageInfoCard(
-            svgSrc: "assets/icons/media.svg",
-            title: "Media Files",
-            amountOfFiles: "15.3GB",
-            numOfFiles: 1328,
-          ),
-          StorageInfoCard(
-            svgSrc: "assets/icons/folder.svg",
-            title: "Other Files",
-            amountOfFiles: "1.3GB",
-            numOfFiles: 1328,
-          ),
-          StorageInfoCard(
-            svgSrc: "assets/icons/unknown.svg",
-            title: "Unknown",
-            amountOfFiles: "1.3GB",
-            numOfFiles: 140,
-          ),
+          Chart(
+              fetchedPieChartData: fetchedPieChartData,
+              totalStudentCount: totalStudentCount,
+              totalAttendance: totalAttendance),
+          if (fetchedPieChartData.isEmpty)
+            Center(
+              child: Text(
+                "No Data",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            )
+          else
+            ...fetchedPieChartData.map(
+              (attendance) => StorageInfoCard(
+                svgSrc: attendance.svg_src ?? 'assets/icons/late.png',
+                title: attendance.description ?? '',
+                amountOfFiles: attendance.present_count?.toString() ?? '',
+                numOfFiles: attendance.total_student_count ?? 0,
+                color: attendance.color,
+              ),
+            ),
         ],
       ),
     );

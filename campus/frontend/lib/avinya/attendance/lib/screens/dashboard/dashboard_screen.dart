@@ -5,6 +5,7 @@ import 'package:gallery/avinya/attendance/lib/screens/dashboard/components/my_fi
 import 'package:gallery/avinya/attendance/lib/screens/responsive.dart';
 import './constants.dart';
 import 'package:gallery/avinya/attendance/lib/screens/dashboard/components/recent_files.dart';
+import 'package:gallery/avinya/attendance/lib/screens/dashboard/components/weekly_attendance_graph.dart';
 import 'package:gallery/avinya/attendance/lib/data/dashboard_data.dart';
 import 'components/storage_details.dart';
 import 'package:gallery/data/person.dart';
@@ -23,7 +24,10 @@ class AttendanceDashboardScreen extends StatefulWidget {
 class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
   List<DashboardData> _fetchedDashboardData = [];
   List<ActivityAttendance> _fetchedAttendanceData = [];
+  List<ActivityAttendance> _fetchedPieChartData = [];
   Organization? _fetchedOrganization;
+  int totalStudentCount = 0;
+  int totalAttendance = 0;
   var _selectedValue;
   bool _isFetching = true;
   //calendar specific variables
@@ -82,6 +86,26 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     }
   }
 
+  int calculateTotalStudentCount(List<ActivityAttendance> fetchedPieChartData) {
+    int totalStudentCount = 0;
+
+    for (var activityAttendance in fetchedPieChartData) {
+      totalStudentCount += activityAttendance.total_student_count ?? 0;
+    }
+
+    return totalStudentCount;
+  }
+
+  int calculateTotalAttendance(List<ActivityAttendance> fetchedPieChartData) {
+    int totalAttendance = 0;
+
+    for (var activityAttendance in fetchedPieChartData) {
+      totalAttendance += activityAttendance.present_count ?? 0;
+    }
+
+    return totalAttendance;
+  }
+
   void refreshState(
       Organization? newValue, String startDate, String endDate) async {
     setState(() {
@@ -90,6 +114,10 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     int? parentOrgId =
         campusAppsPortalInstance.getUserPerson().organization!.id;
     _selectedValue = newValue ?? null;
+    _fetchedPieChartData =
+        await getDailyStudentsAttendanceByParentOrg(parentOrgId);
+    totalStudentCount = await calculateTotalStudentCount(_fetchedPieChartData);
+    totalAttendance = await calculateTotalAttendance(_fetchedPieChartData);
 
     if (_selectedValue == null) {
       _fetchedDashboardData = await getDashboardCardDataByParentOrg(
@@ -122,6 +150,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
       this._isFetching = false;
       this.cardData = _fetchedDashboardData;
       this._fetchedAttendanceData = _fetchedAttendanceData;
+      this._fetchedPieChartData = _fetchedPieChartData;
+      this.totalStudentCount = totalStudentCount;
     });
   }
 
@@ -559,9 +589,15 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                       SizedBox(height: defaultPadding),
                       AttendanceMissedBySecurity(
                           fetchedAttendanceData: _fetchedAttendanceData),
+                      WeeklyAttendanceGraph(
+                          fetchedAttendanceData: this._fetchedAttendanceData),
                       if (Responsive.isMobile(context))
                         SizedBox(height: defaultPadding),
-                      if (Responsive.isMobile(context)) StorageDetails(),
+                      if (Responsive.isMobile(context))
+                        StorageDetails(
+                            fetchedPieChartData: this._fetchedPieChartData,
+                            totalStudentCount: this.totalStudentCount,
+                            totalAttendance: this.totalAttendance),
                     ],
                   ),
                 ),
@@ -571,7 +607,10 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                 if (!Responsive.isMobile(context))
                   Expanded(
                     flex: 2,
-                    child: StorageDetails(),
+                    child: StorageDetails(
+                        fetchedPieChartData: this._fetchedPieChartData,
+                        totalStudentCount: this.totalStudentCount,
+                        totalAttendance: this.totalAttendance),
                   ),
               ],
             )

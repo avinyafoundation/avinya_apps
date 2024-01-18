@@ -23,7 +23,7 @@ class ActivityAttendance {
   String? digital_id;
   int? present_count;
   String? svg_src;
-  Color? color;
+  int? color;
   int? total_student_count;
 
   ActivityAttendance(
@@ -62,7 +62,9 @@ class ActivityAttendance {
       person: json['person'] != null ? json['person']['id'] : null,
       present_count: json['present_count'],
       svg_src: json['svg_src'],
-      color: _parseColor(json['color']),
+      color: json['color'] != null
+          ? int.parse(json['color'].substring(2), radix: 16)
+          : 0xFFFFFFFF, // Assuming 0xFFFFFFFF as default
       total_student_count: json['total_student_count'],
     );
   }
@@ -443,7 +445,7 @@ Future<List<ActivityAttendance>> getAttendanceMissedBySecurityByParentOrg(
 }
 
 Future<List<ActivityAttendance>> getDailyStudentsAttendanceByParentOrg(
-  int parent_organization_id,
+  int? parent_organization_id,
 ) async {
   final response = await http.get(
     Uri.parse(
