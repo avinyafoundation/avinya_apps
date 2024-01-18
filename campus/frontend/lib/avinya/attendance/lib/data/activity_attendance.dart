@@ -26,27 +26,24 @@ class ActivityAttendance {
   Color? color;
   int? total_student_count;
 
-
-
-  ActivityAttendance({
-    this.id,
-    this.activity_instance_id,
-    this.person_id,
-    this.created,
-    this.updated,
-    this.sign_in_time,
-    this.sign_out_time,
-    this.in_marked_by,
-    this.out_marked_by,
-    this.person,
-    this.description,
-    this.preferred_name,
-    this.digital_id,
-    this.present_count,
-    this.svg_src,
-    this.color,
-    this.total_student_count
-  });
+  ActivityAttendance(
+      {this.id,
+      this.activity_instance_id,
+      this.person_id,
+      this.created,
+      this.updated,
+      this.sign_in_time,
+      this.sign_out_time,
+      this.in_marked_by,
+      this.out_marked_by,
+      this.person,
+      this.description,
+      this.preferred_name,
+      this.digital_id,
+      this.present_count,
+      this.svg_src,
+      this.color,
+      this.total_student_count});
 
   factory ActivityAttendance.fromJson(Map<String, dynamic> json) {
     return ActivityAttendance(
@@ -109,7 +106,6 @@ class ActivityAttendance {
     }
   }
 }
-
 
 Future<ActivityAttendance> createActivityAttendance(
     ActivityAttendance activityAttendance) async {
@@ -401,9 +397,7 @@ Future<List<ActivityAttendance>> getDutyAttendanceToday(
 }
 
 Future<List<ActivityAttendance>> getAttendanceMissedBySecurityByOrg(
-    int organization_id,
-    String from_date,
-    String to_date) async {
+    int organization_id, String from_date, String to_date) async {
   final response = await http.get(
     Uri.parse(
         '${AppConfig.campusAttendanceBffApiUrl}/attendance_missed_by_security_by_org/$organization_id/$from_date/$to_date'),
@@ -426,9 +420,7 @@ Future<List<ActivityAttendance>> getAttendanceMissedBySecurityByOrg(
 }
 
 Future<List<ActivityAttendance>> getAttendanceMissedBySecurityByParentOrg(
-    int parent_organization_id,
-    String from_date,
-    String to_date) async {
+    int? parent_organization_id, String? from_date, String? to_date) async {
   final response = await http.get(
     Uri.parse(
         '${AppConfig.campusAttendanceBffApiUrl}/attendance_missed_by_security_by_parent_org/$parent_organization_id/$from_date/$to_date'),
@@ -451,8 +443,8 @@ Future<List<ActivityAttendance>> getAttendanceMissedBySecurityByParentOrg(
 }
 
 Future<List<ActivityAttendance>> getDailyStudentsAttendanceByParentOrg(
-    int parent_organization_id,
-    ) async {
+  int parent_organization_id,
+) async {
   final response = await http.get(
     Uri.parse(
         '${AppConfig.campusAttendanceBffApiUrl}/daily_students_attendance_by_parent_org/$parent_organization_id'),

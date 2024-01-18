@@ -1,15 +1,22 @@
-import 'package:attendance/data/RecentFile.dart';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-
+import 'package:attendance/data/activity_attendance.dart';
 import '../constants.dart';
 
-class RecentFiles extends StatelessWidget {
-  const RecentFiles({
+class AttendanceMissedBySecurity extends StatefulWidget {
+  const AttendanceMissedBySecurity({
     Key? key,
+    required this.fetchedAttendanceData,
   }) : super(key: key);
 
+  final List<ActivityAttendance> fetchedAttendanceData;
+
+  @override
+  _AttendanceMissedBySecurityState createState() =>
+      _AttendanceMissedBySecurityState();
+}
+
+class _AttendanceMissedBySecurityState
+    extends State<AttendanceMissedBySecurity> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,7 +29,7 @@ class RecentFiles extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Recent Files",
+            "Attendance Missed By Security",
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w500,
@@ -31,46 +38,57 @@ class RecentFiles extends StatelessWidget {
           ),
           SizedBox(
             width: double.infinity,
-            child: DataTable(
-              columnSpacing: defaultPadding,
-              // minWidth: 600,
-              columns: [
-                DataColumn(
-                  label: Text(
-                    "File Name",
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
+            child: widget.fetchedAttendanceData.isEmpty
+                ? Center(
+                    child: Text(
+                      "No Data",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+                : DataTable(
+                    columnSpacing: defaultPadding,
+                    columns: [
+                      DataColumn(
+                        label: Text(
+                          "Digital ID",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          "Class",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          "Sign In Date",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                    rows: List.generate(
+                      widget.fetchedAttendanceData.length,
+                      (index) => recentFileDataRow(
+                          widget.fetchedAttendanceData[index]),
                     ),
                   ),
-                ),
-                DataColumn(
-                  label: Text(
-                    "Date",
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                DataColumn(
-                  label: Text(
-                    "Size",
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-              rows: List.generate(
-                demoRecentFiles.length,
-                (index) => recentFileDataRow(demoRecentFiles[index]),
-              ),
-            ),
           ),
         ],
       ),
@@ -78,21 +96,17 @@ class RecentFiles extends StatelessWidget {
   }
 }
 
-DataRow recentFileDataRow(RecentFile fileInfo) {
+DataRow recentFileDataRow(ActivityAttendance fileInfo) {
   return DataRow(
     cells: [
       DataCell(
         Row(
           children: [
-            SvgPicture.asset(
-              fileInfo.icon!,
-              height: 30,
-              width: 30,
-            ),
+            Icon(Icons.usb_rounded, color: Colors.white, size: 20.0),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
               child: Text(
-                fileInfo.title!,
+                fileInfo.digital_id!,
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
@@ -104,7 +118,7 @@ DataRow recentFileDataRow(RecentFile fileInfo) {
         ),
       ),
       DataCell(Text(
-        fileInfo.date!,
+        fileInfo.description!,
         style: TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w500,
@@ -112,7 +126,7 @@ DataRow recentFileDataRow(RecentFile fileInfo) {
         ),
       )),
       DataCell(Text(
-        fileInfo.size!,
+        fileInfo.sign_in_time!,
         style: TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w500,
