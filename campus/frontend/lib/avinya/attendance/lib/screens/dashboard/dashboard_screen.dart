@@ -12,6 +12,7 @@ import 'package:gallery/data/person.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
+import 'package:attendance/data/test.dart';
 
 class AttendanceDashboardScreen extends StatefulWidget {
   const AttendanceDashboardScreen({Key? key}) : super(key: key);
@@ -225,395 +226,376 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
         padding: EdgeInsets.all(defaultPadding),
         child: Column(
           children: [
-            // Header(),
-            SizedBox(height: defaultPadding),
+            // New Row Above
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  flex: 5,
-                  child: Column(
-                    children: [
-                      Text(
-                        "Attendance Dashboard",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: Color.fromARGB(255, 38, 38, 38),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      if (!isMobile)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                                child: Container(
-                              margin: EdgeInsets.only(left: 8.0),
-                              child: Row(children: <Widget>[
-                                for (var org in campusAppsPortalInstance
-                                    .getUserPerson()
-                                    .organization!
-                                    .child_organizations)
-                                  Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        if (org.child_organizations.length > 0)
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                left: 20, top: 20, bottom: 10),
-                                            child: Row(children: <Widget>[
-                                              Text('Select a class:'),
-                                              SizedBox(width: 10),
-                                              DropdownButton<Organization>(
-                                                value: _selectedValue,
-                                                onChanged: (Organization?
-                                                    newValue) async {
-                                                  _selectedValue =
-                                                      newValue ?? null;
-                                                  int? parentOrgId =
-                                                      campusAppsPortalInstance
-                                                          .getUserPerson()
-                                                          .organization!
-                                                          .id;
-                                                  if (_selectedValue == null) {
-                                                    setState(() {
-                                                      if (_fetchedOrganization !=
-                                                          null) {
-                                                        _fetchedOrganization!
-                                                            .id = parentOrgId;
-                                                        _fetchedOrganization!
-                                                                .description =
-                                                            "Select All";
-                                                      } else {
-                                                        _fetchedOrganization =
-                                                            Organization();
-                                                        _fetchedOrganization!
-                                                            .id = parentOrgId;
-                                                        _fetchedOrganization!
-                                                                .description =
-                                                            "Select All";
-                                                      }
-                                                      _fetchedDashboardData;
-                                                    });
-                                                  } else {
-                                                    setState(() {
-                                                      _fetchedOrganization;
-                                                      _fetchedDashboardData;
-                                                    });
-                                                  }
-                                                  if (this.startDate == "" &&
-                                                      this.endDate == "") {
-                                                    today = DateTime.now();
-                                                    String formattedToday =
-                                                        DateFormat('yyyy-MM-dd')
-                                                            .format(today);
-                                                    refreshState(
-                                                        this._selectedValue,
-                                                        formattedToday,
-                                                        formattedToday);
-                                                  } else {
-                                                    refreshState(
-                                                        this._selectedValue,
-                                                        this.startDate,
-                                                        this.endDate);
-                                                  }
-                                                },
-                                                items: [
-                                                  // Add "Select All" option
-                                                  DropdownMenuItem<
-                                                      Organization>(
-                                                    value: null,
-                                                    child: Text("Select All"),
-                                                  ),
-                                                  // Add other organization options
-                                                  ...org.child_organizations
-                                                      .map(
-                                                          (Organization value) {
-                                                    return DropdownMenuItem<
-                                                        Organization>(
-                                                      value: value,
-                                                      child: Text(
-                                                          value.description!),
-                                                    );
-                                                  }),
-                                                ],
-                                              ),
-                                            ]),
-                                          ),
-                                      ]),
-                              ]),
-                            )),
-                            ElevatedButton(
-                              onPressed: () => showDateRangePickerDialog(
-                                  context: context,
-                                  builder: datePickerBuilder,
-                                  offset: Offset(310, 180)),
-                              style: ButtonStyle(
-                                padding: MaterialStateProperty.all(
-                                    EdgeInsets.all(16.0)),
-                                textStyle: MaterialStateProperty.all(
-                                  const TextStyle(fontSize: 16),
-                                ),
-                                elevation: MaterialStateProperty.all(20),
-                                backgroundColor: MaterialStateProperty.all(
-                                    Colors.greenAccent),
-                                foregroundColor:
-                                    MaterialStateProperty.all(Colors.black),
-                              ),
-                              child: Text(formattedStartDate +
-                                  " - " +
-                                  formattedEndDate),
-                            ),
-                          ],
-                        ),
-                      if (isMobile)
+                Text(
+                  "Attendance Dashboard",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                    color: Color.fromARGB(255, 38, 38, 38),
+                  ),
+                )
+              ],
+            ),
+            SizedBox(width: defaultPadding),
+            if (!isMobile)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(
+                      child: Container(
+                    margin: EdgeInsets.only(left: 8.0),
+                    child: Row(children: <Widget>[
+                      for (var org in campusAppsPortalInstance
+                          .getUserPerson()
+                          .organization!
+                          .child_organizations)
                         Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                    child: Container(
-                                  margin: EdgeInsets.only(left: 8.0),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              if (org.child_organizations.length > 0)
+                                Container(
+                                  margin: EdgeInsets.only(
+                                      left: 20, top: 20, bottom: 10),
                                   child: Row(children: <Widget>[
-                                    for (var org in campusAppsPortalInstance
-                                        .getUserPerson()
-                                        .organization!
-                                        .child_organizations)
-                                      Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            if (org.child_organizations.length >
-                                                0)
-                                              Container(
-                                                margin: EdgeInsets.only(
-                                                    left: 20,
-                                                    top: 20,
-                                                    bottom: 10),
-                                                child: Row(children: <Widget>[
-                                                  Text('Select a class:'),
-                                                  SizedBox(width: 10),
-                                                  DropdownButton<Organization>(
-                                                    value: _selectedValue,
-                                                    onChanged: (Organization?
-                                                        newValue) async {
-                                                      _selectedValue =
-                                                          newValue ?? null;
-                                                      int? parentOrgId =
-                                                          campusAppsPortalInstance
-                                                              .getUserPerson()
-                                                              .organization!
-                                                              .id;
-                                                      if (_selectedValue ==
-                                                          null) {
-                                                        // _fetchedOrganization = null;
-                                                        if (this.startDate ==
-                                                                "" &&
-                                                            this.endDate ==
-                                                                "") {
-                                                          today =
-                                                              DateTime.now();
-                                                          String
-                                                              formattedToday =
-                                                              DateFormat(
-                                                                      'yyyy-MM-dd')
-                                                                  .format(
-                                                                      today);
-                                                          _fetchedDashboardData =
-                                                              await getDashboardCardDataByParentOrg(
-                                                                  formattedToday,
-                                                                  formattedToday,
-                                                                  parentOrgId!);
-                                                        } else {
-                                                          _fetchedDashboardData =
-                                                              await getDashboardCardDataByParentOrg(
-                                                                  this.startDate,
-                                                                  this.endDate,
-                                                                  parentOrgId!);
-                                                        }
-                                                      } else {
-                                                        // _fetchedDashboardData = <Person>[];
-                                                        _fetchedOrganization =
-                                                            await fetchOrganization(
-                                                                newValue!.id!);
-                                                        if (this.startDate ==
-                                                                "" &&
-                                                            this.endDate ==
-                                                                "") {
-                                                          today =
-                                                              DateTime.now();
-                                                          String
-                                                              formattedToday =
-                                                              DateFormat(
-                                                                      'yyyy-MM-dd')
-                                                                  .format(
-                                                                      today);
-                                                          _fetchedDashboardData =
-                                                              await getDashboardCardDataByDate(
-                                                                  formattedToday,
-                                                                  formattedToday,
-                                                                  newValue.id!);
-                                                        } else {
-                                                          _fetchedDashboardData =
-                                                              await getDashboardCardDataByDate(
-                                                                  this.startDate,
-                                                                  this.endDate,
-                                                                  newValue.id!);
-                                                        }
-                                                      }
-                                                      if (_selectedValue ==
-                                                          null) {
-                                                        setState(() {
-                                                          if (_fetchedOrganization !=
-                                                              null) {
-                                                            // _fetchedOrganization!.people =
-                                                            //     _fetchedDashboardData;
-                                                            _fetchedOrganization!
-                                                                    .id =
-                                                                parentOrgId;
-                                                            _fetchedOrganization!
-                                                                    .description =
-                                                                "Select All";
-                                                          } else {
-                                                            _fetchedOrganization =
-                                                                Organization();
-                                                            // _fetchedOrganization!.people =
-                                                            //     _fetchedDashboardData;
-                                                            _fetchedOrganization!
-                                                                    .id =
-                                                                parentOrgId;
-                                                            _fetchedOrganization!
-                                                                    .description =
-                                                                "Select All";
-                                                          }
-                                                          _fetchedDashboardData;
-                                                          // cardData = _fetchedDashboardData;
-                                                        });
-                                                      } else {
-                                                        setState(() {
-                                                          _fetchedOrganization;
-                                                          _fetchedDashboardData;
-                                                          // cardData = _fetchedDashboardData;
-                                                        });
-                                                      }
-                                                      if (this.startDate ==
-                                                              "" &&
-                                                          this.endDate == "") {
-                                                        today = DateTime.now();
-                                                        String formattedToday =
-                                                            DateFormat(
-                                                                    'yyyy-MM-dd')
-                                                                .format(today);
-                                                        refreshState(
-                                                            this._selectedValue,
-                                                            formattedToday,
-                                                            formattedToday);
-                                                      } else {
-                                                        refreshState(
-                                                            this._selectedValue,
-                                                            this.startDate,
-                                                            this.endDate);
-                                                      }
-                                                    },
-                                                    items: [
-                                                      // Add "Select All" option
-                                                      DropdownMenuItem<
-                                                          Organization>(
-                                                        value: null,
-                                                        child:
-                                                            Text("Select All"),
-                                                      ),
-                                                      // Add other organization options
-                                                      ...org.child_organizations
-                                                          .map((Organization
-                                                              value) {
-                                                        return DropdownMenuItem<
-                                                            Organization>(
-                                                          value: value,
-                                                          child: Text(value
-                                                              .description!),
-                                                        );
-                                                      }),
-                                                    ],
-                                                  ),
-                                                ]),
-                                              ),
-                                          ]),
-                                  ]),
-                                )),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () => showDateRangePickerDialog(
-                                      context: context,
-                                      builder: datePickerBuilder,
-                                      offset: Offset(310, 180)),
-                                  style: ButtonStyle(
-                                    padding: MaterialStateProperty.all(
-                                        EdgeInsets.all(16.0)),
-                                    textStyle: MaterialStateProperty.all(
-                                      const TextStyle(fontSize: 16),
+                                    Text('Select a class:'),
+                                    SizedBox(width: 10),
+                                    DropdownButton<Organization>(
+                                      value: _selectedValue,
+                                      onChanged:
+                                          (Organization? newValue) async {
+                                        _selectedValue = newValue ?? null;
+                                        int? parentOrgId =
+                                            campusAppsPortalInstance
+                                                .getUserPerson()
+                                                .organization!
+                                                .id;
+                                        if (_selectedValue == null) {
+                                          setState(() {
+                                            if (_fetchedOrganization != null) {
+                                              _fetchedOrganization!.id =
+                                                  parentOrgId;
+                                              _fetchedOrganization!
+                                                  .description = "Select All";
+                                            } else {
+                                              _fetchedOrganization =
+                                                  Organization();
+                                              _fetchedOrganization!.id =
+                                                  parentOrgId;
+                                              _fetchedOrganization!
+                                                  .description = "Select All";
+                                            }
+                                            _fetchedDashboardData;
+                                          });
+                                        } else {
+                                          setState(() {
+                                            _fetchedOrganization;
+                                            _fetchedDashboardData;
+                                          });
+                                        }
+                                        if (this.startDate == "" &&
+                                            this.endDate == "") {
+                                          today = DateTime.now();
+                                          String formattedToday =
+                                              DateFormat('yyyy-MM-dd')
+                                                  .format(today);
+                                          refreshState(this._selectedValue,
+                                              formattedToday, formattedToday);
+                                        } else {
+                                          refreshState(this._selectedValue,
+                                              this.startDate, this.endDate);
+                                        }
+                                      },
+                                      items: [
+                                        // Add "Select All" option
+                                        DropdownMenuItem<Organization>(
+                                          value: null,
+                                          child: Text("Select All"),
+                                        ),
+                                        // Add other organization options
+                                        ...org.child_organizations
+                                            .map((Organization value) {
+                                          return DropdownMenuItem<Organization>(
+                                            value: value,
+                                            child: Text(value.description!),
+                                          );
+                                        }),
+                                      ],
                                     ),
-                                    elevation: MaterialStateProperty.all(20),
-                                    backgroundColor: MaterialStateProperty.all(
-                                        Colors.greenAccent),
-                                    foregroundColor:
-                                        MaterialStateProperty.all(Colors.black),
-                                  ),
-                                  child: Text(this.formattedStartDate +
-                                      " - " +
-                                      this.formattedEndDate),
+                                  ]),
                                 ),
-                              ],
+                            ]),
+                    ]),
+                  )),
+                  ElevatedButton(
+                    onPressed: () => showDateRangePickerDialog(
+                        context: context,
+                        builder: datePickerBuilder,
+                        offset: Offset(310, 180)),
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.all(EdgeInsets.all(16.0)),
+                      textStyle: MaterialStateProperty.all(
+                        const TextStyle(fontSize: 16),
+                      ),
+                      elevation: MaterialStateProperty.all(20),
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.greenAccent),
+                      foregroundColor: MaterialStateProperty.all(Colors.black),
+                    ),
+                    child: Text(formattedStartDate + " - " + formattedEndDate),
+                  ),
+                ],
+              ),
+            if (isMobile)
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                          child: Container(
+                        margin: EdgeInsets.only(left: 8.0),
+                        child: Row(children: <Widget>[
+                          for (var org in campusAppsPortalInstance
+                              .getUserPerson()
+                              .organization!
+                              .child_organizations)
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  if (org.child_organizations.length > 0)
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          left: 20, top: 20, bottom: 10),
+                                      child: Row(children: <Widget>[
+                                        Text('Select a class:'),
+                                        SizedBox(width: 10),
+                                        DropdownButton<Organization>(
+                                          value: _selectedValue,
+                                          onChanged:
+                                              (Organization? newValue) async {
+                                            _selectedValue = newValue ?? null;
+                                            int? parentOrgId =
+                                                campusAppsPortalInstance
+                                                    .getUserPerson()
+                                                    .organization!
+                                                    .id;
+                                            if (_selectedValue == null) {
+                                              // _fetchedOrganization = null;
+                                              if (this.startDate == "" &&
+                                                  this.endDate == "") {
+                                                today = DateTime.now();
+                                                String formattedToday =
+                                                    DateFormat('yyyy-MM-dd')
+                                                        .format(today);
+                                                _fetchedDashboardData =
+                                                    await getDashboardCardDataByParentOrg(
+                                                        formattedToday,
+                                                        formattedToday,
+                                                        parentOrgId!);
+                                              } else {
+                                                _fetchedDashboardData =
+                                                    await getDashboardCardDataByParentOrg(
+                                                        this.startDate,
+                                                        this.endDate,
+                                                        parentOrgId!);
+                                              }
+                                            } else {
+                                              // _fetchedDashboardData = <Person>[];
+                                              _fetchedOrganization =
+                                                  await fetchOrganization(
+                                                      newValue!.id!);
+                                              if (this.startDate == "" &&
+                                                  this.endDate == "") {
+                                                today = DateTime.now();
+                                                String formattedToday =
+                                                    DateFormat('yyyy-MM-dd')
+                                                        .format(today);
+                                                _fetchedDashboardData =
+                                                    await getDashboardCardDataByDate(
+                                                        formattedToday,
+                                                        formattedToday,
+                                                        newValue.id!);
+                                              } else {
+                                                _fetchedDashboardData =
+                                                    await getDashboardCardDataByDate(
+                                                        this.startDate,
+                                                        this.endDate,
+                                                        newValue.id!);
+                                              }
+                                            }
+                                            if (_selectedValue == null) {
+                                              setState(() {
+                                                if (_fetchedOrganization !=
+                                                    null) {
+                                                  // _fetchedOrganization!.people =
+                                                  //     _fetchedDashboardData;
+                                                  _fetchedOrganization!.id =
+                                                      parentOrgId;
+                                                  _fetchedOrganization!
+                                                          .description =
+                                                      "Select All";
+                                                } else {
+                                                  _fetchedOrganization =
+                                                      Organization();
+                                                  // _fetchedOrganization!.people =
+                                                  //     _fetchedDashboardData;
+                                                  _fetchedOrganization!.id =
+                                                      parentOrgId;
+                                                  _fetchedOrganization!
+                                                          .description =
+                                                      "Select All";
+                                                }
+                                                _fetchedDashboardData;
+                                                // cardData = _fetchedDashboardData;
+                                              });
+                                            } else {
+                                              setState(() {
+                                                _fetchedOrganization;
+                                                _fetchedDashboardData;
+                                                // cardData = _fetchedDashboardData;
+                                              });
+                                            }
+                                            if (this.startDate == "" &&
+                                                this.endDate == "") {
+                                              today = DateTime.now();
+                                              String formattedToday =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(today);
+                                              refreshState(
+                                                  this._selectedValue,
+                                                  formattedToday,
+                                                  formattedToday);
+                                            } else {
+                                              refreshState(this._selectedValue,
+                                                  this.startDate, this.endDate);
+                                            }
+                                          },
+                                          items: [
+                                            // Add "Select All" option
+                                            DropdownMenuItem<Organization>(
+                                              value: null,
+                                              child: Text("Select All"),
+                                            ),
+                                            // Add other organization options
+                                            ...org.child_organizations
+                                                .map((Organization value) {
+                                              return DropdownMenuItem<
+                                                  Organization>(
+                                                value: value,
+                                                child: Text(value.description!),
+                                              );
+                                            }),
+                                          ],
+                                        ),
+                                      ]),
+                                    ),
+                                ]),
+                        ]),
+                      )),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => showDateRangePickerDialog(
+                            context: context,
+                            builder: datePickerBuilder,
+                            offset: Offset(310, 180)),
+                        style: ButtonStyle(
+                          padding:
+                              MaterialStateProperty.all(EdgeInsets.all(16.0)),
+                          textStyle: MaterialStateProperty.all(
+                            const TextStyle(fontSize: 16),
+                          ),
+                          elevation: MaterialStateProperty.all(20),
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.greenAccent),
+                          foregroundColor:
+                              MaterialStateProperty.all(Colors.black),
+                        ),
+                        child: Text(this.formattedStartDate +
+                            " - " +
+                            this.formattedEndDate),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+
+            // Existing Column
+            Column(
+              children: [
+                SizedBox(height: defaultPadding),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        children: [
+                          Responsive(
+                            mobile: FileInfoCardGridView(
+                              cardData: this.cardData,
+                              crossAxisCount: _size.width < 650 ? 2 : 4,
+                              childAspectRatio:
+                                  _size.width < 650 && _size.width > 350
+                                      ? 1.3
+                                      : 1,
                             ),
+                            tablet:
+                                FileInfoCardGridView(cardData: this.cardData),
+                            desktop: FileInfoCardGridView(
+                                childAspectRatio:
+                                    _size.width < 1400 ? 1.1 : 1.4,
+                                crossAxisCount: _size.width < 650 ? 2 : 2,
+                                cardData: this.cardData),
+                          ),
+                          SizedBox(height: defaultPadding),
+                          if (Responsive.isMobile(context))
+                            SizedBox(height: defaultPadding),
+                          if (Responsive.isMobile(context))
+                            LineChartWidget(pricePoints),
+                          SizedBox(height: defaultPadding),
+                          if (Responsive.isMobile(context))
+                            SizedBox(height: defaultPadding),
+                          if (Responsive.isMobile(context))
+                            StorageDetails(
+                                fetchedPieChartData: this._fetchedPieChartData,
+                                totalStudentCount: this.totalStudentCount,
+                                totalAttendance: this.totalAttendance),
+                        ],
+                      ),
+                    ),
+                    if (!Responsive.isMobile(context))
+                      SizedBox(width: defaultPadding),
+                    if (!Responsive.isMobile(context))
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          children: [
+                            LineChartWidget(pricePoints),
+                            AttendanceMissedBySecurity(
+                                fetchedAttendanceData: _fetchedAttendanceData),
                           ],
                         ),
-                      SizedBox(height: defaultPadding),
-                      Responsive(
-                        mobile: FileInfoCardGridView(
-                          cardData: this.cardData,
-                          crossAxisCount: _size.width < 650 ? 2 : 4,
-                          childAspectRatio:
-                              _size.width < 650 && _size.width > 350 ? 1.3 : 1,
-                        ),
-                        tablet: FileInfoCardGridView(cardData: this.cardData),
-                        desktop: FileInfoCardGridView(
-                            childAspectRatio: _size.width < 1400 ? 1.1 : 1.4,
-                            cardData: this.cardData),
                       ),
-                      SizedBox(height: defaultPadding),
-                      AttendanceMissedBySecurity(
-                          fetchedAttendanceData: _fetchedAttendanceData),
-                      WeeklyAttendanceGraph(
-                          fetchedAttendanceData: this._fetchedAttendanceData),
-                      if (Responsive.isMobile(context))
-                        SizedBox(height: defaultPadding),
-                      if (Responsive.isMobile(context))
-                        StorageDetails(
+                    if (!Responsive.isMobile(context))
+                      SizedBox(width: defaultPadding),
+                    if (!Responsive.isMobile(context))
+                      Expanded(
+                        flex: 2,
+                        child: StorageDetails(
                             fetchedPieChartData: this._fetchedPieChartData,
                             totalStudentCount: this.totalStudentCount,
                             totalAttendance: this.totalAttendance),
-                    ],
-                  ),
-                ),
-                if (!Responsive.isMobile(context))
-                  SizedBox(width: defaultPadding),
-                // On Mobile means if the screen is less than 850 we don't want to show it
-                if (!Responsive.isMobile(context))
-                  Expanded(
-                    flex: 2,
-                    child: StorageDetails(
-                        fetchedPieChartData: this._fetchedPieChartData,
-                        totalStudentCount: this.totalStudentCount,
-                        totalAttendance: this.totalAttendance),
-                  ),
+                      ),
+                  ],
+                )
               ],
-            )
+            ),
           ],
         ),
       ),

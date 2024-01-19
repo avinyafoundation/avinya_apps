@@ -28,7 +28,7 @@ class StorageDetails extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Today's Student Attendance by Class",
+            "Today's Student Attendance",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
