@@ -25,25 +25,32 @@ class ActivityAttendance {
   String? svg_src;
   int? color;
   int? total_student_count;
+  int? daily_total;
+  String? attendance_date;
 
-  ActivityAttendance(
-      {this.id,
-      this.activity_instance_id,
-      this.person_id,
-      this.created,
-      this.updated,
-      this.sign_in_time,
-      this.sign_out_time,
-      this.in_marked_by,
-      this.out_marked_by,
-      this.person,
-      this.description,
-      this.preferred_name,
-      this.digital_id,
-      this.present_count,
-      this.svg_src,
-      this.color,
-      this.total_student_count});
+
+
+  ActivityAttendance({
+    this.id,
+    this.activity_instance_id,
+    this.person_id,
+    this.created,
+    this.updated,
+    this.sign_in_time,
+    this.sign_out_time,
+    this.in_marked_by,
+    this.out_marked_by,
+    this.person,
+    this.description,
+    this.preferred_name,
+    this.digital_id,
+    this.present_count,
+    this.svg_src,
+    this.color,
+    this.total_student_count,
+    this.daily_total,
+    this.attendance_date
+  });
 
   factory ActivityAttendance.fromJson(Map<String, dynamic> json) {
     return ActivityAttendance(
@@ -66,6 +73,8 @@ class ActivityAttendance {
           ? int.parse(json['color'].substring(2), radix: 16)
           : 0xFFFFFFFF, // Assuming 0xFFFFFFFF as default
       total_student_count: json['total_student_count'],
+      daily_total: json['daily_total'],
+      attendance_date: json['attendance_date']
     );
   }
 
@@ -465,5 +474,55 @@ Future<List<ActivityAttendance>> getDailyStudentsAttendanceByParentOrg(
   } else {
     throw Exception(
         'Failed to get Activity Participant Attendances  by parent org');
+  }
+}
+
+Future<List<ActivityAttendance>> getTotalAttendanceCountByDateByOrg(
+    int organization_id,
+    String from_date,
+    String to_date) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/total_attendance_count_by_date_by_org/$organization_id/$from_date/$to_date'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Total Activity Participant Attendances Count');
+  }
+}
+
+Future<List<ActivityAttendance>> getTotalAttendanceCountByParentOrg(
+    int parent_organization_id,
+    String from_date,
+    String to_date) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/total_attendance_count_by_date_by_parent_org/$parent_organization_id/$from_date/$to_date'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Total Activity Participant Attendances Count');
   }
 }
