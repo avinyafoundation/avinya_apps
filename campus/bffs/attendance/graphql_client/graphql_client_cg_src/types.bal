@@ -846,3 +846,19 @@ public type GetDailyStudentsAttendanceByParentOrgResponse record {|
         string? color;
     |}[]? daily_students_attendance_by_parent_org;
 |};
+
+public type GetTotalAttendanceCountByDateByOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? attendance_date;
+        int? daily_total;
+    |}[]? total_attendance_count_by_date;
+|};
+
+public type GetTotalAttendanceCountByParentOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? attendance_date;
+        int? daily_total;
+    |}[]? total_attendance_count_by_date;
+|};

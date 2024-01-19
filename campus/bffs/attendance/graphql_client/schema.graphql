@@ -856,6 +856,7 @@ type Query {
   attendance_dashboard_data_by_date(organization_id: Int, parent_organization_id: Int, activity_id: Int, from_date: String = "", to_date: String = ""): [AttendanceDashboardDataMain!]
   attendance_missed_by_security(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceMissedBySecurityData!]
   daily_students_attendance_by_parent_org(parent_organization_id: Int): [DailyActivityParticipantAttendanceByParentOrgData!]
+  total_attendance_count_by_date(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [TotalActivityParticipantAttendanceCountByDateData!]
 }
 
 input ResourceAllocation {
@@ -960,6 +961,11 @@ type SupplyData {
   order_amount: Int
   created: String
   updated: String
+}
+
+type TotalActivityParticipantAttendanceCountByDateData {
+  attendance_date: String
+  daily_total: Int
 }
 
 input Vacancy {
