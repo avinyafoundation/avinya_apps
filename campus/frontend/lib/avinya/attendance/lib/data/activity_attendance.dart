@@ -23,57 +23,65 @@ class ActivityAttendance {
   String? digital_id;
   int? present_count;
   String? svg_src;
-  Color? color;
+  int? color;
   int? total_student_count;
   int? daily_total;
   String? attendance_date;
+  double? y;
+  double? x;
 
-
-
-  ActivityAttendance({
-    this.id,
-    this.activity_instance_id,
-    this.person_id,
-    this.created,
-    this.updated,
-    this.sign_in_time,
-    this.sign_out_time,
-    this.in_marked_by,
-    this.out_marked_by,
-    this.person,
-    this.description,
-    this.preferred_name,
-    this.digital_id,
-    this.present_count,
-    this.svg_src,
-    this.color,
-    this.total_student_count,
-    this.daily_total,
-    this.attendance_date
-  });
+  ActivityAttendance(
+      {this.id,
+      this.activity_instance_id,
+      this.person_id,
+      this.created,
+      this.updated,
+      this.sign_in_time,
+      this.sign_out_time,
+      this.in_marked_by,
+      this.out_marked_by,
+      this.person,
+      this.description,
+      this.preferred_name,
+      this.digital_id,
+      this.present_count,
+      this.svg_src,
+      this.color,
+      this.total_student_count,
+      this.daily_total,
+      this.attendance_date,
+      this.x,
+      this.y});
 
   factory ActivityAttendance.fromJson(Map<String, dynamic> json) {
     return ActivityAttendance(
-      id: json['id'],
-      activity_instance_id: json['activity_instance_id'],
-      person_id: json['person_id'],
-      created: json['created'],
-      updated: json['updated'],
-      sign_in_time: json['sign_in_time'],
-      sign_out_time: json['sign_out_time'],
-      in_marked_by: json['in_marked_by'],
-      out_marked_by: json['out_marked_by'],
-      preferred_name: json['preferred_name'],
-      digital_id: json['digital_id'],
-      description: json['description'],
-      person: json['person'] != null ? json['person']['id'] : null,
-      present_count: json['present_count'],
-      svg_src: json['svg_src'],
-      color: _parseColor(json['color']),
-      total_student_count: json['total_student_count'],
-      daily_total: json['daily_total'],
-      attendance_date: json['attendance_date']
-    );
+        id: json['id'],
+        activity_instance_id: json['activity_instance_id'],
+        person_id: json['person_id'],
+        created: json['created'],
+        updated: json['updated'],
+        sign_in_time: json['sign_in_time'],
+        sign_out_time: json['sign_out_time'],
+        in_marked_by: json['in_marked_by'],
+        out_marked_by: json['out_marked_by'],
+        preferred_name: json['preferred_name'],
+        digital_id: json['digital_id'],
+        description: json['description'],
+        person: json['person'] != null ? json['person']['id'] : null,
+        present_count: json['present_count'],
+        svg_src: json['svg_src'],
+        color: json['color'] != null
+            ? int.parse(json['color'].substring(2), radix: 16)
+            : 0xFFFFFFFF, // Assuming 0xFFFFFFFF as default
+        total_student_count: json['total_student_count'],
+        daily_total: json['daily_total'],
+        attendance_date: json['attendance_date'],
+        x: json['attendance_date'] != null
+            ? DateTime.parse(json['attendance_date'])
+                .millisecondsSinceEpoch
+                .toDouble()
+            : 0.0,
+        y: json['daily_total']?.toDouble() ?? 0.0);
   }
 
   Map<String, dynamic> toJson() => {
@@ -452,7 +460,7 @@ Future<List<ActivityAttendance>> getAttendanceMissedBySecurityByParentOrg(
 }
 
 Future<List<ActivityAttendance>> getDailyStudentsAttendanceByParentOrg(
-  int parent_organization_id,
+  int? parent_organization_id,
 ) async {
   final response = await http.get(
     Uri.parse(
@@ -476,9 +484,7 @@ Future<List<ActivityAttendance>> getDailyStudentsAttendanceByParentOrg(
 }
 
 Future<List<ActivityAttendance>> getTotalAttendanceCountByDateByOrg(
-    int organization_id,
-    String from_date,
-    String to_date) async {
+    int? organization_id, String? from_date, String? to_date) async {
   final response = await http.get(
     Uri.parse(
         '${AppConfig.campusAttendanceBffApiUrl}/total_attendance_count_by_date_by_org/$organization_id/$from_date/$to_date'),
@@ -501,9 +507,7 @@ Future<List<ActivityAttendance>> getTotalAttendanceCountByDateByOrg(
 }
 
 Future<List<ActivityAttendance>> getTotalAttendanceCountByParentOrg(
-    int parent_organization_id,
-    String from_date,
-    String to_date) async {
+    int? parent_organization_id, String? from_date, String? to_date) async {
   final response = await http.get(
     Uri.parse(
         '${AppConfig.campusAttendanceBffApiUrl}/total_attendance_count_by_date_by_parent_org/$parent_organization_id/$from_date/$to_date'),
