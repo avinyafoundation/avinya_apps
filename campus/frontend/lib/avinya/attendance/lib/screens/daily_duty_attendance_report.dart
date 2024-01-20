@@ -21,7 +21,8 @@ class _DailyDutyAttendanceReportScreenState extends State<DailyDutyAttendanceRep
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("Daily Duty Attendance Report"),
+        title: Text("Daily Duty Attendance Report",style: TextStyle(color: Colors.black)),
+        backgroundColor: Color.fromARGB(255, 236, 230, 253),
       ),
       body: SingleChildScrollView(
         child: Container(

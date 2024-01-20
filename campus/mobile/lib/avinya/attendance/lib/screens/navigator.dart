@@ -101,7 +101,7 @@ class _SMSNavigatorState extends State<SMSNavigator> {
           // Display the app
           FadeTransitionPage<void>(
             key: _scaffoldKey,
-            child: const SMSScaffold(),
+            child: SMSScaffold(),
           ),
           // Add an additional page to the stack if the user is viewing a book
           // or an author

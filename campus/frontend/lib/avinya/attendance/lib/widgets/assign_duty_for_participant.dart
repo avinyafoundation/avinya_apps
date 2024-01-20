@@ -30,7 +30,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
   List<Activity>  _activitiesByAvinyaType = []; 
   List<String?> _activitiesNames = [];
   List<DutyParticipant> _dutyRelatedParticipantsFilterAndStore = []; //filter And Store duty Relavant Participants
-  List<String> _dropDownRoleList = ['leader','member'];
+  List<String> _dropDownRoleList = ['leader','assistant-leader','member'];
   late DutyRotationMetaDetails _rotationMetaDetails;
 
   late TextEditingController  _startDate;
@@ -57,17 +57,19 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
   }
 
   bool hasLeaderRoleWithActivity(String? activityName,String? allocatedRole){
-    print('duty participants : ${_dutyParticipants}');
-    bool hasLeaderRoleWithActivity;
 
-    if(allocatedRole == "leader"){
-      hasLeaderRoleWithActivity = _dutyParticipants.any((participant)=>participant.activity?.name == activityName && participant.role == 'leader');
-     
-      if(hasLeaderRoleWithActivity){
-        return true;
-      }else{
-        return false;
-      }   
+    if(allocatedRole == "leader" || allocatedRole == "assistant-leader"){
+     int count = 0;
+
+     for(var participant in _dutyParticipants){
+      
+      if(participant.activity?.name == activityName){
+        if(participant.role == allocatedRole){
+          count++;
+        }
+      }
+     }
+      return count == 1;
     }else{
          return  false;
     }
@@ -75,7 +77,6 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
 
   Future<List<DutyParticipant>> loadDutyParticipantsData(int organization_id) async{
 
-    print('organization id inside loadDutyParticipantsData() methos : ${organization_id}');
     return await fetchDutyParticipants(organization_id);
   }
 
@@ -116,8 +117,6 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
    @override
   void didChangeDependencies(){
     super.didChangeDependencies();
-    print('');
-    print('execute did change dependencies');
   }
 
   @override
@@ -141,6 +140,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                         Container(
                           width: 300,
                           child: TextField(
+                            enabled: false,
                             controller: _startDate,
                             decoration: InputDecoration(
                               icon: Icon(Icons.calendar_today),
@@ -156,6 +156,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                         Container(
                           width: 300,
                           child: TextField(
+                            enabled: false,
                             controller: _endDate,
                             decoration: InputDecoration(
                             icon: Icon(Icons.calendar_today),
@@ -193,6 +194,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                         Container(
                           width: 300,
                           child: TextField(
+                            enabled: false,
                             controller: _startDate,
                             decoration: InputDecoration(
                               icon: Icon(Icons.calendar_today),
@@ -208,6 +210,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                         Container(
                           width: 300,
                           child: TextField(
+                            enabled: false,
                             controller: _endDate,
                             decoration: InputDecoration(
                             icon: Icon(Icons.calendar_today),
@@ -278,7 +281,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                                                 const Icon(
                                                                   IconData(0xe6f2, fontFamily: 'MaterialIcons'),
                                                                   size: 25,
-                                                                  color: Colors.blueAccent,
+                                                                  color: Colors.deepPurpleAccent,
                                                                 ),
                                                                 SizedBox(
                                                                  width: 10,
@@ -376,7 +379,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                                                
                                                             Container( 
                                                               margin: EdgeInsets.only(left: 10.0),
-                                                              width: 120, 
+                                                              width: 140, 
                                                               child: buildRoleDropDownButton(tableIndex)
                                                             ),
                                                           ],
@@ -481,7 +484,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                                             ),                                                              
                                                             Container( 
                                                               margin: EdgeInsets.only(left: 10.0),
-                                                              width: 120, 
+                                                              width: 140, 
                                                               child: buildRoleDropDownButton(tableIndex)
                                                             ),
                                                           ],
@@ -518,8 +521,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
               return Container(
                             margin: EdgeInsets.only(top: 10),
                             child: SpinKitCircle(
-                              color: (Colors
-                                  .blue),
+                              color: (Colors.deepPurpleAccent),
                               size: 70, 
                             ),
                   );
@@ -576,6 +578,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                 rows: dutyRelatedParticipantsFilterAndStore.map((participant){
 
                     bool isLeader = participant.role == 'leader';
+                    bool isAssistantLeader = participant.role == 'assistant-leader';
 
                       return DataRow(
                         cells:[
@@ -594,7 +597,9 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                          DataCell(Row(
                            children: [
                              if(isLeader)
-                               Icon(Icons.star,color: Colors.orange,),
+                               Icon(Icons.star,color: Colors.orange,)
+                             else if(isAssistantLeader)
+                               Icon(Icons.star,color: Colors.green,),
                              SizedBox(width: 1,),
                              Text( participant.role ?? 'N/A',),
                            ],
@@ -759,11 +764,11 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                        ),
                        SizedBox(height: 10,),
                        Text(
-                        "A leader role participant is already added to this $activityName duty.",
+                        "A ${allocatedRole} role participant is already added to this $activityName duty.",
                         textAlign: TextAlign.center,
                        ),
                        Text(
-                        "You can't add another participant with a leader role.If you'd like to add this participant as a leader, please remove the current leader first.",
+                        "You can't add another participant with a ${allocatedRole} role.If you'd like to add this participant as a ${allocatedRole}, please remove the current ${allocatedRole} first.",
                         textAlign: TextAlign.center,
                        ),
                     ],

@@ -102,7 +102,22 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
     _personAttendanceToday = await getPersonActivityAttendanceToday(
         qrCodeData.person_id!,
         campusAppsPortalInstance.activityIds['homeroom']!);
-    if (_personAttendanceToday.length == 1 && qrCodeData.sign_out_time != '') {
+
+    // Get the current date and time
+    DateTime today = DateTime.now();
+
+// Format the date as a string
+    String dateOnlyString = DateFormat('yyyy-MM-dd').format(today);
+    String formattedDate = DateFormat('yyyy-MM-dd').format(today);
+    if (qrCodeData.sign_out_time != '') {
+      DateTime dateTime = DateTime.parse(qrCodeData.sign_out_time);
+      dateOnlyString = DateFormat('yyyy-MM-dd').format(dateTime);
+    } else {
+      dateOnlyString = '';
+    }
+    if (_personAttendanceToday.length == 1 &&
+        qrCodeData.sign_out_time != '' &&
+        dateOnlyString == formattedDate) {
       setState(() {
         isFirstTime = true;
         isFetching = false;
@@ -160,10 +175,24 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
           if (snapshot.data!.length > 1) {
             _isCheckedOut = snapshot.data![1].sign_out_time != null;
           }
+          // Get the current date and time
+          DateTime today = DateTime.now();
+
+// Format the date as a string
+          String dateOnlyString = DateFormat('yyyy-MM-dd').format(today);
+          String formattedDate = DateFormat('yyyy-MM-dd').format(today);
+          if (qrCodeData.sign_out_time != '') {
+            DateTime dateTime = DateTime.parse(qrCodeData.sign_out_time);
+            dateOnlyString = DateFormat('yyyy-MM-dd').format(dateTime);
+          } else {
+            dateOnlyString = '';
+          }
           return Scaffold(
             appBar: AppBar(
               title: const Text(
-                  'Check-Out by (QR)'), // Customize your app title here
+                  'Check-Out by (QR)',style: TextStyle(color: Colors.black)),
+              backgroundColor: Color.fromARGB(255, 236, 230, 253),
+              iconTheme: IconThemeData(color: Colors.black), // Customize your app title here
             ),
             body: Center(
               child: SingleChildScrollView(
@@ -184,8 +213,7 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
                       Container(
                         margin: const EdgeInsets.only(top: 10),
                         child: const SpinKitCircle(
-                          color: (Colors
-                              .blue), // Customize the color of the indicator
+                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
                           size: 50, // Customize the size of the indicator
                         ),
                       ),
@@ -198,7 +226,7 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.all(15), // Add padding
-                              color: Colors.lightBlue, // Add a background color
+                              color: Colors.deepPurpleAccent, // Add a background color
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -233,30 +261,57 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
                               ),
                             ),
                             if (markedAttendance)
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(16.0),
-                                color: Colors.green,
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.check_circle,
-                                      size: 32.0,
-                                      color: Colors.white,
-                                    ),
-                                    SizedBox(width: 8.0),
-                                    Text(
-                                      'Check-Out completed successfully!',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                              if (dateOnlyString == formattedDate) ...[
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(16.0),
+                                  color: Colors.green,
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle,
+                                        size: 32.0,
                                         color: Colors.white,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              )
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        'Check-Out completed successfully!',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ] else ...[
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(16.0),
+                                  color: Colors.red,
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.error,
+                                        size: 32.0,
+                                        color: Colors.white,
+                                      ),
+                                      SizedBox(width: 8.0),
+                                      Text(
+                                        'Check-Out failed!',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ]
                           ],
                         ),
                       ],
@@ -264,7 +319,7 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
                         if (qrCodeData.person_id == 0 && isFirstTime)
                           Container(
                             width: double.infinity,
-                            color: Colors.blue,
+                            color: Colors.deepPurpleAccent,
                             padding: const EdgeInsets.all(16.0),
                             child: const Center(
                               child: Text(
@@ -305,7 +360,13 @@ class _QrAttendanceCheckOutState extends State<QrAttendanceCheckOut> {
         }
 
         // By default, show a loading spinner.
-        return const CircularProgressIndicator();
+         return  Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: SpinKitCircle(
+                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
+                          size: 70, // Customize the size of the indicator
+                        ),
+            );
       },
     );
     //
