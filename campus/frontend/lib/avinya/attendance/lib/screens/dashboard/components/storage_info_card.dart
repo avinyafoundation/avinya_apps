@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
 import '../constants.dart';
 
 class StorageInfoCard extends StatelessWidget {
@@ -68,9 +66,9 @@ class StorageInfoCard extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Color(color), // Replace with your desired color
+              color: Color(color),
             ),
-            padding: EdgeInsets.all(8.0), // Adjust the padding as needed
+            padding: EdgeInsets.all(8.0),
             child: Text(
               amountOfFiles,
               style: TextStyle(

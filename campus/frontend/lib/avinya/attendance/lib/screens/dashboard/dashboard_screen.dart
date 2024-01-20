@@ -12,7 +12,6 @@ import 'package:gallery/data/person.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
-import 'package:attendance/data/test.dart';
 
 class AttendanceDashboardScreen extends StatefulWidget {
   const AttendanceDashboardScreen({Key? key}) : super(key: key);
@@ -26,6 +25,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
   List<DashboardData> _fetchedDashboardData = [];
   List<ActivityAttendance> _fetchedAttendanceData = [];
   List<ActivityAttendance> _fetchedPieChartData = [];
+  List<ActivityAttendance> _fetchedLineChartData = [];
   Organization? _fetchedOrganization;
   int totalStudentCount = 0;
   int totalAttendance = 0;
@@ -125,6 +125,18 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
           startDate, endDate, parentOrgId);
       _fetchedAttendanceData = await getAttendanceMissedBySecurityByParentOrg(
           parentOrgId, startDate, endDate);
+      if (startDate == endDate) {
+        DateTime startDateDateTime = DateTime.parse(startDate);
+        DateTime thirtyDaysAgo = startDateDateTime.subtract(Duration(days: 30));
+        _fetchedLineChartData = await getTotalAttendanceCountByParentOrg(
+            parentOrgId,
+            DateFormat('yyyy-MM-dd').format(thirtyDaysAgo),
+            endDate);
+      } else {
+        _fetchedLineChartData = await getTotalAttendanceCountByParentOrg(
+            parentOrgId, startDate, endDate);
+      }
+
       if (_fetchedOrganization != null) {
         _fetchedOrganization!.id = parentOrgId;
         _fetchedOrganization!.description = "Select All";
@@ -138,6 +150,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
       _fetchedDashboardData =
           await getDashboardCardDataByDate(startDate, endDate, newValue.id!);
       _fetchedAttendanceData = await getAttendanceMissedBySecurityByOrg(
+          newValue.id!, startDate, endDate);
+      _fetchedLineChartData = await getTotalAttendanceCountByDateByOrg(
           newValue.id!, startDate, endDate);
     }
 
@@ -153,15 +167,29 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
       this._fetchedAttendanceData = _fetchedAttendanceData;
       this._fetchedPieChartData = _fetchedPieChartData;
       this.totalStudentCount = totalStudentCount;
+      this._fetchedLineChartData = _fetchedLineChartData;
     });
   }
 
   Widget datePickerBuilder(
           BuildContext context, dynamic Function(DateRange?) onDateRangeChanged,
-          [bool doubleMonth = true]) =>
+          [bool doubleMonth = false]) =>
       DateRangePickerWidget(
         doubleMonth: doubleMonth,
         maximumDateRangeLength: 10,
+        theme: CalendarTheme(
+          selectedColor: Colors.blue,
+          dayNameTextStyle: TextStyle(color: Colors.black45, fontSize: 10),
+          inRangeColor: Color(0xFFD9EDFA),
+          inRangeTextStyle: TextStyle(color: Colors.blue),
+          selectedTextStyle: TextStyle(color: Colors.white),
+          todayTextStyle: TextStyle(fontWeight: FontWeight.bold),
+          monthTextStyle: TextStyle(color: Colors.black, fontSize: 12),
+          defaultTextStyle: TextStyle(color: Colors.black, fontSize: 12),
+          radius: 10,
+          tileSize: 40,
+          disabledTextStyle: TextStyle(color: Colors.grey),
+        ),
         quickDateRanges: [
           QuickDateRange(dateRange: null, label: "Remove date range"),
           QuickDateRange(
@@ -201,18 +229,56 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
           ),
         ],
         minimumDateRangeLength: 3,
-        initialDateRange: this.selectedDateRange ??
-            DateRange(
-                DateTime.now(), DateTime.now().add(const Duration(days: 7))),
-        disabledDates: [DateTime(2023, 11, 20)],
-        initialDisplayedDate:
-            this.selectedDateRange?.start ?? DateTime(2023, 11, 20),
+        // initialDateRange: this.selectedDateRange ??
+        //     DateRange(
+        //         DateTime.now(), DateTime.now().add(const Duration(days: 7))),
+        // disabledDates: [DateTime(2023, 11, 20)],
+        initialDisplayedDate: this.selectedDateRange?.start ?? today,
         onDateRangeChanged: (DateRange? value) {
-          print(value);
-          var _rangeStart = value!.start;
-          var _rangeEnd = value.end;
-          this.updateDateRange(_rangeStart, _rangeEnd);
-          // Handle the selected date range here
+          if (value != null) {
+            var _rangeStart = value.start;
+            var _rangeEnd = value.end;
+            this.updateDateRange(_rangeStart, _rangeEnd);
+          } else {
+            onDateRangeChanged(DateRange(today, today));
+            this.updateDateRange(today, today);
+          }
+        },
+      );
+  Widget datePickerBuilderMobile(
+          BuildContext context, dynamic Function(DateRange?) onDateRangeChanged,
+          [bool doubleMonth = false]) =>
+      DateRangePickerWidget(
+        doubleMonth: doubleMonth,
+        maximumDateRangeLength: 10,
+        theme: CalendarTheme(
+          selectedColor: Colors.blue,
+          dayNameTextStyle: TextStyle(color: Colors.black45, fontSize: 10),
+          inRangeColor: Color(0xFFD9EDFA),
+          inRangeTextStyle: TextStyle(color: Colors.blue),
+          selectedTextStyle: TextStyle(color: Colors.white),
+          todayTextStyle: TextStyle(fontWeight: FontWeight.bold),
+          monthTextStyle: TextStyle(color: Colors.black, fontSize: 12),
+          defaultTextStyle: TextStyle(color: Colors.black, fontSize: 12),
+          radius: 10,
+          tileSize: 40,
+          disabledTextStyle: TextStyle(color: Colors.grey),
+        ),
+        minimumDateRangeLength: 3,
+        // initialDateRange: this.selectedDateRange ??
+        //     DateRange(
+        //         DateTime.now(), DateTime.now().add(const Duration(days: 7))),
+        // disabledDates: [DateTime(2023, 11, 20)],
+        initialDisplayedDate: this.selectedDateRange?.start ?? today,
+        onDateRangeChanged: (DateRange? value) {
+          if (value != null) {
+            var _rangeStart = value.start;
+            var _rangeEnd = value.end;
+            this.updateDateRange(_rangeStart, _rangeEnd);
+          } else {
+            onDateRangeChanged(DateRange(today, today));
+            this.updateDateRange(today, today);
+          }
         },
       );
 
@@ -220,6 +286,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
   Widget build(BuildContext context) {
     final Size _size = MediaQuery.of(context).size;
     bool isMobile = MediaQuery.of(context).size.width < 600;
+    final dialogWidth = 510.0;
+    final offsetX = (_size.width - dialogWidth) / 2;
     return SafeArea(
       child: SingleChildScrollView(
         primary: false,
@@ -333,7 +401,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                     onPressed: () => showDateRangePickerDialog(
                         context: context,
                         builder: datePickerBuilder,
-                        offset: Offset(310, 180)),
+                        offset: Offset(offsetX, 170)),
                     style: ButtonStyle(
                       padding: MaterialStateProperty.all(EdgeInsets.all(16.0)),
                       textStyle: MaterialStateProperty.all(
@@ -502,8 +570,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                       ElevatedButton(
                         onPressed: () => showDateRangePickerDialog(
                             context: context,
-                            builder: datePickerBuilder,
-                            offset: Offset(310, 180)),
+                            builder: datePickerBuilderMobile,
+                            offset: Offset(10, 220)),
                         style: ButtonStyle(
                           padding:
                               MaterialStateProperty.all(EdgeInsets.all(16.0)),
@@ -545,19 +613,21 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                                       ? 1.3
                                       : 1,
                             ),
-                            tablet:
-                                FileInfoCardGridView(cardData: this.cardData),
+                            tablet: FileInfoCardGridView(
+                              cardData: this.cardData,
+                              crossAxisCount: _size.width < 800 ? 4 : 2,
+                            ),
                             desktop: FileInfoCardGridView(
                                 childAspectRatio:
                                     _size.width < 1400 ? 1.1 : 1.4,
-                                crossAxisCount: _size.width < 650 ? 2 : 2,
+                                crossAxisCount: _size.width < 1400 ? 2 : 2,
                                 cardData: this.cardData),
                           ),
                           SizedBox(height: defaultPadding),
                           if (Responsive.isMobile(context))
                             SizedBox(height: defaultPadding),
                           if (Responsive.isMobile(context))
-                            LineChartWidget(pricePoints),
+                            LineChartWidget(_fetchedLineChartData),
                           SizedBox(height: defaultPadding),
                           if (Responsive.isMobile(context))
                             SizedBox(height: defaultPadding),
@@ -576,7 +646,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                         flex: 3,
                         child: Column(
                           children: [
-                            LineChartWidget(pricePoints),
+                            LineChartWidget(_fetchedLineChartData),
                             AttendanceMissedBySecurity(
                                 fetchedAttendanceData: _fetchedAttendanceData),
                           ],
