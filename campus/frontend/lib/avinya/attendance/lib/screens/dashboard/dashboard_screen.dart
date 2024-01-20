@@ -176,7 +176,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
           [bool doubleMonth = false]) =>
       DateRangePickerWidget(
         doubleMonth: doubleMonth,
-        maximumDateRangeLength: 10,
+        maximumDateRangeLength: 200,
         theme: CalendarTheme(
           selectedColor: Colors.blue,
           dayNameTextStyle: TextStyle(color: Colors.black45, fontSize: 10),
