@@ -19,7 +19,8 @@ class _DutyAttendanceMarkerScreenState extends State<DutyAttendanceMarkerScreen>
  Widget build(BuildContext context) {
      return Scaffold(
       appBar: AppBar(
-        title: Text("Duty Attendance Marker"),
+        title: Text("Duty Attendance Marker",style: TextStyle(color: Colors.black)),
+        backgroundColor: Color.fromARGB(255, 236, 230, 253),
       ),
       body: SingleChildScrollView(
           child: Container(            
