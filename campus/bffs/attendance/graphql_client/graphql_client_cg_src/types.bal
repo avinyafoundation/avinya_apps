@@ -776,15 +776,13 @@ public type GetDutyParticipantResponse record {|
 
 public type GetAttendanceDashboardResponse record {|
     map<json?> __extensions?;
-    record {|
-        record {|
+    record {|record {|
             string? title;
             int? numOfFiles;
             string? svgSrc;
             string? color;
-            int? percentage;
-        |}? attendance_dashboard_data;
-    |}[]? attendance_dashboard_data_by_date;
+            anydata? percentage;
+        |}? attendance_dashboard_data;|}[]? attendance_dashboard_data_by_date;
 |};
 
 public type GetLateAttendanceReportResponse record {|
@@ -803,6 +801,8 @@ public type GetLateAttendanceReportResponse record {|
         string? digital_id;
         int? person_id;
     |}[]? late_attendance_report;
+|};
+
 public type CreateDutyEvaluationResponse record {|
     map<json?> __extensions?;
     record {|
@@ -821,6 +821,7 @@ public type CreateDutyEvaluationResponse record {|
 public type GetAttendanceMissedBySecurityByOrgResponse record {|
     map<json?> __extensions?;
     record {|
+        string? preferred_name;
         string? digital_id;
         string? description;
         string? sign_in_time;
@@ -830,6 +831,7 @@ public type GetAttendanceMissedBySecurityByOrgResponse record {|
 public type GetAttendanceMissedBySecurityByParentOrgResponse record {|
     map<json?> __extensions?;
     record {|
+        string? preferred_name;
         string? digital_id;
         string? description;
         string? sign_in_time;

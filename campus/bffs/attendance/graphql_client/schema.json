@@ -4587,6 +4587,17 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "preferred_name",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "digital_id",
                             "args": [],
                             "type": {

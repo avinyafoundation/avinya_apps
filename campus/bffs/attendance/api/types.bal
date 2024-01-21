@@ -726,6 +726,7 @@ public type CreateDutyEvaluationResponse record {|
 public type GetAttendanceMissedBySecurityByOrgResponse record {|
     map<json?> __extensions?;
     record {|
+        string? preferred_name;
         string? digital_id;
         string? description;
         string? sign_in_time;
@@ -735,6 +736,7 @@ public type GetAttendanceMissedBySecurityByOrgResponse record {|
 public type GetAttendanceMissedBySecurityByParentOrgResponse record {|
     map<json?> __extensions?;
     record {|
+        string? preferred_name;
         string? digital_id;
         string? description;
         string? sign_in_time;
