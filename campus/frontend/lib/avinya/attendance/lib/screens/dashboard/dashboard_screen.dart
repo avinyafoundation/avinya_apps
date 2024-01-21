@@ -646,7 +646,20 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                         flex: 3,
                         child: Column(
                           children: [
+                            Text("Daily Attendance Trends",
+                                style:
+                                    Theme.of(context).textTheme.headlineMedium),
                             LineChartWidget(_fetchedLineChartData),
+                            Text(
+                              "Date Range: " +
+                                  this.formattedStartDate +
+                                  " - " +
+                                  this.formattedEndDate,
+                              style: TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),
+                            SizedBox(height: defaultPadding),
                             AttendanceMissedBySecurity(
                                 fetchedAttendanceData: _fetchedAttendanceData),
                           ],
