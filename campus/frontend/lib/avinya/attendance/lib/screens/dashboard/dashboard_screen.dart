@@ -286,8 +286,6 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
   Widget build(BuildContext context) {
     final Size _size = MediaQuery.of(context).size;
     bool isMobile = MediaQuery.of(context).size.width < 600;
-    final dialogWidth = 510.0;
-    final offsetX = (_size.width - dialogWidth) / 2;
     return SafeArea(
       child: SingleChildScrollView(
         primary: false,
@@ -312,6 +310,23 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  ElevatedButton(
+                    onPressed: () => showDateRangePickerDialog(
+                        context: context,
+                        builder: datePickerBuilder,
+                        offset: Offset(20, 155)),
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.all(EdgeInsets.all(16.0)),
+                      textStyle: MaterialStateProperty.all(
+                        const TextStyle(fontSize: 16),
+                      ),
+                      elevation: MaterialStateProperty.all(20),
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.greenAccent),
+                      foregroundColor: MaterialStateProperty.all(Colors.black),
+                    ),
+                    child: Text(formattedStartDate + " - " + formattedEndDate),
+                  ),
                   Expanded(
                       child: Container(
                     margin: EdgeInsets.only(left: 8.0),
@@ -397,23 +412,6 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                             ]),
                     ]),
                   )),
-                  ElevatedButton(
-                    onPressed: () => showDateRangePickerDialog(
-                        context: context,
-                        builder: datePickerBuilder,
-                        offset: Offset(offsetX, 170)),
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all(EdgeInsets.all(16.0)),
-                      textStyle: MaterialStateProperty.all(
-                        const TextStyle(fontSize: 16),
-                      ),
-                      elevation: MaterialStateProperty.all(20),
-                      backgroundColor:
-                          MaterialStateProperty.all(Colors.greenAccent),
-                      foregroundColor: MaterialStateProperty.all(Colors.black),
-                    ),
-                    child: Text(formattedStartDate + " - " + formattedEndDate),
-                  ),
                 ],
               ),
             if (isMobile)
@@ -571,7 +569,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                         onPressed: () => showDateRangePickerDialog(
                             context: context,
                             builder: datePickerBuilderMobile,
-                            offset: Offset(10, 220)),
+                            offset: Offset(5, 220)),
                         style: ButtonStyle(
                           padding:
                               MaterialStateProperty.all(EdgeInsets.all(16.0)),
@@ -596,7 +594,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
             // Existing Column
             Column(
               children: [
-                SizedBox(height: defaultPadding),
+                SizedBox(height: 10),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -632,10 +630,12 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                           if (Responsive.isMobile(context))
                             SizedBox(height: defaultPadding),
                           if (Responsive.isMobile(context))
-                            StorageDetails(
-                                fetchedPieChartData: this._fetchedPieChartData,
-                                totalStudentCount: this.totalStudentCount,
-                                totalAttendance: this.totalAttendance),
+                            if (this.totalStudentCount > 0)
+                              StorageDetails(
+                                  fetchedPieChartData:
+                                      this._fetchedPieChartData,
+                                  totalStudentCount: this.totalStudentCount,
+                                  totalAttendance: this.totalAttendance),
                         ],
                       ),
                     ),
@@ -646,7 +646,20 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                         flex: 3,
                         child: Column(
                           children: [
+                            Text("Daily Attendance Trends",
+                                style:
+                                    Theme.of(context).textTheme.headlineMedium),
                             LineChartWidget(_fetchedLineChartData),
+                            Text(
+                              "Date Range: " +
+                                  this.formattedStartDate +
+                                  " - " +
+                                  this.formattedEndDate,
+                              style: TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),
+                            SizedBox(height: defaultPadding),
                             AttendanceMissedBySecurity(
                                 fetchedAttendanceData: _fetchedAttendanceData),
                           ],
@@ -655,13 +668,14 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                     if (!Responsive.isMobile(context))
                       SizedBox(width: defaultPadding),
                     if (!Responsive.isMobile(context))
-                      Expanded(
-                        flex: 2,
-                        child: StorageDetails(
-                            fetchedPieChartData: this._fetchedPieChartData,
-                            totalStudentCount: this.totalStudentCount,
-                            totalAttendance: this.totalAttendance),
-                      ),
+                      if (this.totalStudentCount > 0)
+                        Expanded(
+                          flex: 2,
+                          child: StorageDetails(
+                              fetchedPieChartData: this._fetchedPieChartData,
+                              totalStudentCount: this.totalStudentCount,
+                              totalAttendance: this.totalAttendance),
+                        ),
                   ],
                 )
               ],
