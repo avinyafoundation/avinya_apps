@@ -70,7 +70,9 @@ class _WeekPickerState extends State<WeekPicker> {
       },
       child: Scaffold(
           appBar: AppBar(
-            title: Text('TableCalendar - Range'),
+            title: Text('TableCalendar - Range',style: TextStyle(color: Colors.black)),
+            backgroundColor: Color.fromARGB(255, 236, 230, 253),
+            iconTheme: IconThemeData(color: Colors.black),
           ),
           body: TableCalendar(
             firstDay: kFirstDay,
@@ -119,6 +121,7 @@ class _WeekPickerState extends State<WeekPicker> {
             },
           ),
           floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.deepPurpleAccent,
             onPressed: () async {
               if (_rangeStart != null && _rangeEnd != null) {
                 widget.updateDateRange(_rangeStart!, _rangeEnd!);

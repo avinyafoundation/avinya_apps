@@ -35,7 +35,8 @@ class _LateAttendanceReportScreenState extends State<LateAttendanceReportScreen>
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("Daily Late Attendance Report"),
+        title: Text("Daily Late Attendance Report",style: TextStyle(color: Colors.black)),
+        backgroundColor: Color.fromARGB(255, 236, 230, 253),
       ),
       body: SingleChildScrollView(
         child: Container(

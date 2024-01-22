@@ -97,7 +97,8 @@ class _WeeklyPaymentReportScreenState extends State<WeeklyPaymentReportScreen>
           this.formattedStartDate = formattedStartDate;
           this.formattedEndDate = formattedEndDate;
           this._fetchedStudentList = _fetchedStudentList;
-          this.isFetching = false;
+          // this.isFetching = false;
+          this._fetchedExcelReportData = _fetchedExcelReportData;
         });
       } catch (e) {
         setState(() {
@@ -135,7 +136,8 @@ class _WeeklyPaymentReportScreenState extends State<WeeklyPaymentReportScreen>
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("Weekly Student Payment Report"),
+        title: Text("Weekly Student Payment Report",style: TextStyle(color: Colors.black)),
+        backgroundColor: Color.fromARGB(255, 236, 230, 253),
       ),
       body: SingleChildScrollView(
         child: Container(
