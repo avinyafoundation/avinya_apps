@@ -43,6 +43,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
               leading: Icon(Icons.person_2_outlined,
                   color: Colors.white, size: 20.0),
               title: Container(
+                margin: EdgeInsets.only(left: 12.0),
                 transform: Matrix4.translationValues(-25, 0.0, 0.0),
                 child: Text(
                   "Self Attendance Marker",
@@ -68,6 +69,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
               leading:
                   Icon(Icons.people_outline, color: Colors.white, size: 20.0),
               title: Container(
+                margin: EdgeInsets.only(left: 12.0),
                 transform: Matrix4.translationValues(-25, 0.0, 0.0),
                 child: Text(
                   "Bulk Attendance Marker",
@@ -96,6 +98,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
               leading: Icon(Icons.summarize_outlined,
                   color: Colors.white, size: 20.0),
               title: Container(
+                margin: EdgeInsets.only(left: 12.0),
                 transform: Matrix4.translationValues(-25, 0.0, 0.0),
                 child: Text(
                   "Daily Attendance Report",
@@ -118,6 +121,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
               leading: Icon(Icons.watch_later_outlined,
                   color: Colors.white, size: 20.0),
               title: Container(
+                margin: EdgeInsets.only(left: 12.0),
                 transform: Matrix4.translationValues(-25, 0.0, 0.0),
                 child: Text(
                   "Late Attendance Report",
@@ -143,6 +147,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
               leading:
                   Icon(Icons.paid_outlined, color: Colors.white, size: 20.0),
               title: Container(
+                margin: EdgeInsets.only(left: 12.0),
                 transform: Matrix4.translationValues(-25, 0.0, 0.0),
                 child: Text(
                   "Weekly Payment Report",
@@ -165,6 +170,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
               leading: Icon(Icons.work_history_outlined,
                   color: Colors.white, size: 20.0),
               title: Container(
+                margin: EdgeInsets.only(left: 12.0),
                 transform: Matrix4.translationValues(-25, 0.0, 0.0),
                 child: Text(
                   "Duty Attendance Report",
@@ -193,6 +199,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
               leading: Icon(Icons.person_add_alt_1_outlined,
                   color: Colors.white, size: 20.0),
               title: Container(
+                margin: EdgeInsets.only(left: 12.0),
                 transform: Matrix4.translationValues(-25, 0.0, 0.0),
                 child: Text(
                   "Assign duties",
@@ -221,6 +228,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
               leading: Icon(Icons.person_2_outlined,
                   color: Colors.white, size: 20.0),
               title: Container(
+                margin: EdgeInsets.only(left: 12.0),
                 transform: Matrix4.translationValues(-25, 0.0, 0.0),
                 child: Text(
                   "Self Attendance Marker",
@@ -243,6 +251,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
               leading:
                   Icon(Icons.people_outline, color: Colors.white, size: 20.0),
               title: Container(
+                margin: EdgeInsets.only(left: 12.0),
                 transform: Matrix4.translationValues(-25, 0.0, 0.0),
                 child: Text(
                   "Duty Attendance Marker",
@@ -268,6 +277,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
               leading: Icon(Icons.person_2_outlined,
                   color: Colors.white, size: 20.0),
               title: Container(
+                margin: EdgeInsets.only(left: 12.0),
                 transform: Matrix4.translationValues(-25, 0.0, 0.0),
                 child: Text(
                   "Self Attendance Marker",
@@ -286,11 +296,12 @@ class _SMSScaffoldState extends State<SMSScaffold> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Avinya Academy - Campus Attendance Portal"),
+        title: Text("Avinya Academy - Campus Attendance Portal",style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepPurpleAccent,
+        iconTheme: IconThemeData(color: Colors.white),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout,color: Colors.white,),
             tooltip: 'Logout',
             onPressed: () {
               SMSAuthScope.of(context).signOut();
@@ -299,7 +310,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.info),
+            icon: const Icon(Icons.info,color: Colors.white),
             tooltip: 'Help',
             onPressed: () {
               Navigator.push(context, MaterialPageRoute<void>(
@@ -333,7 +344,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
         ],
       ),
       drawer: Drawer(
-        width: 260.0,
+        width: 270.0,
         backgroundColor: Colors.deepPurpleAccent,
         child: SafeArea(
             child: SingleChildScrollView(
@@ -366,6 +377,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                         leading: Icon(Icons.dashboard,
                             color: Colors.white, size: 20.0),
                         title: Container(
+                          margin: EdgeInsets.only(left: 12.0),
                           transform: Matrix4.translationValues(-25, 0.0, 0.0),
                           child: Text(
                             "Attendance Dashboard",
@@ -413,6 +425,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                     title: Container(
+                      margin: EdgeInsets.only(left: 12.0),
                       transform: Matrix4.translationValues(-21, 0.0, 0.0),
                       child: Text(
                         "Attendance Marker",
@@ -464,6 +477,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                         borderRadius: BorderRadius.circular(15.0),
                       ),
                       title: Container(
+                        margin: EdgeInsets.only(left: 12.0),
                         transform: Matrix4.translationValues(-21, 0.0, 0.0),
                         child: Text(
                           "Duty",
@@ -515,6 +529,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                           borderRadius: BorderRadius.circular(15.0),
                         ),
                         title: Container(
+                          margin: EdgeInsets.only(left: 12.0),
                           transform: Matrix4.translationValues(-21, 0.0, 0.0),
                           child: Text(
                             "Reports",

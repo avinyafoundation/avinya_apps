@@ -9,36 +9,51 @@ class LineChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 2,
-      child: LineChart(
-        LineChartData(
-          lineBarsData: points.isNotEmpty
-              ? [
-                  LineChartBarData(
-                    spots: points
-                        .where((point) => point.x != null && point.y != null)
-                        .map((point) => FlSpot(point.x!, point.y!))
-                        .toList(),
-                    isCurved: false,
-                    dotData: FlDotData(
-                      show: true,
-                    ),
-                  ),
-                ]
-              : [],
-          borderData: FlBorderData(
-            border: const Border(bottom: BorderSide(), left: BorderSide()),
-          ),
-          gridData: FlGridData(show: false),
-          titlesData: FlTitlesData(
-            bottomTitles: AxisTitles(sideTitles: _bottomTitles),
-            leftTitles: AxisTitles(sideTitles: _leftTitles),
-            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Student Count",
+          style: TextStyle(
+            fontSize: 14,
           ),
         ),
-      ),
+        SizedBox(height: 10),
+        AspectRatio(
+          aspectRatio: 2,
+          child: LineChart(
+            LineChartData(
+              lineBarsData: points.isNotEmpty
+                  ? [
+                      LineChartBarData(
+                        spots: points
+                            .where(
+                                (point) => point.x != null && point.y != null)
+                            .map((point) => FlSpot(point.x!, point.y!))
+                            .toList(),
+                        isCurved: false,
+                        dotData: FlDotData(
+                          show: true,
+                        ),
+                      ),
+                    ]
+                  : [],
+              borderData: FlBorderData(
+                border: const Border(bottom: BorderSide(), left: BorderSide()),
+              ),
+              gridData: FlGridData(show: false),
+              titlesData: FlTitlesData(
+                bottomTitles: AxisTitles(sideTitles: _bottomTitles),
+                leftTitles: AxisTitles(sideTitles: _leftTitles),
+                topTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

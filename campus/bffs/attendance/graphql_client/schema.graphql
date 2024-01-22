@@ -120,6 +120,7 @@ type ActivityParticipantAttendanceDataForLateAttendance {
 type ActivityParticipantAttendanceMissedBySecurityData {
   sign_in_time: String
   description: String
+  preferred_name: String
   digital_id: String
 }
 
@@ -280,7 +281,7 @@ type AttendanceDashboardData {
   numOfFiles: Int
   svgSrc: String
   color: String
-  percentage: Int
+  percentage: Decimal
 }
 
 type AttendanceDashboardDataMain {
@@ -349,6 +350,8 @@ type DailyActivityParticipantAttendanceByParentOrgData {
   svg_src: String
   color: String
 }
+
+scalar Decimal
 
 type DistrictData {
   name: LocalizedName!
