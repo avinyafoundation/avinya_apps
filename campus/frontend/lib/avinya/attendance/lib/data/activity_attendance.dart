@@ -27,7 +27,11 @@ class ActivityAttendance {
   int? total_student_count;
   int? daily_total;
   String? attendance_date;
-
+  String? sign_in_date;
+  int? late_count;
+  int? total_count;
+  double? present_attendance_percentage;
+  double? late_attendance_percentage;
 
 
   ActivityAttendance({
@@ -49,7 +53,12 @@ class ActivityAttendance {
     this.color,
     this.total_student_count,
     this.daily_total,
-    this.attendance_date
+    this.attendance_date,
+    this.sign_in_date,
+    this.late_count,
+    this.total_count,
+    this.present_attendance_percentage,
+    this.late_attendance_percentage
   });
 
   factory ActivityAttendance.fromJson(Map<String, dynamic> json) {
@@ -72,7 +81,12 @@ class ActivityAttendance {
       color: _parseColor(json['color']),
       total_student_count: json['total_student_count'],
       daily_total: json['daily_total'],
-      attendance_date: json['attendance_date']
+      attendance_date: json['attendance_date'],
+      sign_in_date: json['sign_in_date'],
+      late_count: json['late_count'],
+      total_count: json['total_count'],
+      present_attendance_percentage: json['present_attendance_percentage'],
+      late_attendance_percentage: json['late_attendance_percentage']
     );
   }
 
@@ -522,5 +536,30 @@ Future<List<ActivityAttendance>> getTotalAttendanceCountByParentOrg(
   } else {
     throw Exception(
         'Failed to get Total Activity Participant Attendances Count');
+  }
+}
+
+Future<List<ActivityAttendance>> getDailyAttendanceSummaryReport(
+    int parent_organization_id,
+    String from_date,
+    String to_date) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/daily_attendance_summary_report/$parent_organization_id/$from_date/$to_date'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Daily Activity Participant Attendances Count');
   }
 }
