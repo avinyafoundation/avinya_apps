@@ -13,6 +13,7 @@ import 'package:attendance/screens/duty_attendance_marker.dart';
 //import 'package:attendance/screens/qr_attendance_marker.dart';
 import 'package:attendance/screens/late_attendance_report.dart';
 import 'package:attendance/screens/dashboard/dashboard_screen.dart';
+import 'package:attendance/screens/daily_attendance_summary_report.dart';
 
 import '../routing.dart';
 import '../widgets/fade_transition_page.dart';
@@ -104,6 +105,12 @@ class SMSScaffoldBody extends StatelessWidget {
           const FadeTransitionPage<void>(
             key: ValueKey('daily_duty_attendance_report'),
             child: DailyDutyAttendanceReportScreen(),
+          )
+        else if (currentRoute.pathTemplate
+            .startsWith('/daily_attendance_summary_report'))
+          const FadeTransitionPage<void>(
+            key: ValueKey('daily_attendance_summary_report'),
+            child: DailyAttendanceSummaryReportScreen(),
           )
         // Avoid building a Navigator with an empty `pages` list when the
         // RouteState is set to an unexpected path, such as /signin.
