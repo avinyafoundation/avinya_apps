@@ -58,6 +58,15 @@ public type ActivityParticipantAttendance record {
     string? digital_id?;
 };
 
+public type ActivityParticipantAttendanceSummary record {
+    string? sign_in_date;
+    int? present_count;
+    int? late_count;
+    int? total_count;
+    decimal? present_attendance_percentage;
+    decimal? late_attendance_percentage;
+};
+
 public type ActivitySequencePlan record {
     int? sequence_number?;
     int? timeslot_number?;
@@ -768,4 +777,16 @@ public type GetTotalAttendanceCountByParentOrgResponse record {|
         string? attendance_date;
         int? daily_total;
     |}[] total_attendance_count_by_date;
+|};
+
+public type GetDailyAttendanceSummaryReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? sign_in_date;
+        int? present_count;
+        int? late_count;
+        int? total_count;
+        anydata? present_attendance_percentage;
+        anydata? late_attendance_percentage;
+    |}[] daily_attendance_summary_report;
 |};

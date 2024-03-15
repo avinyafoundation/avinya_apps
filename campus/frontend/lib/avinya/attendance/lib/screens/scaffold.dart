@@ -118,6 +118,29 @@ class _SMSScaffoldState extends State<SMSScaffold> {
             padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
             child: ListTile(
               hoverColor: Colors.white.withOpacity(0.3),
+              leading: Icon(Icons.report,
+                  color: Colors.white, size: 20.0),
+              title: Container(
+                margin: EdgeInsets.only(left: 12.0),
+                transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                child: Text(
+                  "Daily Attendance Summary Report",
+                  style: TextStyle(color: Colors.white, fontSize: 12),
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                routeState.go('/daily_attendance_summary_report');
+              },
+            ),
+          ),
+        ),
+        Material(
+          type: MaterialType.transparency,
+          child: Container(
+            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
+            child: ListTile(
+              hoverColor: Colors.white.withOpacity(0.3),
               leading: Icon(Icons.watch_later_outlined,
                   color: Colors.white, size: 20.0),
               title: Container(
