@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gallery/avinya/attendance/lib/data/dashboard_data.dart';
 
 import '../constants.dart';

@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
 import '../constants.dart';
 
 class StorageInfoCard extends StatelessWidget {
-  const StorageInfoCard({
-    Key? key,
-    required this.title,
-    required this.svgSrc,
-    required this.amountOfFiles,
-    required this.numOfFiles,
-  }) : super(key: key);
+  const StorageInfoCard(
+      {Key? key,
+      required this.title,
+      required this.svgSrc,
+      required this.amountOfFiles,
+      required this.numOfFiles,
+      required this.color})
+      : super(key: key);
 
   final String title, svgSrc, amountOfFiles;
-  final int numOfFiles;
+  final int numOfFiles, color;
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +28,13 @@ class StorageInfoCard extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            height: 20,
-            width: 20,
-            child: SvgPicture.asset(svgSrc),
+            height: 40,
+            width: 40,
+            child: Image.asset(
+              svgSrc,
+              width: 100,
+              height: 100,
+            ),
           ),
           Expanded(
             child: Padding(
@@ -50,7 +53,7 @@ class StorageInfoCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "$numOfFiles Files",
+                    "$numOfFiles Students",
                     style: Theme.of(context)
                         .textTheme
                         .bodySmall!
@@ -60,12 +63,19 @@ class StorageInfoCard extends StatelessWidget {
               ),
             ),
           ),
-          Text(
-            amountOfFiles,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color(color),
+            ),
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              amountOfFiles,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],
