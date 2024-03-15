@@ -207,4 +207,10 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetTotalAttendanceCountByParentOrgResponse> check performDataBinding(graphqlResponse, GetTotalAttendanceCountByParentOrgResponse);
     }
+    remote isolated function getDailyAttendanceSummaryReport(string from_date, string to_date, int parent_organization_id) returns GetDailyAttendanceSummaryReportResponse|graphql:ClientError {
+        string query = string `query getDailyAttendanceSummaryReport($parent_organization_id:Int!,$from_date:String!,$to_date:String!) {daily_attendance_summary_report(parent_organization_id:$parent_organization_id,from_date:$from_date,to_date:$to_date) {sign_in_date present_count late_count total_count present_attendance_percentage late_attendance_percentage}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "parent_organization_id": parent_organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetDailyAttendanceSummaryReportResponse> check performDataBinding(graphqlResponse, GetDailyAttendanceSummaryReportResponse);
+    }
 }
