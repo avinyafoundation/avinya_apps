@@ -158,7 +158,7 @@ class _PersistentBottomSheetDemoState
     });
 
     Scaffold.of(context)
-        .showBottomSheet<void>(
+        .showBottomSheet<dynamic>(
           (context) {
             return _BottomSheetContent();
           },
