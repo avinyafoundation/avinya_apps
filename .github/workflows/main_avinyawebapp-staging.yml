@@ -16,6 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Delete flutter/bin/cache directory
+        run: rm -rf flutter/bin/cache
+
       # Set up Flutter environment
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
