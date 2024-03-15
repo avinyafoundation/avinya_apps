@@ -33,6 +33,7 @@ jobs:
       - name: Get Flutter dependencies
         run: |
           cd campus/frontend
+          flutter clean
           flutter pub get
           
       - name: Build Flutter app
