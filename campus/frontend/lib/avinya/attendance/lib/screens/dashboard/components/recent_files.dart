@@ -54,7 +54,7 @@ class _AttendanceMissedBySecurityState
                     columns: [
                       DataColumn(
                         label: Text(
-                          "Digital ID",
+                          "Student Name",
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
@@ -102,11 +102,11 @@ DataRow recentFileDataRow(ActivityAttendance fileInfo) {
       DataCell(
         Row(
           children: [
-            Icon(Icons.usb_rounded, color: Colors.white, size: 20.0),
+            // Icon(Icons.verified_user, color: Colors.white, size: 20.0),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
               child: Text(
-                fileInfo.digital_id!,
+                fileInfo.preferred_name!,
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,

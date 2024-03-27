@@ -25,7 +25,11 @@ class GalleryThemeData {
         elevation: 0,
         iconTheme: IconThemeData(color: colorScheme.primary),
       ),
-      iconTheme: IconThemeData(color: colorScheme.onPrimary),
+      iconTheme: IconThemeData(
+        color: Color.fromARGB(255, 234, 80, 9), // Your desired color
+        size: 20, // Adjust the size as needed
+        opacity: 1.0, // You can adjust the opacity if needed
+      ),
       canvasColor: colorScheme.background,
       scaffoldBackgroundColor: colorScheme.background,
       highlightColor: Colors.transparent,
