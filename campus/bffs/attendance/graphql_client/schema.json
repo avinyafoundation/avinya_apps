@@ -2728,7 +2728,16 @@
                             "name": "daily_attendance_summary_report",
                             "args": [
                                 {
-                                    "name": "parent_organization_id",
+                                    "name": "organization_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "avinya_type_id",
                                     "type": {
                                         "kind": "SCALAR",
                                         "name": "Int",
@@ -5448,6 +5457,25 @@
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
+                        },
+                        {
+                            "name": "organization_metadata",
+                            "args": [],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "OrganizationMetaData",
+                                        "ofType": null
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
                         }
                     ],
                     "inputFields": null,
@@ -5796,6 +5824,60 @@
                             "deprecationReason": null
                         }
                     ],
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "OBJECT",
+                    "name": "OrganizationMetaData",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "organization_id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "key_name",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "value",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        }
+                    ],
+                    "inputFields": null,
+                    "interfaces": [],
+                    "enumValues": null,
                     "possibleTypes": null
                 },
                 {

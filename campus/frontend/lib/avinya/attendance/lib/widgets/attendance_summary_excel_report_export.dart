@@ -159,13 +159,19 @@ class _AttendanceSummaryExcelReportExportState extends State<AttendanceSummaryEx
   Widget build(BuildContext context) {
     return IgnorePointer(
       ignoring: widget.isFetching,
-      child: FloatingActionButton(
-        backgroundColor: Colors.deepPurpleAccent,
-        child: Icon(Icons.file_download),
-        tooltip: 'Daily Attendance Report Export',
-        onPressed: () {
+      child: ElevatedButton.icon(
+        icon: Icon(Icons.download),
+        label: Text('Excel Export'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.deepPurpleAccent,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10)
+          ),
+        ),
+        onPressed: (){
           exportToExcel();
         },
+        
       ),
     );
   }

@@ -389,8 +389,8 @@ query getTotalAttendanceCountByParentOrg($parent_organization_id: Int!, $from_da
     }      
 }
 
-query getDailyAttendanceSummaryReport($parent_organization_id: Int!, $from_date: String!, $to_date: String!) {
-    daily_attendance_summary_report(parent_organization_id: $parent_organization_id, from_date: $from_date, to_date: $to_date) {
+query getDailyAttendanceSummaryReport($organization_id: Int!,$avinya_type_id: Int!, $from_date: String!, $to_date: String!) {
+    daily_attendance_summary_report(organization_id: $organization_id, avinya_type_id: $avinya_type_id,from_date: $from_date, to_date: $to_date) {
         sign_in_date
         present_count
         late_count
@@ -398,4 +398,18 @@ query getDailyAttendanceSummaryReport($parent_organization_id: Int!, $from_date:
         present_attendance_percentage
         late_attendance_percentage
     }      
+}
+
+query getOrganizationsByAvinyaType($avinya_type: Int!) {
+    organizations_by_avinya_type(avinya_type:$avinya_type) {   
+        id
+        name{
+            name_en
+        }
+        description
+        organization_metadata{
+            key_name
+            value
+        }
+    }
 }

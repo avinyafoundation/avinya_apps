@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'package:attendance/data/activity_attendance.dart';
+import 'package:attendance/data/organization.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
@@ -9,11 +10,17 @@ import 'package:attendance/widgets/date_range_picker.dart';
 
 import 'attendance_summary_excel_report_export.dart';
 
+enum AvinyaTypeId{ Empower,IT,CS }
+
+const avinyaTypeId = {
+  AvinyaTypeId.Empower : 37,
+  AvinyaTypeId.IT : 10,
+  AvinyaTypeId.CS : 96
+};
+
 class AttendanceSummaryReport extends StatefulWidget{
  
-  const AttendanceSummaryReport({super.key,required this.updateDateRangeForExcel});
-
-  final Function(DateTime, DateTime) updateDateRangeForExcel;
+  const AttendanceSummaryReport({super.key});
  
  
   @override
@@ -26,44 +33,39 @@ class _AttendanceSummaryReportState extends State<AttendanceSummaryReport>{
 
   List<ActivityAttendance> _fetchedDailyAttendanceSummaryData = [];
   List<ActivityAttendance> _fetchedExcelReportData = [];
-  bool _isFetching = true;
+  late Future<List<Organization>> _fetchBatchData;
+  bool _isFetching = false;
+  Organization? _selectedValue;
+  AvinyaTypeId _selectedAvinyaTypeId = AvinyaTypeId.Empower;
+  List<AvinyaTypeId> filteredAvinyaTypeIdValues = [AvinyaTypeId.Empower,AvinyaTypeId.IT,AvinyaTypeId.CS];
 
   List<String?> columnNames = [];
 
-  late String formattedStartDate;
-  late String formattedEndDate;
 
   late DataTableSource _data;
 
   //calendar specific variables
-  DateTime? _selectedDay;
 
-  void selectDateRange(DateTime today) async {
-    // Update the variables to select the week
-    final formatter = DateFormat('MMM d, yyyy');
-    formattedStartDate = formatter.format(today);
-    formattedEndDate = formatter.format(today);
-    setState(() {
-      _isFetching = false;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
-    var today = DateTime.now();
-    selectDateRange(today);
+    _fetchBatchData = _loadBatchData();
+  }
+
+  Future<List<Organization>>  _loadBatchData() async{
+   return await fetchOrganizationsByAvinyaType(86);
   }
 
   void updateExcelState() {
     AttendanceSummaryExcelReportExport(
-      fetchedDailyAttendanceSummaryData: _fetchedExcelReportData,
+      fetchedDailyAttendanceSummaryData: _fetchedDailyAttendanceSummaryData,
       columnNames: columnNames,
       updateExcelState: updateExcelState,
       isFetching: _isFetching,
-      formattedStartDate: formattedStartDate,
-      formattedEndDate: formattedEndDate,
-    );
+      formattedStartDate:  _selectedValue!.organization_metadata[0].value!,
+      formattedEndDate: _selectedValue!.organization_metadata[1].value!,
+);
   }
 
 
@@ -71,73 +73,12 @@ class _AttendanceSummaryReportState extends State<AttendanceSummaryReport>{
   void didChangeDependencies() {
     super.didChangeDependencies();
     _data = MyData(_fetchedDailyAttendanceSummaryData,updateSelected);
-    DateRangePicker(updateDateRange, formattedStartDate);
+   // DateRangePicker(updateDateRange, formattedStartDate);
   }
 
   void updateSelected(int index, bool value, List<bool> selected) {
     setState(() {
       selected[index] = value;
-    });
-  }
-
-  void updateDateRange(_rangeStart, _rangeEnd) async {
-    widget.updateDateRangeForExcel(_rangeStart, _rangeEnd);
-    int? parentOrgId =
-        campusAppsPortalInstance.getUserPerson().organization!.id;
-    if (parentOrgId != null) {
-      setState(() {
-        _isFetching = true; // Set _isFetching to true before starting the fetch
-      });
-
-      _fetchedExcelReportData = await getDailyAttendanceSummaryReport(
-          parentOrgId,
-          DateFormat('yyyy-MM-dd')
-              .format(DateFormat('MMM d, yyyy').parse(this.formattedStartDate)),
-          DateFormat('yyyy-MM-dd')
-              .format(DateFormat('MMM d, yyyy').parse(this.formattedEndDate)));
-    
-
-
-      try {
-        setState(() {
-          final startDate = _rangeStart ?? _selectedDay;
-          final endDate = _rangeEnd ?? _selectedDay;
-          final formatter = DateFormat('MMM d, yyyy');
-          final formattedStartDate = formatter.format(startDate!);
-          final formattedEndDate = formatter.format(endDate!);
-          this.formattedStartDate = formattedStartDate;
-          this.formattedEndDate = formattedEndDate;
-          this._fetchedExcelReportData = _fetchedExcelReportData;
-          _isFetching = false;
-          refreshState();
-        });
-      } catch (error) {
-        // Handle any errors that occur during the fetch
-        setState(() {
-          _isFetching = false; // Set _isFetching to false in case of error
-        });
-        // Perform error handling, e.g., show an error message
-      }
-    }
-  }
-
-  void refreshState() async {
-    setState(() {
-      _isFetching = true; // Set _isFetching to true before starting the fetch
-    });
-     int? parentOrgId =
-        campusAppsPortalInstance.getUserPerson().organization!.id;
-   
-    _fetchedDailyAttendanceSummaryData = await getDailyAttendanceSummaryReport(
-          parentOrgId!,
-          DateFormat('yyyy-MM-dd')
-              .format(DateFormat('MMM d, yyyy').parse(this.formattedStartDate)),
-          DateFormat('yyyy-MM-dd')
-              .format(DateFormat('MMM d, yyyy').parse(this.formattedEndDate)));
-    
-    setState(() {
-      this._isFetching = false;
-      _data = MyData(_fetchedDailyAttendanceSummaryData,updateSelected);
     });
   }
 
@@ -178,89 +119,190 @@ class _AttendanceSummaryReportState extends State<AttendanceSummaryReport>{
   Widget build(BuildContext context) {
 
 
-    AttendanceSummaryExcelReportExport(
-      fetchedDailyAttendanceSummaryData: _fetchedExcelReportData,
-      columnNames: columnNames,
-      updateExcelState: updateExcelState,
-      isFetching: _isFetching,
-      formattedStartDate: formattedStartDate,
-      formattedEndDate: formattedEndDate,
-    );
+    // AttendanceSummaryExcelReportExport(
+    //   fetchedDailyAttendanceSummaryData: _fetchedExcelReportData,
+    //   columnNames: columnNames,
+    //   updateExcelState: updateExcelState,
+    //   isFetching: _isFetching,
+    //   formattedStartDate: formattedStartDate,
+    //   formattedEndDate: formattedEndDate,
+    // );
 
     return SingleChildScrollView(
       child: Column(
         children: [
           Wrap(
               children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    // create a text widget with some padding
-
-                    Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            margin:
-                                EdgeInsets.only(left: 20, top: 20, bottom: 10),
-                            child: Row(children: <Widget>[
-                              ElevatedButton(
-                                style: ButtonStyle(
-                                  textStyle: MaterialStateProperty.all(
-                                    TextStyle(fontSize: 20),
-                                  ),
-                                  elevation: MaterialStateProperty.all(20),
-                                  backgroundColor: MaterialStateProperty.all(
-                                      Colors.greenAccent),
-                                  foregroundColor:
-                                      MaterialStateProperty.all(Colors.black),
-                                ),
-                                onPressed: _isFetching
-                                    ? null
-                                    : () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) => DateRangePicker(
-                                                  updateDateRange,
-                                                  formattedStartDate)),
-                                        );
-                                      },
-                                child: Container(
-                                  height: 50, // Adjust the height as needed
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      if (_isFetching)
-                                        Padding(
-                                          padding: EdgeInsets.only(right: 10),
-                                          child: SpinKitFadingCircle(
-                                            color: Colors
-                                                .black, // Customize the color of the indicator
-                                            size:
-                                                20, // Customize the size of the indicator
-                                          ),
-                                        ),
-                                      if (!_isFetching)
-                                        Icon(Icons.calendar_today,
-                                            color: Colors.black),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        '${this.formattedStartDate} - ${this.formattedEndDate}',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20,left: 20),
+                  child: Row(
+                   children: [
+                   Text('Select a Batch :'),
+                   SizedBox(
+                    width: 10,
+                   ),
+                   FutureBuilder<List<Organization>>(
+                    future: _fetchBatchData, 
+                    builder: (context,snapshot) {
+                
+                      if(snapshot.connectionState == ConnectionState.waiting){
+                         return Container(
+                              margin: EdgeInsets.only(top: 10),
+                              child: SpinKitCircle(
+                                color: (Colors.deepPurpleAccent),
+                                size: 70, 
                               ),
-                            ]),
-                          ),
-                        ]),
-                  ],
+                         );
+                      }else if(snapshot.hasError){
+                         return const Center(
+                          child: Text('Something went wrong...'),
+                        ); 
+                      
+                      }else if(!snapshot.hasData){
+                          return const Center(
+                            child: Text('No batch found'),
+                          );
+                      }
+                      final batchData = snapshot.data!;
+                      return DropdownButton<Organization>(
+                      value: _selectedValue,
+                      items: batchData.map((Organization batch){
+                         return DropdownMenuItem(
+                          value: batch,
+                          child: Text(batch.name!.name_en??'')
+                        );
+                      }).toList(),
+                      onChanged:(Organization? newValue) async{
+                        if(newValue == null){
+                          return;
+                        }
+
+                        if(newValue.organization_metadata.isEmpty){
+                          return;
+                        }
+
+
+                        //filteredAvinyaTypeIdValues =[];
+                        if (DateTime.parse(newValue.organization_metadata[1].value.toString()).isBefore(DateTime.parse('2024-03-01'))) {
+                            filteredAvinyaTypeIdValues = [AvinyaTypeId.Empower];
+                        }else{
+                            filteredAvinyaTypeIdValues = [AvinyaTypeId.Empower,AvinyaTypeId.IT,AvinyaTypeId.CS];
+                        }
+
+                        setState(() {
+                          this._isFetching = true;
+                          filteredAvinyaTypeIdValues;
+                        });
+
+                        if(filteredAvinyaTypeIdValues.contains(_selectedAvinyaTypeId)){
+
+                        _fetchedDailyAttendanceSummaryData 
+                            = await getDailyAttendanceSummaryReport(
+                              newValue.id!,
+                              avinyaTypeId[_selectedAvinyaTypeId]!,
+                              newValue.organization_metadata[0].value!,
+                              newValue.organization_metadata[1].value!,
+                            );
+                        }else{
+                          _selectedAvinyaTypeId = filteredAvinyaTypeIdValues.first;
+
+                          _fetchedDailyAttendanceSummaryData 
+                            = await getDailyAttendanceSummaryReport(
+                              newValue.id!,
+                              avinyaTypeId[_selectedAvinyaTypeId]!,
+                              newValue.organization_metadata[0].value!,
+                              newValue.organization_metadata[1].value!,
+                            );
+                          
+                        }
+
+
+                        setState(() {
+                          _selectedValue = newValue;
+                          this._isFetching = false;
+                          _selectedAvinyaTypeId;
+                          _data = MyData(_fetchedDailyAttendanceSummaryData,updateSelected);
+                        });              
+
+                      }
+                    );
+                      
+                    },
+                    ),
+                    SizedBox(
+                      width: 30,
+                    ),
+                    Text('Select a Programme :'),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    DropdownButton(
+                      value: _selectedAvinyaTypeId,
+                      items: filteredAvinyaTypeIdValues
+                              .map(
+                                (typeId) => DropdownMenuItem(
+                                  value: typeId,
+                                  child: Text(
+                                    typeId.name.toUpperCase()
+                                  ),
+                                ),
+                            )
+                            .toList(),
+                      onChanged: (AvinyaTypeId? value) async{
+                        if(value == null){
+                          return;
+                        }
+
+
+                        if(_selectedValue == null || _selectedValue!.organization_metadata.length == 0){
+                          return;
+                        }
+
+                        setState(() {
+                          this._isFetching = true;
+                        });
+
+                        _fetchedDailyAttendanceSummaryData 
+                            = await getDailyAttendanceSummaryReport(
+                              _selectedValue!.id!,
+                              avinyaTypeId[value]!,
+                              _selectedValue!.organization_metadata[0].value!,
+                              _selectedValue!.organization_metadata[1].value!,
+                            );
+
+                        setState(() {
+                          _selectedAvinyaTypeId = value;
+                          this._isFetching = false;
+                          _data = MyData(_fetchedDailyAttendanceSummaryData,updateSelected);
+                        });
+                      }
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.bottomRight,
+                      margin: EdgeInsets.only(
+                        right: 20.0
+                      ),
+                      width: 25.0,
+                      height: 30.0,
+                      child: _selectedValue != null ?  AttendanceSummaryExcelReportExport(
+                                fetchedDailyAttendanceSummaryData: _fetchedDailyAttendanceSummaryData,
+                                columnNames: columnNames,
+                                updateExcelState: updateExcelState,
+                                isFetching: _isFetching,
+                                formattedStartDate:  _selectedValue!.organization_metadata[0].value!,
+                                formattedEndDate: _selectedValue!.organization_metadata[1].value!,
+                      ) : SizedBox(),
+                    ),
+                  )
+                   ],
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
                 ),
                 Wrap(children: [
                   if (_isFetching)
