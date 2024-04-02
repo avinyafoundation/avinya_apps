@@ -12,6 +12,8 @@ import 'package:gallery/data/person.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 
 class AttendanceDashboardScreen extends StatefulWidget {
   const AttendanceDashboardScreen({Key? key}) : super(key: key);
@@ -40,6 +42,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
   String startDate = "";
   String endDate = "";
   List cardData = [];
+  late Future<List<Organization>> _fetchBatchData;
+  Organization? _selectedOrganizationValue;
 
   @override
   void initState() {
@@ -49,11 +53,16 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     formattedEndDate = DateFormat('MMM d, yyyy').format(today);
     String formattedToday = DateFormat('yyyy-MM-dd').format(today);
     refreshState(null, formattedToday, formattedToday);
+   _fetchBatchData = _loadBatchData();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<List<Organization>>  _loadBatchData() async{
+   return await fetchOrganizationsByAvinyaType(86);
   }
 
   DateRange? selectedDateRange;
@@ -327,6 +336,61 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                     ),
                     child: Text(formattedStartDate + " - " + formattedEndDate),
                   ),
+                  SizedBox(
+                    width: 30,
+                  ),
+                  Text('Select a Batch :'),
+                   SizedBox(
+                    width: 10,
+                   ),
+                   FutureBuilder<List<Organization>>(
+                    future: _fetchBatchData, 
+                    builder: (context,snapshot) {
+                
+                      if(snapshot.connectionState == ConnectionState.waiting){
+                         return Container(
+                              margin: EdgeInsets.only(top: 10),
+                              child: SpinKitCircle(
+                                color: (Colors.deepPurpleAccent),
+                                size: 70, 
+                              ),
+                         );
+                      }else if(snapshot.hasError){
+                         return const Center(
+                          child: Text('Something went wrong...'),
+                        ); 
+                      
+                      }else if(!snapshot.hasData){
+                          return const Center(
+                            child: Text('No batch found'),
+                          );
+                      }
+                      final batchData = snapshot.data!;
+                      return DropdownButton<Organization>(
+                      value: _selectedOrganizationValue,
+                      items: batchData.map((Organization batch){
+                         return DropdownMenuItem(
+                          value: batch,
+                          child: Text(batch.name!.name_en??'')
+                        );
+                      }).toList(),
+                      onChanged:(Organization? newValue) async{
+                        if(newValue == null){
+                          return;
+                        }
+
+                        if(newValue.organization_metadata.isEmpty){
+                          return;
+                        }
+
+                        setState(() {
+                          _selectedOrganizationValue = newValue;
+                        });              
+
+                     }
+                   );    
+                   },
+                   ),
                   Expanded(
                       child: Container(
                     margin: EdgeInsets.only(left: 8.0),
