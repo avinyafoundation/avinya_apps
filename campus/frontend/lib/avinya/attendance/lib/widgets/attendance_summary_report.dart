@@ -65,7 +65,7 @@ class _AttendanceSummaryReportState extends State<AttendanceSummaryReport>{
       isFetching: _isFetching,
       formattedStartDate:  _selectedValue!.organization_metadata[0].value!,
       formattedEndDate: _selectedValue!.organization_metadata[1].value!,
-);
+    );
   }
 
 
@@ -73,7 +73,6 @@ class _AttendanceSummaryReportState extends State<AttendanceSummaryReport>{
   void didChangeDependencies() {
     super.didChangeDependencies();
     _data = MyData(_fetchedDailyAttendanceSummaryData,updateSelected);
-   // DateRangePicker(updateDateRange, formattedStartDate);
   }
 
   void updateSelected(int index, bool value, List<bool> selected) {
@@ -117,16 +116,6 @@ class _AttendanceSummaryReportState extends State<AttendanceSummaryReport>{
 
   @override
   Widget build(BuildContext context) {
-
-
-    // AttendanceSummaryExcelReportExport(
-    //   fetchedDailyAttendanceSummaryData: _fetchedExcelReportData,
-    //   columnNames: columnNames,
-    //   updateExcelState: updateExcelState,
-    //   isFetching: _isFetching,
-    //   formattedStartDate: formattedStartDate,
-    //   formattedEndDate: formattedEndDate,
-    // );
 
     return SingleChildScrollView(
       child: Column(
@@ -181,8 +170,6 @@ class _AttendanceSummaryReportState extends State<AttendanceSummaryReport>{
                           return;
                         }
 
-
-                        //filteredAvinyaTypeIdValues =[];
                         if (DateTime.parse(newValue.organization_metadata[1].value.toString()).isBefore(DateTime.parse('2024-03-01'))) {
                             filteredAvinyaTypeIdValues = [AvinyaTypeId.Empower];
                         }else{
