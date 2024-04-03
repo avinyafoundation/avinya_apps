@@ -39,6 +39,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
 
   String formattedStartDate = "";
   String formattedEndDate = "";
+  String batchStartDate = "";
+  String batchEndDate = "";
   String startDate = "";
   String endDate = "";
   List cardData = [];
@@ -51,6 +53,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     today = DateTime.now();
     formattedStartDate = DateFormat('MMM d, yyyy').format(today);
     formattedEndDate = DateFormat('MMM d, yyyy').format(today);
+    batchStartDate = DateFormat('MMM d, yyyy').format(today);
+    batchEndDate = DateFormat('MMM d, yyyy').format(today);;
     String formattedToday = DateFormat('yyyy-MM-dd').format(today);
     refreshState(null, formattedToday, formattedToday);
    _fetchBatchData = _loadBatchData();
@@ -184,6 +188,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
           BuildContext context, dynamic Function(DateRange?) onDateRangeChanged,
           [bool doubleMonth = false]) =>
       DateRangePickerWidget(
+        minDate: DateFormat('MMM d, yyyy').parse(batchStartDate),
+        maxDate: DateFormat('MMM d, yyyy').parse(batchEndDate),
         doubleMonth: doubleMonth,
         maximumDateRangeLength: 200,
         theme: CalendarTheme(
@@ -222,20 +228,20 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
               DateTime.now(),
             ),
           ),
-          QuickDateRange(
-            label: 'Last 90 days',
-            dateRange: DateRange(
-              DateTime.now().subtract(const Duration(days: 90)),
-              DateTime.now(),
-            ),
-          ),
-          QuickDateRange(
-            label: 'Last 180 days',
-            dateRange: DateRange(
-              DateTime.now().subtract(const Duration(days: 180)),
-              DateTime.now(),
-            ),
-          ),
+          // QuickDateRange(
+          //   label: 'Last 90 days',
+          //   dateRange: DateRange(
+          //     DateTime.now().subtract(const Duration(days: 90)),
+          //     DateTime.now(),
+          //   ),
+          // ),
+          // QuickDateRange(
+          //   label: 'Last 180 days',
+          //   dateRange: DateRange(
+          //     DateTime.now().subtract(const Duration(days: 180)),
+          //     DateTime.now(),
+          //   ),
+          // ),
         ],
         minimumDateRangeLength: 3,
         // initialDateRange: this.selectedDateRange ??
@@ -258,6 +264,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
           BuildContext context, dynamic Function(DateRange?) onDateRangeChanged,
           [bool doubleMonth = false]) =>
       DateRangePickerWidget(
+        minDate: DateFormat('MMM d, yyyy').parse(batchStartDate),
+        maxDate: DateFormat('MMM d, yyyy').parse(batchEndDate),
         doubleMonth: doubleMonth,
         maximumDateRangeLength: 10,
         theme: CalendarTheme(
@@ -385,6 +393,18 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
 
                         setState(() {
                           _selectedOrganizationValue = newValue;
+                          batchStartDate = DateFormat('MMM d, yyyy').format(
+                            DateTime.parse
+                            (_selectedOrganizationValue!.organization_metadata[0].value.toString()));
+                            
+                          batchEndDate = DateFormat('MMM d, yyyy').format(
+                            DateTime.parse
+                            (_selectedOrganizationValue!.organization_metadata[1].value.toString()));
+
+                          this.updateDateRange(
+                            DateTime.parse(_selectedOrganizationValue!.organization_metadata[0].value.toString()),
+                            DateTime.parse(_selectedOrganizationValue!.organization_metadata[1].value.toString()) 
+                            );
                         });              
 
                      }
@@ -484,6 +504,78 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                 children: [
                   Row(
                     children: [
+                          Text('Select a Batch :'),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          SizedBox(
+                            width: 240,
+                            child: FutureBuilder<List<Organization>>(
+                              future: _fetchBatchData, 
+                              builder: (context,snapshot) {
+                                                
+                                if(snapshot.connectionState == ConnectionState.waiting){
+                                  return Container(
+                                        margin: EdgeInsets.only(top: 10),
+                                        child: SpinKitCircle(
+                                          color: (Colors.deepPurpleAccent),
+                                          size: 70, 
+                                        ),
+                                  );
+                                }else if(snapshot.hasError){
+                                  return const Center(
+                                    child: Text('Something went wrong...'),
+                                  ); 
+                                
+                                }else if(!snapshot.hasData){
+                                    return const Center(
+                                      child: Text('No batch found'),
+                                    );
+                                }
+                                final batchData = snapshot.data!;
+                                return DropdownButton<Organization>(
+                                value: _selectedOrganizationValue,
+                                items: batchData.map((Organization batch){
+                                  return DropdownMenuItem(
+                                    value: batch,
+                                    child: Text(batch.name!.name_en??'')
+                                  );
+                                }).toList(),
+                                onChanged:(Organization? newValue) async{
+                                  if(newValue == null){
+                                    return;
+                                  }
+                          
+                                  if(newValue.organization_metadata.isEmpty){
+                                    return;
+                                  }
+                          
+                                  setState(() {
+                                    _selectedOrganizationValue = newValue;
+                                    batchStartDate = DateFormat('MMM d, yyyy').format(
+                                      DateTime.parse
+                                      (_selectedOrganizationValue!.organization_metadata[0].value.toString()));
+                                      
+                                    batchEndDate = DateFormat('MMM d, yyyy').format(
+                                      DateTime.parse
+                                      (_selectedOrganizationValue!.organization_metadata[1].value.toString()));
+                          
+                                    this.updateDateRange(
+                                      DateTime.parse(_selectedOrganizationValue!.organization_metadata[0].value.toString()),
+                                      DateTime.parse(_selectedOrganizationValue!.organization_metadata[1].value.toString()) 
+                                      );
+                                  });              
+                          
+                              }
+                            );    
+                            },
+                          
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
                       Expanded(
                           child: Container(
                         margin: EdgeInsets.only(left: 8.0),
@@ -497,8 +589,9 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                                 children: <Widget>[
                                   if (org.child_organizations.length > 0)
                                     Container(
+                                      alignment: Alignment.centerLeft,
                                       margin: EdgeInsets.only(
-                                          left: 20, top: 20, bottom: 10),
+                                           top: 20, bottom: 10),
                                       child: Row(children: <Widget>[
                                         Text('Select a class:'),
                                         SizedBox(width: 10),
