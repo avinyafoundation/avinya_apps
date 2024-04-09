@@ -14,7 +14,6 @@ import 'package:intl/intl.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-
 class AttendanceDashboardScreen extends StatefulWidget {
   const AttendanceDashboardScreen({Key? key}) : super(key: key);
 
@@ -46,6 +45,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
   List cardData = [];
   late Future<List<Organization>> _fetchBatchData;
   Organization? _selectedOrganizationValue;
+  List<Organization> _batchData = [];
 
   @override
   void initState() {
@@ -54,10 +54,10 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     formattedStartDate = DateFormat('MMM d, yyyy').format(today);
     formattedEndDate = DateFormat('MMM d, yyyy').format(today);
     batchStartDate = DateFormat('MMM d, yyyy').format(today);
-    batchEndDate = DateFormat('MMM d, yyyy').format(today);;
+    batchEndDate = DateFormat('MMM d, yyyy').format(today);
     String formattedToday = DateFormat('yyyy-MM-dd').format(today);
     refreshState(null, formattedToday, formattedToday);
-   _fetchBatchData = _loadBatchData();
+    _fetchBatchData = _loadBatchData();
   }
 
   @override
@@ -65,8 +65,11 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     super.dispose();
   }
 
-  Future<List<Organization>>  _loadBatchData() async{
-   return await fetchOrganizationsByAvinyaType(86);
+  Future<List<Organization>> _loadBatchData() async {
+    _batchData = await fetchOrganizationsByAvinyaType(86);
+    _selectedOrganizationValue = _batchData.isNotEmpty ? _batchData.last : null;
+    this.updateDateRange(today, today);
+    return _batchData;
   }
 
   DateRange? selectedDateRange;
@@ -348,69 +351,71 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                     width: 30,
                   ),
                   Text('Select a Batch :'),
-                   SizedBox(
+                  SizedBox(
                     width: 10,
-                   ),
-                   FutureBuilder<List<Organization>>(
-                    future: _fetchBatchData, 
-                    builder: (context,snapshot) {
-                
-                      if(snapshot.connectionState == ConnectionState.waiting){
-                         return Container(
-                              margin: EdgeInsets.only(top: 10),
-                              child: SpinKitCircle(
-                                color: (Colors.deepPurpleAccent),
-                                size: 70, 
-                              ),
-                         );
-                      }else if(snapshot.hasError){
-                         return const Center(
+                  ),
+                  FutureBuilder<List<Organization>>(
+                    future: _fetchBatchData,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          margin: EdgeInsets.only(top: 10),
+                          child: SpinKitCircle(
+                            color: (Colors.deepPurpleAccent),
+                            size: 70,
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return const Center(
                           child: Text('Something went wrong...'),
-                        ); 
-                      
-                      }else if(!snapshot.hasData){
-                          return const Center(
-                            child: Text('No batch found'),
-                          );
+                        );
+                      } else if (!snapshot.hasData) {
+                        return const Center(
+                          child: Text('No batch found'),
+                        );
                       }
                       final batchData = snapshot.data!;
                       return DropdownButton<Organization>(
-                      value: _selectedOrganizationValue,
-                      items: batchData.map((Organization batch){
-                         return DropdownMenuItem(
-                          value: batch,
-                          child: Text(batch.name!.name_en??'')
-                        );
-                      }).toList(),
-                      onChanged:(Organization? newValue) async{
-                        if(newValue == null){
-                          return;
-                        }
+                          value: _selectedOrganizationValue,
+                          items: batchData.map((Organization batch) {
+                            return DropdownMenuItem(
+                                value: batch,
+                                child: Text(batch.name!.name_en ?? ''));
+                          }).toList(),
+                          onChanged: (Organization? newValue) async {
+                            if (newValue == null) {
+                              return;
+                            }
 
-                        if(newValue.organization_metadata.isEmpty){
-                          return;
-                        }
+                            if (newValue.organization_metadata.isEmpty) {
+                              return;
+                            }
+           
 
-                        setState(() {
-                          _selectedOrganizationValue = newValue;
-                          batchStartDate = DateFormat('MMM d, yyyy').format(
-                            DateTime.parse
-                            (_selectedOrganizationValue!.organization_metadata[0].value.toString()));
-                            
-                          batchEndDate = DateFormat('MMM d, yyyy').format(
-                            DateTime.parse
-                            (_selectedOrganizationValue!.organization_metadata[1].value.toString()));
+                            setState(() {
+                              _selectedOrganizationValue = newValue;
+                              batchStartDate = DateFormat('MMM d, yyyy').format(
+                                  DateTime.parse(_selectedOrganizationValue!
+                                      .organization_metadata[0].value
+                                      .toString()));
 
-                          this.updateDateRange(
-                            DateTime.parse(_selectedOrganizationValue!.organization_metadata[0].value.toString()),
-                            DateTime.parse(_selectedOrganizationValue!.organization_metadata[1].value.toString()) 
-                            );
-                        });              
 
-                     }
-                   );    
-                   },
-                   ),
+                              batchEndDate = DateFormat('MMM d, yyyy').format(
+                                  DateTime.parse(_selectedOrganizationValue!
+                                      .organization_metadata[1].value
+                                      .toString()));
+
+                              this.updateDateRange(
+                                  DateTime.parse(_selectedOrganizationValue!
+                                      .organization_metadata[0].value
+                                      .toString()),
+                                  DateTime.parse(_selectedOrganizationValue!
+                                      .organization_metadata[1].value
+                                      .toString()));
+                            });
+                          });
+                    },
+                  ),
                   Expanded(
                       child: Container(
                     margin: EdgeInsets.only(left: 8.0),
@@ -504,72 +509,76 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                 children: [
                   Row(
                     children: [
-                          Text('Select a Batch :'),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          SizedBox(
-                            width: 240,
-                            child: FutureBuilder<List<Organization>>(
-                              future: _fetchBatchData, 
-                              builder: (context,snapshot) {
-                                                
-                                if(snapshot.connectionState == ConnectionState.waiting){
-                                  return Container(
-                                        margin: EdgeInsets.only(top: 10),
-                                        child: SpinKitCircle(
-                                          color: (Colors.deepPurpleAccent),
-                                          size: 70, 
-                                        ),
-                                  );
-                                }else if(snapshot.hasError){
-                                  return const Center(
-                                    child: Text('Something went wrong...'),
-                                  ); 
-                                
-                                }else if(!snapshot.hasData){
-                                    return const Center(
-                                      child: Text('No batch found'),
-                                    );
-                                }
-                                final batchData = snapshot.data!;
-                                return DropdownButton<Organization>(
+                      Text('Select a Batch :'),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      SizedBox(
+                        width: 240,
+                        child: FutureBuilder<List<Organization>>(
+                          future: _fetchBatchData,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Container(
+                                margin: EdgeInsets.only(top: 10),
+                                child: SpinKitCircle(
+                                  color: (Colors.deepPurpleAccent),
+                                  size: 70,
+                                ),
+                              );
+                            } else if (snapshot.hasError) {
+                              return const Center(
+                                child: Text('Something went wrong...'),
+                              );
+                            } else if (!snapshot.hasData) {
+                              return const Center(
+                                child: Text('No batch found'),
+                              );
+                            }
+                            final batchData = snapshot.data!;
+                            return DropdownButton<Organization>(
                                 value: _selectedOrganizationValue,
-                                items: batchData.map((Organization batch){
+                                items: batchData.map((Organization batch) {
                                   return DropdownMenuItem(
-                                    value: batch,
-                                    child: Text(batch.name!.name_en??'')
-                                  );
+                                      value: batch,
+                                      child: Text(batch.name!.name_en ?? ''));
                                 }).toList(),
-                                onChanged:(Organization? newValue) async{
-                                  if(newValue == null){
+                                onChanged: (Organization? newValue) async {
+                                  if (newValue == null) {
                                     return;
                                   }
-                          
-                                  if(newValue.organization_metadata.isEmpty){
+
+                                  if (newValue.organization_metadata.isEmpty) {
                                     return;
                                   }
-                          
+
                                   setState(() {
                                     _selectedOrganizationValue = newValue;
-                                    batchStartDate = DateFormat('MMM d, yyyy').format(
-                                      DateTime.parse
-                                      (_selectedOrganizationValue!.organization_metadata[0].value.toString()));
-                                      
-                                    batchEndDate = DateFormat('MMM d, yyyy').format(
-                                      DateTime.parse
-                                      (_selectedOrganizationValue!.organization_metadata[1].value.toString()));
-                          
+                                    batchStartDate = DateFormat('MMM d, yyyy')
+                                        .format(DateTime.parse(
+                                            _selectedOrganizationValue!
+                                                .organization_metadata[0].value
+                                                .toString()));
+
+                                    batchEndDate = DateFormat('MMM d, yyyy')
+                                        .format(DateTime.parse(
+                                            _selectedOrganizationValue!
+                                                .organization_metadata[1].value
+                                                .toString()));
+
                                     this.updateDateRange(
-                                      DateTime.parse(_selectedOrganizationValue!.organization_metadata[0].value.toString()),
-                                      DateTime.parse(_selectedOrganizationValue!.organization_metadata[1].value.toString()) 
-                                      );
-                                  });              
-                          
-                              }
-                            );    
-                            },
-                          
+                                        DateTime.parse(
+                                            _selectedOrganizationValue!
+                                                .organization_metadata[0].value
+                                                .toString()),
+                                        DateTime.parse(
+                                            _selectedOrganizationValue!
+                                                .organization_metadata[1].value
+                                                .toString()));
+                                  });
+                                });
+                          },
                         ),
                       ),
                     ],
@@ -590,8 +599,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                                   if (org.child_organizations.length > 0)
                                     Container(
                                       alignment: Alignment.centerLeft,
-                                      margin: EdgeInsets.only(
-                                           top: 20, bottom: 10),
+                                      margin:
+                                          EdgeInsets.only(top: 20, bottom: 10),
                                       child: Row(children: <Widget>[
                                         Text('Select a class:'),
                                         SizedBox(width: 10),
