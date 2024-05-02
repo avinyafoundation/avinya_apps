@@ -55,7 +55,6 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     formattedEndDate = DateFormat('MMM d, yyyy').format(today);
     batchStartDate = DateFormat('MMM d, yyyy').format(today);
     batchEndDate = DateFormat('MMM d, yyyy').format(today);
-    ;
     String formattedToday = DateFormat('yyyy-MM-dd').format(today);
     refreshState(null, formattedToday, formattedToday);
     _fetchBatchData = _loadBatchData();
@@ -391,6 +390,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                             if (newValue.organization_metadata.isEmpty) {
                               return;
                             }
+           
 
                             setState(() {
                               _selectedOrganizationValue = newValue;
@@ -398,6 +398,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                                   DateTime.parse(_selectedOrganizationValue!
                                       .organization_metadata[0].value
                                       .toString()));
+
 
                               batchEndDate = DateFormat('MMM d, yyyy').format(
                                   DateTime.parse(_selectedOrganizationValue!
