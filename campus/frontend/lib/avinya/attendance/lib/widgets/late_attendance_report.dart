@@ -8,6 +8,8 @@ import 'package:gallery/data/person.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+import 'daily_late_attendance_excel_report_export.dart';
+
 class LateAttendanceReport extends StatefulWidget {
   const LateAttendanceReport({Key? key, required this.title}) : super(key: key);
 
@@ -40,6 +42,9 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
   var _selectedValue;
   var activityId = 0;
 
+  List<DataColumn> ColumnNames = [];
+
+
   late String formattedStartDate;
   late String formattedEndDate;
   var today = DateTime.now();
@@ -60,6 +65,17 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
     var today = DateTime.now();
     activityId = campusAppsPortalInstance.activityIds['homeroom']!;
     selectWeek(today, activityId);
+  }
+
+  void updateExcelState() {
+    DailyLateAttendanceExcelReportExport(
+      fetchedDailyLateAttendanceData: _fetchedAttendance,
+      updateExcelState: updateExcelState,
+      isFetching: _isFetching,
+      selectedValue: _selectedValue,
+      formattedStartDate: this.formattedStartDate,
+      formattedEndDate:this.formattedEndDate,
+    );
   }
 
   @override
@@ -154,7 +170,7 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
     });
   }
 
-  List<DataColumn> _buildDataColumns() {
+   List<DataColumn> _buildDataColumns() {
     List<DataColumn> ColumnNames = [];
 
     if (_selectedValue == null) {
@@ -391,7 +407,27 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 20),
+                       SizedBox(
+                      width: 10,
+                    ),
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.bottomRight,
+                      margin: EdgeInsets.only(
+                        right: 20.0
+                      ),
+                      width: 25.0,
+                      height: 30.0,
+                      child: this._isFetching ? null: DailyLateAttendanceExcelReportExport(
+                                fetchedDailyLateAttendanceData: _fetchedAttendance,
+                                updateExcelState: updateExcelState,
+                                isFetching: _isFetching,
+                                selectedValue: _selectedValue,
+                                formattedStartDate: this.formattedStartDate,
+                                formattedEndDate:this.formattedEndDate,
+                      ),
+                    ),
+                  )
                   ],
                 ),
                 SizedBox(height: 16.0),
@@ -404,8 +440,7 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
                       Container(
                         margin: EdgeInsets.only(top: 180),
                         child: SpinKitCircle(
-                          color: (Colors
-                              .blue), // Customize the color of the indicator
+                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
                           size: 50, // Customize the size of the indicator
                         ),
                       )
@@ -467,7 +502,7 @@ class MyData extends DataTableSource {
       }
       var lateSignInTime =
           DateTime.parse(_fetchedAttendance[index - 1].sign_in_time!);
-      var officeStartTime = DateTime.parse("$date 07:30:00");
+      var officeStartTime = DateTime.parse("$date 08:30:00");
       var lateBy = lateSignInTime.difference(officeStartTime).inMinutes;
 
       if (lateBy > 0) {

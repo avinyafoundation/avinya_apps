@@ -10,8 +10,10 @@ class QRImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter + QR code'),
+        title: const Text('Flutter + QR code',style: TextStyle(color: Colors.black)),
+        backgroundColor: Color.fromARGB(255, 236, 230, 253),
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Center(
         child: QrImage(

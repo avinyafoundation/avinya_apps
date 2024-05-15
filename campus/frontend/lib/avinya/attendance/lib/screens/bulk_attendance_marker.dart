@@ -57,16 +57,17 @@ class _BulkAttendanceMarkerScreenState extends State<BulkAttendanceMarkerScreen>
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text('Class Attendance Marker'),
-          bottom: TabBar(
-            controller: _tabController,
-            tabs: const [
-              Tab(
-                text: '',
-                icon: Icon(Icons.list_alt),
-              ),
-            ],
-          ),
+          title: Text('Class Attendance Marker',style: TextStyle(color: Colors.black)),
+          backgroundColor: Color.fromARGB(255, 236, 230, 253),
+          // bottom: TabBar(
+          //   controller: _tabController,
+          //   tabs: const [
+          //     Tab(
+          //       text: '',
+          //       icon: Icon(Icons.list_alt),
+          //     ),
+          //   ],
+          // ),
         ),
         body: TabBarView(
           controller: _tabController,

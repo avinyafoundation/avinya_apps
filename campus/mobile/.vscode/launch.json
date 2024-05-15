@@ -29,7 +29,7 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "debug",
-            "deviceId": "R9WR114BT3J",
+            "deviceId": "TECNO KG5j",
             "runTestsOnDevice": false,
             // "args": [
             //     "--flavor",
@@ -41,7 +41,7 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "debug",
-            "deviceId": "SM A045F",
+            "deviceId": "SM M017F",
             "runTestsOnDevice": false,
             // "args": [
             //     "--flavor",

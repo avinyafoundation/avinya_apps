@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/src/material/data_table.dart';
 import 'package:gallery/avinya/attendance/lib/data.dart';
+import 'package:gallery/avinya/attendance/lib/data/organization_meta_data.dart';
 import 'package:gallery/data/address.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -42,7 +43,9 @@ class Organization {
   String? description;
   var child_organizations = <Organization>[];
   var parent_organizations = <Organization>[];
+  var child_organizations_for_dashboard = <Organization>[];
   var people = <Person>[];
+   var organization_metadata = <OrganizationMetaData>[];
 
   Organization({
     this.id,
@@ -50,7 +53,9 @@ class Organization {
     this.description,
     this.child_organizations = const [],
     this.parent_organizations = const [],
+    this.child_organizations_for_dashboard = const [],  
     this.people = const [],
+    this.organization_metadata = const[],
   });
 
   factory Organization.fromJson(Map<String, dynamic> json) {
@@ -66,8 +71,16 @@ class Organization {
           ? List<Organization>.from(
               json['parent_organizations'].map((x) => Organization.fromJson(x)))
           : [],
+      child_organizations_for_dashboard: json['child_organizations_for_dashboard'] != null
+          ? List<Organization>.from(
+              json['child_organizations_for_dashboard'].map((x) => Organization.fromJson(x)))
+          : [],
       people: json['people'] != null
           ? List<Person>.from(json['people'].map((x) => Person.fromJson(x)))
+          : [],
+      organization_metadata: json['organization_metadata'] != null
+          ? List<OrganizationMetaData>.from(
+           json['organization_metadata'].map((x) => OrganizationMetaData.fromJson(x)))
           : [],
     );
   }
@@ -82,7 +95,10 @@ class Organization {
             List<dynamic>.from(child_organizations.map((x) => x.toJson())),
         'parent_organizations':
             List<dynamic>.from(parent_organizations.map((x) => x.toJson())),
+        'child_organizations_for_dashboard':
+            List<dynamic>.from(child_organizations_for_dashboard.map((x) => x.toJson())),
         'people': List<dynamic>.from(people.map((x) => x.toJson())),
+        'organization_metadata':List<dynamic>.from(organization_metadata.map((x) => x.toJson()))
         // if (employees != null) 'employees': List<dynamic>.from(employees!.map((x) => x.toJson())),
       };
 }
@@ -109,6 +125,7 @@ Future<Organization> fetchOrganization(int id) async {
   }
 }
 
+
 Future<List<Person>> fetchOrganizationForAll(int id) async {
   final uri = Uri.parse(
           AppConfig.campusProfileBffApiUrl + '/student_list_by_parent_org_id')
@@ -132,6 +149,31 @@ Future<List<Person>> fetchOrganizationForAll(int id) async {
     return studentList;
   } else {
     throw Exception('Failed to load Person');
+  }
+}
+Future<List<Organization>> fetchOrganizationsByAvinyaType(int avinya_type) async {
+  
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/organizations_by_avinya_type/$avinya_type'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+
+  if (response.statusCode > 199 && response.statusCode < 300) {
+
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+
+    List<Organization> organization =
+        await resultsJson
+        .map<Organization>((json) => Organization.fromJson(json))
+        .toList();
+    return organization;
+  } else {
+    throw Exception('Failed to load organizations');
   }
 }
 

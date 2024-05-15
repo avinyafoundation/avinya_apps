@@ -1,14 +1,15 @@
 {
-    "campusProfileBffApiUrl" : "http://192.168.1.100:9090",
-    "campusAttendanceBffApiUrl" : "http://192.168.1.100:9091",
-    "campusPctiNotesBffApiUrl" : "http://localhost:9092",
-    "campusPctiFeedbackBffApiUrl" : "http://localhost:9093",
-    "campusAssetsBffApiUrl" : "http://localhost:9094",
+    "campusProfileBffApiUrl" : "https://3a907137-52a3-4196-9e0d-22d054ea5789-prod.e1-us-east-azure.choreoapis.dev/fieg/profile-bff/0.9.0",
+    "campusAttendanceBffApiUrl" : "https://3a907137-52a3-4196-9e0d-22d054ea5789-prod.e1-us-east-azure.choreoapis.dev/fieg/attendance-bff/0.9.0",
+    "campusPctiNotesBffApiUrl" : "https://3a907137-52a3-4196-9e0d-22d054ea5789-dev.e1-us-east-azure.choreoapis.dev/fieg/pcti-notes-bff/1.0.0",
+    "campusPctiFeedbackBffApiUrl" : "https://3a907137-52a3-4196-9e0d-22d054ea5789-dev.e1-us-east-azure.choreoapis.dev/fieg/pcti-feedback-bff/1.0.0",
+    "campusAssetsBffApiUrl" : "https://3a907137-52a3-4196-9e0d-22d054ea5789-prod.e1-us-east-azure.choreoapis.dev/fieg/asset-bff/0.9.0",
     "choreo_sts_endpoint" : "https://sts.choreo.dev/oauth2/token",
-    "asgardeo_token_endpoint" : "https://api.asgardeo.io/t/avinyatest/oauth2/token",
-    "logout_url" : "https://api.asgardeo.io/t/avinyatest/oidc/logout",
-    "bundle_id" : "com.avinyafoundation.campusapp.dev",
+    "asgardeo_token_endpoint" : "https://api.asgardeo.io/t/avinyaacademy/oauth2/token",
+    "logout_url" : "https://api.asgardeo.io/t/avinyaacademy/oidc/logout",
+    "bundle_id" : "com.avinyafoundation.campusapp.prod",
     "redirect_url" : "com.avinyafoundation.campusapp.dev.mobile://oauth/callback",
-    "asgardeo_discovery_url" : "https://api.asgardeo.io/t/avinyatest/oauth2/token/.well-known/openid-configuration"
+    "asgardeo_discovery_url" : "https://api.asgardeo.io/t/avinyaacademy/oauth2/token/.well-known/openid-configuration"
 }
+
 
