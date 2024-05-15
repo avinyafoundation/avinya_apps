@@ -267,7 +267,9 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
         //     DateRange(
         //         DateTime.now(), DateTime.now().add(const Duration(days: 7))),
         // disabledDates: [DateTime(2023, 11, 20)],
-        initialDisplayedDate: this.selectedDateRange?.start ?? today,
+        // initialDisplayedDate: this.selectedDateRange?.start ?? today,
+        initialDisplayedDate: this.selectedDateRange?.start ??
+            DateFormat('MMM d, yyyy').parse(batchStartDate),
         onDateRangeChanged: (DateRange? value) {
           if (value != null) {
             var _rangeStart = value.start;
@@ -305,7 +307,9 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
         //     DateRange(
         //         DateTime.now(), DateTime.now().add(const Duration(days: 7))),
         // disabledDates: [DateTime(2023, 11, 20)],
-        initialDisplayedDate: this.selectedDateRange?.start ?? today,
+        // initialDisplayedDate: this.selectedDateRange?.start ?? today,
+        initialDisplayedDate: this.selectedDateRange?.start ??
+            DateFormat('MMM d, yyyy').parse(batchStartDate),
         onDateRangeChanged: (DateRange? value) {
           if (value != null) {
             var _rangeStart = value.start;
