@@ -43,6 +43,7 @@ class Organization {
   String? description;
   var child_organizations = <Organization>[];
   var parent_organizations = <Organization>[];
+  var child_organizations_for_dashboard = <Organization>[];
   var people = <Person>[];
    var organization_metadata = <OrganizationMetaData>[];
 
@@ -52,6 +53,7 @@ class Organization {
     this.description,
     this.child_organizations = const [],
     this.parent_organizations = const [],
+    this.child_organizations_for_dashboard = const [],  
     this.people = const [],
     this.organization_metadata = const[],
   });
@@ -68,6 +70,10 @@ class Organization {
       parent_organizations: json['parent_organizations'] != null
           ? List<Organization>.from(
               json['parent_organizations'].map((x) => Organization.fromJson(x)))
+          : [],
+      child_organizations_for_dashboard: json['child_organizations_for_dashboard'] != null
+          ? List<Organization>.from(
+              json['child_organizations_for_dashboard'].map((x) => Organization.fromJson(x)))
           : [],
       people: json['people'] != null
           ? List<Person>.from(json['people'].map((x) => Person.fromJson(x)))
@@ -89,6 +95,8 @@ class Organization {
             List<dynamic>.from(child_organizations.map((x) => x.toJson())),
         'parent_organizations':
             List<dynamic>.from(parent_organizations.map((x) => x.toJson())),
+        'child_organizations_for_dashboard':
+            List<dynamic>.from(child_organizations_for_dashboard.map((x) => x.toJson())),
         'people': List<dynamic>.from(people.map((x) => x.toJson())),
         'organization_metadata':List<dynamic>.from(organization_metadata.map((x) => x.toJson()))
         // if (employees != null) 'employees': List<dynamic>.from(employees!.map((x) => x.toJson())),
@@ -116,6 +124,7 @@ Future<Organization> fetchOrganization(int id) async {
     throw Exception('Failed to load Person');
   }
 }
+
 
 Future<List<Person>> fetchOrganizationForAll(int id) async {
   final uri = Uri.parse(

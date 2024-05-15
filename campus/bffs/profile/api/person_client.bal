@@ -49,13 +49,13 @@ public isolated client class GraphqlClient {
         name_en
       }
       description
-      child_organizations {
+    }
+    child_organizations_for_dashboard {
       id
       name {
         name_en
       }
       description
-    }
     }
     parent_organizations {
       id
