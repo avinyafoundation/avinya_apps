@@ -12,6 +12,7 @@ import 'package:gallery/data/person.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_date_range_picker/flutter_date_range_picker.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class AttendanceDashboardScreen extends StatefulWidget {
   const AttendanceDashboardScreen({Key? key}) : super(key: key);
@@ -37,9 +38,15 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
 
   String formattedStartDate = "";
   String formattedEndDate = "";
+  String batchStartDate = "";
+  String batchEndDate = "";
   String startDate = "";
   String endDate = "";
   List cardData = [];
+  late Future<List<Organization>> _fetchBatchData;
+  Organization? _selectedOrganizationValue;
+  List<Organization> _batchData = [];
+  List<Organization> _fetchedOrganizations = [];
 
   @override
   void initState() {
@@ -47,13 +54,37 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     today = DateTime.now();
     formattedStartDate = DateFormat('MMM d, yyyy').format(today);
     formattedEndDate = DateFormat('MMM d, yyyy').format(today);
+    // batchStartDate = DateFormat('MMM d, yyyy').format(today);
+    // batchEndDate = DateFormat('MMM d, yyyy').format(today);
+    ;
     String formattedToday = DateFormat('yyyy-MM-dd').format(today);
-    refreshState(null, formattedToday, formattedToday);
+    _fetchBatchData = _loadBatchData();
+    // refreshState(null, formattedToday, formattedToday, 'batch');
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<List<Organization>> _loadBatchData() async {
+    _batchData = await fetchOrganizationsByAvinyaType(86);
+    _selectedOrganizationValue = _batchData.isNotEmpty ? _batchData.last : null;
+    batchStartDate = DateFormat('MMM d, yyyy').format(DateTime.parse(
+        _selectedOrganizationValue!.organization_metadata[0].value.toString()));
+    batchEndDate = DateFormat('MMM d, yyyy').format(DateTime.parse(
+        _selectedOrganizationValue!.organization_metadata[1].value.toString()));
+    if (_selectedOrganizationValue != null) {
+      int orgId = _selectedOrganizationValue!.id!;
+      _fetchedOrganization = await fetchOrganization(orgId);
+      _fetchedOrganizations =
+          _fetchedOrganization?.child_organizations_for_dashboard ?? [];
+      setState(() {
+        _fetchedOrganizations = _fetchedOrganizations;
+      });
+    }
+    this.updateDateRange(today, today);
+    return _batchData;
   }
 
   DateRange? selectedDateRange;
@@ -75,7 +106,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
           this.formattedEndDate = formattedEndDate;
           this.startDate = DateFormat('yyyy-MM-dd').format(startDate);
           this.endDate = DateFormat('yyyy-MM-dd').format(endDate);
-          refreshState(this._selectedValue, this.startDate, this.endDate);
+          refreshState(
+              this._selectedValue, this.startDate, this.endDate, 'date');
         });
       } catch (error) {
         // Handle any errors that occur during the fetch
@@ -107,8 +139,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     return totalAttendance;
   }
 
-  void refreshState(
-      Organization? newValue, String startDate, String endDate) async {
+  void refreshState(Organization? newValue, String startDate, String endDate,
+      String from) async {
     setState(() {
       _isFetching = true; // Set _isFetching to true before starting the fetch
     });
@@ -146,11 +178,10 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
         _fetchedOrganization!.description = "Select All";
       }
     } else {
-      _fetchedOrganization = await fetchOrganization(newValue!.id!);
       _fetchedDashboardData =
-          await getDashboardCardDataByDate(startDate, endDate, newValue.id!);
+          await getDashboardCardDataByDate(startDate, endDate, newValue?.id!);
       _fetchedAttendanceData = await getAttendanceMissedBySecurityByOrg(
-          newValue.id!, startDate, endDate);
+          newValue!.id!, startDate, endDate);
       _fetchedLineChartData = await getTotalAttendanceCountByDateByOrg(
           newValue.id!, startDate, endDate);
     }
@@ -162,6 +193,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
 
     setState(() {
       _fetchedOrganization;
+      _fetchedOrganizations;
       this._isFetching = false;
       this.cardData = _fetchedDashboardData;
       this._fetchedAttendanceData = _fetchedAttendanceData;
@@ -175,6 +207,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
           BuildContext context, dynamic Function(DateRange?) onDateRangeChanged,
           [bool doubleMonth = false]) =>
       DateRangePickerWidget(
+        minDate: DateFormat('MMM d, yyyy').parse(batchStartDate),
+        maxDate: DateFormat('MMM d, yyyy').parse(batchEndDate),
         doubleMonth: doubleMonth,
         maximumDateRangeLength: 200,
         theme: CalendarTheme(
@@ -213,27 +247,29 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
               DateTime.now(),
             ),
           ),
-          QuickDateRange(
-            label: 'Last 90 days',
-            dateRange: DateRange(
-              DateTime.now().subtract(const Duration(days: 90)),
-              DateTime.now(),
-            ),
-          ),
-          QuickDateRange(
-            label: 'Last 180 days',
-            dateRange: DateRange(
-              DateTime.now().subtract(const Duration(days: 180)),
-              DateTime.now(),
-            ),
-          ),
+          // QuickDateRange(
+          //   label: 'Last 90 days',
+          //   dateRange: DateRange(
+          //     DateTime.now().subtract(const Duration(days: 90)),
+          //     DateTime.now(),
+          //   ),
+          // ),
+          // QuickDateRange(
+          //   label: 'Last 180 days',
+          //   dateRange: DateRange(
+          //     DateTime.now().subtract(const Duration(days: 180)),
+          //     DateTime.now(),
+          //   ),
+          // ),
         ],
         minimumDateRangeLength: 3,
         // initialDateRange: this.selectedDateRange ??
         //     DateRange(
         //         DateTime.now(), DateTime.now().add(const Duration(days: 7))),
         // disabledDates: [DateTime(2023, 11, 20)],
-        initialDisplayedDate: this.selectedDateRange?.start ?? today,
+        // initialDisplayedDate: this.selectedDateRange?.start ?? today,
+        initialDisplayedDate: this.selectedDateRange?.start ??
+            DateFormat('MMM d, yyyy').parse(batchStartDate),
         onDateRangeChanged: (DateRange? value) {
           if (value != null) {
             var _rangeStart = value.start;
@@ -249,6 +285,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
           BuildContext context, dynamic Function(DateRange?) onDateRangeChanged,
           [bool doubleMonth = false]) =>
       DateRangePickerWidget(
+        minDate: DateFormat('MMM d, yyyy').parse(batchStartDate),
+        maxDate: DateFormat('MMM d, yyyy').parse(batchEndDate),
         doubleMonth: doubleMonth,
         maximumDateRangeLength: 10,
         theme: CalendarTheme(
@@ -269,7 +307,9 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
         //     DateRange(
         //         DateTime.now(), DateTime.now().add(const Duration(days: 7))),
         // disabledDates: [DateTime(2023, 11, 20)],
-        initialDisplayedDate: this.selectedDateRange?.start ?? today,
+        // initialDisplayedDate: this.selectedDateRange?.start ?? today,
+        initialDisplayedDate: this.selectedDateRange?.start ??
+            DateFormat('MMM d, yyyy').parse(batchStartDate),
         onDateRangeChanged: (DateRange? value) {
           if (value != null) {
             var _rangeStart = value.start;
@@ -327,89 +367,162 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                     ),
                     child: Text(formattedStartDate + " - " + formattedEndDate),
                   ),
+                  SizedBox(
+                    width: 30,
+                  ),
+                  Text('Select a Batch :'),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  FutureBuilder<List<Organization>>(
+                    future: _fetchBatchData,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          margin: EdgeInsets.only(top: 10),
+                          child: SpinKitCircle(
+                            color: (Colors.deepPurpleAccent),
+                            size: 70,
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return const Center(
+                          child: Text('Something went wrong...'),
+                        );
+                      } else if (!snapshot.hasData) {
+                        return const Center(
+                          child: Text('No batch found'),
+                        );
+                      }
+                      final batchData = snapshot.data!;
+                      return DropdownButton<Organization>(
+                          value: _selectedOrganizationValue,
+                          items: batchData.map((Organization batch) {
+                            return DropdownMenuItem(
+                                value: batch,
+                                child: Text(batch.name!.name_en ?? ''));
+                          }).toList(),
+                          onChanged: (Organization? newValue) async {
+                            if (newValue == null) {
+                              return;
+                            }
+
+                            if (newValue.organization_metadata.isEmpty) {
+                              return;
+                            }
+
+                            _fetchedOrganization =
+                                await fetchOrganization(newValue!.id!);
+                            _fetchedOrganizations = _fetchedOrganization
+                                    ?.child_organizations_for_dashboard ??
+                                [];
+
+                            setState(() {
+                              _fetchedOrganizations;
+                              _selectedValue = null;
+                              _selectedOrganizationValue = newValue;
+                              batchStartDate = DateFormat('MMM d, yyyy').format(
+                                  DateTime.parse(_selectedOrganizationValue!
+                                      .organization_metadata[0].value
+                                      .toString()));
+
+                              batchEndDate = DateFormat('MMM d, yyyy').format(
+                                  DateTime.parse(_selectedOrganizationValue!
+                                      .organization_metadata[1].value
+                                      .toString()));
+
+                              this.updateDateRange(
+                                  DateTime.parse(_selectedOrganizationValue!
+                                      .organization_metadata[0].value
+                                      .toString()),
+                                  DateTime.parse(_selectedOrganizationValue!
+                                      .organization_metadata[1].value
+                                      .toString()));
+                            });
+                          });
+                    },
+                  ),
                   Expanded(
                       child: Container(
                     margin: EdgeInsets.only(left: 8.0),
                     child: Row(children: <Widget>[
-                      for (var org in campusAppsPortalInstance
-                          .getUserPerson()
-                          .organization!
-                          .child_organizations)
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              if (org.child_organizations.length > 0)
-                                Container(
-                                  margin: EdgeInsets.only(
-                                      left: 20, top: 20, bottom: 10),
-                                  child: Row(children: <Widget>[
-                                    Text('Select a class:'),
-                                    SizedBox(width: 10),
-                                    DropdownButton<Organization>(
-                                      value: _selectedValue,
-                                      onChanged:
-                                          (Organization? newValue) async {
-                                        _selectedValue = newValue ?? null;
-                                        int? parentOrgId =
-                                            campusAppsPortalInstance
-                                                .getUserPerson()
-                                                .organization!
-                                                .id;
-                                        if (_selectedValue == null) {
-                                          setState(() {
-                                            if (_fetchedOrganization != null) {
-                                              _fetchedOrganization!.id =
-                                                  parentOrgId;
-                                              _fetchedOrganization!
-                                                  .description = "Select All";
-                                            } else {
-                                              _fetchedOrganization =
-                                                  Organization();
-                                              _fetchedOrganization!.id =
-                                                  parentOrgId;
-                                              _fetchedOrganization!
-                                                  .description = "Select All";
-                                            }
-                                            _fetchedDashboardData;
-                                          });
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            // if (org.child_organizations_for_dashboard.length > 0)
+                            Container(
+                              margin: EdgeInsets.only(
+                                  left: 20, top: 20, bottom: 10),
+                              child: Row(children: <Widget>[
+                                Text('Select a class:'),
+                                SizedBox(width: 10),
+                                DropdownButton<Organization>(
+                                  value: _selectedValue,
+                                  onChanged: (Organization? newValue) async {
+                                    _selectedValue = newValue ?? null;
+                                    int? parentOrgId = campusAppsPortalInstance
+                                        .getUserPerson()
+                                        .organization!
+                                        .id;
+                                    if (_selectedValue == null) {
+                                      setState(() {
+                                        if (_fetchedOrganization != null) {
+                                          _fetchedOrganization!.id =
+                                              parentOrgId;
+                                          _fetchedOrganization!.description =
+                                              "Select All";
                                         } else {
-                                          setState(() {
-                                            _fetchedOrganization;
-                                            _fetchedDashboardData;
-                                          });
+                                          _fetchedOrganization = Organization();
+                                          _fetchedOrganization!.id =
+                                              parentOrgId;
+                                          _fetchedOrganization!.description =
+                                              "Select All";
                                         }
-                                        if (this.startDate == "" &&
-                                            this.endDate == "") {
-                                          today = DateTime.now();
-                                          String formattedToday =
-                                              DateFormat('yyyy-MM-dd')
-                                                  .format(today);
-                                          refreshState(this._selectedValue,
-                                              formattedToday, formattedToday);
-                                        } else {
-                                          refreshState(this._selectedValue,
-                                              this.startDate, this.endDate);
-                                        }
-                                      },
-                                      items: [
-                                        // Add "Select All" option
-                                        DropdownMenuItem<Organization>(
-                                          value: null,
-                                          child: Text("Select All"),
-                                        ),
-                                        // Add other organization options
-                                        ...org.child_organizations
-                                            .map((Organization value) {
-                                          return DropdownMenuItem<Organization>(
-                                            value: value,
-                                            child: Text(value.description!),
-                                          );
-                                        }),
-                                      ],
+                                        _fetchedDashboardData;
+                                      });
+                                    } else {
+                                      setState(() {
+                                        _selectedValue;
+                                        _fetchedOrganization;
+                                        _fetchedDashboardData;
+                                      });
+                                    }
+                                    if (this.startDate == "" &&
+                                        this.endDate == "") {
+                                      today = DateTime.now();
+                                      String formattedToday =
+                                          DateFormat('MMM d, yyyy')
+                                              .format(today);
+                                      refreshState(
+                                          this._selectedValue,
+                                          formattedToday,
+                                          formattedToday,
+                                          'class');
+                                    } else {
+                                      refreshState(
+                                          this._selectedValue,
+                                          this.startDate,
+                                          this.endDate,
+                                          'class');
+                                    }
+                                  },
+                                  items: [
+                                    // Add "Select All" option
+                                    DropdownMenuItem<Organization>(
+                                      value: null,
+                                      child: Text("Select All"),
                                     ),
-                                  ]),
+                                    // Add other organization options
+                                    for (var org in _fetchedOrganizations)
+                                      DropdownMenuItem<Organization>(
+                                        value: org,
+                                        child: Text(org.description!),
+                                      )
+                                  ],
                                 ),
-                            ]),
+                              ]),
+                            ),
+                          ]),
                     ]),
                   )),
                 ],
@@ -420,147 +533,174 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                 children: [
                   Row(
                     children: [
-                      Expanded(
-                          child: Container(
-                        margin: EdgeInsets.only(left: 8.0),
-                        child: Row(children: <Widget>[
-                          for (var org in campusAppsPortalInstance
-                              .getUserPerson()
-                              .organization!
-                              .child_organizations)
-                            Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  if (org.child_organizations.length > 0)
-                                    Container(
-                                      margin: EdgeInsets.only(
-                                          left: 20, top: 20, bottom: 10),
-                                      child: Row(children: <Widget>[
-                                        Text('Select a class:'),
-                                        SizedBox(width: 10),
-                                        DropdownButton<Organization>(
-                                          value: _selectedValue,
-                                          onChanged:
-                                              (Organization? newValue) async {
-                                            _selectedValue = newValue ?? null;
-                                            int? parentOrgId =
-                                                campusAppsPortalInstance
-                                                    .getUserPerson()
-                                                    .organization!
-                                                    .id;
-                                            if (_selectedValue == null) {
-                                              // _fetchedOrganization = null;
-                                              if (this.startDate == "" &&
-                                                  this.endDate == "") {
-                                                today = DateTime.now();
-                                                String formattedToday =
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(today);
-                                                _fetchedDashboardData =
-                                                    await getDashboardCardDataByParentOrg(
-                                                        formattedToday,
-                                                        formattedToday,
-                                                        parentOrgId!);
-                                              } else {
-                                                _fetchedDashboardData =
-                                                    await getDashboardCardDataByParentOrg(
-                                                        this.startDate,
-                                                        this.endDate,
-                                                        parentOrgId!);
-                                              }
-                                            } else {
-                                              // _fetchedDashboardData = <Person>[];
-                                              _fetchedOrganization =
-                                                  await fetchOrganization(
-                                                      newValue!.id!);
-                                              if (this.startDate == "" &&
-                                                  this.endDate == "") {
-                                                today = DateTime.now();
-                                                String formattedToday =
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(today);
-                                                _fetchedDashboardData =
-                                                    await getDashboardCardDataByDate(
-                                                        formattedToday,
-                                                        formattedToday,
-                                                        newValue.id!);
-                                              } else {
-                                                _fetchedDashboardData =
-                                                    await getDashboardCardDataByDate(
-                                                        this.startDate,
-                                                        this.endDate,
-                                                        newValue.id!);
-                                              }
-                                            }
-                                            if (_selectedValue == null) {
-                                              setState(() {
-                                                if (_fetchedOrganization !=
-                                                    null) {
-                                                  // _fetchedOrganization!.people =
-                                                  //     _fetchedDashboardData;
-                                                  _fetchedOrganization!.id =
-                                                      parentOrgId;
-                                                  _fetchedOrganization!
-                                                          .description =
-                                                      "Select All";
-                                                } else {
-                                                  _fetchedOrganization =
-                                                      Organization();
-                                                  // _fetchedOrganization!.people =
-                                                  //     _fetchedDashboardData;
-                                                  _fetchedOrganization!.id =
-                                                      parentOrgId;
-                                                  _fetchedOrganization!
-                                                          .description =
-                                                      "Select All";
-                                                }
-                                                _fetchedDashboardData;
-                                                // cardData = _fetchedDashboardData;
-                                              });
-                                            } else {
-                                              setState(() {
-                                                _fetchedOrganization;
-                                                _fetchedDashboardData;
-                                                // cardData = _fetchedDashboardData;
-                                              });
-                                            }
-                                            if (this.startDate == "" &&
-                                                this.endDate == "") {
-                                              today = DateTime.now();
-                                              String formattedToday =
-                                                  DateFormat('yyyy-MM-dd')
-                                                      .format(today);
-                                              refreshState(
-                                                  this._selectedValue,
-                                                  formattedToday,
-                                                  formattedToday);
-                                            } else {
-                                              refreshState(this._selectedValue,
-                                                  this.startDate, this.endDate);
-                                            }
-                                          },
-                                          items: [
-                                            // Add "Select All" option
-                                            DropdownMenuItem<Organization>(
-                                              value: null,
-                                              child: Text("Select All"),
-                                            ),
-                                            // Add other organization options
-                                            ...org.child_organizations
-                                                .map((Organization value) {
-                                              return DropdownMenuItem<
-                                                  Organization>(
-                                                value: value,
-                                                child: Text(value.description!),
-                                              );
-                                            }),
-                                          ],
-                                        ),
-                                      ]),
-                                    ),
+                      Text('Select a Batch :'),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      SizedBox(
+                        width: 240,
+                        child: FutureBuilder<List<Organization>>(
+                          future: _fetchBatchData,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Container(
+                                margin: EdgeInsets.only(top: 10),
+                                child: SpinKitCircle(
+                                  color: (Colors.deepPurpleAccent),
+                                  size: 70,
+                                ),
+                              );
+                            } else if (snapshot.hasError) {
+                              return const Center(
+                                child: Text('Something went wrong...'),
+                              );
+                            } else if (!snapshot.hasData) {
+                              return const Center(
+                                child: Text('No batch found'),
+                              );
+                            }
+                            final batchData = snapshot.data!;
+                            return DropdownButton<Organization>(
+                                value: _selectedOrganizationValue,
+                                items: batchData.map((Organization batch) {
+                                  return DropdownMenuItem(
+                                      value: batch,
+                                      child: Text(batch.name!.name_en ?? ''));
+                                }).toList(),
+                                onChanged: (Organization? newValue) async {
+                                  if (newValue == null) {
+                                    return;
+                                  }
+
+                                  if (newValue.organization_metadata.isEmpty) {
+                                    return;
+                                  }
+
+                                  _fetchedOrganization =
+                                      await fetchOrganization(newValue!.id!);
+                                  _fetchedOrganizations = _fetchedOrganization
+                                          ?.child_organizations_for_dashboard ??
+                                      [];
+
+                                  setState(() {
+                                    _fetchedOrganizations;
+                                    _selectedValue = null;
+                                    _selectedOrganizationValue = newValue;
+                                    batchStartDate = DateFormat('MMM d, yyyy')
+                                        .format(DateTime.parse(
+                                            _selectedOrganizationValue!
+                                                .organization_metadata[0].value
+                                                .toString()));
+
+                                    batchEndDate = DateFormat('MMM d, yyyy')
+                                        .format(DateTime.parse(
+                                            _selectedOrganizationValue!
+                                                .organization_metadata[1].value
+                                                .toString()));
+
+                                    this.updateDateRange(
+                                        DateTime.parse(
+                                            _selectedOrganizationValue!
+                                                .organization_metadata[0].value
+                                                .toString()),
+                                        DateTime.parse(
+                                            _selectedOrganizationValue!
+                                                .organization_metadata[1].value
+                                                .toString()));
+                                  });
+                                });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text('Select a Class :'),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      SizedBox(
+                        width: 240,
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              // if (org.child_organizations_for_dashboard.length > 0)
+                              Container(
+                                margin: EdgeInsets.only(
+                                    left: 20, top: 20, bottom: 10),
+                                child: Row(children: <Widget>[
+                                  DropdownButton<Organization>(
+                                    value: _selectedValue,
+                                    onChanged: (Organization? newValue) async {
+                                      _selectedValue = newValue ?? null;
+                                      int? parentOrgId =
+                                          campusAppsPortalInstance
+                                              .getUserPerson()
+                                              .organization!
+                                              .id;
+                                      if (_selectedValue == null) {
+                                        setState(() {
+                                          if (_fetchedOrganization != null) {
+                                            _fetchedOrganization!.id =
+                                                parentOrgId;
+                                            _fetchedOrganization!.description =
+                                                "Select All";
+                                          } else {
+                                            _fetchedOrganization =
+                                                Organization();
+                                            _fetchedOrganization!.id =
+                                                parentOrgId;
+                                            _fetchedOrganization!.description =
+                                                "Select All";
+                                          }
+                                          _fetchedDashboardData;
+                                        });
+                                      } else {
+                                        setState(() {
+                                          _selectedValue;
+                                          _fetchedOrganization;
+                                          _fetchedDashboardData;
+                                        });
+                                      }
+                                      if (this.startDate == "" &&
+                                          this.endDate == "") {
+                                        today = DateTime.now();
+                                        String formattedToday =
+                                            DateFormat('MMM d, yyyy')
+                                                .format(today);
+                                        refreshState(
+                                            this._selectedValue,
+                                            formattedToday,
+                                            formattedToday,
+                                            'class');
+                                      } else {
+                                        refreshState(
+                                            this._selectedValue,
+                                            this.startDate,
+                                            this.endDate,
+                                            'class');
+                                      }
+                                    },
+                                    items: [
+                                      // Add "Select All" option
+                                      DropdownMenuItem<Organization>(
+                                        value: null,
+                                        child: Text("Select All"),
+                                      ),
+                                      // Add other organization options
+                                      for (var org in _fetchedOrganizations)
+                                        DropdownMenuItem<Organization>(
+                                          value: org,
+                                          child: Text(org.description!),
+                                        )
+                                    ],
+                                  ),
                                 ]),
-                        ]),
-                      )),
+                              ),
+                            ]),
+                      ),
                     ],
                   ),
                   Row(

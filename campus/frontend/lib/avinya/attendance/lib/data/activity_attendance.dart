@@ -1,6 +1,4 @@
 import 'dart:ui';
-
-import 'package:gallery/avinya/attendance/lib/data.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -546,12 +544,13 @@ Future<List<ActivityAttendance>> getTotalAttendanceCountByParentOrg(
 }
 
 Future<List<ActivityAttendance>> getDailyAttendanceSummaryReport(
-    int parent_organization_id,
+    int organization_id,
+    int avinya_type_id,
     String from_date,
     String to_date) async {
   final response = await http.get(
     Uri.parse(
-        '${AppConfig.campusAttendanceBffApiUrl}/daily_attendance_summary_report/$parent_organization_id/$from_date/$to_date'),
+        '${AppConfig.campusAttendanceBffApiUrl}/daily_attendance_summary_report/$organization_id/$avinya_type_id/$from_date/$to_date'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -566,6 +565,6 @@ Future<List<ActivityAttendance>> getDailyAttendanceSummaryReport(
     return activityAttendances;
   } else {
     throw Exception(
-        'Failed to get Daily Activity Participant Attendances Count');
+        'Failed to get Daily Attendances Summary Data');
   }
 }
