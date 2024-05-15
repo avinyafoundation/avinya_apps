@@ -118,7 +118,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
             padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
             child: ListTile(
               hoverColor: Colors.white.withOpacity(0.3),
-              leading: Icon(Icons.report,
+              leading: Icon(Icons.summarize_sharp,
                   color: Colors.white, size: 20.0),
               title: Container(
                 margin: EdgeInsets.only(left: 12.0),

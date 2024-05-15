@@ -876,3 +876,18 @@ public type GetDailyAttendanceSummaryReportResponse record {|
         anydata? late_attendance_percentage;
     |}[]? daily_attendance_summary_report;
 |};
+
+public type GetOrganizationsByAvinyaTypeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string name_en;
+        |} name;
+        string? description;
+        record {|
+            string? key_name;
+            string? value;
+        |}[]? organization_metadata;
+    |}[]? organizations_by_avinya_type;
+|};
