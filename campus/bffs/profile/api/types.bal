@@ -593,6 +593,13 @@ public type GetOrganizationResponse record {|
                 string name_en;
             |} name;
             string? description;
+        |}[]? child_organizations_for_dashboard;
+        record {|
+            int? id;
+            record {|
+                string name_en;
+            |} name;
+            string? description;
         |}[]? parent_organizations;
         record {|
             int? id;
