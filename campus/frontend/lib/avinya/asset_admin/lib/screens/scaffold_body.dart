@@ -1,7 +1,10 @@
 // import 'package:ShoolManagementSystem/src/screens/assets.dart';
 // import 'package:ShoolManagementSystem/src/screens/resource_allocations.dart';
 import 'package:flutter/material.dart';
-import 'package:asset_admin/screens/resource_allocation_report.dart';
+import 'package:asset_admin/screens/empty_screen.dart';
+import 'package:gallery/avinya/asset_admin/lib/screens/asset_dashboard_screen.dart';
+import 'package:gallery/avinya/asset_admin/lib/screens/consumable_dashboard_screen.dart';
+import 'package:gallery/avinya/asset_admin/lib/widgets/resource_allocation_report.dart';
 
 import '../routing.dart';
 import '../widgets/fade_transition_page.dart';
@@ -28,7 +31,17 @@ class SMSScaffoldBody extends StatelessWidget {
        if (currentRoute.pathTemplate.startsWith('/resource_allocation_report'))
           const FadeTransitionPage<void>(
             key: ValueKey('resource_allocation_report'),
-            child: ResourceAllocationReportScreen(),
+            child: ResourceAllocationReport(),
+          )
+       else if (currentRoute.pathTemplate.startsWith('/asset_dashboard'))
+          const FadeTransitionPage<void>(
+            key: ValueKey('activites'),
+            child: AssetDashboardScreen(),
+          )
+       else if (currentRoute.pathTemplate.startsWith('/consumable_dashboard'))
+          const FadeTransitionPage<void>(
+            key: ValueKey('activites'),
+            child: ConsumableDashboardScreen(),
           )
         // Avoid building a Navigator with an empty `pages` list when the
         // RouteState is set to an unexpected path, such as /signin.
