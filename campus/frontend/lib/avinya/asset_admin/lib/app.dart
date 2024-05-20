@@ -31,6 +31,8 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
         '/signin',
         '/resource_allocation_report',
         '/resource_allocations/:id',
+        '/asset_dashboard',
+        '/consumable_dashboard'
         // '/assets/new',
         // '/assets/all',
         // '/assets/popular',
@@ -41,7 +43,7 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
       ],
       guard: _guard,
       // initialRoute: '/signin',
-      initialRoute: '/resource_allocation_report',
+      initialRoute: '/asset_dashboard',
     );
 
     _routeState = RouteState(_routeParser);
@@ -80,6 +82,11 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
                   TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
                 },
               ),
+              drawerTheme: DrawerThemeData(
+                backgroundColor: Colors.yellow[800],
+                //width: 270.0,
+              ),
+              appBarTheme: AppBarTheme(backgroundColor: Colors.yellow[800]),
             ),
           ),
         ),
@@ -93,6 +100,12 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
 
     final resourceAllocationReportRoute =
         ParsedRoute('/resource_allocation_report', '/resource_allocation_report', {}, {});
+    
+    final assetDashboardReportRoute = ParsedRoute(
+        '/asset_dashboard', '/asset_dashboard', {}, {});
+    
+    final consumableDashboardReportRoute =
+        ParsedRoute('/consumable_dashboard', '/consumable_dashboard', {}, {});
 
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
@@ -101,10 +114,14 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
 
     if (signedIn && from == resourceAllocationReportRoute ) {
       return resourceAllocationReportRoute;
+    }else if (signedIn && from == assetDashboardReportRoute) {
+      return assetDashboardReportRoute;
+    } else if (signedIn && from == consumableDashboardReportRoute) {
+      return consumableDashboardReportRoute;
     }
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {
-      return ParsedRoute('/resource_allocation_report', '/resource_allocation_report', {}, {});
+      return ParsedRoute('/asset_dashboard', '/asset_dashboard', {}, {});
     }
     log("_guard signed in2 $signedIn");
     // } else if (signedIn && jwt_sub != null) {
@@ -117,7 +134,7 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
     bool signedIn = await _auth.getSignedIn();
     if (!signedIn) {
       // _routeState.go('/signin');
-      _routeState.go('/resource_allocation_report');
+      _routeState.go('/asset_dashboard');
     }
   }
 
