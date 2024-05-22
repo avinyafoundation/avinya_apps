@@ -18,6 +18,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
   bool isAssetReportSectionHovered = false;
   bool isConsumableSectionHovered = false;
   bool isConsumableReportSectionHovered = false;
+  bool isStockReplenishmentSectionHovered = false;
 
   @override
   Widget build(BuildContext context) {
@@ -106,8 +107,9 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color:
-                        isAssetSectionHovered ? Colors.white.withOpacity(0.3) : null,
+                    color: isAssetSectionHovered
+                        ? Colors.white.withOpacity(0.3)
+                        : null,
                     borderRadius: BorderRadius.circular(15.0),
                   ),
                   margin: EdgeInsets.all(8.0),
@@ -161,8 +163,9 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color:
-                        isConsumableSectionHovered ? Colors.white.withOpacity(0.3) : null,
+                    color: isConsumableSectionHovered
+                        ? Colors.white.withOpacity(0.3)
+                        : null,
                     borderRadius: BorderRadius.circular(15.0),
                   ),
                   margin: EdgeInsets.all(8.0),
@@ -190,17 +193,57 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                       color: Colors.white,
                       size: 20.0,
                     ),
-
                     children: [
+                      MouseRegion(
+                        onEnter: (_) {
+                          setState(() {
+                            isStockReplenishmentSectionHovered = true;
+                          });
+                        },
+                        onExit: (_) {
+                          setState(() {
+                            isStockReplenishmentSectionHovered = false;
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isStockReplenishmentSectionHovered
+                                ? Colors.white.withOpacity(0.3)
+                                : null,
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          margin: EdgeInsets.all(8.0),
+                          child: ListTile(
+                            leading: Icon(Icons.inventory,
+                                color: Colors.white, size: 20.0),
+                            title: Container(
+                              margin: EdgeInsets.only(left: 12.0),
+                              transform:
+                                  Matrix4.translationValues(-25, 0.0, 0.0),
+                              child: Text(
+                                "Stock Replenishment",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.pop(context); // Close the drawer
+                              routeState.go('/stock_replenishment');
+                            },
+                          ),
+                        ),
+                      ),
                       SideNavigationSection(
-                        initialSectionHoveredValue: isConsumableReportSectionHovered,
+                        initialSectionHoveredValue:
+                            isConsumableReportSectionHovered,
                         sectionName: "Reports",
                         icon: Icons.summarize,
                         destinations: consumableDestinations,
                       ),
                     ],
                   ),
-                  //),
                 ),
               ),
             ],
