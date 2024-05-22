@@ -113,7 +113,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                   margin: EdgeInsets.all(8.0),
                   child: ExpansionTile(
                     trailing: Icon(Icons.keyboard_arrow_down, size: 20.0),
-                    backgroundColor: Colors.yellow.shade600,
+                    backgroundColor: Colors.yellow[800],
                     collapsedIconColor: Colors.white,
                     iconColor: Colors.white,
                     shape: RoundedRectangleBorder(
@@ -168,7 +168,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                   margin: EdgeInsets.all(8.0),
                   child: ExpansionTile(
                     trailing: Icon(Icons.keyboard_arrow_down, size: 20.0),
-                    backgroundColor: Colors.yellow.shade600,
+                    backgroundColor: Colors.yellow[800],
                     collapsedIconColor: Colors.white,
                     iconColor: Colors.white,
                     shape: RoundedRectangleBorder(
