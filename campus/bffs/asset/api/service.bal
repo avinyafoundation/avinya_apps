@@ -733,5 +733,29 @@ service / on new http:Listener(9094) {
         }
     }
 
+    resource function get inventory_data_by_organization/[int organization_id]/[string date]() returns Inventory[]|error {
+        GetInventoryDataByOrganizationResponse|graphql:ClientError getInventoryDataByOrganizationResponse = globalDataClient->getInventoryDataByOrganization(date,organization_id);
+        if (getInventoryDataByOrganizationResponse is GetInventoryDataByOrganizationResponse) {
+            Inventory[] inventory_datas = [];
+            foreach var inventory_data in getInventoryDataByOrganizationResponse.inventory_data_by_organization {
+                Inventory|error inventory_data_record = inventory_data.cloneWithType(Inventory);
+                if (inventory_data_record is Inventory) {
+                    inventory_datas.push(inventory_data_record);
+                } else {
+                    log:printError("Error while processing Application record received", inventory_data_record);
+                    return error("Error while processing Application record received: " + inventory_data_record.message() +
+                        ":: Detail: " + inventory_data_record.detail().toString());
+                }
+            }
+
+            return inventory_datas;
+
+        } else {
+            log:printError("Error while getting application", getInventoryDataByOrganizationResponse);
+            return error("Error while getting application: " + getInventoryDataByOrganizationResponse.message() +
+                ":: Detail: " + getInventoryDataByOrganizationResponse.detail().toString());
+        }
+    }
+
 
 }

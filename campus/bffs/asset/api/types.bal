@@ -215,17 +215,19 @@ public type EvaluationMetadata record {
 };
 
 public type Inventory record {
-    int? quantity_out?;
     int? consumable_id?;
     int? quantity?;
-    int? quantity_in?;
     string? created?;
-    int? organization_id?;
     int? avinya_type_id?;
-    int? id?;
     int? asset_id?;
-    string? updated?;
     string? record_type?;
+    int? quantity_out?;
+    int? resource_property_id?;
+    int? quantity_in?;
+    int? organization_id?;
+    int? id?;
+    string? updated?;
+    string? resource_property_value?;
     int? person_id?;
 };
 
@@ -1052,4 +1054,29 @@ public type GetAvinyaTypesResponse record {|
         int? level;
         string? description;
     |}[] avinya_types;
+|};
+
+public type GetInventoryDataByOrganizationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string global_type;
+            string? name;
+        |}? avinya_type;
+        record {|
+            int? id;
+            string? name;
+            string? manufacturer;
+        |}? consumable;
+        int? quantity;
+        int? quantity_in;
+        int? quantity_out;
+        record {|
+            int? id;
+            string? property;
+            string? value;
+        |}? resource_property;
+    |}[] inventory_data_by_organization;
 |};
