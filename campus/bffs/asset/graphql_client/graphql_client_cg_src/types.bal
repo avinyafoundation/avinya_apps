@@ -242,12 +242,15 @@ public type Inventory record {
     int? quantity?;
     string? created?;
     int? avinya_type_id?;
+    string? description?;
     int? asset_id?;
     string? record_type?;
+    string? manufacturer?;
     int? quantity_out?;
     int? resource_property_id?;
     int? quantity_in?;
     int? organization_id?;
+    string? name?;
     int? id?;
     string? updated?;
     string? resource_property_value?;
@@ -1091,11 +1094,9 @@ public type GetInventoryDataByOrganizationResponse record {|
             string global_type;
             string? name;
         |}? avinya_type;
-        record {|
-            int? id;
-            string? name;
-            string? manufacturer;
-        |}? consumable;
+        string? name;
+        string? manufacturer;
+        string? description;
         int? quantity;
         int? quantity_in;
         int? quantity_out;
