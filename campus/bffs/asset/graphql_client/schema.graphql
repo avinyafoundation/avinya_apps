@@ -546,6 +546,9 @@ input Inventory {
   avinya_type_id: Int
   asset_id: Int
   consumable_id: Int
+  name: String
+  description: String
+  manufacturer: String
   organization_id: Int
   person_id: Int
   quantity: Int
@@ -569,6 +572,9 @@ type InventoryData {
   quantity_in: Int
   quantity_out: Int
   resource_property: ResourcePropertyData
+  name: String
+  description: String
+  manufacturer: String
   created: String
   updated: String
 }
