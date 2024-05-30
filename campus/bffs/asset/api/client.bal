@@ -237,4 +237,15 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetInventoryDataByOrganizationResponse>check performDataBinding(graphqlResponse, GetInventoryDataByOrganizationResponse);
     }
+
+    remote isolated function createInventories(Inventory[] inventories) returns json|graphql:ClientError {
+        string query = string `mutation addInventories($inventories: [Inventory!]!)
+                                {
+                                    add_inventories(inventories:$inventories)
+                                }`;
+        map<anydata> variables = {"inventories": inventories};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        
+        return graphqlResponse;
+    }
 }

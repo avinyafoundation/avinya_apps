@@ -551,9 +551,9 @@ input Inventory {
   manufacturer: String
   organization_id: Int
   person_id: Int
-  quantity: Int
-  quantity_in: Int
-  quantity_out: Int
+  quantity: Decimal
+  quantity_in: Decimal
+  quantity_out: Decimal
   resource_property_id: Int
   resource_property_value: String
   created: String
@@ -568,9 +568,9 @@ type InventoryData {
   consumable: ConsumableData
   organization: OrganizationData
   person: PersonData
-  quantity: Int
-  quantity_in: Int
-  quantity_out: Int
+  quantity: Decimal
+  quantity_in: Decimal
+  quantity_out: Decimal
   resource_property: ResourcePropertyData
   name: String
   description: String
@@ -639,6 +639,7 @@ type Mutation {
   update_duty_rotation_metadata(duty_rotation: DutyRotationMetaDetails!): DutyRotationMetaData
   add_duty_attendance(duty_attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
   add_duty_evaluation(duty_evaluation: Evaluation!): EvaluationData
+  add_inventories(inventories: [Inventory!]!): Int
 }
 
 input Organization {

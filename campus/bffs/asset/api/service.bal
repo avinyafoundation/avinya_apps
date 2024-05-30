@@ -756,6 +756,16 @@ service / on new http:Listener(9094) {
                 ":: Detail: " + getInventoryDataByOrganizationResponse.detail().toString());
         }
     }
-
-
+    resource function post inventories (@http:Payload Inventory[] inventories) returns json|error {
+    
+        json|graphql:ClientError createInventoryResponse = globalDataClient->createInventories(inventories);
+        if(createInventoryResponse is json) {
+            log:printInfo("Inventories created successfully: " + createInventoryResponse.toString());
+            return createInventoryResponse;
+        } else {
+            log:printError("Error while creating inventories", createInventoryResponse);
+            return error("Error while creating inventories: " + createInventoryResponse.message() +
+                ":: Detail: " + createInventoryResponse.detail().toString());
+        }
+    }
 }
