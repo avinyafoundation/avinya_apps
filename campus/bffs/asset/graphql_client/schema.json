@@ -7985,7 +7985,7 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "add_inventories",
+                            "name": "consumable_replenishment",
                             "args": [
                                 {
                                     "name": "inventories",
@@ -8010,9 +8010,17 @@
                                 }
                             ],
                             "type": {
-                                "kind": "SCALAR",
-                                "name": "Int",
-                                "ofType": null
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "InventoryData",
+                                        "ofType": null
+                                    }
+                                }
                             },
                             "isDeprecated": false,
                             "deprecationReason": null

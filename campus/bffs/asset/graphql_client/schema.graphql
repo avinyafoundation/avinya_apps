@@ -639,7 +639,7 @@ type Mutation {
   update_duty_rotation_metadata(duty_rotation: DutyRotationMetaDetails!): DutyRotationMetaData
   add_duty_attendance(duty_attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
   add_duty_evaluation(duty_evaluation: Evaluation!): EvaluationData
-  add_inventories(inventories: [Inventory!]!): Int
+  consumable_replenishment(inventories: [Inventory!]!): [InventoryData!]
 }
 
 input Organization {

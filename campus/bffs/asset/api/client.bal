@@ -238,10 +238,28 @@ public isolated client class GraphqlClient {
         return <GetInventoryDataByOrganizationResponse>check performDataBinding(graphqlResponse, GetInventoryDataByOrganizationResponse);
     }
 
-    remote isolated function createInventories(Inventory[] inventories) returns json|graphql:ClientError {
-        string query = string `mutation addInventories($inventories: [Inventory!]!)
+    remote isolated function consumableReplenishment(Inventory[] inventories) returns json|graphql:ClientError {
+        string query = string `mutation consumableReplenishment($inventories: [Inventory!]!)
                                 {
-                                    add_inventories(inventories:$inventories)
+                                    consumable_replenishment(inventories:$inventories)
+                                        {
+                                            id
+                                            avinya_type{
+                                                id
+                                                global_type
+                                                name
+                                            }
+                                            consumable{
+                                                name
+                                                description
+                                                manufacturer
+                                            }
+                                            quantity
+                                            quantity_in
+                                            quantity_out
+                                            created
+                                            updated
+                                        }
                                 }`;
         map<anydata> variables = {"inventories": inventories};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
