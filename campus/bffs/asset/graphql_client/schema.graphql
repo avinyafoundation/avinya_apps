@@ -640,6 +640,7 @@ type Mutation {
   add_duty_attendance(duty_attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
   add_duty_evaluation(duty_evaluation: Evaluation!): EvaluationData
   consumable_replenishment(inventories: [Inventory!]!): [InventoryData!]
+  consumable_depletion(inventories: [Inventory!]!): [InventoryData!]
 }
 
 input Organization {

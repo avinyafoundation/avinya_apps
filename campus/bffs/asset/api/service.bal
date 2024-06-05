@@ -768,4 +768,17 @@ service / on new http:Listener(9094) {
                 ":: Detail: " + createInventoryResponse.detail().toString());
         }
     }
+
+    resource function post consumable_depletion(@http:Payload Inventory[] inventories) returns json|error {
+    
+        json|graphql:ClientError inventoryDepletionResponse = globalDataClient->consumableDepletion(inventories);
+        if(inventoryDepletionResponse is json) {
+            log:printInfo("Inventories depleted  successfully: " + inventoryDepletionResponse.toString());
+            return inventoryDepletionResponse;
+        } else {
+            log:printError("Error while depletion inventories", inventoryDepletionResponse);
+            return error("Error while depletion inventories: " + inventoryDepletionResponse.message() +
+                ":: Detail: " + inventoryDepletionResponse.detail().toString());
+        }
+    }
 }

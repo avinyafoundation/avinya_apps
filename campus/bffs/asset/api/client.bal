@@ -266,4 +266,33 @@ public isolated client class GraphqlClient {
         
         return graphqlResponse;
     }
+
+    remote isolated function consumableDepletion(Inventory[] inventories) returns json|graphql:ClientError {
+        string query = string ` mutation consumableDepletion($inventories: [Inventory!]!)
+                                    {
+                                      consumable_depletion(inventories:$inventories)
+                                        {
+                                            id
+                                            avinya_type{
+                                                id
+                                                global_type
+                                                name
+                                            }
+                                            consumable{
+                                                name
+                                                description
+                                                manufacturer
+                                            }
+                                            quantity
+                                            quantity_in
+                                            quantity_out
+                                            created
+                                            updated
+                                        }
+                                    }`;
+        map<anydata> variables = {"inventories": inventories};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+
+        return graphqlResponse;
+    }
 }
