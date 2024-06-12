@@ -19,7 +19,7 @@ class _StockReplenishmentScreenState extends State<StockReplenishmentScreen> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          child: StockReplenishment(
+          child: StockReplenishmentForm(
             title: 'Stock Replenishment',
           ),
         ),

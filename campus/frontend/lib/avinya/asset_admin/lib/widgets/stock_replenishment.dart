@@ -2,15 +2,16 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gallery/avinya/asset_admin/lib/data/stock_repenishment.dart';
+// import 'package:asset_admin/data/stock_repenishment.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
-import 'package:attendance/data/activity_attendance.dart';
 import 'package:gallery/data/person.dart';
 import 'package:intl/intl.dart';
-import 'package:attendance/widgets/date_range_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class StockReplenishment extends StatefulWidget {
-  const StockReplenishment({Key? key, required this.title}) : super(key: key);
+class StockReplenishmentForm extends StatefulWidget {
+  const StockReplenishmentForm({Key? key, required this.title})
+      : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -24,16 +25,18 @@ class StockReplenishment extends StatefulWidget {
   final String title;
 
   @override
-  State<StockReplenishment> createState() => _StockReplenishmentState();
+  State<StockReplenishmentForm> createState() => _StockReplenishmentState();
 }
 
-class _StockReplenishmentState extends State<StockReplenishment> {
-  List<ActivityAttendance> _fetchedAttendance = [];
-  List<ActivityAttendance> _fetchedAttendanceAfterSchool = [];
+class _StockReplenishmentState extends State<StockReplenishmentForm> {
+  List<StockReplenishment> _fetchedStockList = [];
+  List<StockReplenishment> _fetchedStockListAfterSchool = [];
   Organization? _fetchedOrganization;
   bool _isFetching = true;
   List<Person> _fetchedStudentList = [];
 
+  bool _isSubmitting = false;
+  bool _isUpdate = false;
   //calendar specific variables
   DateTime? _selectedDay;
 
@@ -44,43 +47,23 @@ class _StockReplenishmentState extends State<StockReplenishment> {
   var activityId = 0;
   bool _isDisplayErrorMessage = false;
 
-  late String formattedStartDate;
-  late String formattedEndDate;
   var today = DateTime.now();
 
-  void selectWeek(DateTime today, activityId) async {
-    // Update the variables to select the week
-    final formatter = DateFormat('MMM d, yyyy');
-    formattedStartDate = formatter.format(today);
-    formattedEndDate = formatter.format(today);
-    setState(() {
-      _isFetching = false;
-    });
-  }
+  DateTime? _selectedDate;
 
-  @override
-  void initState() {
-    super.initState();
-    var today = DateTime.now();
-    activityId = campusAppsPortalInstance.activityIds['homeroom']!;
-    selectWeek(today, activityId);
-  }
+  Future<void> _pickDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _data = MyData(
-        _fetchedAttendance, columnNames, _fetchedOrganization, updateSelected);
-    DateRangePicker(updateDateRange, formattedStartDate);
-  }
-
-  void updateSelected(int index, bool value, List<bool> selected) {
-    setState(() {
-      selected[index] = value;
-    });
-  }
-
-  void updateDateRange(_rangeStart, _rangeEnd) async {
     int? parentOrgId =
         campusAppsPortalInstance.getUserPerson().organization!.id;
     if (parentOrgId != null) {
@@ -89,15 +72,7 @@ class _StockReplenishmentState extends State<StockReplenishment> {
       });
       try {
         setState(() {
-          final startDate = _rangeStart ?? _selectedDay;
-          final endDate = _rangeEnd ?? _selectedDay;
-          final formatter = DateFormat('MMM d, yyyy');
-          final formattedStartDate = formatter.format(startDate!);
-          final formattedEndDate = formatter.format(endDate!);
-          this.formattedStartDate = formattedStartDate;
-          this.formattedEndDate = formattedEndDate;
-          this._fetchedStudentList = _fetchedStudentList;
-          refreshState(this._selectedValue);
+          refreshState(DateFormat('yyyy-MM-dd').format(_selectedDate!));
         });
       } catch (error) {
         // Handle any errors that occur during the fetch
@@ -109,7 +84,56 @@ class _StockReplenishmentState extends State<StockReplenishment> {
     }
   }
 
-  void refreshState(Organization? newValue) async {
+  @override
+  void initState() {
+    super.initState();
+    // var today = DateTime.now();
+    activityId = campusAppsPortalInstance.activityIds['homeroom']!;
+    _selectedDate = DateTime.now();
+    _fetchInitialData();
+    // selectWeek(today, activityId);
+  }
+
+  @override
+  void dispose() {
+    // Perform any cleanup tasks here
+    super.dispose();
+  }
+
+  Future<void> _fetchInitialData() async {
+    int? parentOrgId =
+        campusAppsPortalInstance.getUserPerson().organization?.id;
+    if (parentOrgId != null) {
+      setState(() {
+        _isFetching = true; // Show loading indicator
+      });
+      try {
+        await refreshState(DateFormat('yyyy-MM-dd').format(_selectedDate!));
+      } catch (error) {
+        // Handle any errors that occur during the fetch
+        // You can show an error message or take appropriate actions here
+      } finally {
+        setState(() {
+          _isFetching = false; // Hide loading indicator
+        });
+      }
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Perform any initialization that depends on context
+    // _pickDate(context);
+  }
+
+  void updateSelected(int index, bool value, List<bool> selected) {
+    setState(() {
+      selected[index] = value;
+    });
+  }
+
+  Future<void> refreshState(String? newValue) async {
     setState(() {
       _isFetching = true; // Set _isFetching to true before starting the fetch
     });
@@ -117,625 +141,228 @@ class _StockReplenishmentState extends State<StockReplenishment> {
         campusAppsPortalInstance.getUserPerson().organization!.id;
     _selectedValue = newValue ?? null;
 
-    if (_selectedValue == null) {
-      _fetchedStudentList = await fetchOrganizationForAll(parentOrgId!);
-      if (_fetchedOrganization != null) {
-        _fetchedOrganization!.people = _fetchedStudentList;
-        _fetchedOrganization!.id = parentOrgId;
-      } else {
-        _fetchedOrganization = Organization();
-        _fetchedOrganization!.people = _fetchedStudentList;
-        _fetchedOrganization!.id = parentOrgId;
-      }
-    } else {
-      var cols =
-          columnNames.map((label) => DataColumn(label: Text(label!))).toList();
+    _fetchedStockList =
+        await getStockListforReplenishment(parentOrgId, newValue!);
 
-      _fetchedOrganization = await fetchOrganization(newValue!.id!);
-      _fetchedAttendance = await getClassActivityAttendanceReportForPayment(
-          _fetchedOrganization!.id!,
-          activityId,
-          DateFormat('yyyy-MM-dd')
-              .format(DateFormat('MMM d, yyyy').parse(this.formattedStartDate)),
-          DateFormat('yyyy-MM-dd')
-              .format(DateFormat('MMM d, yyyy').parse(this.formattedEndDate)));
-
-      if (_fetchedAttendance.length > 0) {
-        columnNames.clear();
-        List<String?> names = _fetchedAttendance
-            .map((attendance) => attendance.sign_in_time?.split(" ")[0])
-            .where((name) => name != null) // Filter out null values
-            .toList();
-        columnNames.addAll(names);
-      } else {
-        columnNames.clear();
-      }
-
-      columnNames = columnNames.toSet().toList();
-      columnNames.sort();
-      columnNames.insert(0, "Name");
-      columnNames.insert(1, "Digital ID");
-      cols =
-          columnNames.map((label) => DataColumn(label: Text(label!))).toList();
-      print(cols.length);
-      if (_fetchedAttendance.length == 0)
-        _fetchedAttendance = new List.filled(
-            _fetchedOrganization!.people.length,
-            new ActivityAttendance(person_id: -1));
-      else {
-        for (int i = 0; i < _fetchedOrganization!.people.length; i++) {
-          if (_fetchedAttendance.indexWhere((attendance) =>
-                  attendance.person_id == _fetchedOrganization!.people[i].id) ==
-              -1) {
-            _fetchedAttendance.add(new ActivityAttendance(person_id: -1));
-          }
-        }
-      }
+    if (mounted) {
+      setState(() {
+        _fetchedStockList;
+        _isFetching =
+            false; // Ensure _isFetching is set to false after fetching
+      });
     }
+  }
 
-    String? newSelectedVal;
-    if (_selectedValue != null) {
-      newSelectedVal = _selectedValue.description;
-    }
+  Future<void> _handleSubmit() async {
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    await addConsumableReplenishment(_fetchedStockList);
+
+    // Add your form submission logic here
 
     setState(() {
-      _fetchedOrganization;
-      this._isFetching = false;
-      _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
-          updateSelected);
+      _isSubmitting = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    var cols =
-        columnNames.map((label) => DataColumn(label: Text(label!))).toList();
-
     return SingleChildScrollView(
       child: campusAppsPortalPersonMetaDataInstance
               .getGroups()
               .contains('Student')
-          ? Text("Please go to 'Mark Attedance' Page",
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold))
-          : Wrap(
-              children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    for (var org in campusAppsPortalInstance
-                        .getUserPerson()
-                        .organization!
-                        .child_organizations)
-                      // create a text widget with some padding
-                      Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            if (org.child_organizations.length > 0)
-                              Container(
-                                margin: EdgeInsets.only(
-                                    left: 20, top: 20, bottom: 10),
-                                child: Row(children: <Widget>[
-                                  Text('Select a class:'),
-                                  SizedBox(width: 10),
-                                  DropdownButton<Organization>(
-                                    value: _selectedValue,
-                                    onChanged: _isFetching
-                                        ? null
-                                        : (Organization? newValue) async {
-                                            _selectedValue = newValue!;
-                                            print(newValue.id);
-
-                                            _fetchedOrganization =
-                                                await fetchOrganization(
-                                                    newValue.id!);
-
-                                            _fetchedAttendance =
-                                                await getClassActivityAttendanceReportForPayment(
-                                                    _fetchedOrganization!.id!,
-                                                    activityId,
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateFormat(
-                                                                'MMM d, yyyy')
-                                                            .parse(this
-                                                                .formattedStartDate)),
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateFormat(
-                                                                'MMM d, yyyy')
-                                                            .parse(this
-                                                                .formattedEndDate)));
-
-                                            if (_fetchedAttendance.length > 0) {
-                                              // Add null check here
-                                              // Process attendance data here
-                                              columnNames.clear();
-                                              List<String?> names =
-                                                  _fetchedAttendance
-                                                      .map((attendance) =>
-                                                          attendance
-                                                              .sign_in_time
-                                                              ?.split(" ")[0])
-                                                      .where((name) =>
-                                                          name !=
-                                                          null) // Filter out null values
-                                                      .toList();
-                                              columnNames.addAll(names);
-                                            } else {
-                                              columnNames.clear();
-                                            }
-
-                                            columnNames =
-                                                columnNames.toSet().toList();
-                                            columnNames.sort();
-                                            columnNames.insert(0, "Name");
-                                            columnNames.insert(1, "Digital ID");
-                                            cols = columnNames
-                                                .map((label) => DataColumn(
-                                                    label: Text(label!)))
-                                                .toList();
-                                            print(cols.length);
-                                            if (_fetchedAttendance.length == 0)
-                                              _fetchedAttendance =
-                                                  new List.filled(
-                                                      _fetchedOrganization!
-                                                          .people.length,
-                                                      new ActivityAttendance(
-                                                          person_id: -1));
-                                            else {
-                                              for (int i = 0;
-                                                  i <
-                                                      _fetchedOrganization!
-                                                          .people.length;
-                                                  i++) {
-                                                if (_fetchedAttendance.indexWhere(
-                                                        (attendance) =>
-                                                            attendance
-                                                                .person_id ==
-                                                            _fetchedOrganization!
-                                                                .people[i]
-                                                                .id) ==
-                                                    -1) {
-                                                  _fetchedAttendance.add(
-                                                      new ActivityAttendance(
-                                                          person_id: -1));
-                                                }
-                                              }
-                                            }
-                                            setState(() {
-                                              _fetchedOrganization;
-                                              _fetchedStudentList;
-                                              _data = MyData(
-                                                  _fetchedAttendance,
-                                                  columnNames,
-                                                  _fetchedOrganization,
-                                                  updateSelected);
-                                            });
-                                            _isDisplayErrorMessage = false;
-                                          },
-                                    items: org.child_organizations
-                                        .map((Organization value) {
-                                      return DropdownMenuItem<Organization>(
-                                        value: value,
-                                        child: Text(value.description!),
-                                      );
-                                    }).toList(),
-                                  ),
-                                  SizedBox(width: 20),
-                                  ElevatedButton(
-                                    style: ButtonStyle(
-                                      textStyle: MaterialStateProperty.all(
-                                        TextStyle(fontSize: 20),
-                                      ),
-                                      elevation: MaterialStateProperty.all(20),
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.greenAccent),
-                                      foregroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.black),
+          ? Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Text(
+                  "Please go to 'Mark Attendance' Page",
+                  style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                ),
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: 200,
+                      child: TextField(
+                        readOnly: true,
+                        onTap: () => _pickDate(context),
+                        decoration: InputDecoration(
+                          labelText: 'Select Date',
+                          suffixIcon: Icon(Icons.calendar_today),
+                        ),
+                        controller: TextEditingController(
+                          text: _selectedDate == null
+                              ? ''
+                              : '${_selectedDate!.toLocal()}'.split(' ')[0],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
+                  _isFetching
+                      ? Center(
+                          child: SpinKitCircle(
+                            color: Colors.deepPurpleAccent,
+                            size: 50,
+                          ),
+                        )
+                      : _fetchedStockList.isNotEmpty
+                          ? LayoutBuilder(
+                              builder: (context, constraints) {
+                                return SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      minWidth: constraints.maxWidth,
                                     ),
-                                    onPressed: _isFetching
-                                        ? null
-                                        : () {
-                                            if (_selectedValue == null) {
-                                              setState(() {
-                                                _isDisplayErrorMessage = true;
-                                              });
-                                            } else {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        DateRangePicker(
-                                                            updateDateRange,
-                                                            formattedStartDate)),
-                                              );
-                                              setState(() {
-                                                _isDisplayErrorMessage = false;
-                                              });
-                                            }
-                                          },
-                                    child: Container(
-                                      height: 50, // Adjust the height as needed
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          if (_isFetching)
+                                    child: DataTable(
+                                      columns: const [
+                                        DataColumn(
+                                            label: Text(
+                                          "Product Name",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        )),
+                                        DataColumn(
+                                            label: Text(
+                                          "Quantity",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        )),
+                                        DataColumn(
+                                            label: Text(
+                                          "On Hand",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        )),
+                                        DataColumn(
+                                            label: Text(
+                                          "Total",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        )),
+                                        DataColumn(
+                                            label: Text(
+                                          "Unit",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        )),
+                                      ],
+                                      rows: _fetchedStockList.map((item) {
+                                        int totalQuantityIn =
+                                            (item.quantity_in ?? 0) +
+                                                (item.quantity ?? 0);
+
+                                        return DataRow(cells: [
+                                          DataCell(Text(item.name!)),
+                                          DataCell(
                                             Padding(
                                               padding:
-                                                  EdgeInsets.only(right: 10),
-                                              child: SpinKitFadingCircle(
-                                                color: Colors
-                                                    .black, // Customize the color of the indicator
-                                                size:
-                                                    20, // Customize the size of the indicator
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 6.0,
+                                                      horizontal: 2.0),
+                                              child: TextField(
+                                                keyboardType: TextInputType
+                                                    .numberWithOptions(
+                                                        decimal: true),
+                                                inputFormatters: <TextInputFormatter>[
+                                                  FilteringTextInputFormatter
+                                                      .allow(RegExp(
+                                                          r'^\d*\.?\d{0,2}')),
+                                                ],
+                                                onChanged:
+                                                    (String value) async {
+                                                  int? quantity =
+                                                      int.tryParse(value);
+                                                  if (quantity != null) {
+                                                    print(
+                                                        'Quantity: $quantity');
+                                                  }
+                                                },
+                                                decoration: InputDecoration(
+                                                  hintText: item.quantity
+                                                          ?.toString() ??
+                                                      'Enter quantity',
+                                                  border: OutlineInputBorder(),
+                                                ),
                                               ),
                                             ),
-                                          if (!_isFetching)
-                                            Icon(Icons.calendar_today,
-                                                color: Colors.black),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            '${this.formattedStartDate} - ${this.formattedEndDate}',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w400,
-                                            ),
                                           ),
-                                        ],
-                                      ),
+                                          DataCell(Text(
+                                              item.quantity_in!.toString())),
+                                          DataCell(
+                                              Text(totalQuantityIn.toString())),
+                                          DataCell(Text(item
+                                              .resource_property!.value!
+                                              .toString())),
+                                        ]);
+                                      }).toList(),
                                     ),
                                   ),
-                                ]),
+                                );
+                              },
+                            )
+                          : Center(
+                              child: Text('No data found'),
+                            ),
+                  if (!_isFetching && _fetchedStockList.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: SizedBox(
+                          width: 120, // Set the width of the button
+                          // child: ElevatedButton(
+                          //   onPressed: _isSubmitting ? null : _handleSubmit,
+                          //   style: ElevatedButton.styleFrom(
+                          //     primary: Colors.deepPurple, // Change button color
+                          //     elevation: 4, // Add elevation
+                          //   ),
+                          //   child: Padding(
+                          //     padding: const EdgeInsets.all(8.0),
+                          //     child: Text(
+                          //       _isUpdate ? 'Update' : 'Save',
+                          //       style: TextStyle(
+                          //         fontSize: 16, // Increase font size
+                          //         fontWeight: FontWeight.bold,
+                          //         color: Colors.white, // Change text color
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                          child: ElevatedButton(
+                            onPressed: _isSubmitting ? null : _handleSubmit,
+                            style: ButtonStyle(
+                              padding: MaterialStateProperty.all(
+                                  EdgeInsets.all(16.0)),
+                              textStyle: MaterialStateProperty.all(
+                                const TextStyle(fontSize: 16),
                               ),
-                          ]),
-                  ],
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 20.0),
-                  child: _isDisplayErrorMessage
-                      ? Text(
-                          'Please select a value from the dropdown',
-                          style: TextStyle(color: Colors.red),
-                        )
-                      : SizedBox(),
-                ),
-                SizedBox(height: 32.0),
-                SizedBox(height: 32.0),
-                Wrap(children: [
-                  if (_isFetching)
-                    Container(
-                      margin: EdgeInsets.only(top: 180),
-                      child: SpinKitCircle(
-                        color: (Colors
-                            .deepPurpleAccent), // Customize the color of the indicator
-                        size: 50, // Customize the size of the indicator
+                              elevation: MaterialStateProperty.all(20),
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.greenAccent),
+                              foregroundColor:
+                                  MaterialStateProperty.all(Colors.black),
+                            ),
+                            child: Text(
+                              _isUpdate ? 'Update' : 'Save',
+                            ),
+                          ),
+                        ),
                       ),
-                    )
-                  else if (_fetchedAttendance.length > 0)
-                    ScrollConfiguration(
-                      behavior: ScrollConfiguration.of(context)
-                          .copyWith(dragDevices: {
-                        PointerDeviceKind.touch,
-                        PointerDeviceKind.mouse,
-                      }),
-                      child: Table(
-                        border: TableBorder.all(),
-                        children: [
-                          TableRow(children: [
-                            TableCell(
-                                child: Text("Product Name",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold))),
-                            TableCell(
-                                child: Text("Quantity",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold))),
-                            TableCell(
-                                child: Text("On Hand",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold))),
-                            TableCell(
-                                child: Text("Total",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold))),
-                            TableCell(
-                                child: Text("Unit",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold))),
-                          ]),
-                          if (_fetchedOrganization != null)
-                            if (_fetchedOrganization!.people.length > 0)
-                              ..._fetchedOrganization!.people.map((person) {
-                                return TableRow(children: [
-                                  TableCell(
-                                      child: Text(person.preferred_name!)),
-                                  // sign in
-                                  if (_fetchedAttendance.length > 0)
-                                    if (_fetchedAttendance
-                                            .firstWhere(
-                                                (attendance) =>
-                                                    attendance.person_id ==
-                                                        person.id &&
-                                                    attendance.sign_in_time !=
-                                                        null,
-                                                orElse: () =>
-                                                    new ActivityAttendance(
-                                                        person_id: -1))
-                                            .person_id !=
-                                        -1)
-                                      TableCell(
-                                        child: TextField(
-                                          keyboardType:
-                                              TextInputType.numberWithOptions(
-                                                  decimal: true),
-                                          inputFormatters: <TextInputFormatter>[
-                                            FilteringTextInputFormatter.allow(
-                                                RegExp(r'^\d*\.?\d{0,2}')),
-                                          ],
-                                          controller: TextEditingController(
-                                            text: _fetchedAttendance
-                                                        .firstWhere(
-                                                          (attendance) =>
-                                                              attendance
-                                                                      .person_id ==
-                                                                  person.id &&
-                                                              attendance
-                                                                      .sign_in_time !=
-                                                                  null,
-                                                        )
-                                                        .sign_in_time !=
-                                                    null
-                                                ? '1' // or set to the appropriate initial quantity
-                                                : '',
-                                          ),
-                                          onChanged: (String value) async {
-                                            int? quantity = int.tryParse(value);
-                                            if (quantity != null) {
-                                              // Handle the quantity value, e.g., save it to the database or update state
-                                              // await toggleAttendance(person.id!, quantity > 0, true, false);
-                                              print('Quantity: $quantity');
-                                            }
-                                            setState(() {});
-                                          },
-                                          decoration: InputDecoration(
-                                            hintText: 'Enter quantity',
-                                            border: OutlineInputBorder(),
-                                          ),
-                                        ),
-                                      )
-                                    else
-                                      TableCell(
-                                        child: TextField(
-                                          keyboardType:
-                                              TextInputType.numberWithOptions(
-                                                  decimal: true),
-                                          inputFormatters: <TextInputFormatter>[
-                                            FilteringTextInputFormatter.allow(
-                                                RegExp(r'^\d*\.?\d{0,2}')),
-                                          ],
-                                          onChanged: (String value) async {
-                                            int? quantity = int.tryParse(value);
-                                            if (quantity != null) {
-                                              // Handle the quantity value, e.g., save it to the database or update state
-                                              // await toggleAttendance(person.id!, true, quantity > 0, false);
-                                              print('Quantity: $quantity');
-                                            }
-                                            setState(() {});
-                                          },
-                                          decoration: InputDecoration(
-                                            hintText: 'Enter quantity',
-                                            border: OutlineInputBorder(),
-                                          ),
-                                        ),
-                                      ),
-                                  TableCell(child: Text(person.digital_id!)),
-                                  TableCell(child: Text(person.digital_id!)),
-                                  TableCell(
-                                      child: Text(person.preferred_name!)),
-                                ]);
-                              }).toList()
-                        ],
-                      ),
-                    )
-                  else
-                    Container(
-                      margin: EdgeInsets.all(20),
-                      child: Text('No data found'),
                     ),
-                ]),
-              ],
+                ],
+              ),
             ),
     );
   }
-}
-
-class MyData extends DataTableSource {
-  MyData(this._fetchedAttendance, this.columnNames, this._fetchedOrganization,
-      this.updateSelected) {
-    columnNames.sort((a, b) => b!.compareTo(a!));
-  }
-
-  final List<ActivityAttendance> _fetchedAttendance;
-  final List<String?> columnNames;
-  final Organization? _fetchedOrganization;
-  final Function(int, bool, List<bool>) updateSelected;
-
-  @override
-  DataRow? getRow(int index) {
-    if (index == 0 || index == 1 || index == 2) {
-      List<DataCell> cells = new List.filled(
-        columnNames.toSet().toList().length,
-        new DataCell(Container(child: Text("Absent"), color: Colors.red)),
-      );
-
-      if (index == 0) {
-        cells[0] = DataCell(Text(''));
-        cells[1] = DataCell(Text(''));
-        for (final date in columnNames) {
-          print("date ${date}");
-          if (columnNames.indexOf(date) == 0 ||
-              columnNames.indexOf(date) == 1) {
-            continue;
-          }
-
-          date == '$date 00:00:00';
-          cells[columnNames.indexOf(date)] = DataCell(Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.all(8),
-            child: Text(DateFormat.EEEE().format(DateTime.parse(date!)),
-                style: TextStyle(
-                  color: Color.fromARGB(255, 14, 72, 90),
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                )),
-          ));
-        }
-      } else if (index == 1) {
-        cells[0] = DataCell(Text(''));
-        cells[1] = DataCell(Container(
-          alignment: Alignment.bottomRight,
-          padding: EdgeInsets.all(8),
-          child: Text('Present Count',
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 72, 90),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              )),
-        ));
-        for (final date in columnNames) {
-          int presentCount = 0;
-          if (columnNames.indexOf(date) == 0 ||
-              columnNames.indexOf(date) == 1) {
-            continue;
-          }
-          for (final attendance in _fetchedAttendance) {
-            if (attendance.sign_in_time != null &&
-                attendance.sign_in_time!.split(" ")[0] == date) {
-              presentCount++;
-            }
-          }
-          cells[columnNames.indexOf(date)] = DataCell(Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.all(8),
-            child: Text(presentCount.toString(),
-                style: TextStyle(
-                  color: Color.fromARGB(255, 14, 72, 90),
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                )),
-          ));
-        }
-      } else if (index == 2) {
-        cells[0] = DataCell(Text(''));
-        cells[1] = DataCell(Container(
-          alignment: Alignment.bottomRight,
-          padding: EdgeInsets.all(8),
-          child: Text('Absent Count',
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 72, 90),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              )),
-        ));
-        for (final date in columnNames) {
-          int absentCount = 0;
-          int presentCount = 0;
-          if (columnNames.indexOf(date) == 0 ||
-              columnNames.indexOf(date) == 1) {
-            continue;
-          }
-          for (final attendance in _fetchedAttendance) {
-            if (attendance.sign_in_time != null &&
-                attendance.sign_in_time!.split(" ")[0] == date) {
-              presentCount++;
-            }
-          }
-          absentCount = _fetchedOrganization!.people.length - presentCount;
-          cells[columnNames.indexOf(date)] = DataCell(Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.all(8),
-            child: Text(absentCount.toString(),
-                style: TextStyle(
-                  color: Color.fromARGB(255, 14, 72, 90),
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                )),
-          ));
-        }
-      }
-
-      return DataRow(
-        cells: cells,
-      );
-    }
-    if (_fetchedOrganization != null &&
-        _fetchedOrganization!.people.isNotEmpty &&
-        columnNames.length > 0) {
-      var person = _fetchedOrganization!
-          .people[index - 3]; // to facilitate additional rows
-      List<DataCell> cells = new List.filled(
-        columnNames.toSet().toList().length,
-        new DataCell(Container(
-            alignment: Alignment.center,
-            child: Text("Absent",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                )))),
-      );
-      cells[0] = DataCell(Text(person.preferred_name!));
-      cells[1] = DataCell(Text(person.digital_id.toString()));
-      for (final attendance in _fetchedAttendance) {
-        if (attendance.person_id == person.id) {
-          for (final date in columnNames) {
-            if (attendance.sign_in_time != null &&
-                attendance.sign_in_time!.split(" ")[0] == date) {
-              // print(
-              //     'index ${index} date ${date} person_id ${attendance.person_id} sign_in_time ${attendance.sign_in_time} columnNames length ${columnNames.length} columnNames.indexOf(date) ${columnNames.indexOf(date)}');
-              cells[columnNames.indexOf(date)] = DataCell(Container(
-                  alignment: Alignment.center, child: Text("Present")));
-            }
-          }
-        }
-      }
-      int numItems = _fetchedOrganization!.people.length;
-      List<bool> selected = List<bool>.generate(numItems, (int index) => false);
-      return DataRow(
-        cells: cells,
-        onSelectChanged: (value) {
-          updateSelected(index, value!,
-              selected); // Call the callback to update the selected state
-        },
-        color: MaterialStateProperty.resolveWith<Color?>(
-            (Set<MaterialState> states) {
-          if (states.contains(MaterialState.hovered)) {
-            return Colors.grey.withOpacity(0.4);
-          }
-          if (index.isEven) {
-            return Colors.grey.withOpacity(0.2);
-          }
-          return null;
-        }),
-      );
-    }
-    return null;
-  }
-
-  @override
-  bool get isRowCountApproximate => false;
-
-  @override
-  int get rowCount {
-    int count = 0;
-    if (_fetchedOrganization != null) {
-      count = _fetchedOrganization?.people.length ?? 0;
-      count += 3; //to facilitate additional rows
-    }
-    return count;
-  }
-
-  @override
-  int get selectedRowCount => 0;
 }
