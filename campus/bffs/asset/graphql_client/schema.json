@@ -6023,7 +6023,7 @@
                             "args": [],
                             "type": {
                                 "kind": "SCALAR",
-                                "name": "Int",
+                                "name": "Decimal",
                                 "ofType": null
                             },
                             "isDeprecated": false,
@@ -6034,7 +6034,7 @@
                             "args": [],
                             "type": {
                                 "kind": "SCALAR",
-                                "name": "Int",
+                                "name": "Decimal",
                                 "ofType": null
                             },
                             "isDeprecated": false,
@@ -6045,7 +6045,7 @@
                             "args": [],
                             "type": {
                                 "kind": "SCALAR",
-                                "name": "Int",
+                                "name": "Decimal",
                                 "ofType": null
                             },
                             "isDeprecated": false,
@@ -7983,6 +7983,88 @@
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
+                        },
+                        {
+                            "name": "consumable_replenishment",
+                            "args": [
+                                {
+                                    "name": "inventories",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "LIST",
+                                            "name": null,
+                                            "ofType": {
+                                                "kind": "NON_NULL",
+                                                "name": null,
+                                                "ofType": {
+                                                    "kind": "INPUT_OBJECT",
+                                                    "name": "Inventory",
+                                                    "ofType": null
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "InventoryData",
+                                        "ofType": null
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "consumable_depletion",
+                            "args": [
+                                {
+                                    "name": "inventories",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "LIST",
+                                            "name": null,
+                                            "ofType": {
+                                                "kind": "NON_NULL",
+                                                "name": null,
+                                                "ofType": {
+                                                    "kind": "INPUT_OBJECT",
+                                                    "name": "Inventory",
+                                                    "ofType": null
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "InventoryData",
+                                        "ofType": null
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
                         }
                     ],
                     "inputFields": null,
@@ -8652,7 +8734,7 @@
                             "name": "quantity",
                             "type": {
                                 "kind": "SCALAR",
-                                "name": "Int",
+                                "name": "Decimal",
                                 "ofType": null
                             },
                             "defaultValue": null
@@ -8661,7 +8743,7 @@
                             "name": "quantity_in",
                             "type": {
                                 "kind": "SCALAR",
-                                "name": "Int",
+                                "name": "Decimal",
                                 "ofType": null
                             },
                             "defaultValue": null
@@ -8670,7 +8752,7 @@
                             "name": "quantity_out",
                             "type": {
                                 "kind": "SCALAR",
-                                "name": "Int",
+                                "name": "Decimal",
                                 "ofType": null
                             },
                             "defaultValue": null

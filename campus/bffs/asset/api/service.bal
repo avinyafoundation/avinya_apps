@@ -756,6 +756,29 @@ service / on new http:Listener(9094) {
                 ":: Detail: " + getInventoryDataByOrganizationResponse.detail().toString());
         }
     }
+    resource function post consumable_replenishment(@http:Payload Inventory[] inventories) returns json|error {
+    
+        json|graphql:ClientError createInventoryResponse = globalDataClient->consumableReplenishment(inventories);
+        if(createInventoryResponse is json) {
+            log:printInfo("Inventories created successfully: " + createInventoryResponse.toString());
+            return createInventoryResponse;
+        } else {
+            log:printError("Error while creating inventories", createInventoryResponse);
+            return error("Error while creating inventories: " + createInventoryResponse.message() +
+                ":: Detail: " + createInventoryResponse.detail().toString());
+        }
+    }
 
-
+    resource function post consumable_depletion(@http:Payload Inventory[] inventories) returns json|error {
+    
+        json|graphql:ClientError inventoryDepletionResponse = globalDataClient->consumableDepletion(inventories);
+        if(inventoryDepletionResponse is json) {
+            log:printInfo("Inventories depleted  successfully: " + inventoryDepletionResponse.toString());
+            return inventoryDepletionResponse;
+        } else {
+            log:printError("Error while depletion inventories", inventoryDepletionResponse);
+            return error("Error while depletion inventories: " + inventoryDepletionResponse.message() +
+                ":: Detail: " + inventoryDepletionResponse.detail().toString());
+        }
+    }
 }

@@ -237,4 +237,62 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetInventoryDataByOrganizationResponse>check performDataBinding(graphqlResponse, GetInventoryDataByOrganizationResponse);
     }
+
+    remote isolated function consumableReplenishment(Inventory[] inventories) returns json|graphql:ClientError {
+        string query = string `mutation consumableReplenishment($inventories: [Inventory!]!)
+                                {
+                                    consumable_replenishment(inventories:$inventories)
+                                        {
+                                            id
+                                            avinya_type{
+                                                id
+                                                global_type
+                                                name
+                                            }
+                                            consumable{
+                                                name
+                                                description
+                                                manufacturer
+                                            }
+                                            quantity
+                                            quantity_in
+                                            quantity_out
+                                            created
+                                            updated
+                                        }
+                                }`;
+        map<anydata> variables = {"inventories": inventories};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        
+        return graphqlResponse;
+    }
+
+    remote isolated function consumableDepletion(Inventory[] inventories) returns json|graphql:ClientError {
+        string query = string ` mutation consumableDepletion($inventories: [Inventory!]!)
+                                    {
+                                      consumable_depletion(inventories:$inventories)
+                                        {
+                                            id
+                                            avinya_type{
+                                                id
+                                                global_type
+                                                name
+                                            }
+                                            consumable{
+                                                name
+                                                description
+                                                manufacturer
+                                            }
+                                            quantity
+                                            quantity_in
+                                            quantity_out
+                                            created
+                                            updated
+                                        }
+                                    }`;
+        map<anydata> variables = {"inventories": inventories};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+
+        return graphqlResponse;
+    }
 }

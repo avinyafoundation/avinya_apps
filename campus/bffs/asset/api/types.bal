@@ -214,18 +214,37 @@ public type EvaluationMetadata record {
     string? status?;
 };
 
+// public type Inventory record {
+//     int? consumable_id?;
+//     anydata? quantity?;
+//     string? created?;
+//     int? avinya_type_id?;
+//     string? description?;
+//     int? asset_id?;
+//     string? record_type?;
+//     string? manufacturer?;
+//     anydata? quantity_out?;
+//     int? resource_property_id?;
+//     anydata? quantity_in?;
+//     int? organization_id?;
+//     string? name?;
+//     int? id?;
+//     string? updated?;
+//     string? resource_property_value?;
+//     int? person_id?;
+// };
 public type Inventory record {
     int? consumable_id?;
-    int? quantity?;
+    decimal? quantity?;
     string? created?;
     int? avinya_type_id?;
     string? description?;
     int? asset_id?;
     string? record_type?;
     string? manufacturer?;
-    int? quantity_out?;
+    decimal? quantity_out?;
     int? resource_property_id?;
-    int? quantity_in?;
+    decimal? quantity_in?;
     int? organization_id?;
     string? name?;
     int? id?;
@@ -233,6 +252,7 @@ public type Inventory record {
     string? resource_property_value?;
     int? person_id?;
 };
+
 
 public type Organization record {
     int[]? parent_organizations?;
@@ -876,9 +896,9 @@ public type GetInventoryResponse record {|
             string? name;
         |}? avinya_type;
         int? avinya_type_id;
-        int? quantity;
-        int? quantity_in;
-        int? quantity_out;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
     |}? inventory;
 |};
 
@@ -909,9 +929,9 @@ public type GetInventoriesResponse record {|
             string? name;
         |}? avinya_type;
         int? avinya_type_id;
-        int? quantity;
-        int? quantity_in;
-        int? quantity_out;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
     |}[] inventories;
 |};
 
@@ -934,9 +954,9 @@ public type AddInventoryResponse record {|
         record {|
             int? id;
         |}? avinya_type;
-        int? quantity;
-        int? quantity_in;
-        int? quantity_out;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
     |}? add_inventory;
 |};
 
@@ -959,9 +979,9 @@ public type UpdateInventoryResponse record {|
         record {|
             int? id;
         |}? avinya_type;
-        int? quantity;
-        int? quantity_in;
-        int? quantity_out;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
     |}? update_inventory;
 |};
 
@@ -1071,9 +1091,9 @@ public type GetInventoryDataByOrganizationResponse record {|
         string? name;
         string? manufacturer;
         string? description;
-        int? quantity;
-        int? quantity_in;
-        int? quantity_out;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
         record {|
             int? id;
             string? property;
