@@ -641,6 +641,8 @@ type Mutation {
   add_duty_evaluation(duty_evaluation: Evaluation!): EvaluationData
   consumable_replenishment(inventories: [Inventory!]!): [InventoryData!]
   consumable_depletion(inventories: [Inventory!]!): [InventoryData!]
+  update_consumable_replenishment(inventories: [Inventory!]!): [InventoryData!]
+  update_consumable_depletion(inventories: [Inventory!]!): [InventoryData!]
 }
 
 input Organization {
@@ -892,6 +894,7 @@ type Query {
   total_attendance_count_by_date(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [TotalActivityParticipantAttendanceCountByDateData!]
   daily_attendance_summary_report(organization_id: Int, avinya_type_id: Int, from_date: String = "", to_date: String = ""): [DailyActivityParticipantAttendanceSummaryReportData!]
   inventory_data_by_organization(organization_id: Int, date: String = ""): [InventoryData!]
+  consumable_weekly_report(organization_id: Int, from_date: String = "", to_date: String = ""): [InventoryData!]
 }
 
 input ResourceAllocation {
