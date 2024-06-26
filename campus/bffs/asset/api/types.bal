@@ -1101,3 +1101,49 @@ public type GetInventoryDataByOrganizationResponse record {|
         |}? resource_property;
     |}[] inventory_data_by_organization;
 |};
+
+public type GetConsumableWeeklyReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string global_type;
+            string? name;
+        |}? avinya_type;
+        record {|
+            int? id;
+            string? name;
+            string? description;
+            string? manufacturer;
+        |}? consumable;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
+        record {|
+            int? id;
+            string? property;
+            string? value;
+        |}? resource_property;
+        string? updated;
+    |}[] consumable_weekly_report;
+|};
+
+public type GetConsumableMonthlyReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        record {|
+            int? id;
+            string? name;
+            string? description;
+            string? manufacturer;
+        |}? consumable;
+        anydata? quantity_in;
+        anydata? quantity_out;
+        record {|
+            int? id;
+            string? property;
+            string? value;
+        |}? resource_property;
+    |}[] consumable_monthly_report;
+|};

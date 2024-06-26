@@ -663,3 +663,47 @@ query getInventoryDataByOrganization($organization_id: Int!,$date: String!) {
        }
     }
 }
+
+query getConsumableWeeklyReport($organization_id: Int!,$from_date: String!,$to_date: String!) {
+    consumable_weekly_report(organization_id: $organization_id,from_date: $from_date,to_date: $to_date) {
+        id
+        avinya_type{
+            id
+            global_type
+            name
+        }
+        consumable{
+            id
+            name
+            description
+            manufacturer
+        }
+        quantity
+        quantity_in
+        quantity_out
+        resource_property{
+            id
+            property
+            value
+        }
+        updated
+    }      
+}
+
+query getConsumableMonthlyReport($organization_id: Int!,$year: Int!,$month: Int!) {
+    consumable_monthly_report(organization_id: $organization_id,year: $year,month: $month) {
+        consumable{
+            id
+            name
+            description
+            manufacturer
+        }
+        quantity_in
+        quantity_out
+        resource_property{
+            id
+            property
+            value
+        }
+    }      
+}
