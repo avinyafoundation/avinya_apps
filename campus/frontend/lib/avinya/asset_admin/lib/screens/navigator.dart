@@ -68,7 +68,7 @@ class _SMSNavigatorState extends State<SMSNavigator> {
 
         if (route.settings is Page &&
             (route.settings as Page).key == _assetDetailsKey) {
-          routeState.go('/resource_allocations');
+          routeState.go('/stock_replenishment');
         }
 
         return route.didPop(result);

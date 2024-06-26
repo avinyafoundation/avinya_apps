@@ -1094,9 +1094,12 @@ public type GetInventoryDataByOrganizationResponse record {|
             string global_type;
             string? name;
         |}? avinya_type;
-        string? name;
-        string? manufacturer;
-        string? description;
+        record {|
+            int? id;
+            string? name;
+            string? description;
+            string? manufacturer;
+        |}? consumable;
         anydata? quantity;
         anydata? quantity_in;
         anydata? quantity_out;

@@ -32,7 +32,8 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
         '/resource_allocation_report',
         '/resource_allocations/:id',
         '/asset_dashboard',
-        '/consumable_dashboard'
+        '/consumable_dashboard',
+        '/stock_replenishment',
         // '/assets/new',
         // '/assets/all',
         // '/assets/popular',
@@ -98,26 +99,31 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
 
     final signInRoute = ParsedRoute('/signin', '/signin', {}, {});
 
-    final resourceAllocationReportRoute =
-        ParsedRoute('/resource_allocation_report', '/resource_allocation_report', {}, {});
-    
-    final assetDashboardReportRoute = ParsedRoute(
-        '/asset_dashboard', '/asset_dashboard', {}, {});
-    
+    final resourceAllocationReportRoute = ParsedRoute(
+        '/resource_allocation_report', '/resource_allocation_report', {}, {});
+
+    final assetDashboardReportRoute =
+        ParsedRoute('/asset_dashboard', '/asset_dashboard', {}, {});
+
     final consumableDashboardReportRoute =
         ParsedRoute('/consumable_dashboard', '/consumable_dashboard', {}, {});
+
+    final stockReplenishmentRoute =
+        ParsedRoute('/stock_replenishment', '/stock_replenishment', {}, {});
 
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
     // log("_guard JWT sub ${jwt_sub}");
     log("_guard from ${from.toString()}\n");
 
-    if (signedIn && from == resourceAllocationReportRoute ) {
+    if (signedIn && from == resourceAllocationReportRoute) {
       return resourceAllocationReportRoute;
-    }else if (signedIn && from == assetDashboardReportRoute) {
+    } else if (signedIn && from == assetDashboardReportRoute) {
       return assetDashboardReportRoute;
     } else if (signedIn && from == consumableDashboardReportRoute) {
       return consumableDashboardReportRoute;
+    } else if (signedIn && from == stockReplenishmentRoute) {
+      return stockReplenishmentRoute;
     }
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {
