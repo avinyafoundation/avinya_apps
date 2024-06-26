@@ -40,6 +40,9 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
   //calendar specific variables
   DateTime? _selectedDay;
 
+  List<TextEditingController> _controllers = [];
+  DateTime _selectedDate = DateTime.now();
+
   late DataTableSource _data;
   List<String?> columnNames = [];
   List<Map<String, bool>> attendanceList = [];
@@ -49,8 +52,8 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
 
   var today = DateTime.now();
 
-  DateTime? _selectedDate;
-
+  // DateTime? _selectedDate;
+  late TextEditingController _controller;
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -94,9 +97,22 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
     // selectWeek(today, activityId);
   }
 
+  void _initializeControllers() {
+    _controllers = _fetchedStockList.map((item) {
+      DateTime isToday = DateTime.now();
+      return TextEditingController(
+        text:
+            _selectedDate == isToday ? '' : item.quantity_in?.toString() ?? '',
+      );
+    }).toList();
+  }
+
   @override
   void dispose() {
     // Perform any cleanup tasks here
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -133,6 +149,11 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
     });
   }
 
+  String formatDateTime(DateTime dateTime) {
+    return "${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')} "
+        "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}:${dateTime.second.toString().padLeft(2, '0')}";
+  }
+
   Future<void> refreshState(String? newValue) async {
     setState(() {
       _isFetching = true; // Set _isFetching to true before starting the fetch
@@ -143,6 +164,19 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
 
     _fetchedStockList =
         await getStockListforReplenishment(parentOrgId, newValue!);
+    Person person = campusAppsPortalInstance.getUserPerson();
+
+    var formattedDate = formatDateTime(_selectedDate!);
+    for (var item in _fetchedStockList) {
+      int? avinya_type_id = item.avinya_type?.id;
+      item.avinya_type_id = avinya_type_id;
+      item.person_id = person.id;
+      item.consumable_id = item.consumable!.id;
+      item.updated = formattedDate;
+      item.organization_id = parentOrgId;
+    }
+
+    _initializeControllers();
 
     if (mounted) {
       setState(() {
@@ -158,12 +192,13 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
       _isSubmitting = true;
     });
 
-    await addConsumableReplenishment(_fetchedStockList);
+    var result = await addConsumableReplenishment(_fetchedStockList);
 
     // Add your form submission logic here
 
     setState(() {
       _isSubmitting = false;
+      _isUpdate = true;
     });
   }
 
@@ -257,13 +292,39 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
                                               fontWeight: FontWeight.bold),
                                         )),
                                       ],
-                                      rows: _fetchedStockList.map((item) {
+                                      rows: _fetchedStockList
+                                          .asMap()
+                                          .entries
+                                          .map((entry) {
+                                        int index = entry.key;
+                                        StockReplenishment item = entry.value;
                                         int totalQuantityIn =
                                             (item.quantity_in ?? 0) +
                                                 (item.quantity ?? 0);
-
+                                        DateTime isToday = DateTime.now();
+                                        _controller = TextEditingController(
+                                          text: _selectedDate != null &&
+                                                  _selectedDate == isToday
+                                              ? ''
+                                              : item.quantity_in?.toString() ??
+                                                  '',
+                                        );
+                                        // _controller.addListener(() {
+                                        //   final text = _controller.text;
+                                        //   final quantity_in =
+                                        //       int.tryParse(text);
+                                        //   if (quantity_in != null) {
+                                        //     setState(() {
+                                        //       item.quantity_in = quantity_in;
+                                        //       totalQuantityIn =
+                                        //           (item.quantity_in ?? 0) +
+                                        //               (item.quantity ?? 0);
+                                        //     });
+                                        //   }
+                                        // });
                                         return DataRow(cells: [
-                                          DataCell(Text(item.name!)),
+                                          DataCell(
+                                              Text(item.consumable!.name!)),
                                           DataCell(
                                             Padding(
                                               padding:
@@ -271,6 +332,7 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
                                                       vertical: 6.0,
                                                       horizontal: 2.0),
                                               child: TextField(
+                                                controller: _controllers[index],
                                                 keyboardType: TextInputType
                                                     .numberWithOptions(
                                                         decimal: true),
@@ -281,15 +343,24 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
                                                 ],
                                                 onChanged:
                                                     (String value) async {
-                                                  int? quantity =
+                                                  int? quantity_in =
                                                       int.tryParse(value);
-                                                  if (quantity != null) {
+                                                  if (quantity_in != null) {
                                                     print(
-                                                        'Quantity: $quantity');
+                                                        'Quantity: $quantity_in');
+                                                    setState(() {
+                                                      item.quantity_in =
+                                                          quantity_in;
+                                                      totalQuantityIn =
+                                                          (item.quantity_in ??
+                                                                  0) +
+                                                              (item.quantity ??
+                                                                  0);
+                                                    });
                                                   }
                                                 },
                                                 decoration: InputDecoration(
-                                                  hintText: item.quantity
+                                                  hintText: item.quantity_in
                                                           ?.toString() ??
                                                       'Enter quantity',
                                                   border: OutlineInputBorder(),
@@ -297,8 +368,8 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
                                               ),
                                             ),
                                           ),
-                                          DataCell(Text(
-                                              item.quantity_in!.toString())),
+                                          DataCell(
+                                              Text(item.quantity!.toString())),
                                           DataCell(
                                               Text(totalQuantityIn.toString())),
                                           DataCell(Text(item

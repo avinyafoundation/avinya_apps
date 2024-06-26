@@ -650,9 +650,12 @@ query getInventoryDataByOrganization($organization_id: Int!,$date: String!) {
         global_type
         name
        }
-       name
-       manufacturer
-       description
+       consumable{
+        id
+        name
+        description
+        manufacturer
+       }
        quantity
        quantity_in
        quantity_out
