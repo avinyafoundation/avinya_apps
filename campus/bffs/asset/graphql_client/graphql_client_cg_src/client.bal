@@ -243,4 +243,10 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetConsumableWeeklyReportResponse> check performDataBinding(graphqlResponse, GetConsumableWeeklyReportResponse);
     }
+    remote isolated function getConsumableMonthlyReport(int month, int year, int organization_id) returns GetConsumableMonthlyReportResponse|graphql:ClientError {
+        string query = string `query getConsumableMonthlyReport($organization_id:Int!,$year:Int!,$month:Int!) {consumable_monthly_report(organization_id:$organization_id,year:$year,month:$month) {consumable {id name description manufacturer} quantity_in quantity_out resource_property {id property value}}}`;
+        map<anydata> variables = {"month": month, "year": year, "organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetConsumableMonthlyReportResponse> check performDataBinding(graphqlResponse, GetConsumableMonthlyReportResponse);
+    }
 }

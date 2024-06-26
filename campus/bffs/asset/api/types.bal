@@ -1128,3 +1128,22 @@ public type GetConsumableWeeklyReportResponse record {|
         string? updated;
     |}[] consumable_weekly_report;
 |};
+
+public type GetConsumableMonthlyReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        record {|
+            int? id;
+            string? name;
+            string? description;
+            string? manufacturer;
+        |}? consumable;
+        anydata? quantity_in;
+        anydata? quantity_out;
+        record {|
+            int? id;
+            string? property;
+            string? value;
+        |}? resource_property;
+    |}[] consumable_monthly_report;
+|};

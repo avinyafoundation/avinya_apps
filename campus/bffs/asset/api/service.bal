@@ -831,4 +831,28 @@ service / on new http:Listener(9094) {
                 ":: Detail: " + updateConsumableDepletionResponse.detail().toString());
         }
     }
+
+    resource function get consumable_monthly_report/[int organization_id]/[int year]/[int month]() returns Inventory[]|error {
+        GetConsumableMonthlyReportResponse|graphql:ClientError getConsumableMonthlyReportResponse = globalDataClient->getConsumableMonthlyReport(month,year,organization_id);
+        if (getConsumableMonthlyReportResponse is GetConsumableMonthlyReportResponse) {
+            Inventory[] monthly_summary_consumable_datas = [];
+            foreach var monthly_summary_consumable_data in getConsumableMonthlyReportResponse.consumable_monthly_report {
+                Inventory|error monthly_summary_consumable_data_record = monthly_summary_consumable_data.cloneWithType(Inventory);
+                if (monthly_summary_consumable_data_record is Inventory) {
+                    monthly_summary_consumable_datas.push(monthly_summary_consumable_data_record);
+                } else {
+                    log:printError("Error while processing Application record received", monthly_summary_consumable_data_record);
+                    return error("Error while processing Application record received: " + monthly_summary_consumable_data_record.message() +
+                        ":: Detail: " + monthly_summary_consumable_data_record.detail().toString());
+                }
+            }
+
+            return monthly_summary_consumable_datas;
+
+        } else {
+            log:printError("Error while getting application", getConsumableMonthlyReportResponse);
+            return error("Error while getting application: " + getConsumableMonthlyReportResponse.message() +
+                ":: Detail: " + getConsumableMonthlyReportResponse.detail().toString());
+        }
+    }
 }
