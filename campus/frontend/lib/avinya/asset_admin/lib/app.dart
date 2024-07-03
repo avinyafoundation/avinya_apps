@@ -3,11 +3,15 @@ import 'dart:developer';
 //import 'package:ShoolManagementSystem/src/data/campus_config_system.dart';
 //import 'package:ShoolManagementSystem/src/data/resource_allocation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:gallery/auth.dart';
+import 'package:month_year_picker/month_year_picker.dart';
+import 'package:flutter_localizations/src/material_localizations.dart';
 
 //import 'auth.dart';
 import 'routing.dart';
 import 'screens/navigator.dart';
+
 
 class AssetAdminSystem extends StatefulWidget {
   const AssetAdminSystem({super.key});
@@ -34,6 +38,7 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
         '/asset_dashboard',
         '/consumable_dashboard',
         '/stock_replenishment',
+        '/consumable_monthly_report',
         // '/assets/new',
         // '/assets/all',
         // '/assets/popular',
@@ -69,6 +74,11 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
         child: SMSAuthScope(
           notifier: _auth,
           child: MaterialApp.router(
+            localizationsDelegates: [
+              GlobalWidgetsLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              MonthYearPickerLocalizations.delegate,
+            ],
             routerDelegate: _routerDelegate,
             routeInformationParser: _routeParser,
             // Revert back to pre-Flutter-2.5 transition behavior:
@@ -111,6 +121,9 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
     final stockReplenishmentRoute =
         ParsedRoute('/stock_replenishment', '/stock_replenishment', {}, {});
 
+    final consumableMonthlyReportRoute =
+        ParsedRoute('/consumable_monthly_report', '/consumable_monthly_report', {}, {});
+
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
     // log("_guard JWT sub ${jwt_sub}");
@@ -124,6 +137,8 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
       return consumableDashboardReportRoute;
     } else if (signedIn && from == stockReplenishmentRoute) {
       return stockReplenishmentRoute;
+    } else if (signedIn && from == consumableMonthlyReportRoute){
+      return consumableMonthlyReportRoute;
     }
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {

@@ -298,9 +298,9 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
                                           .map((entry) {
                                         int index = entry.key;
                                         StockReplenishment item = entry.value;
-                                        int totalQuantityIn =
-                                            (item.quantity_in ?? 0) +
-                                                (item.quantity ?? 0);
+                                        double totalQuantityIn =
+                                            (item.quantity_in ?? 0.0) +
+                                                (item.quantity ?? 0.0);
                                         DateTime isToday = DateTime.now();
                                         _controller = TextEditingController(
                                           text: _selectedDate != null &&
@@ -343,8 +343,8 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
                                                 ],
                                                 onChanged:
                                                     (String value) async {
-                                                  int? quantity_in =
-                                                      int.tryParse(value);
+                                                  double? quantity_in =
+                                                      double.tryParse(value);
                                                   if (quantity_in != null) {
                                                     print(
                                                         'Quantity: $quantity_in');
@@ -353,9 +353,9 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
                                                           quantity_in;
                                                       totalQuantityIn =
                                                           (item.quantity_in ??
-                                                                  0) +
+                                                                  0.0) +
                                                               (item.quantity ??
-                                                                  0);
+                                                                  0.0);
                                                     });
                                                   }
                                                 },
