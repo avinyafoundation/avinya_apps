@@ -13,9 +13,9 @@ class StockReplenishment {
   int? organization_id;
   String? updated;
   AvinyaType? avinya_type;
-  int? quantity;
-  int? quantity_in;
-  int? quantity_out;
+  double? quantity;
+  double? quantity_in;
+  double? quantity_out;
   ResourceProperty? resource_property;
   Consumable? consumable;
 
@@ -44,7 +44,9 @@ class StockReplenishment {
         organization_id:
             json["organization_id"] == null ? null : json["organization_id"],
         updated: json["updated"] == null ? null : json["updated"],
-        avinya_type: AvinyaType.fromJson(json['avinya_type']),
+        avinya_type: json['avinya_type'] == null
+            ? null
+            : AvinyaType.fromJson(json['avinya_type']),
         quantity: json["quantity"] == null ? null : json["quantity"],
         quantity_in: json["quantity_in"] == null ? null : json["quantity_in"],
         quantity_out:
@@ -119,5 +121,30 @@ Future<List<StockReplenishment>> getStockListforReplenishment(
   } else {
     throw Exception(
         'Failed to get Activity Participant Attendance report for organization ID $organization_id and activity');
+  }
+}
+
+Future<List<StockReplenishment>> getConsumableMonthlyReport(
+    int organization_id,
+    int year,
+    int month
+    ) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAssetsBffApiUrl}/consumable_monthly_report/$organization_id/$year/$month'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<StockReplenishment> consumableMonthlySummaryData = await resultsJson
+        .map<StockReplenishment>((json) => StockReplenishment.fromJson(json))
+        .toList();
+    return consumableMonthlySummaryData;
+  } else {
+    throw Exception('Failed to get Consumable Monthly Summary Data');
   }
 }

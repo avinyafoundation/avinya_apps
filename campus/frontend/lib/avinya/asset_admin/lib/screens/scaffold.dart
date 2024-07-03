@@ -14,6 +14,7 @@ class SMSScaffold extends StatefulWidget {
 }
 
 class _SMSScaffoldState extends State<SMSScaffold> {
+  bool isAssetDashboardSectionHovered = false;
   bool isAssetSectionHovered = false;
   bool isAssetReportSectionHovered = false;
   bool isConsumableSectionHovered = false;
@@ -24,17 +25,23 @@ class _SMSScaffoldState extends State<SMSScaffold> {
   Widget build(BuildContext context) {
     final routeState = RouteStateScope.of(context);
 
-    List<SideNavigationSectionTile> assetDestinations = [];
-    List<SideNavigationSectionTile> consumableDestinations = [];
+    List<SideNavigationSectionTile> assetReportDestinations = [];
+    List<SideNavigationSectionTile> consumableReportDestinations = [];
 
-    assetDestinations = [
+    assetReportDestinations = [
       SideNavigationSectionTile(
           tileName: "Resource Allocation",
           route: "/resource_allocation_report",
-          icon: Icons.report),
+          icon: Icons.report
+      ),
     ];
 
-    consumableDestinations = [];
+    consumableReportDestinations = [
+      SideNavigationSectionTile(
+          tileName: "Consumable Monthly Report",
+          route: "/consumable_monthly_report",
+      icon: Icons.summarize_sharp),
+    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -97,6 +104,52 @@ class _SMSScaffoldState extends State<SMSScaffold> {
               MouseRegion(
                 onEnter: (_) {
                   setState(() {
+                    isAssetDashboardSectionHovered = true;
+                  });
+                },
+                onExit: (_) {
+                  setState(() {
+                    isAssetDashboardSectionHovered = false;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isAssetDashboardSectionHovered
+                        ? Colors.white.withOpacity(0.3)
+                        : null,
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  margin: EdgeInsets.all(8.0),
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Container(
+                      child: ListTile(
+                        leading: Icon(Icons.dashboard,
+                            color: Colors.white, size: 20.0),
+                        title: Container(
+                          margin: EdgeInsets.only(left: 12.0),
+                          transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                          child: Text(
+                            "Asset Dashboard",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context); // Close the drawer
+                          routeState.go('/asset_dashboard');
+                        },
+                      ),
+                    ),
+                  ),
+                  // ),
+                ),
+              ),
+              MouseRegion(
+                onEnter: (_) {
+                  setState(() {
                     isAssetSectionHovered = true;
                   });
                 },
@@ -143,7 +196,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                         initialSectionHoveredValue: isAssetReportSectionHovered,
                         sectionName: "Reports",
                         icon: Icons.summarize,
-                        destinations: assetDestinations,
+                        destinations: assetReportDestinations,
                       ),
                     ],
                   ),
@@ -240,7 +293,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                             isConsumableReportSectionHovered,
                         sectionName: "Reports",
                         icon: Icons.summarize,
-                        destinations: consumableDestinations,
+                        destinations: consumableReportDestinations,
                       ),
                     ],
                   ),
