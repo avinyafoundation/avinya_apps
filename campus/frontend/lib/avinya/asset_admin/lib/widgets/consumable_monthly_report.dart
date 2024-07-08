@@ -136,7 +136,7 @@ class _ConsumableMonthlyReportState extends State<ConsumableMonthlyReport> {
                      if (_selected == null)
                       Container(
                         child: const Text(
-                          'No month year selected.',
+                          'No month & year selected.',
                            style: TextStyle(
                             fontSize:14, 
                             fontWeight: FontWeight.normal,
@@ -170,20 +170,22 @@ class _ConsumableMonthlyReportState extends State<ConsumableMonthlyReport> {
                     ),
                   )
                 else if (_fetchedConsumableMonthlySummaryData.length > 0)
-                  ScrollConfiguration(
-                    behavior:
-                        ScrollConfiguration.of(context).copyWith(dragDevices: {
-                      PointerDeviceKind.touch,
-                      PointerDeviceKind.mouse,
-                    }),
-                    child: PaginatedDataTable(
-                      showCheckboxColumn: false,
-                      source: _data,
-                      columns: _buildDataColumns(),
-                      // header: const Center(child: Text('Daily Attendance')),
-                      columnSpacing: 100,
-                      horizontalMargin: 60,
-                      rowsPerPage: 20,
+                  Center(
+                    child: ScrollConfiguration(
+                      behavior:
+                          ScrollConfiguration.of(context).copyWith(dragDevices: {
+                        PointerDeviceKind.touch,
+                        PointerDeviceKind.mouse,
+                      }),
+                      child: PaginatedDataTable(
+                        showCheckboxColumn: false,
+                        source: _data,
+                        columns: _buildDataColumns(),
+                        // header: const Center(child: Text('Daily Attendance')),
+                        columnSpacing: 50,
+                        horizontalMargin: 60,
+                        rowsPerPage: 10,
+                      ),
                     ),
                   )
                 else
@@ -215,18 +217,6 @@ class MyData extends DataTableSource {
       return DataRow(
         cells: cells,
       );
-    }else if(index == 1){
-      List<DataCell> cells = List<DataCell>.filled(6, DataCell.empty);
-      cells[0] = DataCell(Text('Total',
-            style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)));
-      cells[1] = DataCell(Text(''));
-      cells[2] = DataCell(Text(''));
-      cells[3] = DataCell(Text(''));
-      cells[4] = DataCell(Text(''));
-      cells[5] = DataCell(Text(''));
-      return DataRow(
-        cells: cells,
-      );
     }
     
     if(_fetchedConsumableMonthlySummaryData.length > 0){
@@ -236,20 +226,20 @@ class MyData extends DataTableSource {
 
       cells[0] = DataCell(Text(''));
       cells[1] =  DataCell(
-              Center(child: Text(_fetchedConsumableMonthlySummaryData[index - 2].consumable!.name.toString())));
+              Center(child: Text(_fetchedConsumableMonthlySummaryData[index - 1].consumable!.name.toString())));
       cells[2] =  DataCell(
-              Center(child: Text(_fetchedConsumableMonthlySummaryData[index - 2].quantity_in.toString())));
+              Center(child: Text(_fetchedConsumableMonthlySummaryData[index - 1].quantity_in!.toStringAsFixed(2))));
       cells[3] =  DataCell(
-              Center(child: Text(_fetchedConsumableMonthlySummaryData[index - 2].quantity_out.toString())));
+              Center(child: Text(_fetchedConsumableMonthlySummaryData[index - 1].quantity_out!.toStringAsFixed(2))));
       
-      double? closingStock = (_fetchedConsumableMonthlySummaryData[index - 2].quantity_in!) - 
-                            (_fetchedConsumableMonthlySummaryData[index - 2].quantity_out!);
+      double? closingStock = (_fetchedConsumableMonthlySummaryData[index - 1].quantity_in!) - 
+                            (_fetchedConsumableMonthlySummaryData[index - 1].quantity_out!);
 
       cells[4] = DataCell(Center(
           child: Text(closingStock.toStringAsFixed(2))));
 
       cells[5] =  DataCell(
-              Center(child: Text(_fetchedConsumableMonthlySummaryData[index - 2].resource_property!.value.toString())));
+              Center(child: Text(_fetchedConsumableMonthlySummaryData[index - 1].resource_property!.value.toString())));
       
       return DataRow(cells: cells);
     }
@@ -264,7 +254,6 @@ class MyData extends DataTableSource {
     int count = 0;
     if (_fetchedConsumableMonthlySummaryData.length > 0) {
       count = _fetchedConsumableMonthlySummaryData.length;
-      count += 2; //to facilitate additional rows
     }
     return count;
   }

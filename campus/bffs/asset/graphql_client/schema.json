@@ -6091,6 +6091,17 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "consumable_id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "organization",
                             "args": [],
                             "type": {
@@ -8082,6 +8093,45 @@
                             "name": "consumable_replenishment",
                             "args": [
                                 {
+                                    "name": "person_id",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "organization_id",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "date",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "String",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
                                     "name": "inventories",
                                     "type": {
                                         "kind": "NON_NULL",
@@ -8122,6 +8172,45 @@
                         {
                             "name": "consumable_depletion",
                             "args": [
+                                {
+                                    "name": "person_id",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "organization_id",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "date",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "String",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
                                 {
                                     "name": "inventories",
                                     "type": {

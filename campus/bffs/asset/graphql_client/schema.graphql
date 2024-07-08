@@ -566,6 +566,7 @@ type InventoryData {
   avinya_type_id: Int
   asset: AssetData
   consumable: ConsumableData
+  consumable_id: Int
   organization: OrganizationData
   person: PersonData
   quantity: Decimal
@@ -639,8 +640,8 @@ type Mutation {
   update_duty_rotation_metadata(duty_rotation: DutyRotationMetaDetails!): DutyRotationMetaData
   add_duty_attendance(duty_attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
   add_duty_evaluation(duty_evaluation: Evaluation!): EvaluationData
-  consumable_replenishment(inventories: [Inventory!]!): [InventoryData!]
-  consumable_depletion(inventories: [Inventory!]!): [InventoryData!]
+  consumable_replenishment(person_id: Int!, organization_id: Int!, date: String!, inventories: [Inventory!]!): [InventoryData!]
+  consumable_depletion(person_id: Int!, organization_id: Int!, date: String!, inventories: [Inventory!]!): [InventoryData!]
   update_consumable_replenishment(inventories: [Inventory!]!): [InventoryData!]
   update_consumable_depletion(inventories: [Inventory!]!): [InventoryData!]
 }

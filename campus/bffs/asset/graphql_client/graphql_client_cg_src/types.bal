@@ -1089,17 +1089,8 @@ public type GetInventoryDataByOrganizationResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
-        record {|
-            int? id;
-            string global_type;
-            string? name;
-        |}? avinya_type;
-        record {|
-            int? id;
-            string? name;
-            string? description;
-            string? manufacturer;
-        |}? consumable;
+        int? avinya_type_id;
+        int? consumable_id;
         anydata? quantity;
         anydata? quantity_in;
         anydata? quantity_out;

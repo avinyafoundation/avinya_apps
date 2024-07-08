@@ -644,18 +644,9 @@ query getAvinyaTypes {
 
 query getInventoryDataByOrganization($organization_id: Int!,$date: String!) {
     inventory_data_by_organization(organization_id:$organization_id,date:$date) {   
-       id
-       avinya_type{
         id
-        global_type
-        name
-       }
-       consumable{
-        id
-        name
-        description
-        manufacturer
-       }
+       avinya_type_id
+       consumable_id
        quantity
        quantity_in
        quantity_out
