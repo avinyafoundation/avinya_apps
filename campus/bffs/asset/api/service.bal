@@ -756,9 +756,9 @@ service / on new http:Listener(9094) {
                 ":: Detail: " + getInventoryDataByOrganizationResponse.detail().toString());
         }
     }
-    resource function post consumable_replenishment(@http:Payload Inventory[] inventories) returns json|error {
+    resource function post consumable_replenishment/[int person_id]/[int organization_id]/[string date](@http:Payload Inventory[] inventories) returns json|error {
     
-        json|graphql:ClientError createInventoryResponse = globalDataClient->consumableReplenishment(inventories);
+        json|graphql:ClientError createInventoryResponse = globalDataClient->consumableReplenishment(person_id,organization_id,date,inventories);
         if(createInventoryResponse is json) {
             log:printInfo("Inventories created successfully: " + createInventoryResponse.toString());
             return createInventoryResponse;
@@ -769,9 +769,9 @@ service / on new http:Listener(9094) {
         }
     }
 
-    resource function post consumable_depletion(@http:Payload Inventory[] inventories) returns json|error {
+    resource function post consumable_depletion/[int person_id]/[int organization_id]/[string date](@http:Payload Inventory[] inventories) returns json|error {
     
-        json|graphql:ClientError inventoryDepletionResponse = globalDataClient->consumableDepletion(inventories);
+        json|graphql:ClientError inventoryDepletionResponse = globalDataClient->consumableDepletion(person_id,organization_id,date,inventories);
         if(inventoryDepletionResponse is json) {
             log:printInfo("Inventories depleted  successfully: " + inventoryDepletionResponse.toString());
             return inventoryDepletionResponse;
