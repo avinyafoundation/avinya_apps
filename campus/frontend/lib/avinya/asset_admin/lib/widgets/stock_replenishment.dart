@@ -167,14 +167,6 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
     Person person = campusAppsPortalInstance.getUserPerson();
 
     var formattedDate = formatDateTime(_selectedDate!);
-    for (var item in _fetchedStockList) {
-      int? avinya_type_id = item.avinya_type?.id;
-      item.avinya_type_id = avinya_type_id;
-      item.person_id = person.id;
-      item.consumable_id = item.consumable!.id;
-      item.updated = formattedDate;
-      item.organization_id = parentOrgId;
-    }
 
     _initializeControllers();
 
