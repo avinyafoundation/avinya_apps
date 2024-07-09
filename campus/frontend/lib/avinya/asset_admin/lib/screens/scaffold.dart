@@ -38,6 +38,10 @@ class _SMSScaffoldState extends State<SMSScaffold> {
 
     consumableReportDestinations = [
       SideNavigationSectionTile(
+          tileName: "Consumable Weekly Report",
+          route: "/consumable_weekly_report",
+          icon: Icons.summarize_outlined),
+      SideNavigationSectionTile(
           tileName: "Consumable Monthly Report",
           route: "/consumable_monthly_report",
       icon: Icons.summarize_sharp),
