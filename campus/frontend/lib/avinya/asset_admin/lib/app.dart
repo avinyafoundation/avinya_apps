@@ -39,6 +39,7 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
         '/consumable_dashboard',
         '/stock_replenishment',
         '/consumable_monthly_report',
+        '/consumable_weekly_report',
         // '/assets/new',
         // '/assets/all',
         // '/assets/popular',
@@ -123,6 +124,9 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
 
     final consumableMonthlyReportRoute =
         ParsedRoute('/consumable_monthly_report', '/consumable_monthly_report', {}, {});
+    
+    final consumableWeeklyReportRoute = ParsedRoute(
+        '/consumable_weekly_report', '/consumable_weekly_report', {}, {});
 
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
@@ -139,6 +143,8 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
       return stockReplenishmentRoute;
     } else if (signedIn && from == consumableMonthlyReportRoute){
       return consumableMonthlyReportRoute;
+    } else if (signedIn && from == consumableWeeklyReportRoute) {
+      return consumableWeeklyReportRoute;
     }
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {

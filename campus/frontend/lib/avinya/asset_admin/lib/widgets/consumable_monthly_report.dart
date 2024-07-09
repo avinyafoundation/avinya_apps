@@ -135,6 +135,7 @@ class _ConsumableMonthlyReportState extends State<ConsumableMonthlyReport> {
                     ),
                      if (_selected == null)
                       Container(
+                        margin: EdgeInsets.only(left: 10.0),
                         child: const Text(
                           'No month & year selected.',
                            style: TextStyle(
@@ -157,7 +158,7 @@ class _ConsumableMonthlyReportState extends State<ConsumableMonthlyReport> {
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 30,
               ),
               Wrap(children: [
                 if (_isFetching)
@@ -170,7 +171,8 @@ class _ConsumableMonthlyReportState extends State<ConsumableMonthlyReport> {
                     ),
                   )
                 else if (_fetchedConsumableMonthlySummaryData.length > 0)
-                  Center(
+                  Container(
+                    margin: EdgeInsets.only(left: 10.0,top: 20.0),
                     child: ScrollConfiguration(
                       behavior:
                           ScrollConfiguration.of(context).copyWith(dragDevices: {
@@ -210,14 +212,7 @@ class MyData extends DataTableSource {
 
   @override
   DataRow? getRow(int index) {
-    if (index == 0) {
     
-      List<DataCell> cells = List<DataCell>.filled(
-          6, DataCell.empty);
-      return DataRow(
-        cells: cells,
-      );
-    }
     
     if(_fetchedConsumableMonthlySummaryData.length > 0){
 
@@ -226,20 +221,20 @@ class MyData extends DataTableSource {
 
       cells[0] = DataCell(Text(''));
       cells[1] =  DataCell(
-              Center(child: Text(_fetchedConsumableMonthlySummaryData[index - 1].consumable!.name.toString())));
+              Center(child: Text(_fetchedConsumableMonthlySummaryData[index].consumable!.name.toString())));
       cells[2] =  DataCell(
-              Center(child: Text(_fetchedConsumableMonthlySummaryData[index - 1].quantity_in!.toStringAsFixed(2))));
+              Center(child: Text(_fetchedConsumableMonthlySummaryData[index].quantity_in!.toStringAsFixed(2))));
       cells[3] =  DataCell(
-              Center(child: Text(_fetchedConsumableMonthlySummaryData[index - 1].quantity_out!.toStringAsFixed(2))));
+              Center(child: Text(_fetchedConsumableMonthlySummaryData[index].quantity_out!.toStringAsFixed(2))));
       
-      double? closingStock = (_fetchedConsumableMonthlySummaryData[index - 1].quantity_in!) - 
-                            (_fetchedConsumableMonthlySummaryData[index - 1].quantity_out!);
+      double? closingStock = (_fetchedConsumableMonthlySummaryData[index].quantity_in!) - 
+                            (_fetchedConsumableMonthlySummaryData[index].quantity_out!);
 
       cells[4] = DataCell(Center(
           child: Text(closingStock.toStringAsFixed(2))));
 
       cells[5] =  DataCell(
-              Center(child: Text(_fetchedConsumableMonthlySummaryData[index - 1].resource_property!.value.toString())));
+              Center(child: Text(_fetchedConsumableMonthlySummaryData[index].resource_property!.value.toString())));
       
       return DataRow(cells: cells);
     }
