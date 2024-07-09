@@ -1091,6 +1091,10 @@ public type GetInventoryDataByOrganizationResponse record {|
         int? id;
         int? avinya_type_id;
         int? consumable_id;
+        record {|
+            int? id;
+            string? name;
+        |}? consumable;
         anydata? quantity;
         anydata? quantity_in;
         anydata? quantity_out;
