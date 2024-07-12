@@ -654,6 +654,7 @@ query getInventoryDataByOrganization($organization_id: Int!,$date: String!) {
        quantity
        quantity_in
        quantity_out
+       prev_quantity
        resource_property{
         id
         property

@@ -241,6 +241,7 @@ public type Inventory record {
     int? consumable_id?;
     anydata? quantity?;
     string? created?;
+    anydata? prev_quantity?;
     int? avinya_type_id?;
     string? description?;
     int? asset_id?;
@@ -1098,6 +1099,7 @@ public type GetInventoryDataByOrganizationResponse record {|
         anydata? quantity;
         anydata? quantity_in;
         anydata? quantity_out;
+        anydata? prev_quantity;
         record {|
             int? id;
             string? property;
