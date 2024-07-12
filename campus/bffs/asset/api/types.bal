@@ -235,16 +235,17 @@ public type EvaluationMetadata record {
 // };
 public type Inventory record {
     int? consumable_id?;
-    decimal? quantity?;
+    anydata? quantity?;
     string? created?;
+    anydata? prev_quantity?;
     int? avinya_type_id?;
     string? description?;
     int? asset_id?;
     string? record_type?;
     string? manufacturer?;
-    decimal? quantity_out?;
+    anydata? quantity_out?;
     int? resource_property_id?;
-    decimal? quantity_in?;
+    anydata? quantity_in?;
     int? organization_id?;
     string? name?;
     int? id?;
@@ -1092,6 +1093,7 @@ public type GetInventoryDataByOrganizationResponse record {|
         anydata? quantity;
         anydata? quantity_in;
         anydata? quantity_out;
+        anydata? prev_quantity;
         record {|
             int? id;
             string? property;
