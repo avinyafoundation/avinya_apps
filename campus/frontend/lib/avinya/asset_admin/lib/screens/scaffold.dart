@@ -20,6 +20,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
   bool isConsumableSectionHovered = false;
   bool isConsumableReportSectionHovered = false;
   bool isStockReplenishmentSectionHovered = false;
+  bool isStockDepletionSectionHovered = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +33,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
       SideNavigationSectionTile(
           tileName: "Resource Allocation",
           route: "/resource_allocation_report",
-          icon: Icons.report
-      ),
+          icon: Icons.report),
     ];
 
     consumableReportDestinations = [
@@ -44,7 +44,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
       SideNavigationSectionTile(
           tileName: "Consumable Monthly Report",
           route: "/consumable_monthly_report",
-      icon: Icons.summarize_sharp),
+          icon: Icons.summarize_sharp),
     ];
 
     return Scaffold(
@@ -288,6 +288,47 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                             onTap: () {
                               Navigator.pop(context); // Close the drawer
                               routeState.go('/stock_replenishment');
+                            },
+                          ),
+                        ),
+                      ),
+                      MouseRegion(
+                        onEnter: (_) {
+                          setState(() {
+                            isStockDepletionSectionHovered = true;
+                          });
+                        },
+                        onExit: (_) {
+                          setState(() {
+                            isStockDepletionSectionHovered = false;
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isStockDepletionSectionHovered
+                                ? Colors.white.withOpacity(0.3)
+                                : null,
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          margin: EdgeInsets.all(8.0),
+                          child: ListTile(
+                            leading: Icon(Icons.inventory,
+                                color: Colors.white, size: 20.0),
+                            title: Container(
+                              margin: EdgeInsets.only(left: 12.0),
+                              transform:
+                                  Matrix4.translationValues(-25, 0.0, 0.0),
+                              child: Text(
+                                "Stock Depletion",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.pop(context); // Close the drawer
+                              routeState.go('/stock_depletion');
                             },
                           ),
                         ),

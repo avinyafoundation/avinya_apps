@@ -2,16 +2,16 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gallery/avinya/asset_admin/lib/data/stock_repenishment.dart';
+import 'package:gallery/avinya/asset_admin/lib/data/stock_depletion.dart';
+// import 'package:gallery/avinya/asset_admin/lib/data/stock_repenishment.dart';
 // import 'package:asset_admin/data/stock_repenishment.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:gallery/data/person.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class StockReplenishmentForm extends StatefulWidget {
-  const StockReplenishmentForm({Key? key, required this.title})
-      : super(key: key);
+class StockDepletionForm extends StatefulWidget {
+  const StockDepletionForm({Key? key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -25,12 +25,12 @@ class StockReplenishmentForm extends StatefulWidget {
   final String title;
 
   @override
-  State<StockReplenishmentForm> createState() => _StockReplenishmentState();
+  State<StockDepletionForm> createState() => _StockDepletionState();
 }
 
-class _StockReplenishmentState extends State<StockReplenishmentForm> {
-  List<StockReplenishment> _fetchedStockList = [];
-  List<StockReplenishment> _fetchedStockListAfterSchool = [];
+class _StockDepletionState extends State<StockDepletionForm> {
+  List<StockDepletion> _fetchedStockList = [];
+  List<StockDepletion> _fetchedStockListAfterSchool = [];
   Organization? _fetchedOrganization;
   bool _isFetching = true;
   List<Person> _fetchedStudentList = [];
@@ -165,8 +165,7 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
         campusAppsPortalInstance.getUserPerson().organization!.id;
     _selectedValue = newValue ?? null;
 
-    _fetchedStockList =
-        await getStockListforReplenishment(parentOrgId, newValue!);
+    _fetchedStockList = await getStockListforDepletion(parentOrgId, newValue!);
     Person person = campusAppsPortalInstance.getUserPerson();
 
     var formattedDate = formatDateTime(_selectedDate!);
@@ -201,10 +200,10 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
     });
 
     if (_isUpdate) {
-      var result = await updateConsumableReplenishment(
+      var result = await updateConsumableDepletion(
           _fetchedStockList, this.formatted_date);
     } else {
-      var result = await addConsumableReplenishment(_fetchedStockList,
+      var result = await addConsumableDepletion(_fetchedStockList,
           this._person?.id, this.parent_org_id, this.formatted_date);
     }
 
@@ -311,7 +310,7 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
                                           .entries
                                           .map((entry) {
                                         int index = entry.key;
-                                        StockReplenishment item = entry.value;
+                                        StockDepletion item = entry.value;
                                         double totalQuantityIn =
                                             (item.quantity_in ?? 0.0) +
                                                 (item.quantity ?? 0.0);
