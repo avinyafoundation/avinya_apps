@@ -233,7 +233,7 @@ public isolated client class GraphqlClient {
     }
 
     remote isolated function getInventoryDataByOrganization(string date, int organization_id) returns GetInventoryDataByOrganizationResponse|graphql:ClientError {
-        string query = string `query getInventoryDataByOrganization($organization_id:Int!,$date:String!) {inventory_data_by_organization(organization_id:$organization_id,date:$date) {id avinya_type_id consumable_id consumable {id name} quantity quantity_in quantity_out resource_property {id property value}}}`;
+        string query = string `query getInventoryDataByOrganization($organization_id:Int!,$date:String!) {inventory_data_by_organization(organization_id:$organization_id,date:$date) {id avinya_type_id consumable_id consumable {id name} quantity quantity_in quantity_out prev_quantity resource_property {id property value}}}`;
         map<anydata> variables = {"date": date, "organization_id": organization_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetInventoryDataByOrganizationResponse>check performDataBinding(graphqlResponse, GetInventoryDataByOrganizationResponse);
@@ -258,6 +258,7 @@ public isolated client class GraphqlClient {
                                                 quantity
                                                 quantity_in
                                                 quantity_out
+                                                prev_quantity
                                                 created
                                                 updated
                                             }
@@ -287,6 +288,7 @@ public isolated client class GraphqlClient {
                                                 quantity
                                                 quantity_in
                                                 quantity_out
+                                                prev_quantity
                                                 created
                                                 updated
                                             }

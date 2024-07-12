@@ -31,18 +31,88 @@ class _ConsumableWeeklyReportState extends State<ConsumableWeeklyReport> {
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
+  List<_GroupedItem> _displayData = [];
+
+    void selectWeek(DateTime today) async {
+    // Calculate the start of the week (excluding weekends) based on the selected day
+    DateTime startOfWeek = today.subtract(Duration(days: today.weekday - 1));
+    while (startOfWeek.weekday > DateTime.friday) {
+      startOfWeek = startOfWeek.subtract(Duration(days: 1));
+    }
+
+    // Calculate the end of the week (excluding weekends) based on the start of the week
+    DateTime endOfWeek = startOfWeek.add(Duration(days: 4));
+
+    // Update the variables to select the week
+    final formatter = DateFormat('MMM d, yyyy');
+    formattedStartDate = formatter.format(startOfWeek);
+    formattedEndDate = formatter.format(endOfWeek);
+
+    int? parentOrgId =
+        campusAppsPortalInstance.getUserPerson().organization!.id;
+
+    if (parentOrgId != null) {
+      setState(() {
+        _isFetching = true; // Set _isFetching to true before starting the fetch
+      });
+
+      try {
+        final fetchedConsumableWeeklySummaryData = await getConsumableWeeklyReport(
+            parentOrgId,
+            DateFormat('yyyy-MM-dd').format(startOfWeek),
+            DateFormat('yyyy-MM-dd').format(endOfWeek));
+
+        setState(() {
+          _fetchedConsumableWeeklySummaryData = fetchedConsumableWeeklySummaryData;
+          _isFetching = false; // Set _isFetching to false after the fetch completes
+           displayData();
+        });
+      } catch (error) {
+        // Handle any errors that occur during the fetch
+        setState(() {
+          _isFetching = false; // Set _isFetching to false in case of error
+        });
+        // Perform error handling, e.g., show an error message
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     parentOrgId = campusAppsPortalInstance.getUserPerson().organization!.id!;
+    selectWeek(today);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _data = MyData(_fetchedConsumableWeeklySummaryData, updateSelected);
+    _data = MyData(_fetchedConsumableWeeklySummaryData, _displayData, updateSelected);
     // DateRangePicker(updateDateRange, formattedStartDate);
+  }
+
+  void displayData(){
+
+     Map<String, List<StockReplenishment>> groupedData = {};
+
+    for (StockReplenishment item in _fetchedConsumableWeeklySummaryData) {
+      final date = DateFormat('yyyy-MM-dd').format(DateTime.parse(item.updated!));
+      if (!groupedData.containsKey(date)) {
+        groupedData[date] = [];
+      }
+      groupedData[date]?.add(item);
+    }
+
+    // Flatten the grouped data into a list with display flags
+    List<_GroupedItem> displayData = [];
+    groupedData.forEach((date, items) {
+      for (int i = 0; i < items.length; i++) {
+        displayData.add(_GroupedItem(date, items[i], i == 0));
+      }
+    });
+   
+      this._displayData = displayData;
+  
   }
 
 
@@ -66,7 +136,7 @@ class _ConsumableWeeklyReportState extends State<ConsumableWeeklyReport> {
                 parentOrgId,
                 DateFormat('yyyy-MM-dd').format(_rangeStart),
                 DateFormat('yyyy-MM-dd').format(_rangeEnd));
-
+         
         setState(() {
           final startDate = _rangeStart ?? _selectedDay;
           final endDate = _rangeEnd ?? _selectedDay;
@@ -77,6 +147,9 @@ class _ConsumableWeeklyReportState extends State<ConsumableWeeklyReport> {
           this.formattedEndDate = formattedEndDate;
           this._fetchedConsumableWeeklySummaryData = _fetchedConsumableWeeklySummaryData;
           _isFetching = false;
+          displayData();
+          _data = MyData(_fetchedConsumableWeeklySummaryData,_displayData,updateSelected);
+        
         });
       } catch (error) {
         // Handle any errors that occur during the fetch
@@ -224,7 +297,6 @@ class _ConsumableWeeklyReportState extends State<ConsumableWeeklyReport> {
                         showCheckboxColumn: false,
                         source: _data,
                         columns: _buildDataColumns(),
-                        // header: const Center(child: Text('Daily Attendance')),
                         columnSpacing: 50,
                         horizontalMargin: 60,
                         rowsPerPage: 10,
@@ -246,40 +318,14 @@ class _ConsumableWeeklyReportState extends State<ConsumableWeeklyReport> {
 }
 
 class MyData extends DataTableSource {
-  MyData(this._fetchedConsumableWeeklySummaryData, this.updateSelected);
+  MyData(this._fetchedConsumableWeeklySummaryData,this.displayData, this.updateSelected);
 
   final List<StockReplenishment> _fetchedConsumableWeeklySummaryData;
+  List<_GroupedItem> displayData;
   final Function(int, bool, List<bool>) updateSelected;
 
   @override
   DataRow? getRow(int index) {
-    
-    if (_fetchedConsumableWeeklySummaryData.isEmpty) {
-      return null;
-    }
-
-    //Group the data by date
-    Map<DateTime,List<StockReplenishment>> groupedData = {};
-
-    for(var item in _fetchedConsumableWeeklySummaryData){
-      final date = item.updated;
-      if(!groupedData.containsKey(date)){
-        groupedData[DateTime.parse(date!)] = [];
-      }
-      groupedData[date]!.add(item);
-    }
-
-    // Flatten the grouped data into a list with display flags
-    List<_GroupedItem> displayData = [];
-    groupedData.forEach((date,items) { 
-      for(int i=0;i<items.length;i++){
-        displayData.add(_GroupedItem(date,items[i],i==0));
-      }
-    });
-
-    if (index >= displayData.length) {
-      return null;
-    }
 
     final groupedItem  = displayData[index];
     final consumableItem = groupedItem.stockReplenishment;
@@ -287,16 +333,22 @@ class MyData extends DataTableSource {
     List<DataCell> cells = List<DataCell>.filled(8, DataCell.empty);
 
     // Display date only once for the first item of the group
-    cells[0] = DataCell(Text(groupedItem.showDate ? groupedItem.date.toString() : ''));
-    cells[1] = DataCell(Center(child: Text(groupedItem.showDate ? groupedItem.date.toString() : '')));
-    cells[2] = DataCell(Center(child: Text(groupedItem.showDate ? groupedItem.date.toString() : '')));
-    cells[3] = DataCell(Center(child: Text(groupedItem.showDate ? groupedItem.date.toString() : '')));
-    cells[4] = DataCell(Text(groupedItem.showDate ? groupedItem.date.toString() : ''));
-    cells[5] = DataCell(Text(groupedItem.showDate ? groupedItem.date.toString() : ''));
-    cells[6] = DataCell(Text(groupedItem.showDate ? groupedItem.date.toString() : ''));
-    cells[7] = DataCell(Text(groupedItem.showDate ? groupedItem.date.toString() : ''));
+    cells[0] = DataCell(Center(child: Text(groupedItem.showDate ? groupedItem.date.toString() : '')));
+    cells[1] = DataCell(Center(child: Text(consumableItem.consumable!.name.toString())));
+    cells[2] = DataCell(Center(child: Text(consumableItem.quantity.toString())));
+    cells[3] = DataCell(Center(child: Text(consumableItem.quantity_in.toString())));
 
-    return null;
+    double? balance = (consumableItem.quantity!) + (consumableItem.quantity_in!);
+
+    cells[4] = DataCell(Center(child: Text(balance.toStringAsFixed(2))));
+    cells[5] = DataCell(Center(child: Text(consumableItem.quantity_out.toString())));
+    
+    double? closingStock = (balance) - (consumableItem.quantity_out!);
+
+    cells[6] = DataCell(Center(child: Text(closingStock.toStringAsFixed(2))));
+    cells[7] = DataCell(Center(child: Text(consumableItem.resource_property!.value!)));
+
+    return DataRow(cells: cells);
   }
 
   @override
@@ -316,7 +368,7 @@ class MyData extends DataTableSource {
 }
 
 class _GroupedItem {
-  final DateTime date;
+  final String date;
   final StockReplenishment stockReplenishment;
   final bool showDate;
 

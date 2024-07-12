@@ -554,6 +554,7 @@ input Inventory {
   quantity: Decimal
   quantity_in: Decimal
   quantity_out: Decimal
+  prev_quantity: Decimal
   resource_property_id: Int
   resource_property_value: String
   created: String
@@ -572,6 +573,7 @@ type InventoryData {
   quantity: Decimal
   quantity_in: Decimal
   quantity_out: Decimal
+  prev_quantity: Decimal
   resource_property: ResourcePropertyData
   name: String
   description: String

@@ -6157,6 +6157,17 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "prev_quantity",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Decimal",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "resource_property",
                             "args": [],
                             "type": {
@@ -9015,6 +9026,15 @@
                         },
                         {
                             "name": "quantity_out",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Decimal",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "prev_quantity",
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "Decimal",
