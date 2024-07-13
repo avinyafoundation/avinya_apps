@@ -1099,6 +1099,8 @@ public type GetInventoryDataByOrganizationResponse record {|
             string? property;
             string? value;
         |}? resource_property;
+        string? created;
+        string? updated;
     |}[] inventory_data_by_organization;
 |};
 
@@ -1138,6 +1140,7 @@ public type GetConsumableMonthlyReportResponse record {|
             string? description;
             string? manufacturer;
         |}? consumable;
+        anydata? quantity;
         anydata? quantity_in;
         anydata? quantity_out;
         record {|

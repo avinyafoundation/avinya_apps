@@ -50,22 +50,24 @@ class _ConsumableMonthlyReportState extends State<ConsumableMonthlyReport> {
   
   List<DataColumn> _buildDataColumns() {
     List<DataColumn> columnNames = [];
-    
-    columnNames.add(DataColumn(
-        label: Text('',
-            style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
 
     columnNames.add(DataColumn(
         label: Text('Product Name',
             style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
     columnNames.add(DataColumn(
-        label: Text('Balance(QTY)',
+        label: Text('Opening Stock(QTY)',
             style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
     columnNames.add(DataColumn(
-        label: Text('Consumption',
+        label: Text('Replenishment(QTY)',
             style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
     columnNames.add(DataColumn(
-        label: Text('Closing Stock',
+        label: Text('Total(QTY)',
+            style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
+    columnNames.add(DataColumn(
+        label: Text('Consumption(QTY)',
+            style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
+    columnNames.add(DataColumn(
+        label: Text('Closing Stock(QTY)',
             style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
     columnNames.add(DataColumn(
         label: Text('Unit',
@@ -217,23 +219,30 @@ class MyData extends DataTableSource {
     if(_fetchedConsumableMonthlySummaryData.length > 0){
 
       List<DataCell> cells = List<DataCell>.filled(
-          6, DataCell.empty);
+          7, DataCell.empty);
 
-      cells[0] = DataCell(Text(''));
-      cells[1] =  DataCell(
+      cells[0] =  DataCell(
               Center(child: Text(_fetchedConsumableMonthlySummaryData[index].consumable!.name.toString())));
+      cells[1] =  DataCell(
+              Center(child: Text(_fetchedConsumableMonthlySummaryData[index].quantity!.toStringAsFixed(2))));
       cells[2] =  DataCell(
               Center(child: Text(_fetchedConsumableMonthlySummaryData[index].quantity_in!.toStringAsFixed(2))));
-      cells[3] =  DataCell(
-              Center(child: Text(_fetchedConsumableMonthlySummaryData[index].quantity_out!.toStringAsFixed(2))));
       
-      double? closingStock = (_fetchedConsumableMonthlySummaryData[index].quantity_in!) - 
-                            (_fetchedConsumableMonthlySummaryData[index].quantity_out!);
+      double? balance = (_fetchedConsumableMonthlySummaryData[index].quantity!) +
+                        (_fetchedConsumableMonthlySummaryData[index].quantity_in!);
 
-      cells[4] = DataCell(Center(
-          child: Text(closingStock.toStringAsFixed(2))));
+      cells[3] =  DataCell(
+              Center(child: Text(balance.toStringAsFixed(2))));
 
-      cells[5] =  DataCell(
+      cells[4] =  DataCell(
+              Center(child: Text(_fetchedConsumableMonthlySummaryData[index].quantity_out!.toStringAsFixed(2))));
+
+      
+      double? closingStock = (balance) - (_fetchedConsumableMonthlySummaryData[index].quantity_out!);
+
+      cells[5] = DataCell(Center(child: Text(closingStock.toStringAsFixed(2))));
+
+      cells[6] =  DataCell(
               Center(child: Text(_fetchedConsumableMonthlySummaryData[index].resource_property!.value.toString())));
       
       return DataRow(cells: cells);
