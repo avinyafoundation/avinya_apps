@@ -88,9 +88,15 @@ class _ConsumableMonthlyReportState extends State<ConsumableMonthlyReport> {
       locale: localeObj,
     );
 
+   if(selected !=null){
     setState(() {
       _isFetching = true;
     });
+   }else{
+    setState(() {
+      _isFetching = false;
+    });
+   }
    
     if (selected != null) {
 
