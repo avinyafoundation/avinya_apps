@@ -33,6 +33,7 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
   List<StockReplenishment> _fetchedStockListAfterSchool = [];
   Organization? _fetchedOrganization;
   bool _isFetching = true;
+  bool _isAfter = false;
   List<Person> _fetchedStudentList = [];
   Person? _person;
   String? formatted_date;
@@ -65,13 +66,17 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
       lastDate: DateTime(2101),
     );
     if (picked != null && picked != _selectedDate) {
+      DateTime isToday = DateTime.now();
+      _isAfter = picked.isAfter(isToday);
       setState(() {
         _selectedDate = picked;
+        _isAfter = _isAfter;
       });
     }
 
     int? parentOrgId =
         campusAppsPortalInstance.getUserPerson().organization!.id;
+
     if (parentOrgId != null) {
       setState(() {
         _isFetching = true; // Set _isFetching to true before starting the fetch
@@ -104,8 +109,9 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
     _controllers = _fetchedStockList.map((item) {
       DateTime isToday = DateTime.now();
       return TextEditingController(
-        text:
-            _selectedDate == isToday ? '' : item.quantity_in?.toString() ?? '',
+        text: _isAfter ? '0' : item.quantity_in?.toString() ?? '',
+        // text:
+        //     _selectedDate == isToday ? '' : item.quantity_in?.toString() ?? '',
       );
     }).toList();
   }
@@ -205,7 +211,7 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
           _fetchedStockList, this.formatted_date);
     } else {
       var result = await addConsumableReplenishment(_fetchedStockList,
-          this._person?.id, this.parent_org_id, this.formatted_date);
+          this._person?.id, this.parent_org_id, this.formatted_date, _isUpdate);
     }
 
     // Add your form submission logic here
@@ -312,14 +318,20 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
                                           .map((entry) {
                                         int index = entry.key;
                                         StockReplenishment item = entry.value;
-                                        double totalQuantityIn =
-                                            (item.quantity_in ?? 0.0) +
-                                                (item.quantity ?? 0.0);
-                                        DateTime isToday = DateTime.now();
+                                        double totalQuantityIn = 0.0;
+                                        if (_isUpdate) {
+                                          totalQuantityIn =
+                                              (item.quantity_in ?? 0.0) +
+                                                  (item.prev_quantity ?? 0.0);
+                                        } else {
+                                          totalQuantityIn =
+                                              (item.quantity_in ?? 0.0) +
+                                                  (item.quantity ?? 0.0);
+                                        }
+
                                         _controller = TextEditingController(
-                                          text: _selectedDate != null &&
-                                                  _selectedDate == isToday
-                                              ? ''
+                                          text: _isAfter
+                                              ? '0'
                                               : item.quantity_in?.toString() ??
                                                   '',
                                         );
@@ -365,25 +377,37 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
                                                     setState(() {
                                                       item.quantity_in =
                                                           quantity_in;
-                                                      totalQuantityIn =
-                                                          (item.quantity_in ??
-                                                                  0.0) +
-                                                              (item.quantity ??
-                                                                  0.0);
+                                                      if (_isAfter) {
+                                                        totalQuantityIn =
+                                                            (item.quantity_in ??
+                                                                    0.0) +
+                                                                (item.quantity ??
+                                                                    0.0);
+                                                      } else {
+                                                        totalQuantityIn = (item
+                                                                    .quantity_in ??
+                                                                0.0) +
+                                                            (item.prev_quantity ??
+                                                                0.0);
+                                                      }
                                                     });
                                                   }
                                                 },
                                                 decoration: InputDecoration(
-                                                  hintText: item.quantity_in
-                                                          ?.toString() ??
-                                                      'Enter quantity',
+                                                  // hintText: item.quantity_in
+                                                  //         ?.toString() ??
+                                                  //     'Enter quantity',
                                                   border: OutlineInputBorder(),
                                                 ),
                                               ),
                                             ),
                                           ),
                                           DataCell(
-                                              Text(item.quantity!.toString())),
+                                            Text(_isAfter
+                                                ? item.quantity!.toString()
+                                                : item.prev_quantity!
+                                                    .toString()),
+                                          ),
                                           DataCell(
                                               Text(totalQuantityIn.toString())),
                                           DataCell(Text(item

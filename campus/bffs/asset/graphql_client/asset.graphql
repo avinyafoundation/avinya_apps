@@ -660,6 +660,8 @@ query getInventoryDataByOrganization($organization_id: Int!,$date: String!) {
         property
         value
        }
+       created
+       updated
     }
 }
 
@@ -697,6 +699,7 @@ query getConsumableMonthlyReport($organization_id: Int!,$year: Int!,$month: Int!
             description
             manufacturer
         }
+        quantity
         quantity_in
         quantity_out
         resource_property{

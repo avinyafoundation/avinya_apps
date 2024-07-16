@@ -101,6 +101,9 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
                   //width: 270.0,
                 ),
                 appBarTheme: AppBarTheme(backgroundColor: Colors.yellow[700]),
+                floatingActionButtonTheme: FloatingActionButtonThemeData(
+                  backgroundColor: Colors.yellow[700],
+                ),
               ),
             ),
           ),

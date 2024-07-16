@@ -18,6 +18,7 @@ class StockReplenishment {
   String? created;
   AvinyaType? avinya_type;
   double? quantity;
+  double? prev_quantity;
   double? quantity_in;
   double? quantity_out;
   ResourceProperty? resource_property;
@@ -33,6 +34,7 @@ class StockReplenishment {
       this.created,
       this.avinya_type,
       this.quantity,
+      this.prev_quantity,
       this.quantity_in,
       this.quantity_out,
       this.resource_property,
@@ -54,6 +56,8 @@ class StockReplenishment {
             ? null
             : AvinyaType.fromJson(json['avinya_type']),
         quantity: json["quantity"] == null ? null : json["quantity"],
+        prev_quantity:
+            json["prev_quantity"] == null ? null : json["prev_quantity"],
         quantity_in: json["quantity_in"] == null ? null : json["quantity_in"],
         quantity_out:
             json["quantity_out"] == null ? null : json["quantity_out"],
@@ -74,6 +78,7 @@ class StockReplenishment {
         "updated": updated == null ? null : updated,
         "avinya_type": avinya_type == null ? null : avinya_type,
         "quantity": quantity == null ? null : quantity,
+        "prev_quantity": prev_quantity == null ? null : prev_quantity,
         "quantity_in": quantity_in == null ? null : quantity_in,
         "quantity_out": quantity_out == null ? null : quantity_out,
         "resource_property":
@@ -86,7 +91,8 @@ Future<List<StockReplenishment>> addConsumableReplenishment(
     List<StockReplenishment> stockList,
     int? person_id,
     int? organization_id,
-    String? to_date) async {
+    String? to_date,
+    bool _isUpdate) async {
   // Transform the original list to the new structure
   List<Map<String, dynamic>> transformedList =
       stockList.map((stock) => stock.toJson()).toList().map((item) {
@@ -94,7 +100,8 @@ Future<List<StockReplenishment>> addConsumableReplenishment(
       "avinya_type_id": item["avinya_type_id"],
       "consumable_id": item["consumable_id"],
       "quantity": item["quantity"],
-      "quantity_in": item["quantity_in"]
+      "quantity_in": item["quantity_in"],
+      "prev_quantity": _isUpdate ? item["prev_quantity"] : item["quantity"]
     };
   }).toList();
   final response = await http.post(
