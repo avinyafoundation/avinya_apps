@@ -121,7 +121,6 @@ class _WeekPickerState extends State<WeekPicker> {
             },
           ),
           floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.deepPurpleAccent,
             onPressed: () async {
               if (_rangeStart != null && _rangeEnd != null) {
                 widget.updateDateRange(_rangeStart!, _rangeEnd!);
