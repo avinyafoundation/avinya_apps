@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
 
-void showSuccessToast() {
+void showSuccessToast(item) {
   showToastWidget(
     Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
@@ -15,7 +15,7 @@ void showSuccessToast() {
           Icon(Icons.check, color: Colors.white),
           SizedBox(width: 12.0),
           Text(
-            'Stock Replenishment Successfully Updated!',
+            item.toString(),
             style: TextStyle(color: Colors.white),
           ),
         ],

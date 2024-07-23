@@ -1,10 +1,7 @@
 import 'dart:ui';
-
+import 'package:gallery/avinya/asset_admin/lib/data/stock_depletion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gallery/avinya/asset_admin/lib/data/stock_depletion.dart';
-// import 'package:gallery/avinya/asset_admin/lib/data/stock_repenishment.dart';
-// import 'package:asset_admin/data/stock_repenishment.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:gallery/data/person.dart';
 import 'package:intl/intl.dart';
@@ -12,15 +9,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class StockDepletionForm extends StatefulWidget {
   const StockDepletionForm({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -31,8 +19,10 @@ class StockDepletionForm extends StatefulWidget {
 class _StockDepletionState extends State<StockDepletionForm> {
   List<StockDepletion> _fetchedStockList = [];
   List<StockDepletion> _fetchedStockListAfterSchool = [];
+  List<StockDepletion> result = [];
   Organization? _fetchedOrganization;
   bool _isFetching = true;
+  bool _isAfter = false;
   List<Person> _fetchedStudentList = [];
   Person? _person;
   String? formatted_date;
@@ -40,11 +30,16 @@ class _StockDepletionState extends State<StockDepletionForm> {
 
   bool _isSubmitting = false;
   bool _isUpdate = false;
+  bool _showQtyIn = false;
+  bool _backDate = false;
+  double prevQtyIn = 0.00;
+  int prevIndex = 0;
   //calendar specific variables
   DateTime? _selectedDay;
 
   List<TextEditingController> _controllers = [];
   DateTime _selectedDate = DateTime.now();
+  DateTime _fetcheddDate = DateTime.now();
 
   late DataTableSource _data;
   List<String?> columnNames = [];
@@ -65,20 +60,26 @@ class _StockDepletionState extends State<StockDepletionForm> {
       lastDate: DateTime(2101),
     );
     if (picked != null && picked != _selectedDate) {
+      DateTime isToday = DateTime.now();
+      _isAfter = picked.isAfter(isToday);
       setState(() {
         _selectedDate = picked;
+        _isAfter = _isAfter;
+        prevQtyIn = 0.00;
       });
     }
 
     int? parentOrgId =
         campusAppsPortalInstance.getUserPerson().organization!.id;
+
     if (parentOrgId != null) {
       setState(() {
         _isFetching = true; // Set _isFetching to true before starting the fetch
       });
       try {
         setState(() {
-          refreshState(DateFormat('yyyy-MM-dd').format(_selectedDate!));
+          refreshState(
+              DateFormat('yyyy-MM-dd HH:mm:ss').format(_selectedDate!));
         });
       } catch (error) {
         // Handle any errors that occur during the fetch
@@ -104,8 +105,9 @@ class _StockDepletionState extends State<StockDepletionForm> {
     _controllers = _fetchedStockList.map((item) {
       DateTime isToday = DateTime.now();
       return TextEditingController(
-        text:
-            _selectedDate == isToday ? '' : item.quantity_in?.toString() ?? '',
+        text: _showQtyIn ? item.quantity_out?.toString() : '0',
+        // text:
+        //     _selectedDate == isToday ? '' : item.quantity_out?.toString() ?? '',
       );
     }).toList();
   }
@@ -127,7 +129,8 @@ class _StockDepletionState extends State<StockDepletionForm> {
         _isFetching = true; // Show loading indicator
       });
       try {
-        await refreshState(DateFormat('yyyy-MM-dd').format(_selectedDate!));
+        await refreshState(
+            DateFormat('yyyy-MM-dd HH:mm:ss').format(_selectedDate!));
       } catch (error) {
         // Handle any errors that occur during the fetch
         // You can show an error message or take appropriate actions here
@@ -142,8 +145,6 @@ class _StockDepletionState extends State<StockDepletionForm> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Perform any initialization that depends on context
-    // _pickDate(context);
   }
 
   void updateSelected(int index, bool value, List<bool> selected) {
@@ -168,12 +169,68 @@ class _StockDepletionState extends State<StockDepletionForm> {
     _fetchedStockList = await getStockListforDepletion(parentOrgId, newValue!);
     Person person = campusAppsPortalInstance.getUserPerson();
 
-    var formattedDate = formatDateTime(_selectedDate!);
+    var formattedDate = formatDateTime(_selectedDate);
 
-    _initializeControllers();
+    for (var item in _fetchedStockList) {
+      DateTime itemDate = DateTime.parse(item.updated!).toLocal();
+      DateTime itemDateOnly =
+          DateTime(itemDate.year, itemDate.month, itemDate.day);
+      DateTime currentDate = DateTime.now().toLocal();
+      if (_selectedDate.year == currentDate.year &&
+          _selectedDate.month == currentDate.month &&
+          _selectedDate.day == currentDate.day) {
+        if (_selectedDate.isAfter(itemDateOnly) &&
+            item.quantity_out != 0 &&
+            _selectedDate.day != itemDateOnly.day) {
+          _showQtyIn = false;
+          _backDate = false;
+        } else if (_selectedDate.isBefore(itemDateOnly) &&
+            item.quantity_out != 0 &&
+            _selectedDate.day != itemDateOnly.day) {
+          _showQtyIn = false;
+          _backDate = false;
+        } else if (item.quantity_out != 0) {
+          _isSubmitting = false;
+          _showQtyIn = true;
+          _backDate = false;
+          _isUpdate = true;
+        } else {
+          _isSubmitting = false;
+          _showQtyIn = false;
+          _backDate = false;
+          _isUpdate = false;
+        }
+      } else if (_selectedDate.isBefore(currentDate)) {
+        if (_selectedDate.isAfter(itemDateOnly) && item.quantity_out != 0) {
+          _isSubmitting = false;
+          _showQtyIn = false;
+          _backDate = false;
+          _isUpdate = true;
+          break;
+        } else if (_selectedDate.isBefore(itemDateOnly)) {
+          _isSubmitting = true;
+          _showQtyIn = true;
+          _backDate = true;
+          _isUpdate = true;
+        } else {
+          _isSubmitting = true;
+          _backDate = false;
+          _showQtyIn = false;
+          _isUpdate = false;
+        }
+      } else {
+        _isSubmitting = false;
+        _showQtyIn = false;
+        _backDate = false;
+        _isUpdate = false;
+      }
+    }
+
     _fetchedStockList.map((item) {
-      if (item.quantity_in != 0) {
-        _isUpdate = true;
+      if (item.quantity_out != 0) {
+        if (item.updated != null) {
+          _fetcheddDate = DateTime.parse(item.updated!);
+        }
       }
     }).toList();
 
@@ -181,17 +238,19 @@ class _StockDepletionState extends State<StockDepletionForm> {
       setState(() {
         _fetchedStockList;
         _person = person;
-        _fetchedStockList.map((item) {
-          if (item.quantity_in != 0) {
-            _isUpdate = true;
-          }
-        }).toList();
+        _isSubmitting = _isSubmitting;
+        _backDate = _backDate;
+        _showQtyIn = _showQtyIn;
+        _fetcheddDate = _fetcheddDate;
+        _isUpdate = _isUpdate;
         formatted_date = formattedDate;
         parent_org_id = parentOrgId;
         _isFetching =
             false; // Ensure _isFetching is set to false after fetching
       });
     }
+
+    _initializeControllers();
   }
 
   Future<void> _handleSubmit() async {
@@ -199,17 +258,16 @@ class _StockDepletionState extends State<StockDepletionForm> {
       _isSubmitting = true;
     });
 
-    if (_isUpdate) {
-      var result = await updateConsumableDepletion(
+    if (_showQtyIn || _isUpdate) {
+      result = await updateConsumableDepletion(
           _fetchedStockList, this.formatted_date);
     } else {
-      var result = await addConsumableDepletion(_fetchedStockList,
-          this._person?.id, this.parent_org_id, this.formatted_date);
+      result = await addConsumableDepletion(_fetchedStockList, this._person?.id,
+          this.parent_org_id, this.formatted_date, _isUpdate);
     }
 
-    // Add your form submission logic here
-
     setState(() {
+      refreshState(DateFormat('yyyy-MM-dd HH:mm:ss').format(_selectedDate));
       _isSubmitting = false;
       _isUpdate = true;
     });
@@ -263,187 +321,208 @@ class _StockDepletionState extends State<StockDepletionForm> {
                             size: 50,
                           ),
                         )
-                      : _fetchedStockList.isNotEmpty
-                          ? LayoutBuilder(
-                              builder: (context, constraints) {
-                                return SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      minWidth: constraints.maxWidth,
-                                    ),
-                                    child: DataTable(
-                                      columns: const [
-                                        DataColumn(
-                                            label: Text(
-                                          "Product Name",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                        DataColumn(
-                                            label: Text(
-                                          "Quantity",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                        DataColumn(
-                                            label: Text(
-                                          "On Hand",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                        DataColumn(
-                                            label: Text(
-                                          "Total",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                        DataColumn(
-                                            label: Text(
-                                          "Unit",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                      ],
-                                      rows: _fetchedStockList
-                                          .asMap()
-                                          .entries
-                                          .map((entry) {
-                                        int index = entry.key;
-                                        StockDepletion item = entry.value;
-                                        double totalQuantityIn =
-                                            (item.quantity_in ?? 0.0) +
-                                                (item.quantity ?? 0.0);
-                                        DateTime isToday = DateTime.now();
-                                        _controller = TextEditingController(
-                                          text: _selectedDate != null &&
-                                                  _selectedDate == isToday
-                                              ? ''
-                                              : item.quantity_in?.toString() ??
-                                                  '',
-                                        );
-                                        // _controller.addListener(() {
-                                        //   final text = _controller.text;
-                                        //   final quantity_in =
-                                        //       int.tryParse(text);
-                                        //   if (quantity_in != null) {
-                                        //     setState(() {
-                                        //       item.quantity_in = quantity_in;
-                                        //       totalQuantityIn =
-                                        //           (item.quantity_in ?? 0) +
-                                        //               (item.quantity ?? 0);
-                                        //     });
-                                        //   }
-                                        // });
-                                        return DataRow(cells: [
-                                          DataCell(
-                                              Text(item.consumable!.name!)),
-                                          DataCell(
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
+                      : _backDate != true
+                          ? _fetchedStockList.isNotEmpty
+                              ? LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    return SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          minWidth: constraints.maxWidth,
+                                        ),
+                                        child: DataTable(
+                                          columns: const [
+                                            DataColumn(
+                                                label: Text(
+                                              "Product Name",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            )),
+                                            DataColumn(
+                                                label: Text(
+                                              "Quantity",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            )),
+                                            DataColumn(
+                                                label: Text(
+                                              "On Hand",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            )),
+                                            DataColumn(
+                                                label: Text(
+                                              "Total",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            )),
+                                            DataColumn(
+                                                label: Text(
+                                              "Unit",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            )),
+                                          ],
+                                          rows: _fetchedStockList
+                                              .asMap()
+                                              .entries
+                                              .map((entry) {
+                                            int index = entry.key;
+                                            StockDepletion item = entry.value;
+
+                                            _controller = TextEditingController(
+                                              text: _isAfter
+                                                  ? '0'
+                                                  : item.quantity_out
+                                                          ?.toString() ??
+                                                      '',
+                                            );
+                                            return DataRow(cells: [
+                                              DataCell(
+                                                  Text(item.consumable!.name!)),
+                                              DataCell(
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
                                                       vertical: 6.0,
                                                       horizontal: 2.0),
-                                              child: TextField(
-                                                controller: _controllers[index],
-                                                keyboardType: TextInputType
-                                                    .numberWithOptions(
-                                                        decimal: true),
-                                                inputFormatters: <TextInputFormatter>[
-                                                  FilteringTextInputFormatter
-                                                      .allow(RegExp(
-                                                          r'^\d*\.?\d{0,2}')),
-                                                ],
-                                                onChanged:
-                                                    (String value) async {
-                                                  double? quantity_in =
-                                                      double.tryParse(value);
-                                                  if (quantity_in != null) {
-                                                    print(
-                                                        'Quantity: $quantity_in');
-                                                    setState(() {
-                                                      item.quantity_in =
-                                                          quantity_in;
-                                                      totalQuantityIn =
-                                                          (item.quantity_in ??
-                                                                  0.0) +
-                                                              (item.quantity ??
-                                                                  0.0);
-                                                    });
-                                                  }
-                                                },
-                                                decoration: InputDecoration(
-                                                  hintText: item.quantity_in
-                                                          ?.toString() ??
-                                                      'Enter quantity',
-                                                  border: OutlineInputBorder(),
+                                                  child: TextField(
+                                                    controller:
+                                                        _controllers[index],
+                                                    keyboardType: TextInputType
+                                                        .numberWithOptions(
+                                                            decimal: true),
+                                                    inputFormatters: <TextInputFormatter>[
+                                                      FilteringTextInputFormatter
+                                                          .allow(RegExp(
+                                                              r'^\d*\.?\d{0,2}')),
+                                                    ],
+                                                    onChanged:
+                                                        (String value) async {
+                                                      double? quantity_out =
+                                                          double.tryParse(
+                                                              value);
+                                                      if (quantity_out !=
+                                                          null) {
+                                                        print(
+                                                            'Quantity: $quantity_out');
+                                                        setState(() {
+                                                          item.quantity_out =
+                                                              quantity_out;
+                                                          prevQtyIn = (item
+                                                                  .quantity_out ??
+                                                              0.0);
+                                                          prevIndex = index;
+
+                                                          if (_showQtyIn) {
+                                                            item.total_quantity =
+                                                                (item.prev_quantity ??
+                                                                        0.0) -
+                                                                    (item.quantity_out ??
+                                                                        0.0);
+                                                          } else {
+                                                            item.total_quantity =
+                                                                (item.quantity ??
+                                                                        0.0) -
+                                                                    double.tryParse(
+                                                                        value)!;
+                                                          }
+                                                        });
+                                                      }
+                                                    },
+                                                    decoration: InputDecoration(
+                                                      border:
+                                                          OutlineInputBorder(),
+                                                    ),
+                                                    enabled: !_isSubmitting,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
-                                          DataCell(
-                                              Text(item.quantity!.toString())),
-                                          DataCell(
-                                              Text(totalQuantityIn.toString())),
-                                          DataCell(Text(item
-                                              .resource_property!.value!
-                                              .toString())),
-                                        ]);
-                                      }).toList(),
-                                    ),
-                                  ),
-                                );
-                              },
-                            )
-                          : Center(
-                              child: Text('No data found'),
-                            ),
+                                              DataCell(
+                                                Text(_showQtyIn
+                                                    ? item.prev_quantity!
+                                                        .toString()
+                                                    : item.quantity!
+                                                        .toString()),
+                                              ),
+                                              DataCell(Text(item.total_quantity
+                                                  .toString())),
+                                              DataCell(Text(item
+                                                  .resource_property!.value!
+                                                  .toString())),
+                                            ]);
+                                          }).toList(),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                )
+                              : Center(
+                                  child: Text('No data found'),
+                                )
+                          : Text("Please Select Valid Date"),
                   if (!_isFetching && _fetchedStockList.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: SizedBox(
-                          width: 120, // Set the width of the button
-                          // child: ElevatedButton(
-                          //   onPressed: _isSubmitting ? null : _handleSubmit,
-                          //   style: ElevatedButton.styleFrom(
-                          //     primary: Colors.deepPurple, // Change button color
-                          //     elevation: 4, // Add elevation
-                          //   ),
-                          //   child: Padding(
-                          //     padding: const EdgeInsets.all(8.0),
-                          //     child: Text(
-                          //       _isUpdate ? 'Update' : 'Save',
-                          //       style: TextStyle(
-                          //         fontSize: 16, // Increase font size
-                          //         fontWeight: FontWeight.bold,
-                          //         color: Colors.white, // Change text color
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                          child: ElevatedButton(
-                            onPressed: _isSubmitting ? null : _handleSubmit,
-                            style: ButtonStyle(
-                              padding: MaterialStateProperty.all(
-                                  EdgeInsets.all(16.0)),
-                              textStyle: MaterialStateProperty.all(
-                                const TextStyle(fontSize: 16),
+                    _backDate != true
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: SizedBox(
+                                width: 120,
+                                child: ElevatedButton(
+                                  onPressed:
+                                      _isSubmitting ? null : _handleSubmit,
+                                  style: ButtonStyle(
+                                    padding: MaterialStateProperty.all(
+                                        EdgeInsets.all(16.0)),
+                                    textStyle:
+                                        MaterialStateProperty.resolveWith(
+                                            (states) {
+                                      if (states
+                                          .contains(MaterialState.disabled)) {
+                                        return TextStyle(
+                                            fontSize: 16, color: Colors.grey);
+                                      }
+                                      return TextStyle(
+                                          fontSize: 16, color: Colors.black);
+                                    }),
+                                    elevation:
+                                        MaterialStateProperty.resolveWith(
+                                            (states) {
+                                      if (states
+                                          .contains(MaterialState.disabled)) {
+                                        return 0.0;
+                                      }
+                                      return 20.0;
+                                    }),
+                                    backgroundColor:
+                                        MaterialStateProperty.resolveWith(
+                                            (states) {
+                                      if (states
+                                          .contains(MaterialState.disabled)) {
+                                        return Colors.grey.shade400;
+                                      }
+                                      return Colors.greenAccent;
+                                    }),
+                                    foregroundColor:
+                                        MaterialStateProperty.resolveWith(
+                                            (states) {
+                                      if (states
+                                          .contains(MaterialState.disabled)) {
+                                        return Colors.grey.shade700;
+                                      }
+                                      return Colors.black;
+                                    }),
+                                  ),
+                                  child: Text(
+                                    _isUpdate ? 'Update' : 'Save',
+                                  ),
+                                ),
                               ),
-                              elevation: MaterialStateProperty.all(20),
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.greenAccent),
-                              foregroundColor:
-                                  MaterialStateProperty.all(Colors.black),
                             ),
-                            child: Text(
-                              _isUpdate ? 'Update' : 'Save',
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                          )
+                        : Text(""),
                 ],
               ),
             ),
