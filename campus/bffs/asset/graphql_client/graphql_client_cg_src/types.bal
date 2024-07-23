@@ -81,11 +81,13 @@ public type Address record {
 
 public type ApplicantConsent record {
     string? date_of_birth?;
+    string? al_stream?;
     string? created?;
     int? avinya_type_id?;
     boolean? agree_terms_consent?;
     boolean? active?;
-    boolean? done_ol?;
+    int? al_year?;
+    string? done_ol?;
     int? application_id?;
     int? ol_year?;
     string? record_type?;
@@ -96,6 +98,7 @@ public type ApplicantConsent record {
     int? id?;
     int? distance_to_school?;
     string? updated?;
+    string? done_al?;
     string? email?;
     int? person_id?;
 };
@@ -145,6 +148,26 @@ public type Consumable record {
     string? updated?;
     string? record_type?;
     string? manufacturer?;
+};
+
+public type DutyParticipant record {
+    string? role?;
+    Activity? activity?;
+    Person? person?;
+    string? created?;
+    int? activity_id?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+};
+
+public type DutyRotationMetaDetails record {
+    string? end_date?;
+    int? organization_id?;
+    int? id?;
+    string? record_type?;
+    string? start_date?;
 };
 
 public type EducationExperience record {
@@ -215,32 +238,39 @@ public type EvaluationMetadata record {
 };
 
 public type Inventory record {
-    int? quantity_out?;
     int? consumable_id?;
-    int? quantity?;
-    int? quantity_in?;
+    anydata? quantity?;
     string? created?;
-    int? organization_id?;
+    anydata? prev_quantity?;
     int? avinya_type_id?;
-    int? id?;
+    string? description?;
     int? asset_id?;
-    string? updated?;
     string? record_type?;
+    string? manufacturer?;
+    anydata? quantity_out?;
+    int? resource_property_id?;
+    anydata? quantity_in?;
+    int? organization_id?;
+    string? name?;
+    int? id?;
+    string? updated?;
+    string? resource_property_value?;
     int? person_id?;
 };
 
 public type Organization record {
-    int[]? parent_organizations?;
     string? notes?;
     string? name_ta?;
     int[]? child_organizations?;
-    int? phone?;
     int? address_id?;
     string? name_si?;
     int? avinya_type?;
     string? description?;
-    int? id?;
+    int[]? child_organizations_for_dashboard?;
     string? record_type?;
+    int[]? parent_organizations?;
+    int? phone?;
+    int? id?;
     string name_en?;
 };
 
@@ -266,6 +296,7 @@ public type Person record {
     string? passport_no?;
     string? record_type?;
     Address? mailing_address?;
+    string? branch_code?;
     int[]? child_student?;
     string? bank_account_name?;
     int? avinya_phone?;
@@ -273,6 +304,7 @@ public type Person record {
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    string? academy_org_name?;
     string? asgardeo_id?;
     string? updated?;
     string? preferred_name?;
@@ -871,9 +903,9 @@ public type GetInventoryResponse record {|
             string? name;
         |}? avinya_type;
         int? avinya_type_id;
-        int? quantity;
-        int? quantity_in;
-        int? quantity_out;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
     |}? inventory;
 |};
 
@@ -904,9 +936,9 @@ public type GetInventoriesResponse record {|
             string? name;
         |}? avinya_type;
         int? avinya_type_id;
-        int? quantity;
-        int? quantity_in;
-        int? quantity_out;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
     |}[] inventories;
 |};
 
@@ -929,9 +961,9 @@ public type AddInventoryResponse record {|
         record {|
             int? id;
         |}? avinya_type;
-        int? quantity;
-        int? quantity_in;
-        int? quantity_out;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
     |}? add_inventory;
 |};
 
@@ -954,9 +986,9 @@ public type UpdateInventoryResponse record {|
         record {|
             int? id;
         |}? avinya_type;
-        int? quantity;
-        int? quantity_in;
-        int? quantity_out;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
     |}? update_inventory;
 |};
 
@@ -1052,4 +1084,75 @@ public type GetAvinyaTypesResponse record {|
         int? level;
         string? description;
     |}[] avinya_types;
+|};
+
+public type GetInventoryDataByOrganizationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? avinya_type_id;
+        int? consumable_id;
+        record {|
+            int? id;
+            string? name;
+        |}? consumable;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
+        anydata? prev_quantity;
+        record {|
+            int? id;
+            string? property;
+            string? value;
+        |}? resource_property;
+        string? created;
+        string? updated;
+    |}[]? inventory_data_by_organization;
+|};
+
+public type GetConsumableWeeklyReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string global_type;
+            string? name;
+        |}? avinya_type;
+        record {|
+            int? id;
+            string? name;
+            string? description;
+            string? manufacturer;
+        |}? consumable;
+        anydata? prev_quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
+        record {|
+            int? id;
+            string? property;
+            string? value;
+        |}? resource_property;
+        string? updated;
+    |}[]? consumable_weekly_report;
+|};
+
+public type GetConsumableMonthlyReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        record {|
+            int? id;
+            string? name;
+            string? description;
+            string? manufacturer;
+        |}? consumable;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
+        record {|
+            int? id;
+            string? property;
+            string? value;
+        |}? resource_property;
+    |}[]? consumable_monthly_report;
 |};

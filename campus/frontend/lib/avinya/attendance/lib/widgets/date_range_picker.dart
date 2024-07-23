@@ -63,7 +63,7 @@ class _DateRangePickerState extends State<DateRangePicker> {
             backgroundColor: Color.fromARGB(255, 236, 230, 253),
           ),
           body: TableCalendar(
-            firstDay: kFirstDay,
+            firstDay: DateTime.utc(2020, 1, 1),
             lastDay: kLastDay,
             focusedDay: _focusedDay,
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),

@@ -864,3 +864,30 @@ public type GetTotalAttendanceCountByParentOrgResponse record {|
         int? daily_total;
     |}[]? total_attendance_count_by_date;
 |};
+
+public type GetDailyAttendanceSummaryReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? sign_in_date;
+        int? present_count;
+        int? late_count;
+        int? total_count;
+        anydata? present_attendance_percentage;
+        anydata? late_attendance_percentage;
+    |}[]? daily_attendance_summary_report;
+|};
+
+public type GetOrganizationsByAvinyaTypeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string name_en;
+        |} name;
+        string? description;
+        record {|
+            string? key_name;
+            string? value;
+        |}[]? organization_metadata;
+    |}[]? organizations_by_avinya_type;
+|};

@@ -833,4 +833,51 @@ service / on new http:Listener(9091) {
         }
     }
 
+    resource function get daily_attendance_summary_report/[int organization_id]/[int avinya_type_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendanceSummary[]|error {
+        GetDailyAttendanceSummaryReportResponse|graphql:ClientError getDailyAttendanceSummaryReportResponse = globalDataClient->getDailyAttendanceSummaryReport(from_date,to_date,organization_id,avinya_type_id);
+        if(getDailyAttendanceSummaryReportResponse is GetDailyAttendanceSummaryReportResponse) {
+            ActivityParticipantAttendanceSummary[] activityParticipantAttendances = [];
+            foreach var attendance_record in getDailyAttendanceSummaryReportResponse.daily_attendance_summary_report {
+                ActivityParticipantAttendanceSummary|error activityParticipantAttendance = attendance_record.cloneWithType(ActivityParticipantAttendanceSummary);
+                if(activityParticipantAttendance is ActivityParticipantAttendanceSummary) {
+                    activityParticipantAttendances.push(activityParticipantAttendance);
+                } else {
+                    log:printError("Error while processing Application record received", activityParticipantAttendance);
+                    return error("Error while processing Application record received: " + activityParticipantAttendance.message() + 
+                        ":: Detail: " + activityParticipantAttendance.detail().toString());
+                }
+            }
+
+            return activityParticipantAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getDailyAttendanceSummaryReportResponse);
+            return error("Error while creating application: " + getDailyAttendanceSummaryReportResponse.message() + 
+                ":: Detail: " + getDailyAttendanceSummaryReportResponse.detail().toString());
+        }
+    }
+
+    resource function get organizations_by_avinya_type/[int avinya_type_id]() returns Organization[]|error {
+        GetOrganizationsByAvinyaTypeResponse|graphql:ClientError getOrganizationsByAvinyaTypeResponse = globalDataClient->getOrganizationsByAvinyaType(avinya_type_id);
+        if(getOrganizationsByAvinyaTypeResponse is GetOrganizationsByAvinyaTypeResponse) {
+            Organization[] organizations = [];
+            foreach var organization_record in getOrganizationsByAvinyaTypeResponse.organizations_by_avinya_type {
+                Organization|error organization = organization_record.cloneWithType(Organization);
+                if(organization is Organization) {
+                    organizations.push(organization);
+                } else {
+                    log:printError("Error while processing Application record received", organization);
+                    return error("Error while processing Application record received: " + organization.message() + 
+                        ":: Detail: " + organization.detail().toString());
+                }
+            }
+
+            return organizations;
+            
+        } else {
+            log:printError("Error while creating application", getOrganizationsByAvinyaTypeResponse);
+            return error("Error while creating application: " + getOrganizationsByAvinyaTypeResponse.message() + 
+                ":: Detail: " + getOrganizationsByAvinyaTypeResponse.detail().toString());
+        }
+    }
 }
