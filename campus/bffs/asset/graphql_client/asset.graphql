@@ -679,7 +679,7 @@ query getConsumableWeeklyReport($organization_id: Int!,$from_date: String!,$to_d
             description
             manufacturer
         }
-        quantity
+        prev_quantity
         quantity_in
         quantity_out
         resource_property{

@@ -238,7 +238,7 @@ public isolated client class GraphqlClient {
         return <GetInventoryDataByOrganizationResponse> check performDataBinding(graphqlResponse, GetInventoryDataByOrganizationResponse);
     }
     remote isolated function getConsumableWeeklyReport(string from_date, string to_date, int organization_id) returns GetConsumableWeeklyReportResponse|graphql:ClientError {
-        string query = string `query getConsumableWeeklyReport($organization_id:Int!,$from_date:String!,$to_date:String!) {consumable_weekly_report(organization_id:$organization_id,from_date:$from_date,to_date:$to_date) {id avinya_type {id global_type name} consumable {id name description manufacturer} quantity quantity_in quantity_out resource_property {id property value} updated}}`;
+        string query = string `query getConsumableWeeklyReport($organization_id:Int!,$from_date:String!,$to_date:String!) {consumable_weekly_report(organization_id:$organization_id,from_date:$from_date,to_date:$to_date) {id avinya_type {id global_type name} consumable {id name description manufacturer} prev_quantity quantity_in quantity_out resource_property {id property value} updated}}`;
         map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetConsumableWeeklyReportResponse> check performDataBinding(graphqlResponse, GetConsumableWeeklyReportResponse);
