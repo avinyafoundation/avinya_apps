@@ -1125,7 +1125,7 @@ public type GetConsumableWeeklyReportResponse record {|
             string? description;
             string? manufacturer;
         |}? consumable;
-        anydata? quantity;
+        anydata? prev_quantity;
         anydata? quantity_in;
         anydata? quantity_out;
         record {|
