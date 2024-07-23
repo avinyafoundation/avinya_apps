@@ -1,8 +1,12 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:attendance/data/activity_attendance.dart';
 import 'package:gallery/data/person.dart';
 import 'package:intl/intl.dart';
+import 'package:attendance/widgets/date_range_picker.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class DailyAttendanceReport extends StatefulWidget {
   const DailyAttendanceReport({Key? key, required this.title})
@@ -27,20 +31,40 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
   List<ActivityAttendance> _fetchedAttendance = [];
   List<ActivityAttendance> _fetchedAttendanceAfterSchool = [];
   Organization? _fetchedOrganization;
+  bool _isFetching = true;
+   List<Person> _fetchedStudentList = [];
+
+  //calendar specific variables
+  DateTime? _selectedDay;
 
   late DataTableSource _data;
   List<String?> columnNames = [];
   List<Map<String, bool>> attendanceList = [];
   var _selectedValue;
   var activityId = 0;
+  bool _isDisplayErrorMessage = false;
+
+  late String formattedStartDate;
+  late String formattedEndDate;
+  var today = DateTime.now();
+
+  void selectWeek(DateTime today, activityId) async {
+    // Update the variables to select the week
+    final formatter = DateFormat('MMM d, yyyy');
+    formattedStartDate = formatter.format(today);
+    formattedEndDate = formatter.format(today);
+    setState(() {
+      _isFetching = false;
+    });
+  }
+
 
   @override
   void initState() {
     super.initState();
-    if (campusAppsPortalInstance.isTeacher) {
-      activityId = campusAppsPortalInstance.activityIds['homeroom']!;
-    } else if (campusAppsPortalInstance.isSecurity)
-      activityId = campusAppsPortalInstance.activityIds['arrival']!;
+    var today = DateTime.now();
+    activityId = campusAppsPortalInstance.activityIds['homeroom']!;
+    selectWeek(today, activityId);
   }
 
   @override
@@ -48,6 +72,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
     super.didChangeDependencies();
     _data = MyData(
         _fetchedAttendance, columnNames, _fetchedOrganization, updateSelected);
+    DateRangePicker(updateDateRange, formattedStartDate);
   }
 
   void updateSelected(int index, bool value, List<bool> selected) {
@@ -55,6 +80,134 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
       selected[index] = value;
     });
   }
+
+  void updateDateRange(_rangeStart, _rangeEnd) async {
+    int? parentOrgId =
+        campusAppsPortalInstance.getUserPerson().organization!.id;
+    if (parentOrgId != null) {
+      setState(() {
+        _isFetching = true; // Set _isFetching to true before starting the fetch
+      });
+      try {
+        setState(() {
+          final startDate = _rangeStart ?? _selectedDay;
+          final endDate = _rangeEnd ?? _selectedDay;
+          final formatter = DateFormat('MMM d, yyyy');
+          final formattedStartDate = formatter.format(startDate!);
+          final formattedEndDate = formatter.format(endDate!);
+          this.formattedStartDate = formattedStartDate;
+          this.formattedEndDate = formattedEndDate;
+          this._fetchedStudentList = _fetchedStudentList;
+          refreshState(this._selectedValue);
+        });
+      } catch (error) {
+        // Handle any errors that occur during the fetch
+        setState(() {
+          _isFetching = false; // Set _isFetching to false in case of error
+        });
+        // Perform error handling, e.g., show an error message
+      }
+    }
+  }
+
+  void refreshState(Organization? newValue) async {
+    setState(() {
+      _isFetching = true; // Set _isFetching to true before starting the fetch
+    });
+    int? parentOrgId =
+        campusAppsPortalInstance.getUserPerson().organization!.id;
+    _selectedValue = newValue ?? null;
+
+    if (_selectedValue == null) {
+      _fetchedStudentList = await fetchOrganizationForAll(parentOrgId!);
+      if (_fetchedOrganization != null) {
+        _fetchedOrganization!.people = _fetchedStudentList;
+        _fetchedOrganization!.id = parentOrgId;
+      } else {
+        _fetchedOrganization = Organization();
+        _fetchedOrganization!.people = _fetchedStudentList;
+        _fetchedOrganization!.id = parentOrgId;
+      }
+    } else {
+      
+      var cols =
+        columnNames.map((label) => DataColumn(label: Text(label!))).toList(); 
+
+      _fetchedOrganization = await fetchOrganization(newValue!.id!);
+      _fetchedAttendance = await getClassActivityAttendanceReportForPayment(
+                                    _fetchedOrganization!.id!,
+                                    activityId,
+                                    DateFormat('yyyy-MM-dd')
+                                          .format(DateFormat('MMM d, yyyy')
+                                          .parse(this.formattedStartDate)),
+                                    DateFormat('yyyy-MM-dd')
+                                          .format(DateFormat('MMM d, yyyy')
+                                          .parse(this.formattedEndDate)));
+      
+      if (_fetchedAttendance.length > 0) {
+                                
+              columnNames.clear();
+              List<String?> names = _fetchedAttendance
+                  .map((attendance) => attendance
+                      .sign_in_time
+                      ?.split(" ")[0])
+                  .where((name) =>
+                      name !=
+                      null) // Filter out null values
+                  .toList();
+              columnNames.addAll(names);
+            } else {
+              columnNames.clear();
+            }
+
+            columnNames =
+                columnNames.toSet().toList();
+            columnNames.sort();
+            columnNames.insert(0, "Name");
+            columnNames.insert(1, "Digital ID");
+            cols = columnNames
+                .map((label) =>
+                    DataColumn(label: Text(label!)))
+                .toList();
+            print(cols.length);
+            if (_fetchedAttendance.length == 0)
+              _fetchedAttendance = new List.filled(
+                  _fetchedOrganization!.people.length,
+                  new ActivityAttendance(
+                      person_id: -1));
+            else {
+              for (int i = 0;
+                  i <
+                      _fetchedOrganization!
+                          .people.length;
+                  i++) {
+                if (_fetchedAttendance.indexWhere(
+                        (attendance) =>
+                            attendance.person_id ==
+                            _fetchedOrganization!
+                                .people[i].id) ==
+                    -1) {
+                  _fetchedAttendance.add(
+                      new ActivityAttendance(
+                          person_id: -1));
+                }
+              }
+            }
+
+    }
+
+    String? newSelectedVal;
+    if (_selectedValue != null) {
+      newSelectedVal = _selectedValue.description;
+    }
+
+    setState(() {
+      _fetchedOrganization;
+      this._isFetching = false;
+      _data = MyData(_fetchedAttendance,columnNames,_fetchedOrganization,updateSelected);
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -89,17 +242,29 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                                   SizedBox(width: 10),
                                   DropdownButton<Organization>(
                                     value: _selectedValue,
-                                    onChanged: (Organization? newValue) async {
+                                    onChanged:_isFetching ? null: (Organization? newValue) async {
                                       _selectedValue = newValue!;
                                       print(newValue.id);
+                                       
                                       _fetchedOrganization =
-                                          await fetchOrganization(newValue.id!);
-
+                                         await fetchOrganization(newValue.id!);
+                                     
                                       _fetchedAttendance =
-                                          await getClassActivityAttendanceReport(
-                                              _fetchedOrganization!.id!,
-                                              activityId,
-                                              250);
+                                                await getClassActivityAttendanceReportForPayment(
+                                                    _fetchedOrganization!.id!,
+                                                    activityId,
+                                                    DateFormat('yyyy-MM-dd')
+                                                        .format(DateFormat(
+                                                                'MMM d, yyyy')
+                                                            .parse(this
+                                                                .formattedStartDate)),
+                                                    DateFormat('yyyy-MM-dd')
+                                                        .format(DateFormat(
+                                                                'MMM d, yyyy')
+                                                            .parse(this
+                                                                .formattedEndDate)));
+                                      
+
                                       if (_fetchedAttendance.length > 0) {
                                         // Add null check here
                                         // Process attendance data here
@@ -151,12 +316,15 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                                         }
                                       }
                                       setState(() {
+                                        _fetchedOrganization;
+                                        _fetchedStudentList;
                                         _data = MyData(
                                             _fetchedAttendance,
                                             columnNames,
                                             _fetchedOrganization,
                                             updateSelected);
-                                      });
+                                        });
+                                       _isDisplayErrorMessage = false;
                                     },
                                     items: org.child_organizations
                                         .map((Organization value) {
@@ -166,28 +334,130 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                                       );
                                     }).toList(),
                                   ),
+                                SizedBox(width: 20),
+                                ElevatedButton(
+                                      style: ButtonStyle(
+                                        textStyle: MaterialStateProperty.all(
+                                          TextStyle(fontSize: 20),
+                                        ),
+                                        elevation: MaterialStateProperty.all(20),
+                                        backgroundColor:
+                                            MaterialStateProperty.all(Colors.greenAccent),
+                                        foregroundColor:
+                                            MaterialStateProperty.all(Colors.black),
+                                      ),
+                                      onPressed: _isFetching
+                                          ? null
+                                          : () { 
+                                            if(_selectedValue == null){
+                                             
+                                            setState(() {
+                                              _isDisplayErrorMessage = true;
+                                            });
+                                            
+                                            }else{
+
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) => DateRangePicker(
+                                                        updateDateRange, formattedStartDate)),
+                                              );
+                                               setState(() {
+                                              _isDisplayErrorMessage = false;
+                                            });
+                                            }
+                                          },
+                                      child: Container(
+                                        height: 50, // Adjust the height as needed
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            if (_isFetching)
+                                              Padding(
+                                                padding: EdgeInsets.only(right: 10),
+                                                child: SpinKitFadingCircle(
+                                                  color: Colors
+                                                      .black, // Customize the color of the indicator
+                                                  size:
+                                                      20, // Customize the size of the indicator
+                                                ),
+                                              ),
+                                            if (!_isFetching)
+                                              Icon(Icons.calendar_today, color: Colors.black),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              '${this.formattedStartDate} - ${this.formattedEndDate}',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                 ]),
-                              ),
+                              ),  
                           ]),
                   ],
                 ),
-                SizedBox(height: 16.0),
+                Container(
+                  margin: EdgeInsets.only(left: 20.0),
+                  child: _isDisplayErrorMessage 
+                        ? Text(
+                      'Please select a value from the dropdown',
+                      style: TextStyle(color: Colors.red),  
+                      ):
+                      SizedBox(), 
+                ),
+                SizedBox(height: 32.0),
                 SizedBox(height: 32.0),
                 Wrap(children: [
-                  (cols.length > 2)
-                      ? PaginatedDataTable(
-                          showCheckboxColumn: false,
-                          source: _data,
-                          columns: cols,
-                          // header: const Center(child: Text('Daily Attendance')),
-                          columnSpacing: 100,
-                          horizontalMargin: 60,
-                          rowsPerPage: 25,
-                        )
-                      : Container(
-                          margin: EdgeInsets.all(20), // Add margin here
-                          child: Text('No attendance data found'),
+                  if (_isFetching)
+                      Container(
+                        margin: EdgeInsets.only(top: 180),
+                        child: SpinKitCircle(
+                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
+                          size: 50, // Customize the size of the indicator
                         ),
+                      )
+                  else if (_fetchedAttendance.length > 0)
+                     ScrollConfiguration(
+                      behavior: ScrollConfiguration.of(context).copyWith(dragDevices: {
+                            PointerDeviceKind.touch,
+                            PointerDeviceKind.mouse,
+                      }),
+                       child: PaginatedDataTable(
+                            showCheckboxColumn: false,
+                            source: _data,
+                            columns: cols,
+                            // header: const Center(child: Text('Daily Attendance')),
+                            columnSpacing: 100,
+                            horizontalMargin: 60,
+                            rowsPerPage: 25,
+                          ),
+                     )
+                  else
+                      Container(
+                        margin: EdgeInsets.all(20),
+                        child: Text('No attendance data found'),
+                      ),
+                  // (cols.length > 2 && _fetchedAttendance.length > 0)
+                  //     ? PaginatedDataTable(
+                  //         showCheckboxColumn: false,
+                  //         source: _data,
+                  //         columns: cols,
+                  //         // header: const Center(child: Text('Daily Attendance')),
+                  //         columnSpacing: 100,
+                  //         horizontalMargin: 60,
+                  //         rowsPerPage: 25,
+                  //       )
+                  //     : Container(
+                  //         margin: EdgeInsets.all(20), // Add margin here
+                  //         child: Text('No attendance data found'),
+                  //       ),
                 ]),
               ],
             ),

@@ -101,6 +101,29 @@ type ActivityParticipantAttendanceData {
   out_marked_by: String
 }
 
+type ActivityParticipantAttendanceDataForLateAttendance {
+  id: Int
+  activity_instance_id: Int
+  person_id: Int
+  person: PersonData
+  sign_in_time: String
+  description: String
+  preferred_name: String
+  digital_id: String
+  sign_out_time: String
+  created: String
+  updated: String
+  in_marked_by: String
+  out_marked_by: String
+}
+
+type ActivityParticipantAttendanceMissedBySecurityData {
+  sign_in_time: String
+  description: String
+  preferred_name: String
+  digital_id: String
+}
+
 type ActivityParticipantData {
   id: Int
   activity_instance_id: Int
@@ -165,8 +188,11 @@ input ApplicantConsent {
   application_id: Int
   name: String
   date_of_birth: String
-  done_ol: Boolean
+  done_ol: String
   ol_year: Int
+  done_al: String
+  al_year: Int
+  al_stream: String
   distance_to_school: Int
   phone: Int
   email: String
@@ -184,11 +210,18 @@ type ApplicantConsentData {
   id: Int
   email: String
   date_of_birth: String
-  done_ol: Boolean
+  done_ol: String
   ol_year: Int
+  done_al: String
+  al_year: Int
+  al_stream: String
   distance_to_school: Int
   information_correct_consent: Boolean
   agree_terms_consent: Boolean
+  application_id: Int
+  person_id: Int
+  avinya_type_id: Int
+  organization_id: Int
 }
 
 input Application {
@@ -237,8 +270,23 @@ type AssetData {
   registration_number: String
   description: String
   avinya_type: AvinyaTypeData
+  avinya_type_id: Int
   created: String
   updated: String
+}
+
+type AttendanceDashboardData {
+  record_type: String
+  title: String
+  numOfFiles: Int
+  svgSrc: String
+  color: String
+  percentage: Decimal
+}
+
+type AttendanceDashboardDataMain {
+  record_type: String
+  attendance_dashboard_data: AttendanceDashboardData
 }
 
 input AvinyaType {
@@ -295,11 +343,68 @@ type ConsumableData {
   updated: String
 }
 
+type DailyActivityParticipantAttendanceByParentOrgData {
+  description: String
+  present_count: Int
+  total_student_count: Int
+  svg_src: String
+  color: String
+}
+
+type DailyActivityParticipantAttendanceSummaryReportData {
+  sign_in_date: String
+  present_count: Int
+  late_count: Int
+  total_count: Int
+  present_attendance_percentage: Decimal
+  late_attendance_percentage: Decimal
+}
+
+scalar Decimal
+
 type DistrictData {
   name: LocalizedName!
   id: Int
   province: ProvinceData!
   cities: [CityData!]!
+}
+
+input DutyParticipant {
+  record_type: String = ""
+  id: Int
+  activity_id: Int
+  activity: Activity
+  person_id: Int
+  person: Person
+  role: String
+  created: String
+  updated: String
+}
+
+type DutyParticipantData {
+  id: Int
+  person_id: Int
+  person: PersonData
+  activity: ActivityData
+  activity_id: Int
+  role: String
+  created: String
+  updated: String
+}
+
+type DutyRotationMetaData {
+  id: Int
+  start_date: String
+  end_date: String
+  organization_id: Int
+}
+
+input DutyRotationMetaDetails {
+  record_type: String = ""
+  id: Int
+  start_date: String
+  end_date: String
+  organization_id: Int
 }
 
 input EducationExperience {
@@ -452,6 +557,8 @@ input Inventory {
 
 type InventoryData {
   id: Int
+  avinya_type: AvinyaTypeData
+  avinya_type_id: Int
   asset: AssetData
   consumable: ConsumableData
   organization: OrganizationData
@@ -518,6 +625,11 @@ type Mutation {
   update_resource_allocation(resourceAllocation: ResourceAllocation!): ResourceAllocationData
   add_inventory(inventory: Inventory!): InventoryData
   update_inventory(inventory: Inventory!): InventoryData
+  add_duty_for_participant(dutyparticipant: DutyParticipant!): DutyParticipantData
+  delete_duty_for_participant(id: Int!): Int
+  update_duty_rotation_metadata(duty_rotation: DutyRotationMetaDetails!): DutyRotationMetaData
+  add_duty_attendance(duty_attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
+  add_duty_evaluation(duty_evaluation: Evaluation!): EvaluationData
 }
 
 input Organization {
@@ -547,6 +659,14 @@ type OrganizationData {
   parent_organizations: [OrganizationData!]
   people: [PersonData!]
   vacancies: [VacancyData!]
+  organization_metadata: [OrganizationMetaData!]
+}
+
+type OrganizationMetaData {
+  id: Int
+  organization_id: Int
+  key_name: String
+  value: String
 }
 
 type OrganizationStructureData {
@@ -587,6 +707,8 @@ input Person {
   bank_account_number: String
   bank_account_name: String
   academy_org_id: Int
+  academy_org_name: String
+  branch_code: String
 }
 
 type PersonData {
@@ -621,6 +743,8 @@ type PersonData {
   bank_account_number: String
   bank_account_name: String
   academy_org_id: Int
+  organization_id: Int
+  branch_code: String
 }
 
 type PlaceData {
@@ -689,6 +813,8 @@ type Query {
   organization_structure(name: String, id: Int): OrganizationStructureData
   organizations(level: Int!): OrganizationStructureData
   organization(name: String, id: Int): OrganizationData
+  organizations_by_avinya_type(avinya_type: Int): [OrganizationData!]
+  student_list_by_parent(id: Int): [PersonData!]
   person(name: String, id: Int): PersonData
   person_by_digital_id(id: String): PersonData
   prospect(email: String, phone: Int): ProspectData
@@ -720,7 +846,8 @@ type Query {
   class_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_today(person_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int): [ActivityParticipantAttendanceData!]
-  class_attendance_report(organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
+  class_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
+  late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceDataForLateAttendance!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
   supplier(id: Int!): SupplierData
@@ -728,6 +855,7 @@ type Query {
   consumable(id: Int!): ConsumableData
   consumableByUpdate(updated: String, avinya_type_id: Int): [ConsumableData!]
   consumables: [ConsumableData!]!
+  activeActivityInstance: [ActivityInstanceData!]!
   resource_property(id: Int!): ResourcePropertyData
   resource_properties: [ResourcePropertyData!]!
   supply(id: Int!): SupplyData
@@ -738,6 +866,18 @@ type Query {
   resource_allocations: [ResourceAllocationData!]!
   inventory(id: Int!): InventoryData
   inventories: [InventoryData!]!
+  resource_allocations_report(organization_id: Int, avinya_type_id: Int): [ResourceAllocationData!]!
+  duty_participants(organization_id: Int): [DutyParticipantData!]!
+  activities_by_avinya_type(avinya_type_id: Int): [ActivityData!]
+  duty_rotation_metadata_by_organization(organization_id: Int): DutyRotationMetaData
+  duty_participants_by_duty_activity_id(organization_id: Int, duty_activity_id: Int): [DutyParticipantData!]!
+  duty_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
+  duty_participant(person_id: Int): DutyParticipantData
+  attendance_dashboard_data_by_date(organization_id: Int, parent_organization_id: Int, activity_id: Int, from_date: String = "", to_date: String = ""): [AttendanceDashboardDataMain!]
+  attendance_missed_by_security(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceMissedBySecurityData!]
+  daily_students_attendance_by_parent_org(parent_organization_id: Int): [DailyActivityParticipantAttendanceByParentOrgData!]
+  total_attendance_count_by_date(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [TotalActivityParticipantAttendanceCountByDateData!]
+  daily_attendance_summary_report(organization_id: Int, avinya_type_id: Int, from_date: String = "", to_date: String = ""): [DailyActivityParticipantAttendanceSummaryReportData!]
 }
 
 input ResourceAllocation {
@@ -755,6 +895,7 @@ input ResourceAllocation {
   end_date: String
   created: String
   updated: String
+  resource_properties: [ResourceProperty!]
 }
 
 type ResourceAllocationData {
@@ -771,6 +912,7 @@ type ResourceAllocationData {
   end_date: String
   created: String
   updated: String
+  resource_properties: [ResourcePropertyData!]!
 }
 
 input ResourceProperty {
@@ -840,6 +982,11 @@ type SupplyData {
   order_amount: Int
   created: String
   updated: String
+}
+
+type TotalActivityParticipantAttendanceCountByDateData {
+  attendance_date: String
+  daily_total: Int
 }
 
 input Vacancy {

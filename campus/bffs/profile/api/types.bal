@@ -457,6 +457,9 @@ public type GetPersonResponse record {|
             |}[]? child_organizations;
             record {|
                 int? id;
+                record {|
+                    int? id;
+                |}[]? parent_organizations;
             |}[]? parent_organizations;
         |}? organization;
         record {|
@@ -584,6 +587,13 @@ public type GetOrganizationResponse record {|
             |} name;
             string? description;
         |}[]? child_organizations;
+        record {|
+            int? id;
+            record {|
+                string name_en;
+            |} name;
+            string? description;
+        |}[]? child_organizations_for_dashboard;
         record {|
             int? id;
             record {|

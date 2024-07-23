@@ -53,6 +53,18 @@ public type ActivityParticipantAttendance record {
     string? sign_out_time?;
     string? in_marked_by?;
     string? out_marked_by?;
+    string? description?;
+    string? preferred_name?;
+    string? digital_id?;
+};
+
+public type ActivityParticipantAttendanceSummary record {
+    string? sign_in_date;
+    int? present_count;
+    int? late_count;
+    int? total_count;
+    decimal? present_attendance_percentage;
+    decimal? late_attendance_percentage;
 };
 
 public type ActivitySequencePlan record {
@@ -182,6 +194,7 @@ public type Person record {
     string? passport_no?;
     string? record_type?;
     Address? mailing_address?;
+    string? branch_code?;
     int[]? child_student?;
     string? bank_account_name?;
     int? avinya_phone?;
@@ -189,6 +202,7 @@ public type Person record {
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    string? academy_org_name?;
     string? asgardeo_id?;
     string? updated?;
     string? preferred_name?;
@@ -225,6 +239,41 @@ public type Vacancy record {
     int? evaluation_cycle_id?;
     int? head_count?;
     int? id?;
+    string? record_type?;
+};
+
+public type DutyParticipant record {
+    string? role?;
+    Activity? activity?;
+    Person? person?;
+    string? created?;
+    int? activity_id?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+};
+
+public type DutyRotationMetaDetails record {
+    string? end_date?;
+    int? organization_id?;
+    int? id?;
+    string? record_type?;
+    string? start_date?;
+};
+
+public type DailyActivityParticipantAttendanceByParentOrg record {
+    string? description;
+    int? present_count;
+    string? svg_src;
+    string? color;
+    string? record_type?;
+    int? total_student_count;
+};
+
+public type  TotalAttendanceCountByDate  record {
+    string? attendance_date;
+    int? daily_total;
     string? record_type?;
 };
 
@@ -391,6 +440,43 @@ public type GetClassAttendanceReportResponse record {|
     |}[] class_attendance_report;
 |};
 
+public type GetLateAttendanceReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        record {|
+            int? id;
+        |}? person;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+        string? preferred_name;
+        string? digital_id;
+    |}[] late_attendance_report;
+|};
+
+public type GetLateAttendanceReportResponseForParentOrg record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        record {|
+            int? id;
+        |}? person;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+        string? description;
+        string? preferred_name;
+        string? digital_id;
+    |}[] late_attendance_report;
+|};
+
 public type GetPersonAttendanceReportResponse record {|
     map<json?> __extensions?;
     record {|
@@ -465,4 +551,257 @@ public type UpdateEvaluationsResponse record {|
         int? activity_instance_id;
         string? updated;
     |}? update_evaluation;
+|};
+
+public type GetDutyParticipantsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string? name;
+            string? description;
+        |}? activity;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? digital_id;
+            record {|
+                record {|
+                    string name_en;
+                |} name;
+                string? description;
+            |}? organization;
+        |}? person;
+        string? role;
+    |}[] duty_participants;
+|};
+
+public type CreateDutyForParticipantResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_id;
+        int? person_id;
+        string? role;
+        string? created;
+    |}? add_duty_for_participant;
+|};
+
+public type GetActivitiesByAvinyaTypeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? name;
+        string? description;
+        string? notes;
+    |}[] activities_by_avinya_type;
+|};
+
+public type UpdateDutyRotationMetaDataResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? start_date;
+        string? end_date;
+        int? organization_id;
+    |}? update_duty_rotation_metadata;
+|};
+
+public type GetDutyRotationMetadataByOrganizationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? start_date;
+        string? end_date;
+        int? organization_id;
+    |}? duty_rotation_metadata_by_organization;
+|};
+
+public type GetDutyParticipantsByDutyActivityIdResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string? name;
+            string? description;
+        |}? activity;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? digital_id;
+            record {|
+                record {|
+                    string name_en;
+                |} name;
+                string? description;
+            |}? organization;
+        |}? person;
+        string? role;
+    |}[] duty_participants_by_duty_activity_id;
+|};
+
+public type AddDutyAttendanceResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_instance_id;
+        int? person_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+        string? created;
+    |}? add_duty_attendance;
+|};
+
+public type GetDutyAttendanceTodayResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? in_marked_by;
+        string? out_marked_by;
+        string? created;
+    |}[] duty_attendance_today;
+|};
+
+public type GetDutyParticipantResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string? name;
+            string? description;
+        |}? activity;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? digital_id;
+            record {|
+                record {|
+                    string name_en;
+                |} name;
+                string? description;
+            |}? organization;
+        |}? person;
+        string? role;
+    |}? duty_participant;
+|};
+
+public type GetAttendanceDashboardResponse record {|
+    map<json?> __extensions?;
+    record {|
+        record {|
+            string title;
+            int numOfFiles;
+            string svgSrc;
+            string color;
+            decimal percentage;
+        |} attendance_dashboard_data;
+    |}[] attendance_dashboard_data_by_date;
+|};
+
+public type AttendanceDashboardData record {
+    string? title?;
+    int? numOfFiles?;
+    string? svgSrc?;
+    string? color?;
+    decimal? percentage?;
+};
+public type AttendanceDashboardDataMain record {
+    AttendanceDashboardData? attendance_dashboard_data?;
+};
+public type CreateDutyEvaluationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? evaluatee_id;
+        int? evaluator_id;
+        int? evaluation_criteria_id;
+        int? activity_instance_id;
+        string? response;
+        string? notes;
+        int? grade;
+        string? created;
+    |}? add_duty_evaluation;
+|};
+
+public type GetAttendanceMissedBySecurityByOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? preferred_name;
+        string? digital_id;
+        string? description;
+        string? sign_in_time;
+    |}[] attendance_missed_by_security;
+|};
+
+public type GetAttendanceMissedBySecurityByParentOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? preferred_name;
+        string? digital_id;
+        string? description;
+        string? sign_in_time;
+    |}[] attendance_missed_by_security;
+|};
+
+public type GetDailyStudentsAttendanceByParentOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? description;
+        int? present_count;
+        int? total_student_count;
+        string? svg_src;
+        string? color;
+    |}[] daily_students_attendance_by_parent_org;
+|};
+
+public type GetTotalAttendanceCountByDateByOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? attendance_date;
+        int? daily_total;
+    |}[] total_attendance_count_by_date;
+|};
+
+public type GetTotalAttendanceCountByParentOrgResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? attendance_date;
+        int? daily_total;
+    |}[] total_attendance_count_by_date;
+|};
+
+public type GetDailyAttendanceSummaryReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? sign_in_date;
+        int? present_count;
+        int? late_count;
+        int? total_count;
+        anydata? present_attendance_percentage;
+        anydata? late_attendance_percentage;
+    |}[] daily_attendance_summary_report;
+|};
+
+public type GetOrganizationsByAvinyaTypeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string name_en;
+        |} name;
+        string? description;
+        record {|
+            string? key_name;
+            string? value;
+        |}[]? organization_metadata;
+    |}[] organizations_by_avinya_type;
 |};

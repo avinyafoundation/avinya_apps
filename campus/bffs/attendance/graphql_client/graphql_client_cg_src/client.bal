@@ -105,4 +105,118 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <UpdateEvaluationsResponse> check performDataBinding(graphqlResponse, UpdateEvaluationsResponse);
     }
+    remote isolated function getDutyParticipants(int organization_id) returns GetDutyParticipantsResponse|graphql:ClientError {
+        string query = string `query getDutyParticipants($organization_id:Int!) {duty_participants(organization_id:$organization_id) {id activity {id name description} person {id preferred_name digital_id organization {name {name_en} description}} role}}`;
+        map<anydata> variables = {"organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetDutyParticipantsResponse> check performDataBinding(graphqlResponse, GetDutyParticipantsResponse);
+    }
+    remote isolated function createDutyForParticipant(DutyParticipant dutyparticipant) returns CreateDutyForParticipantResponse|graphql:ClientError {
+        string query = string `mutation createDutyForParticipant($dutyparticipant:DutyParticipant!) {add_duty_for_participant(dutyparticipant:$dutyparticipant) {id activity_id person_id role created}}`;
+        map<anydata> variables = {"dutyparticipant": dutyparticipant};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <CreateDutyForParticipantResponse> check performDataBinding(graphqlResponse, CreateDutyForParticipantResponse);
+    }
+    remote isolated function getActivitiesByAvinyaType(int avinya_type_id) returns GetActivitiesByAvinyaTypeResponse|graphql:ClientError {
+        string query = string `query getActivitiesByAvinyaType($avinya_type_id:Int!) {activities_by_avinya_type(avinya_type_id:$avinya_type_id) {id name description notes}}`;
+        map<anydata> variables = {"avinya_type_id": avinya_type_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetActivitiesByAvinyaTypeResponse> check performDataBinding(graphqlResponse, GetActivitiesByAvinyaTypeResponse);
+    }
+    remote isolated function updateDutyRotationMetaData(DutyRotationMetaDetails dutyRotation) returns UpdateDutyRotationMetaDataResponse|graphql:ClientError {
+        string query = string `mutation updateDutyRotationMetaData($dutyRotation:DutyRotationMetaDetails!) {update_duty_rotation_metadata(duty_rotation:$dutyRotation) {id start_date end_date organization_id}}`;
+        map<anydata> variables = {"dutyRotation": dutyRotation};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <UpdateDutyRotationMetaDataResponse> check performDataBinding(graphqlResponse, UpdateDutyRotationMetaDataResponse);
+    }
+    remote isolated function getDutyRotationMetadataByOrganization(int organization_id) returns GetDutyRotationMetadataByOrganizationResponse|graphql:ClientError {
+        string query = string `query getDutyRotationMetadataByOrganization($organization_id:Int!) {duty_rotation_metadata_by_organization(organization_id:$organization_id) {id start_date end_date organization_id}}`;
+        map<anydata> variables = {"organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetDutyRotationMetadataByOrganizationResponse> check performDataBinding(graphqlResponse, GetDutyRotationMetadataByOrganizationResponse);
+    }
+    remote isolated function getDutyParticipantsByDutyActivityId(int organization_id, int duty_activity_id) returns GetDutyParticipantsByDutyActivityIdResponse|graphql:ClientError {
+        string query = string `query getDutyParticipantsByDutyActivityId($organization_id:Int!,$duty_activity_id:Int!) {duty_participants_by_duty_activity_id(organization_id:$organization_id,duty_activity_id:$duty_activity_id) {id activity {id name description} person {id preferred_name digital_id organization {name {name_en} description}} role}}`;
+        map<anydata> variables = {"organization_id": organization_id, "duty_activity_id": duty_activity_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetDutyParticipantsByDutyActivityIdResponse> check performDataBinding(graphqlResponse, GetDutyParticipantsByDutyActivityIdResponse);
+    }
+    remote isolated function addDutyAttendance(ActivityParticipantAttendance duty_attendance) returns AddDutyAttendanceResponse|graphql:ClientError {
+        string query = string `mutation addDutyAttendance($duty_attendance:ActivityParticipantAttendance!) {add_duty_attendance(duty_attendance:$duty_attendance) {id activity_instance_id person_id sign_in_time sign_out_time in_marked_by out_marked_by created}}`;
+        map<anydata> variables = {"duty_attendance": duty_attendance};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <AddDutyAttendanceResponse> check performDataBinding(graphqlResponse, AddDutyAttendanceResponse);
+    }
+    remote isolated function getDutyAttendanceToday(int organization_id, int activity_id) returns GetDutyAttendanceTodayResponse|graphql:ClientError {
+        string query = string `query getDutyAttendanceToday($organization_id:Int!,$activity_id:Int!) {duty_attendance_today(organization_id:$organization_id,activity_id:$activity_id) {id person_id activity_instance_id sign_in_time sign_out_time in_marked_by out_marked_by created}}`;
+        map<anydata> variables = {"organization_id": organization_id, "activity_id": activity_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetDutyAttendanceTodayResponse> check performDataBinding(graphqlResponse, GetDutyAttendanceTodayResponse);
+    }
+    remote isolated function getDutyParticipant(int person_id) returns GetDutyParticipantResponse|graphql:ClientError {
+        string query = string `query getDutyParticipant($person_id:Int!) {duty_participant(person_id:$person_id) {id activity {id name description} person {id preferred_name digital_id organization {name {name_en} description}} role}}`;
+        map<anydata> variables = {"person_id": person_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetDutyParticipantResponse> check performDataBinding(graphqlResponse, GetDutyParticipantResponse);
+    }
+    remote isolated function getAttendanceDashboard(string from_date, string to_date, int organization_id) returns GetAttendanceDashboardResponse|graphql:ClientError {
+        string query = string `query getAttendanceDashboard($organization_id:Int!,$from_date:String!,$to_date:String!) {attendance_dashboard_data_by_date(organization_id:$organization_id,from_date:$from_date,to_date:$to_date) {attendance_dashboard_data {title numOfFiles svgSrc color percentage}}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetAttendanceDashboardResponse> check performDataBinding(graphqlResponse, GetAttendanceDashboardResponse);
+    }
+    remote isolated function getLateAttendanceReport(string from_date, string to_date, int organization_id, int activity_id) returns GetLateAttendanceReportResponse|graphql:ClientError {
+        string query = string `query getLateAttendanceReport($organization_id:Int!,$activity_id:Int!,$from_date:String!,$to_date:String!) {late_attendance_report(organization_id:$organization_id,activity_id:$activity_id,from_date:$from_date,to_date:$to_date) {id person {id} activity_instance_id sign_in_time sign_out_time in_marked_by out_marked_by preferred_name digital_id person_id}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id, "activity_id": activity_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetLateAttendanceReportResponse> check performDataBinding(graphqlResponse, GetLateAttendanceReportResponse);
+    }
+    remote isolated function createDutyEvaluation(Evaluation duty_evaluation) returns CreateDutyEvaluationResponse|graphql:ClientError {
+        string query = string `mutation createDutyEvaluation($duty_evaluation:Evaluation!) {add_duty_evaluation(duty_evaluation:$duty_evaluation) {id evaluatee_id evaluator_id evaluation_criteria_id activity_instance_id response notes grade created}}`;
+        map<anydata> variables = {"duty_evaluation": duty_evaluation};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <CreateDutyEvaluationResponse> check performDataBinding(graphqlResponse, CreateDutyEvaluationResponse);
+    }
+    remote isolated function getAttendanceMissedBySecurityByOrg(string from_date, string to_date, int organization_id) returns GetAttendanceMissedBySecurityByOrgResponse|graphql:ClientError {
+        string query = string `query getAttendanceMissedBySecurityByOrg($organization_id:Int!,$from_date:String!,$to_date:String!) {attendance_missed_by_security(organization_id:$organization_id,from_date:$from_date,to_date:$to_date) {preferred_name digital_id description sign_in_time}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetAttendanceMissedBySecurityByOrgResponse> check performDataBinding(graphqlResponse, GetAttendanceMissedBySecurityByOrgResponse);
+    }
+    remote isolated function getAttendanceMissedBySecurityByParentOrg(string from_date, string to_date, int parent_organization_id) returns GetAttendanceMissedBySecurityByParentOrgResponse|graphql:ClientError {
+        string query = string `query getAttendanceMissedBySecurityByParentOrg($parent_organization_id:Int!,$from_date:String!,$to_date:String!) {attendance_missed_by_security(parent_organization_id:$parent_organization_id,from_date:$from_date,to_date:$to_date) {preferred_name digital_id description sign_in_time}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "parent_organization_id": parent_organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetAttendanceMissedBySecurityByParentOrgResponse> check performDataBinding(graphqlResponse, GetAttendanceMissedBySecurityByParentOrgResponse);
+    }
+    remote isolated function getDailyStudentsAttendanceByParentOrg(int parent_organization_id) returns GetDailyStudentsAttendanceByParentOrgResponse|graphql:ClientError {
+        string query = string `query getDailyStudentsAttendanceByParentOrg($parent_organization_id:Int!) {daily_students_attendance_by_parent_org(parent_organization_id:$parent_organization_id) {description present_count total_student_count svg_src color}}`;
+        map<anydata> variables = {"parent_organization_id": parent_organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetDailyStudentsAttendanceByParentOrgResponse> check performDataBinding(graphqlResponse, GetDailyStudentsAttendanceByParentOrgResponse);
+    }
+    remote isolated function getTotalAttendanceCountByDateByOrg(string from_date, string to_date, int organization_id) returns GetTotalAttendanceCountByDateByOrgResponse|graphql:ClientError {
+        string query = string `query getTotalAttendanceCountByDateByOrg($organization_id:Int!,$from_date:String!,$to_date:String!) {total_attendance_count_by_date(organization_id:$organization_id,from_date:$from_date,to_date:$to_date) {attendance_date daily_total}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetTotalAttendanceCountByDateByOrgResponse> check performDataBinding(graphqlResponse, GetTotalAttendanceCountByDateByOrgResponse);
+    }
+    remote isolated function getTotalAttendanceCountByParentOrg(string from_date, string to_date, int parent_organization_id) returns GetTotalAttendanceCountByParentOrgResponse|graphql:ClientError {
+        string query = string `query getTotalAttendanceCountByParentOrg($parent_organization_id:Int!,$from_date:String!,$to_date:String!) {total_attendance_count_by_date(parent_organization_id:$parent_organization_id,from_date:$from_date,to_date:$to_date) {attendance_date daily_total}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "parent_organization_id": parent_organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetTotalAttendanceCountByParentOrgResponse> check performDataBinding(graphqlResponse, GetTotalAttendanceCountByParentOrgResponse);
+    }
+    remote isolated function getDailyAttendanceSummaryReport(string from_date, string to_date, int organization_id, int avinya_type_id) returns GetDailyAttendanceSummaryReportResponse|graphql:ClientError {
+        string query = string `query getDailyAttendanceSummaryReport($organization_id:Int!,$avinya_type_id:Int!,$from_date:String!,$to_date:String!) {daily_attendance_summary_report(organization_id:$organization_id,avinya_type_id:$avinya_type_id,from_date:$from_date,to_date:$to_date) {sign_in_date present_count late_count total_count present_attendance_percentage late_attendance_percentage}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id, "avinya_type_id": avinya_type_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetDailyAttendanceSummaryReportResponse> check performDataBinding(graphqlResponse, GetDailyAttendanceSummaryReportResponse);
+    }
+    remote isolated function getOrganizationsByAvinyaType(int avinya_type) returns GetOrganizationsByAvinyaTypeResponse|graphql:ClientError {
+        string query = string `query getOrganizationsByAvinyaType($avinya_type:Int!) {organizations_by_avinya_type(avinya_type:$avinya_type) {id name {name_en} description organization_metadata {key_name value}}}`;
+        map<anydata> variables = {"avinya_type": avinya_type};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetOrganizationsByAvinyaTypeResponse> check performDataBinding(graphqlResponse, GetOrganizationsByAvinyaTypeResponse);
+    }
 }

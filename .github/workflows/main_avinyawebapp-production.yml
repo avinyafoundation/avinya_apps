@@ -18,9 +18,10 @@ jobs:
 
       # Set up Flutter environment
       - name: Set up Flutter
-        uses: subosito/flutter-action@dbf1fa04f4d2e52c33185153d06cdb5443aa189d
+        uses: subosito/flutter-action@v2
         with:
-          channel: master
+          channel: stable
+          flutter-version: '3.16.8'
       - run: flutter doctor -v
 
       - name: Set up Node.js version
@@ -33,6 +34,8 @@ jobs:
       - name: Get Flutter dependencies
         run: |
           cd campus/frontend
+          flutter clean
+          flutter pub outdated
           flutter pub get
           
       - name: Build Flutter app

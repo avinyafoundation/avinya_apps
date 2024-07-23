@@ -182,3 +182,234 @@ mutation updateEvaluations($evaluation: Evaluation!)
         updated
     }       
 }
+
+query getDutyParticipants($organization_id: Int!) {
+    duty_participants(organization_id:$organization_id) {
+      id
+      activity{
+        id
+        name
+        description  
+      }
+      person{
+        id
+        preferred_name
+        digital_id
+        organization{
+            name{
+                name_en
+            }
+            description
+        }
+      }
+      role
+    }
+}
+
+mutation createDutyForParticipant($dutyparticipant: DutyParticipant!)
+{
+    add_duty_for_participant(dutyparticipant:$dutyparticipant){
+       id
+       activity_id
+       person_id
+       role
+       created
+    }
+}
+
+query getActivitiesByAvinyaType($avinya_type_id: Int!) {
+    activities_by_avinya_type(avinya_type_id:$avinya_type_id){
+        id
+        name
+        description
+        notes
+    }
+}
+
+mutation updateDutyRotationMetaData($dutyRotation:DutyRotationMetaDetails!)
+{
+    update_duty_rotation_metadata(duty_rotation:$dutyRotation){
+        id
+        start_date
+        end_date
+        organization_id
+    }
+}
+
+query getDutyRotationMetadataByOrganization($organization_id: Int!){
+    duty_rotation_metadata_by_organization(organization_id: $organization_id){
+        id
+        start_date
+        end_date
+        organization_id
+    }
+}
+
+query getDutyParticipantsByDutyActivityId($organization_id: Int!, $duty_activity_id: Int!) {
+   duty_participants_by_duty_activity_id(organization_id:$organization_id, duty_activity_id:$duty_activity_id) {
+      id
+      activity{
+        id
+        name
+        description  
+      }
+      person{
+        id
+        preferred_name
+        digital_id
+        organization{
+            name{
+                name_en
+            }
+            description
+        }
+      }
+      role
+    }
+}
+
+mutation addDutyAttendance($duty_attendance: ActivityParticipantAttendance!)
+{
+    add_duty_attendance(duty_attendance:$duty_attendance){
+        id
+        activity_instance_id
+        person_id
+        sign_in_time
+        sign_out_time
+        in_marked_by
+        out_marked_by
+        created
+    }
+}
+
+query getDutyAttendanceToday($organization_id: Int!, $activity_id: Int!) {
+    duty_attendance_today(organization_id:$organization_id, activity_id: $activity_id) {
+        id
+        person_id
+        activity_instance_id
+        sign_in_time
+        sign_out_time
+        in_marked_by
+        out_marked_by
+        created
+    }      
+}
+
+query getDutyParticipant($person_id: Int!) {
+    duty_participant(person_id:$person_id) {
+        id
+        activity{
+            id
+            name
+            description  
+        }
+        person{
+            id
+            preferred_name
+            digital_id
+            organization{
+               name{
+                name_en
+               }
+               description
+            }
+        }
+        role
+    }
+}
+
+query getAttendanceDashboard($organization_id: Int!, $from_date: String!, $to_date: String!) {
+    attendance_dashboard_data_by_date(organization_id:$organization_id, from_date: $from_date, to_date: $to_date) {
+        attendance_dashboard_data {
+            title
+            numOfFiles
+            svgSrc
+            color
+            percentage
+        }
+    }      
+}
+
+query getLateAttendanceReport($organization_id:Int!,$activity_id:Int!,$from_date:String!,$to_date:String!) {late_attendance_report(organization_id:$organization_id,activity_id:$activity_id,from_date:$from_date,to_date:$to_date) {id person {id} activity_instance_id sign_in_time sign_out_time in_marked_by out_marked_by preferred_name digital_id person_id}}
+
+mutation createDutyEvaluation($duty_evaluation: Evaluation!)
+{
+    add_duty_evaluation(duty_evaluation:$duty_evaluation){
+        id
+        evaluatee_id
+        evaluator_id
+        evaluation_criteria_id
+        activity_instance_id
+        response
+        notes
+        grade
+        created
+    }
+}
+
+query getAttendanceMissedBySecurityByOrg($organization_id: Int!, $from_date: String!, $to_date: String!) {
+    attendance_missed_by_security(organization_id:$organization_id, from_date: $from_date, to_date: $to_date) {
+        preferred_name
+        digital_id
+        description
+        sign_in_time
+    }      
+}
+
+query getAttendanceMissedBySecurityByParentOrg($parent_organization_id: Int!, $from_date: String!, $to_date: String!) {
+    attendance_missed_by_security(parent_organization_id: $parent_organization_id, from_date: $from_date, to_date: $to_date) {
+        preferred_name
+        digital_id
+        description
+        sign_in_time
+    }      
+}
+
+query getDailyStudentsAttendanceByParentOrg($parent_organization_id: Int!) {
+    daily_students_attendance_by_parent_org(parent_organization_id: $parent_organization_id) {
+        description
+        present_count
+        total_student_count
+        svg_src
+        color
+    }      
+}
+
+query getTotalAttendanceCountByDateByOrg($organization_id: Int!, $from_date: String!, $to_date: String!) {
+    total_attendance_count_by_date(organization_id:$organization_id, from_date: $from_date, to_date: $to_date) {
+        attendance_date
+        daily_total
+    }      
+}
+
+query getTotalAttendanceCountByParentOrg($parent_organization_id: Int!, $from_date: String!, $to_date: String!) {
+    total_attendance_count_by_date(parent_organization_id: $parent_organization_id, from_date: $from_date, to_date: $to_date) {
+        attendance_date
+        daily_total
+    }      
+}
+
+query getDailyAttendanceSummaryReport($organization_id: Int!,$avinya_type_id: Int!, $from_date: String!, $to_date: String!) {
+    daily_attendance_summary_report(organization_id: $organization_id, avinya_type_id: $avinya_type_id,from_date: $from_date, to_date: $to_date) {
+        sign_in_date
+        present_count
+        late_count
+        total_count
+        present_attendance_percentage
+        late_attendance_percentage
+    }      
+}
+
+query getOrganizationsByAvinyaType($avinya_type: Int!) {
+    organizations_by_avinya_type(avinya_type:$avinya_type) {   
+        id
+        name{
+            name_en
+        }
+        description
+        organization_metadata{
+            key_name
+            value
+        }
+    }
+}

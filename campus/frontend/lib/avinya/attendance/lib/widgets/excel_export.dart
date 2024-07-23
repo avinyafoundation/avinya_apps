@@ -294,6 +294,7 @@ class _ExcelExportState extends State<ExcelExport> {
     return IgnorePointer(
       ignoring: widget.isFetching,
       child: FloatingActionButton(
+        backgroundColor: Colors.deepPurpleAccent,
         child: Icon(Icons.file_download),
         onPressed: () {
           exportToExcel();

@@ -4,6 +4,7 @@ import 'package:attendance/data/activity_attendance.dart';
 import 'package:intl/intl.dart';
 
 import 'package:gallery/data/campus_apps_portal.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../routing.dart';
 
 List<DateTime> getWeekdaysFromDate(DateTime fromDate, int numberOfWeekdays) {
@@ -140,7 +141,13 @@ class _PersonAttendanceMarkerReportState
         }// } else if (snapshot.hasError) {
         //   return Text("${snapshot.error}");
         // }
-        return CircularProgressIndicator();
+        return  Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: SpinKitCircle(
+                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
+                          size: 70, // Customize the size of the indicator
+                        ),
+            );
       },
     );
   }

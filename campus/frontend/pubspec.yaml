@@ -22,7 +22,7 @@ dependencies:
   flutter_localized_locales: ^2.0.3
   flutter_staggered_grid_view: ^0.6.1
   # google_fonts: ^3.0.1
-  intl: ^0.17.0
+  intl: ^0.18.1
   meta: ^1.7.0
   package_info_plus: ^2.0.0
   path_provider: ^2.0.11
@@ -55,6 +55,14 @@ dependencies:
   route_observer_mixin: ^1.7.0
   sizer: ^2.0.15
   flutter_spinkit: ^5.0.0
+  qr_flutter: 4.0.0
+  qr_code_scanner: ^1.0.1
+  flutter_date_range_picker: ^0.0.14
+  fl_chart: 0.60.0
+
+  pdf: ^3.6.4
+  month_year_picker: ^0.3.0+1
+  oktoast: ^3.4.0
 
 dev_dependencies:
   flutter_test:
@@ -280,6 +288,7 @@ flutter:
     - assets/config/dev-cloud.json
     - assets/config/stag.json
     - assets/images/
+    - assets/icons/
 
   generate: true
   uses-material-design: true

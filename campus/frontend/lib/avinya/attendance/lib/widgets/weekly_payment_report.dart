@@ -105,11 +105,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
   void initState() {
     super.initState();
     var today = DateTime.now();
-    if (campusAppsPortalInstance.isTeacher) {
-      activityId = campusAppsPortalInstance.activityIds['homeroom']!;
-      selectWeek(today, activityId);
-    } else if (campusAppsPortalInstance.isSecurity)
-      activityId = campusAppsPortalInstance.activityIds['arrival']!;
+    activityId = campusAppsPortalInstance.activityIds['homeroom']!;
     selectWeek(today, activityId);
   }
 
@@ -159,6 +155,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                 activityId,
                 DateFormat('yyyy-MM-dd').format(_rangeStart),
                 DateFormat('yyyy-MM-dd').format(_rangeEnd));
+        final fetchedStudentList = await fetchStudentList(parentOrgId);
         setState(() {
           final startDate = _rangeStart ?? _selectedDay;
           final endDate = _rangeEnd ?? _selectedDay;
@@ -167,7 +164,9 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
           final formattedEndDate = formatter.format(endDate!);
           this.formattedStartDate = formattedStartDate;
           this.formattedEndDate = formattedEndDate;
-          this._fetchedStudentList = _fetchedStudentList;
+          this._fetchedStudentList = fetchedStudentList;
+          this._fetchedExcelReportData = _fetchedExcelReportData;
+          _isFetching = false;
           if (this._selectedValue != null) {
             refreshState(this._selectedValue);
           }
@@ -456,8 +455,7 @@ class _WeeklyPaymentReportState extends State<WeeklyPaymentReport> {
                       Container(
                         margin: EdgeInsets.only(top: 180),
                         child: SpinKitCircle(
-                          color: (Colors
-                              .blue), // Customize the color of the indicator
+                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
                           size: 50, // Customize the size of the indicator
                         ),
                       )
