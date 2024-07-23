@@ -7,11 +7,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:gallery/auth.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:flutter_localizations/src/material_localizations.dart';
+import 'package:oktoast/oktoast.dart';
 
 //import 'auth.dart';
 import 'routing.dart';
 import 'screens/navigator.dart';
-
 
 class AssetAdminSystem extends StatefulWidget {
   const AssetAdminSystem({super.key});
@@ -38,6 +38,7 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
         '/asset_dashboard',
         '/consumable_dashboard',
         '/stock_replenishment',
+        '/stock_depletion',
         '/consumable_monthly_report',
         '/consumable_weekly_report',
         // '/assets/new',
@@ -74,33 +75,35 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
         notifier: _routeState,
         child: SMSAuthScope(
           notifier: _auth,
-          child: MaterialApp.router(
-            localizationsDelegates: [
-              GlobalWidgetsLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              MonthYearPickerLocalizations.delegate,
-            ],
-            routerDelegate: _routerDelegate,
-            routeInformationParser: _routeParser,
-            // Revert back to pre-Flutter-2.5 transition behavior:
-            // https://github.com/flutter/flutter/issues/82053
-            theme: ThemeData(
-              pageTransitionsTheme: const PageTransitionsTheme(
-                builders: {
-                  TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-                  TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-                  TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
-                  TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-                  TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
-                },
-              ),
-              drawerTheme: DrawerThemeData(
-                backgroundColor: Colors.yellow[700],
-                //width: 270.0,
-              ),
-              appBarTheme: AppBarTheme(backgroundColor: Colors.yellow[700]),
-              floatingActionButtonTheme: FloatingActionButtonThemeData(
-                backgroundColor: Colors.yellow[700],
+          child: OKToast(
+            child: MaterialApp.router(
+              localizationsDelegates: [
+                GlobalWidgetsLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                MonthYearPickerLocalizations.delegate,
+              ],
+              routerDelegate: _routerDelegate,
+              routeInformationParser: _routeParser,
+              // Revert back to pre-Flutter-2.5 transition behavior:
+              // https://github.com/flutter/flutter/issues/82053
+              theme: ThemeData(
+                pageTransitionsTheme: const PageTransitionsTheme(
+                  builders: {
+                    TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+                    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+                    TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+                    TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+                    TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+                  },
+                ),
+                drawerTheme: DrawerThemeData(
+                  backgroundColor: Colors.yellow[700],
+                  //width: 270.0,
+                ),
+                appBarTheme: AppBarTheme(backgroundColor: Colors.yellow[700]),
+                floatingActionButtonTheme: FloatingActionButtonThemeData(
+                  backgroundColor: Colors.yellow[700],
+                ),
               ),
             ),
           ),
@@ -125,9 +128,12 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
     final stockReplenishmentRoute =
         ParsedRoute('/stock_replenishment', '/stock_replenishment', {}, {});
 
-    final consumableMonthlyReportRoute =
-        ParsedRoute('/consumable_monthly_report', '/consumable_monthly_report', {}, {});
-    
+    final stockDepletionRoute =
+        ParsedRoute('/stock_depletion', '/stock_depletion', {}, {});
+
+    final consumableMonthlyReportRoute = ParsedRoute(
+        '/consumable_monthly_report', '/consumable_monthly_report', {}, {});
+
     final consumableWeeklyReportRoute = ParsedRoute(
         '/consumable_weekly_report', '/consumable_weekly_report', {}, {});
 
@@ -144,7 +150,9 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
       return consumableDashboardReportRoute;
     } else if (signedIn && from == stockReplenishmentRoute) {
       return stockReplenishmentRoute;
-    } else if (signedIn && from == consumableMonthlyReportRoute){
+    } else if (signedIn && from == stockDepletionRoute) {
+      return stockDepletionRoute;
+    } else if (signedIn && from == consumableMonthlyReportRoute) {
       return consumableMonthlyReportRoute;
     } else if (signedIn && from == consumableWeeklyReportRoute) {
       return consumableWeeklyReportRoute;

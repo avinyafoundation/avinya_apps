@@ -1,26 +1,25 @@
 import 'dart:ui';
+import 'package:gallery/avinya/asset_admin/lib/data/stock_depletion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gallery/avinya/asset_admin/lib/data/stock_repenishment.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:gallery/data/person.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class StockReplenishmentForm extends StatefulWidget {
-  const StockReplenishmentForm({Key? key, required this.title})
-      : super(key: key);
+class StockDepletionForm extends StatefulWidget {
+  const StockDepletionForm({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<StockReplenishmentForm> createState() => _StockReplenishmentState();
+  State<StockDepletionForm> createState() => _StockDepletionState();
 }
 
-class _StockReplenishmentState extends State<StockReplenishmentForm> {
-  List<StockReplenishment> _fetchedStockList = [];
-  List<StockReplenishment> _fetchedStockListAfterSchool = [];
-  List<StockReplenishment> result = [];
+class _StockDepletionState extends State<StockDepletionForm> {
+  List<StockDepletion> _fetchedStockList = [];
+  List<StockDepletion> _fetchedStockListAfterSchool = [];
+  List<StockDepletion> result = [];
   Organization? _fetchedOrganization;
   bool _isFetching = true;
   bool _isAfter = false;
@@ -106,9 +105,9 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
     _controllers = _fetchedStockList.map((item) {
       DateTime isToday = DateTime.now();
       return TextEditingController(
-        text: _showQtyIn ? item.quantity_in?.toString() : '0',
+        text: _showQtyIn ? item.quantity_out?.toString() : '0',
         // text:
-        //     _selectedDate == isToday ? '' : item.quantity_in?.toString() ?? '',
+        //     _selectedDate == isToday ? '' : item.quantity_out?.toString() ?? '',
       );
     }).toList();
   }
@@ -167,8 +166,7 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
         campusAppsPortalInstance.getUserPerson().organization!.id;
     _selectedValue = newValue ?? null;
 
-    _fetchedStockList =
-        await getStockListforReplenishment(parentOrgId, newValue!);
+    _fetchedStockList = await getStockListforDepletion(parentOrgId, newValue!);
     Person person = campusAppsPortalInstance.getUserPerson();
 
     var formattedDate = formatDateTime(_selectedDate);
@@ -178,64 +176,58 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
       DateTime itemDateOnly =
           DateTime(itemDate.year, itemDate.month, itemDate.day);
       DateTime currentDate = DateTime.now().toLocal();
-      if (item.quantity_out != 0) {
-        if (_selectedDate.day == currentDate.day) {
+      if (_selectedDate.year == currentDate.year &&
+          _selectedDate.month == currentDate.month &&
+          _selectedDate.day == currentDate.day) {
+        if (_selectedDate.isAfter(itemDateOnly) &&
+            item.quantity_out != 0 &&
+            _selectedDate.day != itemDateOnly.day) {
+          _showQtyIn = false;
+          _backDate = false;
+        } else if (_selectedDate.isBefore(itemDateOnly) &&
+            item.quantity_out != 0 &&
+            _selectedDate.day != itemDateOnly.day) {
+          _showQtyIn = false;
+          _backDate = false;
+        } else if (item.quantity_out != 0) {
+          _isSubmitting = false;
+          _showQtyIn = true;
+          _backDate = false;
+          _isUpdate = true;
+        } else {
           _isSubmitting = false;
           _showQtyIn = false;
           _backDate = false;
           _isUpdate = false;
-        } else {
-          _isUpdate = true;
-          _backDate = false;
-          _isSubmitting = true;
+        }
+      } else if (_selectedDate.isBefore(currentDate)) {
+        if (_selectedDate.isAfter(itemDateOnly) && item.quantity_out != 0) {
+          _isSubmitting = false;
           _showQtyIn = false;
-          // this is a depletion
+          _backDate = false;
+          _isUpdate = true;
+          break;
+        } else if (_selectedDate.isBefore(itemDateOnly)) {
+          _isSubmitting = true;
+          _showQtyIn = true;
+          _backDate = true;
+          _isUpdate = true;
+        } else {
+          _isSubmitting = true;
+          _backDate = false;
+          _showQtyIn = false;
+          _isUpdate = false;
         }
       } else {
-        if (_selectedDate.year == currentDate.year &&
-            _selectedDate.month == currentDate.month &&
-            _selectedDate.day == currentDate.day) {
-          if (_selectedDate.isAfter(itemDateOnly) &&
-              item.quantity_in != 0 &&
-              _selectedDate.day != itemDateOnly.day) {
-            _showQtyIn = false;
-            _backDate = false;
-            _isUpdate = false;
-          } else {
-            _isSubmitting = false;
-            _showQtyIn = true;
-            _backDate = false;
-            _isUpdate = true;
-          }
-        } else if (_selectedDate.isBefore(currentDate)) {
-          if (_selectedDate.isAfter(itemDateOnly) && item.quantity_in != 0) {
-            _isSubmitting = false;
-            _showQtyIn = false;
-            _backDate = false;
-            _isUpdate = false;
-            break;
-          } else if (_selectedDate.isBefore(itemDateOnly)) {
-            _isSubmitting = true;
-            _showQtyIn = true;
-            _backDate = true;
-            _isUpdate = true;
-          } else {
-            _isSubmitting = true;
-            _backDate = false;
-            _showQtyIn = true;
-            _isUpdate = true;
-          }
-        } else {
-          _isSubmitting = false;
-          _showQtyIn = false;
-          _backDate = false;
-          _isUpdate = false;
-        }
+        _isSubmitting = false;
+        _showQtyIn = false;
+        _backDate = false;
+        _isUpdate = false;
       }
     }
 
     _fetchedStockList.map((item) {
-      if (item.quantity_in != 0) {
+      if (item.quantity_out != 0) {
         if (item.updated != null) {
           _fetcheddDate = DateTime.parse(item.updated!);
         }
@@ -267,11 +259,11 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
     });
 
     if (_showQtyIn || _isUpdate) {
-      result = await updateConsumableReplenishment(
+      result = await updateConsumableDepletion(
           _fetchedStockList, this.formatted_date);
     } else {
-      result = await addConsumableReplenishment(_fetchedStockList,
-          this._person?.id, this.parent_org_id, this.formatted_date, _isUpdate);
+      result = await addConsumableDepletion(_fetchedStockList, this._person?.id,
+          this.parent_org_id, this.formatted_date, _isUpdate);
     }
 
     setState(() {
@@ -377,12 +369,12 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
                                               .entries
                                               .map((entry) {
                                             int index = entry.key;
-                                            StockReplenishment item =
-                                                entry.value;
+                                            StockDepletion item = entry.value;
+
                                             _controller = TextEditingController(
                                               text: _isAfter
                                                   ? '0'
-                                                  : item.quantity_in
+                                                  : item.quantity_out
                                                           ?.toString() ??
                                                       '',
                                             );
@@ -408,32 +400,33 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
                                                     ],
                                                     onChanged:
                                                         (String value) async {
-                                                      double? quantity_in =
+                                                      double? quantity_out =
                                                           double.tryParse(
                                                               value);
-                                                      if (quantity_in != null) {
+                                                      if (quantity_out !=
+                                                          null) {
                                                         print(
-                                                            'Quantity: $quantity_in');
+                                                            'Quantity: $quantity_out');
                                                         setState(() {
-                                                          item.quantity_in =
-                                                              quantity_in;
+                                                          item.quantity_out =
+                                                              quantity_out;
                                                           prevQtyIn = (item
-                                                                  .quantity_in ??
+                                                                  .quantity_out ??
                                                               0.0);
                                                           prevIndex = index;
 
                                                           if (_showQtyIn) {
                                                             item.total_quantity =
-                                                                (item.quantity_in ??
-                                                                        0.0) +
-                                                                    (item.prev_quantity ??
+                                                                (item.prev_quantity ??
+                                                                        0.0) -
+                                                                    (item.quantity_out ??
                                                                         0.0);
                                                           } else {
                                                             item.total_quantity =
-                                                                double.tryParse(
-                                                                        value)! +
-                                                                    (item.quantity ??
-                                                                        0.0);
+                                                                (item.quantity ??
+                                                                        0.0) -
+                                                                    double.tryParse(
+                                                                        value)!;
                                                           }
                                                         });
                                                       }

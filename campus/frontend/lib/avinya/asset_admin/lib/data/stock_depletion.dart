@@ -4,11 +4,10 @@ import 'package:gallery/avinya/asset_admin/lib/data.dart';
 import 'package:gallery/widgets/success_message.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:gallery/config/app_config.dart';
 import 'package:oktoast/oktoast.dart';
 
-class StockReplenishment {
+class StockDepletion {
   int? id;
   int? avinya_type_id;
   int? consumable_id;
@@ -18,14 +17,14 @@ class StockReplenishment {
   String? created;
   AvinyaType? avinya_type;
   double? quantity;
+  double? total_quantity;
   double? prev_quantity;
   double? quantity_in;
   double? quantity_out;
-  double? total_quantity;
   ResourceProperty? resource_property;
   Consumable? consumable;
 
-  StockReplenishment(
+  StockDepletion(
       {this.id,
       this.avinya_type_id,
       this.consumable_id,
@@ -36,14 +35,13 @@ class StockReplenishment {
       this.avinya_type,
       this.quantity,
       this.prev_quantity,
+      this.total_quantity,
       this.quantity_in,
       this.quantity_out,
-      this.total_quantity,
       this.resource_property,
       this.consumable});
 
-  factory StockReplenishment.fromJson(Map<String, dynamic> json) =>
-      StockReplenishment(
+  factory StockDepletion.fromJson(Map<String, dynamic> json) => StockDepletion(
         id: json["id"] == null ? null : json["id"],
         avinya_type_id:
             json["avinya_type_id"] == null ? null : json["avinya_type_id"],
@@ -91,8 +89,8 @@ class StockReplenishment {
       };
 }
 
-Future<List<StockReplenishment>> addConsumableReplenishment(
-    List<StockReplenishment> stockList,
+Future<List<StockDepletion>> addConsumableDepletion(
+    List<StockDepletion> stockList,
     int? person_id,
     int? organization_id,
     String? to_date,
@@ -103,14 +101,14 @@ Future<List<StockReplenishment>> addConsumableReplenishment(
     return {
       "avinya_type_id": item["avinya_type_id"],
       "consumable_id": item["consumable_id"],
-      "quantity": item["quantity_in"] + item["quantity"],
-      "quantity_in": item["quantity_in"],
+      "quantity": item["quantity"] - item["quantity_out"],
+      "quantity_out": item["quantity_out"],
       "prev_quantity": _isUpdate ? item["prev_quantity"] : item["quantity"]
     };
   }).toList();
   final response = await http.post(
     Uri.parse(
-        '${AppConfig.campusAssetsBffApiUrl}/consumable_replenishment/$person_id/$organization_id/$to_date'),
+        '${AppConfig.campusAssetsBffApiUrl}/consumable_depletion/$person_id/$organization_id/$to_date'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -120,33 +118,33 @@ Future<List<StockReplenishment>> addConsumableReplenishment(
   );
   if (response.statusCode > 199 && response.statusCode < 300) {
     // return StockReplenishment.fromJson(jsonDecode(response.body));
-    var resultsJson = json.decode(response.body)['data']
-        ['consumable_replenishment'] as List<dynamic>;
+    var resultsJson = json.decode(response.body)['data']['consumable_depletion']
+        as List<dynamic>;
     // var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    List<StockReplenishment> stockList = await resultsJson
-        .map<StockReplenishment>((json) => StockReplenishment.fromJson(json))
+    List<StockDepletion> stockList = await resultsJson
+        .map<StockDepletion>((json) => StockDepletion.fromJson(json))
         .toList();
-    showSuccessToast("Stock Replenishment Successfully Saved!");
+    showSuccessToast("Stock Depletion Successfully Saved!");
     return stockList;
   } else {
     throw Exception('Failed to create Activity Participant Attendance.');
   }
 }
 
-Future<List<StockReplenishment>> updateConsumableReplenishment(
-    List<StockReplenishment> stockList, String? to_date) async {
+Future<List<StockDepletion>> updateConsumableDepletion(
+    List<StockDepletion> stockList, String? to_date) async {
   // Transform the original list to the new structure
   List<Map<String, dynamic>> transformedList =
       stockList.map((stock) => stock.toJson()).toList().map((item) {
     return {
       "id": item["id"],
-      "quantity": item["quantity_in"] + item["prev_quantity"],
-      "quantity_in": item["quantity_in"],
+      "quantity": item["quantity"] - item["quantity_out"],
+      "quantity_out": item["quantity_out"],
       "updated": to_date,
     };
   }).toList();
   final response = await http.put(
-    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/consumable_replenishment'),
+    Uri.parse('${AppConfig.campusAssetsBffApiUrl}/consumable_depletion'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -157,19 +155,19 @@ Future<List<StockReplenishment>> updateConsumableReplenishment(
   if (response.statusCode > 199 && response.statusCode < 300) {
     // return StockReplenishment.fromJson(jsonDecode(response.body));
     var resultsJson = json.decode(response.body)['data']
-        ['update_consumable_replenishment'] as List<dynamic>;
+        ['update_consumable_depletion'] as List<dynamic>;
     // var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    List<StockReplenishment> stockList = await resultsJson
-        .map<StockReplenishment>((json) => StockReplenishment.fromJson(json))
+    List<StockDepletion> stockList = await resultsJson
+        .map<StockDepletion>((json) => StockDepletion.fromJson(json))
         .toList();
-    showSuccessToast("Stock Replenishment Successfully Updated!");
+    showSuccessToast("Stock Depletion Successfully Updated!");
     return stockList;
   } else {
     throw Exception('Failed to create Activity Participant Attendance.');
   }
 }
 
-Future<List<StockReplenishment>> getStockListforReplenishment(
+Future<List<StockDepletion>> getStockListforDepletion(
     int? organization_id, String to_date) async {
   final response = await http.get(
     Uri.parse(
@@ -182,56 +180,12 @@ Future<List<StockReplenishment>> getStockListforReplenishment(
   );
   if (response.statusCode > 199 && response.statusCode < 300) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    List<StockReplenishment> stockList = await resultsJson
-        .map<StockReplenishment>((json) => StockReplenishment.fromJson(json))
+    List<StockDepletion> stockList = await resultsJson
+        .map<StockDepletion>((json) => StockDepletion.fromJson(json))
         .toList();
     return stockList;
   } else {
     throw Exception(
         'Failed to get Activity Participant Attendance report for organization ID $organization_id and activity');
-  }
-}
-
-Future<List<StockReplenishment>> getConsumableMonthlyReport(
-    int organization_id, int year, int month) async {
-  final response = await http.get(
-    Uri.parse(
-        '${AppConfig.campusAssetsBffApiUrl}/consumable_monthly_report/$organization_id/$year/$month'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
-    },
-  );
-  if (response.statusCode > 199 && response.statusCode < 300) {
-    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    List<StockReplenishment> consumableMonthlySummaryData = await resultsJson
-        .map<StockReplenishment>((json) => StockReplenishment.fromJson(json))
-        .toList();
-    return consumableMonthlySummaryData;
-  } else {
-    throw Exception('Failed to get Consumable Monthly Summary Data');
-  }
-}
-
-Future<List<StockReplenishment>> getConsumableWeeklyReport(
-    int organization_id, String from_date, String to_date) async {
-  final response = await http.get(
-    Uri.parse(
-        '${AppConfig.campusAssetsBffApiUrl}/consumable_weekly_report/$organization_id/$from_date/$to_date'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
-    },
-  );
-  if (response.statusCode > 199 && response.statusCode < 300) {
-    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    List<StockReplenishment> consumableWeeklySummaryData = await resultsJson
-        .map<StockReplenishment>((json) => StockReplenishment.fromJson(json))
-        .toList();
-    return consumableWeeklySummaryData;
-  } else {
-    throw Exception('Failed to get Consumable Weekly Summary Data');
   }
 }
