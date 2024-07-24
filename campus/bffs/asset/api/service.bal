@@ -733,5 +733,126 @@ service / on new http:Listener(9094) {
         }
     }
 
+    resource function get inventory_data_by_organization/[int organization_id]/[string date]() returns Inventory[]|error {
+        GetInventoryDataByOrganizationResponse|graphql:ClientError getInventoryDataByOrganizationResponse = globalDataClient->getInventoryDataByOrganization(date,organization_id);
+        if (getInventoryDataByOrganizationResponse is GetInventoryDataByOrganizationResponse) {
+            Inventory[] inventory_datas = [];
+            foreach var inventory_data in getInventoryDataByOrganizationResponse.inventory_data_by_organization {
+                Inventory|error inventory_data_record = inventory_data.cloneWithType(Inventory);
+                if (inventory_data_record is Inventory) {
+                    inventory_datas.push(inventory_data_record);
+                } else {
+                    log:printError("Error while processing Application record received", inventory_data_record);
+                    return error("Error while processing Application record received: " + inventory_data_record.message() +
+                        ":: Detail: " + inventory_data_record.detail().toString());
+                }
+            }
 
+            return inventory_datas;
+
+        } else {
+            log:printError("Error while getting application", getInventoryDataByOrganizationResponse);
+            return error("Error while getting application: " + getInventoryDataByOrganizationResponse.message() +
+                ":: Detail: " + getInventoryDataByOrganizationResponse.detail().toString());
+        }
+    }
+    resource function post consumable_replenishment/[int person_id]/[int organization_id]/[string date](@http:Payload Inventory[] inventories) returns json|error {
+    
+        json|graphql:ClientError createInventoryResponse = globalDataClient->consumableReplenishment(person_id,organization_id,date,inventories);
+        if(createInventoryResponse is json) {
+            log:printInfo("Inventories created successfully: " + createInventoryResponse.toString());
+            return createInventoryResponse;
+        } else {
+            log:printError("Error while creating inventories", createInventoryResponse);
+            return error("Error while creating inventories: " + createInventoryResponse.message() +
+                ":: Detail: " + createInventoryResponse.detail().toString());
+        }
+    }
+
+    resource function post consumable_depletion/[int person_id]/[int organization_id]/[string date](@http:Payload Inventory[] inventories) returns json|error {
+    
+        json|graphql:ClientError inventoryDepletionResponse = globalDataClient->consumableDepletion(person_id,organization_id,date,inventories);
+        if(inventoryDepletionResponse is json) {
+            log:printInfo("Inventories depleted  successfully: " + inventoryDepletionResponse.toString());
+            return inventoryDepletionResponse;
+        } else {
+            log:printError("Error while depletion inventories", inventoryDepletionResponse);
+            return error("Error while depletion inventories: " + inventoryDepletionResponse.message() +
+                ":: Detail: " + inventoryDepletionResponse.detail().toString());
+        }
+    }
+
+    resource function get consumable_weekly_report/[int organization_id]/[string from_date]/[string to_date]() returns Inventory[]|error {
+        GetConsumableWeeklyReportResponse|graphql:ClientError getConsumableWeeklyReportResponse = globalDataClient->getConsumableWeeklyReport(from_date,to_date,organization_id);
+        if (getConsumableWeeklyReportResponse is GetConsumableWeeklyReportResponse) {
+            Inventory[] weekly_summary_inventory_datas = [];
+            foreach var weekly_summary_inventory_data in getConsumableWeeklyReportResponse.consumable_weekly_report {
+                Inventory|error weekly_summary_inventory_data_record = weekly_summary_inventory_data.cloneWithType(Inventory);
+                if (weekly_summary_inventory_data_record is Inventory) {
+                    weekly_summary_inventory_datas.push(weekly_summary_inventory_data_record);
+                } else {
+                    log:printError("Error while processing Application record received", weekly_summary_inventory_data_record);
+                    return error("Error while processing Application record received: " + weekly_summary_inventory_data_record.message() +
+                        ":: Detail: " + weekly_summary_inventory_data_record.detail().toString());
+                }
+            }
+
+            return weekly_summary_inventory_datas;
+
+        } else {
+            log:printError("Error while getting application", getConsumableWeeklyReportResponse);
+            return error("Error while getting application: " + getConsumableWeeklyReportResponse.message() +
+                ":: Detail: " + getConsumableWeeklyReportResponse.detail().toString());
+        }
+    }
+
+    resource function put consumable_replenishment(@http:Payload Inventory[] inventories) returns json|error {
+        
+        json|graphql:ClientError updateConsumableReplenishmentResponse = globalDataClient->updateConsumableReplenishment(inventories);
+        if (updateConsumableReplenishmentResponse is json) {
+            log:printInfo("Consumables updated successfully: " + updateConsumableReplenishmentResponse.toString());
+            return updateConsumableReplenishmentResponse;
+        } else {
+            log:printError("Error while updating consumbales", updateConsumableReplenishmentResponse);
+            return error("Error while updating consumbales: " + updateConsumableReplenishmentResponse.message() +
+                ":: Detail: " + updateConsumableReplenishmentResponse.detail().toString());
+        }
+    }
+
+    resource function put consumable_depletion(@http:Payload Inventory[] inventories) returns json|error {
+
+        json|graphql:ClientError updateConsumableDepletionResponse = globalDataClient->updateConsumableDepletion(inventories);
+        if (updateConsumableDepletionResponse is json) {
+            log:printInfo("Consumables updated successfully: " + updateConsumableDepletionResponse.toString());
+            return updateConsumableDepletionResponse;
+        } else {
+            log:printError("Error while updating consumbales", updateConsumableDepletionResponse);
+            return error("Error while updating consumbales: " + updateConsumableDepletionResponse.message() +
+                ":: Detail: " + updateConsumableDepletionResponse.detail().toString());
+        }
+    }
+
+    resource function get consumable_monthly_report/[int organization_id]/[int year]/[int month]() returns Inventory[]|error {
+        GetConsumableMonthlyReportResponse|graphql:ClientError getConsumableMonthlyReportResponse = globalDataClient->getConsumableMonthlyReport(month,year,organization_id);
+        if (getConsumableMonthlyReportResponse is GetConsumableMonthlyReportResponse) {
+            Inventory[] monthly_summary_consumable_datas = [];
+            foreach var monthly_summary_consumable_data in getConsumableMonthlyReportResponse.consumable_monthly_report {
+                Inventory|error monthly_summary_consumable_data_record = monthly_summary_consumable_data.cloneWithType(Inventory);
+                if (monthly_summary_consumable_data_record is Inventory) {
+                    monthly_summary_consumable_datas.push(monthly_summary_consumable_data_record);
+                } else {
+                    log:printError("Error while processing Application record received", monthly_summary_consumable_data_record);
+                    return error("Error while processing Application record received: " + monthly_summary_consumable_data_record.message() +
+                        ":: Detail: " + monthly_summary_consumable_data_record.detail().toString());
+                }
+            }
+
+            return monthly_summary_consumable_datas;
+
+        } else {
+            log:printError("Error while getting application", getConsumableMonthlyReportResponse);
+            return error("Error while getting application: " + getConsumableMonthlyReportResponse.message() +
+                ":: Detail: " + getConsumableMonthlyReportResponse.detail().toString());
+        }
+    }
 }

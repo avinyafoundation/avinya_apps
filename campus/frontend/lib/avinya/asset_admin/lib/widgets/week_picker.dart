@@ -8,16 +8,16 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../utils.dart';
 
-class DateRangePicker extends StatefulWidget {
-  DateRangePicker(this.updateDateRange, this.formattedStartDate);
+class WeekPicker extends StatefulWidget {
+  WeekPicker(this.updateDateRange, this.formattedStartDate);
   final Function(DateTime, DateTime) updateDateRange;
   final String formattedStartDate;
 
   @override
-  _DateRangePickerState createState() => _DateRangePickerState();
+  _WeekPickerState createState() => _WeekPickerState();
 }
 
-class _DateRangePickerState extends State<DateRangePicker> {
+class _WeekPickerState extends State<WeekPicker> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
 
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
@@ -27,23 +27,34 @@ class _DateRangePickerState extends State<DateRangePicker> {
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
 
-  void selectDateRange(DateTime startDay, DateTime endDay) {
-    _focusedDay = startDay;
-    _selectedDay = startDay;
-    _rangeStart = startDay;
-    _rangeEnd = endDay;
+  void selectWeek(DateTime selectedDay) {
+    // Calculate the start of the week (excluding weekends) based on the selected day
+    DateTime startOfWeek =
+        selectedDay.subtract(Duration(days: selectedDay.weekday - 1));
+    while (startOfWeek.weekday > DateTime.friday) {
+      startOfWeek = startOfWeek.subtract(Duration(days: 1));
+    }
+
+    // Calculate the end of the week (excluding weekends) based on the start of the week
+    DateTime endOfWeek = startOfWeek.add(Duration(days: 4));
+
+    // Update the variables to select the week
+    _focusedDay = startOfWeek;
+    _selectedDay = selectedDay;
+    _rangeStart = startOfWeek;
+    _rangeEnd = endOfWeek;
   }
 
   @override
   void didChangeDependencies() {
-    if (_rangeStart != null && _rangeEnd != null) {
-      selectDateRange(_rangeStart!, _rangeEnd!);
+    if (_selectedDay != null) {
+      selectWeek(_selectedDay!);
     } else {
       String dateString = widget.formattedStartDate;
       DateTime dateTime = DateFormat('MMM d, yyyy').parse(dateString);
 
       _selectedDay = dateTime;
-      selectDateRange(dateTime, dateTime);
+      selectWeek(_selectedDay!);
     }
     super.didChangeDependencies();
   }
@@ -61,9 +72,10 @@ class _DateRangePickerState extends State<DateRangePicker> {
           appBar: AppBar(
             title: Text('TableCalendar - Range',style: TextStyle(color: Colors.black)),
             backgroundColor: Color.fromARGB(255, 236, 230, 253),
+            iconTheme: IconThemeData(color: Colors.black),
           ),
           body: TableCalendar(
-            firstDay: DateTime.utc(2020, 1, 1),
+            firstDay: kFirstDay,
             lastDay: kLastDay,
             focusedDay: _focusedDay,
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
@@ -79,6 +91,9 @@ class _DateRangePickerState extends State<DateRangePicker> {
                   _rangeStart = null; // Important to clean those
                   _rangeEnd = null;
                   _rangeSelectionMode = RangeSelectionMode.toggledOff;
+
+                  // Update the variables to select the week (excluding weekends)
+                  selectWeek(selectedDay);
                 });
               }
             },
@@ -89,6 +104,9 @@ class _DateRangePickerState extends State<DateRangePicker> {
                 _rangeStart = start;
                 _rangeEnd = end;
                 _rangeSelectionMode = RangeSelectionMode.toggledOn;
+
+                // Update the variables to select the week (excluding weekends)
+                selectWeek(start!);
               });
             },
             onFormatChanged: (format) {
@@ -103,7 +121,6 @@ class _DateRangePickerState extends State<DateRangePicker> {
             },
           ),
           floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.deepPurpleAccent,
             onPressed: () async {
               if (_rangeStart != null && _rangeEnd != null) {
                 widget.updateDateRange(_rangeStart!, _rangeEnd!);

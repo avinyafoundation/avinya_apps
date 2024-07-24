@@ -61,6 +61,8 @@ dependencies:
   fl_chart: 0.60.0
 
   pdf: ^3.6.4
+  month_year_picker: ^0.3.0+1
+  oktoast: ^3.4.0
 
 dev_dependencies:
   flutter_test:
