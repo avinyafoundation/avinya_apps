@@ -51,7 +51,7 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
       ],
       guard: _guard,
       // initialRoute: '/signin',
-      initialRoute: '/asset_dashboard',
+      initialRoute: '/consumable_dashboard',
     );
 
     _routeState = RouteState(_routeParser);
@@ -172,7 +172,7 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
     bool signedIn = await _auth.getSignedIn();
     if (!signedIn) {
       // _routeState.go('/signin');
-      _routeState.go('/asset_dashboard');
+      _routeState.go('/consumable_dashboard');
     }
   }
 

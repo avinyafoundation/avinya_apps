@@ -15,6 +15,7 @@ class SMSScaffold extends StatefulWidget {
 
 class _SMSScaffoldState extends State<SMSScaffold> {
   bool isAssetDashboardSectionHovered = false;
+  bool isConsumableDashboardSectionHovered = false;
   bool isAssetSectionHovered = false;
   bool isAssetReportSectionHovered = false;
   bool isConsumableSectionHovered = false;
@@ -205,6 +206,52 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                     ],
                   ),
                   //),
+                ),
+              ),
+              MouseRegion(
+                onEnter: (_) {
+                  setState(() {
+                    isConsumableDashboardSectionHovered = true;
+                  });
+                },
+                onExit: (_) {
+                  setState(() {
+                    isConsumableDashboardSectionHovered = false;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isConsumableDashboardSectionHovered
+                        ? Colors.white.withOpacity(0.3)
+                        : null,
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  margin: EdgeInsets.all(8.0),
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Container(
+                      child: ListTile(
+                        leading: Icon(Icons.space_dashboard_rounded,
+                            color: Colors.white, size: 20.0),
+                        title: Container(
+                          margin: EdgeInsets.only(left: 12.0),
+                          transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                          child: Text(
+                            "Consumable Dashboard",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context); // Close the drawer
+                          routeState.go('/consumable_dashboard');
+                        },
+                      ),
+                    ),
+                  ),
+                  // ),
                 ),
               ),
               MouseRegion(
