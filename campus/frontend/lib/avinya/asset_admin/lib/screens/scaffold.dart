@@ -22,6 +22,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
   bool isConsumableReportSectionHovered = false;
   bool isStockReplenishmentSectionHovered = false;
   bool isStockDepletionSectionHovered = false;
+  bool isVehicleFuelConsumptionSectionHovered = false;
 
   @override
   Widget build(BuildContext context) {
@@ -376,6 +377,47 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                             onTap: () {
                               Navigator.pop(context); // Close the drawer
                               routeState.go('/stock_depletion');
+                            },
+                          ),
+                        ),
+                      ),
+                      MouseRegion(
+                        onEnter: (_) {
+                          setState(() {
+                            isVehicleFuelConsumptionSectionHovered = true;
+                          });
+                        },
+                        onExit: (_) {
+                          setState(() {
+                            isVehicleFuelConsumptionSectionHovered = false;
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isVehicleFuelConsumptionSectionHovered
+                                ? Colors.white.withOpacity(0.3)
+                                : null,
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          margin: EdgeInsets.all(8.0),
+                          child: ListTile(
+                            leading: Icon(Icons.local_gas_station_sharp,
+                                color: Colors.white, size: 20.0),
+                            title: Container(
+                              margin: EdgeInsets.only(left: 12.0),
+                              transform:
+                                  Matrix4.translationValues(-25, 0.0, 0.0),
+                              child: Text(
+                                "Vehicle Fuel Consumption",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.pop(context); // Close the drawer
+                              routeState.go('/vehicle_fuel_consumption');
                             },
                           ),
                         ),
