@@ -238,6 +238,7 @@ public type EvaluationMetadata record {
 };
 
 public type Inventory record {
+    string? month_name?;
     int? consumable_id?;
     anydata? quantity?;
     string? created?;
@@ -557,7 +558,7 @@ public type GetConsumablesResponse record {|
         string? manufacturer;
         string? model;
         string? serial_number;
-    |}[] consumables;
+    |}[]? consumables;
 |};
 
 public type AddConsumableResponse record {|
@@ -1155,4 +1156,22 @@ public type GetConsumableMonthlyReportResponse record {|
             string? value;
         |}? resource_property;
     |}[]? consumable_monthly_report;
+|};
+
+public type GetConsumableYearlyReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        record {|
+            int? id;
+            string? name;
+        |}? consumable;
+        string? month_name;
+        anydata? quantity_in;
+        anydata? quantity_out;
+        record {|
+            int? id;
+            string? property;
+            string? value;
+        |}? resource_property;
+    |}[]? consumable_yearly_report;
 |};

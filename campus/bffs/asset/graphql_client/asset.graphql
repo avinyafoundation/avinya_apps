@@ -709,3 +709,20 @@ query getConsumableMonthlyReport($organization_id: Int!,$year: Int!,$month: Int!
         }
     }      
 }
+
+query getConsumableYearlyReport($organization_id: Int!,$consumable_id: Int!,$year: Int!) {
+    consumable_yearly_report(organization_id: $organization_id,consumable_id: $consumable_id,year: $year) {
+        consumable{
+            id
+            name
+        }
+        month_name
+        quantity_in
+        quantity_out
+        resource_property{
+            id
+            property
+            value
+        }
+    }      
+}

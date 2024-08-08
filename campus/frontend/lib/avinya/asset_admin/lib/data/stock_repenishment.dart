@@ -235,3 +235,25 @@ Future<List<StockReplenishment>> getConsumableWeeklyReport(
     throw Exception('Failed to get Consumable Weekly Summary Data');
   }
 }
+
+Future<List<StockReplenishment>> getConsumableYearlyReport(
+    int organization_id, int consumable_id, int year) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAssetsBffApiUrl}/consumable_yearly_report/$organization_id/$consumable_id/$year'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<StockReplenishment> consumableYearlySummaryData = await resultsJson
+        .map<StockReplenishment>((json) => StockReplenishment.fromJson(json))
+        .toList();
+    return consumableYearlySummaryData;
+  } else {
+    throw Exception('Failed to get Consumable Yearly Summary Data');
+  }
+}

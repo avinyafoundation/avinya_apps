@@ -547,6 +547,7 @@ input Inventory {
   asset_id: Int
   consumable_id: Int
   name: String
+  month_name: String
   description: String
   manufacturer: String
   organization_id: Int
@@ -576,6 +577,7 @@ type InventoryData {
   prev_quantity: Decimal
   resource_property: ResourcePropertyData
   name: String
+  month_name: String
   description: String
   manufacturer: String
   created: String
@@ -872,7 +874,7 @@ type Query {
   suppliers: [SupplierData!]!
   consumable(id: Int!): ConsumableData
   consumableByUpdate(updated: String, avinya_type_id: Int): [ConsumableData!]
-  consumables: [ConsumableData!]!
+  consumables: [ConsumableData!]
   activeActivityInstance: [ActivityInstanceData!]!
   resource_property(id: Int!): ResourcePropertyData
   resource_properties: [ResourcePropertyData!]!
@@ -899,6 +901,7 @@ type Query {
   inventory_data_by_organization(organization_id: Int, date: String = ""): [InventoryData!]
   consumable_weekly_report(organization_id: Int, from_date: String = "", to_date: String = ""): [InventoryData!]
   consumable_monthly_report(organization_id: Int, year: Int, month: Int): [InventoryData!]
+  consumable_yearly_report(organization_id: Int, consumable_id: Int, year: Int): [InventoryData!]
 }
 
 input ResourceAllocation {

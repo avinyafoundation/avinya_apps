@@ -41,6 +41,7 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
         '/stock_depletion',
         '/consumable_monthly_report',
         '/consumable_weekly_report',
+        '/vehicle_fuel_consumption',
         // '/assets/new',
         // '/assets/all',
         // '/assets/popular',
@@ -51,7 +52,7 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
       ],
       guard: _guard,
       // initialRoute: '/signin',
-      initialRoute: '/asset_dashboard',
+      initialRoute: '/consumable_dashboard',
     );
 
     _routeState = RouteState(_routeParser);
@@ -136,6 +137,10 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
 
     final consumableWeeklyReportRoute = ParsedRoute(
         '/consumable_weekly_report', '/consumable_weekly_report', {}, {});
+    
+    final vehicleFuelConsumptionRoute = ParsedRoute(
+        '/vehicle_fuel_consumption', '/vehicle_fuel_consumption', {}, {});
+
 
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
@@ -156,6 +161,8 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
       return consumableMonthlyReportRoute;
     } else if (signedIn && from == consumableWeeklyReportRoute) {
       return consumableWeeklyReportRoute;
+    } else if (signedIn && from == vehicleFuelConsumptionRoute) {
+      return vehicleFuelConsumptionRoute;
     }
     // Go to /application if the user is signed in and tries to go to /signin.
     else if (signedIn && from == signInRoute) {
@@ -172,7 +179,7 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
     bool signedIn = await _auth.getSignedIn();
     if (!signedIn) {
       // _routeState.go('/signin');
-      _routeState.go('/asset_dashboard');
+      _routeState.go('/consumable_dashboard');
     }
   }
 
