@@ -47,6 +47,10 @@ class _SMSScaffoldState extends State<SMSScaffold> {
           tileName: "Consumable Monthly Report",
           route: "/consumable_monthly_report",
           icon: Icons.summarize_sharp),
+      SideNavigationSectionTile(
+          tileName: "Vehicle Fuel Consumption Monthly Report",
+          route: "/vehicle_fuel_consumption_monthly_report",
+          icon: Icons.local_gas_station_outlined),
     ];
 
     return Scaffold(

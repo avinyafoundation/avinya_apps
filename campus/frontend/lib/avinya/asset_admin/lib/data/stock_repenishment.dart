@@ -22,6 +22,7 @@ class StockReplenishment {
   double? quantity_in;
   double? quantity_out;
   double? total_quantity;
+  int? is_below_threshold;
   ResourceProperty? resource_property;
   Consumable? consumable;
 
@@ -39,6 +40,7 @@ class StockReplenishment {
       this.quantity_in,
       this.quantity_out,
       this.total_quantity,
+      this.is_below_threshold,
       this.resource_property,
       this.consumable});
 
@@ -61,6 +63,8 @@ class StockReplenishment {
         prev_quantity:
             json["prev_quantity"] == null ? null : json["prev_quantity"],
         total_quantity: json["quantity"] == null ? null : json["quantity"],
+        is_below_threshold:
+            json["is_below_threshold"] == null ? null : json["is_below_threshold"],
         quantity_in: json["quantity_in"] == null ? null : json["quantity_in"],
         quantity_out:
             json["quantity_out"] == null ? null : json["quantity_out"],
@@ -85,6 +89,7 @@ class StockReplenishment {
         "total_quantity": quantity == null ? null : quantity,
         "quantity_in": quantity_in == null ? null : quantity_in,
         "quantity_out": quantity_out == null ? null : quantity_out,
+        "is_below_threshold":is_below_threshold == null ? null : is_below_threshold,
         "resource_property":
             resource_property == null ? null : resource_property,
         "consumable": consumable == null ? null : consumable,

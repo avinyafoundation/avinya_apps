@@ -14,7 +14,6 @@ class LatestConsumableData extends StatefulWidget {
 }
 
 class _LatestConsumableDataState extends State<LatestConsumableData> {
-
   List<StockReplenishment> _fetchedLatestConsumableData = [];
   bool _isFetching = false;
   DateTime? _selected;
@@ -33,8 +32,7 @@ class _LatestConsumableDataState extends State<LatestConsumableData> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _data = MyData(_fetchedLatestConsumableData,isQuantityBelowThreshold,
-        getThresholdValue);
+    _data = MyData(_fetchedLatestConsumableData);
   }
 
   Future<void> _fetchInitialData() async {
@@ -45,14 +43,13 @@ class _LatestConsumableDataState extends State<LatestConsumableData> {
         _isFetching = true; // Show loading indicator
       });
       try {
-      _fetchedLatestConsumableData = await getStockListforReplenishment(parentOrgId,
-                                    DateFormat('yyyy-MM-dd').format(DateTime.now()));
+        _fetchedLatestConsumableData = await getStockListforReplenishment(
+            parentOrgId, DateFormat('yyyy-MM-dd').format(DateTime.now()));
 
-      setState(() {
-        _isFetching = false;
-        _data = MyData(_fetchedLatestConsumableData, isQuantityBelowThreshold,
-              getThresholdValue);
-      });
+        setState(() {
+          _isFetching = false;
+          _data = MyData(_fetchedLatestConsumableData);
+        });
       } catch (error) {
         // Handle any errors that occur during the fetch
         // You can show an error message or take appropriate actions here
@@ -64,164 +61,114 @@ class _LatestConsumableDataState extends State<LatestConsumableData> {
     }
   }
 
-  bool isQuantityBelowThreshold(String unit,double quantity){
-    
-    const Map<String,double> thresholds = {
-      'kg': 2.0,
-      'g': 500.0,
-      'packet': 2.0,
-      'cup': 10.0,
-      'bags': 10.0,
-      'rolls': 1.0,
-      'litre': 2.0,
-      'ml': 100.0,
-      'piece': 20.0,
-    };
-    
-    if(thresholds.containsKey(unit)){
-      return quantity < thresholds[unit]!;
-    }
-    return false;
-  }
-
-  double getThresholdValue(String unit){
-
-    const Map<String, double> thresholds = {
-      'kg': 2.0,
-      'g': 500.0,
-      'packet': 2.0,
-      'cup': 10.0,
-      'bags': 10.0,
-      'rolls': 1.0,
-      'litre': 2.0,
-      'ml': 100.0,
-      'piece': 20.0,
-    };
-
-    return thresholds.containsKey(unit) ? thresholds[unit]! : 0.0;
-  }
-
   List<DataColumn> _buildDataColumns() {
     List<DataColumn> columnNames = [];
 
     columnNames.add(DataColumn(
         label: Center(
-          child: Text('Product Name',
-              style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
-        )));
-
-    columnNames.add(DataColumn(
-        label: Center(
-          child: Text('On Hand(QTY)',
-              style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
-        )));
-
-    columnNames.add(DataColumn(
-        label: Center(
-          child: Text('Unit',
-              style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
-        )));
-
-    columnNames.add(DataColumn(
-        label: Center(
-      child: Text('Threshold',
+      child: Text('Product Name',
+          textAlign: TextAlign.center,
           style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
-        )));
+    )));
+
+    columnNames.add(DataColumn(
+        label: Center(
+      child: Text('On Hand(QTY)',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
+    )));
+
+    columnNames.add(DataColumn(
+        label: Center(
+      child: Text('Unit',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
+    )));
 
     return columnNames;
   }
 
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
+
     return SingleChildScrollView(
       child: Wrap(children: [
-                    Center(
-                      child: Text(
-                        'Latest Consumable Data',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.purple, 
-                        ),
-                      ),
-                    ),
-                  if (_isFetching)
-                    Container(
-                      margin: EdgeInsets.only(top: 180),
-                      child: SpinKitCircle(
-                        color: (Colors
-                            .yellow[700]), 
-                        size: 50, 
-                      ),
-                    )
-                  else if (_fetchedLatestConsumableData.length > 0)
-                    Container(
-                      margin: EdgeInsets.only(left: 10.0, top: 20.0),
-                      child: ScrollConfiguration(
-                        behavior: ScrollConfiguration.of(context)
-                            .copyWith(dragDevices: {
-                          PointerDeviceKind.touch,
-                          PointerDeviceKind.mouse,
-                        }),
-                        child: PaginatedDataTable(
-                          showCheckboxColumn: false,
-                          source: _data,
-                          columns: _buildDataColumns(),
-                          columnSpacing:35,
-                          horizontalMargin: 30,
-                          rowsPerPage: 10,
-                        ),
-                      ),
-                    )
-                  else
-                    Container(
-                      margin: EdgeInsets.all(20),
-                      child: Text('No latest consumable data found'),
-                    ),
-             ]),
+        Center(
+          child: Text(
+            'Latest Consumable Data',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        if (_isFetching)
+          Container(
+            margin: EdgeInsets.only(top: 180),
+            child: SpinKitCircle(
+              color: (Colors.yellow[700]),
+              size: 50,
+            ),
+          )
+        else if (_fetchedLatestConsumableData.length > 0)
+          Container(
+            margin: EdgeInsets.only(left: 10.0, top: 20.0),
+            child: ScrollConfiguration(
+              behavior: ScrollConfiguration.of(context).copyWith(dragDevices: {
+                PointerDeviceKind.touch,
+                PointerDeviceKind.mouse,
+              }),
+              child: Container(
+                width: screenWidth * 0.95,
+                height: screenHeight * 1.2,
+                child: PaginatedDataTable(
+                  showCheckboxColumn: false,
+                  source: _data,
+                  columns: _buildDataColumns(),
+                  columnSpacing: 50,
+                  rowsPerPage: 10,
+                ),
+              ),
+            ),
+          )
+        else
+          Container(
+            margin: EdgeInsets.all(20),
+            child: Text('No latest consumable data found'),
+          ),
+      ]),
     );
   }
 }
 
 class MyData extends DataTableSource {
-  MyData(this._fetchedLatestConsumableData,this.isQuantityBelowThreshold,this.getThresholdValue);
+  MyData(this._fetchedLatestConsumableData);
 
   final List<StockReplenishment> _fetchedLatestConsumableData;
-  final Function(String,double) isQuantityBelowThreshold;
-  final Function(String) getThresholdValue;
 
   @override
   DataRow? getRow(int index) {
-
     var consumableItem = _fetchedLatestConsumableData[index];
 
-    bool isBelowThreshold = isQuantityBelowThreshold(
-                                consumableItem.resource_property!.value.toString(),
-                                consumableItem.quantity!
-                            );
-    
-    double threshold = getThresholdValue(consumableItem.resource_property!.value!);
+    List<DataCell> cells = List<DataCell>.filled(3, DataCell.empty);
 
-    List<DataCell> cells = List<DataCell>.filled(4, DataCell.empty);
-
-    cells[0] = DataCell(Center(
-        child: Text(consumableItem.consumable!.name.toString())));
-    cells[1] = DataCell(
-        Center(child: Text(consumableItem.quantity.toString())));
-    cells[2] =
-        DataCell(
-          Center(child: Text(consumableItem.resource_property!.value.toString())));
-    cells[3] =
-        DataCell(
-          Center(child: Text(threshold.toString())));
-   
+    cells[0] = DataCell(
+        Center(child: Text(consumableItem.consumable!.name.toString())));
+    cells[1] =
+        DataCell(Center(child: Text(consumableItem.quantity.toString())));
+    cells[2] = DataCell(Center(
+        child: Text(consumableItem.resource_property!.value.toString())));
 
     return DataRow(
-      color: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states){
-        return isBelowThreshold ?Colors.red[300]:null;
-      }),
-      cells: cells
-      );
+        color: MaterialStateProperty.resolveWith<Color?>(
+            (Set<MaterialState> states) {
+          return consumableItem.is_below_threshold == 1
+              ? Colors.red[300]
+              : null;
+        }),
+        cells: cells);
   }
 
   @override

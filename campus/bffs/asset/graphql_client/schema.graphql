@@ -327,6 +327,7 @@ input Consumable {
   manufacturer: String
   model: String
   serial_number: String
+  threshold: Decimal
   created: String
   updated: String
 }
@@ -339,6 +340,7 @@ type ConsumableData {
   manufacturer: String
   model: String
   serial_number: String
+  threshold: Decimal
   created: String
   updated: String
 }
@@ -558,6 +560,7 @@ input Inventory {
   prev_quantity: Decimal
   resource_property_id: Int
   resource_property_value: String
+  is_below_threshold: Int
   created: String
   updated: String
 }
@@ -580,6 +583,7 @@ type InventoryData {
   month_name: String
   description: String
   manufacturer: String
+  is_below_threshold: Int
   created: String
   updated: String
 }

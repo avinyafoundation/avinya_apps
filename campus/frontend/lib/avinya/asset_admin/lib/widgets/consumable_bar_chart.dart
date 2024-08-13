@@ -213,248 +213,271 @@ class _ConsumableBarChartState extends State<ConsumableBarChart> {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 16 / 9,
-      child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-               Center(
-                child: Text(
-                  'Consumable Yearly Report',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.purple, // Matches yellow[700]
-                  ),
-                ),
-              ),
-              Flexible(
-                flex: 2,
-                child: Row(
-                  children: [
-                    Text(
-                      'Select a Consumable :',
-                      style: TextStyle(
-                          fontStyle: FontStyle.normal,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    FutureBuilder<List<Consumable>>(
-                        future: _fetchConsumableData,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Container(
-                              margin: EdgeInsets.only(top: 10),
-                              child: SpinKitCircle(
-                                color: (Colors.yellow[700]),
-                                size: 70,
-                              ),
-                            );
-                          } else if (snapshot.hasError) {
-                            return const Center(
-                              child: Text('Something went wrong...'),
-                            );
-                          } else if (!snapshot.hasData) {
-                            return const Center(
-                              child: Text('No consumable data found'),
-                            );
-                          }
-                          final consumableData = snapshot.data!;
-                          return DropdownButton<Consumable>(
-                              value: _selectedConsumableValue,
-                              items: consumableData.map((Consumable consumable) {
-                                return DropdownMenuItem(
-                                    value: consumable,
-                                    child: Text(consumable.name! ?? ''));
-                              }).toList(),
-                              onChanged: (Consumable? newValue) async {
-                                if (newValue == null) {
-                                  return;
-                                }
-        
-                                int consumableId = newValue.id!;
-        
-                                int? parentOrgId = campusAppsPortalInstance
-                                    .getUserPerson()
-                                    .organization!
-                                    .id;
-        
-                                _fetchedConsumableYearlySummaryData =
-                                    await getConsumableYearlyReport(parentOrgId!,
-                                        consumableId, _selectedYear.year);
-        
-                                _selectedConsumableUnitValue =
-                                    _fetchedConsumableYearlySummaryData
-                                        .first.resource_property!.value;
-        
-                                _consumableItemQuantityInForYear =
-                                    _fetchedConsumableYearlySummaryData
-                                        .map((consumableMonthObject) =>
-                                            consumableMonthObject.quantity_in!)
-                                        .toList();
-                                _consumableItemQuantityOutForYear =
-                                    _fetchedConsumableYearlySummaryData
-                                        .map((consumableMonthObject) =>
-                                            consumableMonthObject.quantity_out!)
-                                        .toList();
-        
-                                setState(() {
-                                  _fetchedConsumableYearlySummaryData;
-                                  _selectedConsumableValue = newValue;
-                                  _consumableItemQuantityInForYear;
-                                  _consumableItemQuantityOutForYear;
-                                });
-                              });
-                        }),
-                    const SizedBox(
-                      width: 20.0,
-                    ),
-                    Text(
-                      'Select a Year:',
-                      style: TextStyle(
-                          fontStyle: FontStyle.normal,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    TextButton(
-                      onPressed: () => _showPicker(context),
-                      child: Icon(Icons.calendar_month),
-                    ),
-                    if (_selectedYear == null)
-                      Container(
-                        margin: EdgeInsets.only(left: 10.0),
-                        child: const Text(
-                          'No year selected.',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      )
-                    else
-                      Container(
-                        child: Text(
-                          _selectedYear.year.toString(),
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.normal),
-                        ),
-                      ),
-                    SizedBox(
-                      width: 20.0,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 70.0,
-                          height: 30.0,
-                          child: Text(
-                            'Quantity In',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        SizedBox(
-                          child: Container(
-                            width: 20,
-                            height: 20,
-                            color: Colors.green,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 80.0,
-                          height: 30.0,
-                          child: Text(
-                            'Quantity Out',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        SizedBox(
-                          child: Container(
-                            width: 20,
-                            height: 20,
-                            color: Colors.red,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 5.0,
-              ),
-              Center(
-                child: Text(
-                  'Unit - ${_selectedConsumableUnitValue ?? ''}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20.0,
-              ),
-              if (_consumableItemQuantityInForYear.length > 0 &&
-                  _consumableItemQuantityOutForYear.length > 0)
-                Flexible(
-                  flex: 3,
-                  child: BarChart(
-                    BarChartData(
-                      groupsSpace: 30.0,
-                      alignment: BarChartAlignment.spaceAround,
-                      barGroups: _getBarGroups(),
-                      titlesData: FlTitlesData(
-                          show: true,
-                          topTitles: AxisTitles(
-                              sideTitles: SideTitles(showTitles: false)),
-                          bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                  getTitlesWidget: getTitles,
-                                  showTitles: true,
-                                  reservedSize: 50))),
-                      gridData: FlGridData(
-                          show: true,
-                          drawHorizontalLine: true,
-                          drawVerticalLine: false),
-                    ),
-                  ),
-                )
-              else
-                Container(
-                  margin: EdgeInsets.only(left: 10.0),
-                  child: const Text(
-                    'No data',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                )
-            ],
+    var screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Center(
+          child: Text(
+            'Consumable Yearly Report',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
+        ),
+        Row(
+          //mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Select a Consumable :',
+              style: TextStyle(
+                  fontStyle: FontStyle.normal, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              width: 5.0,
+            ),
+            FutureBuilder<List<Consumable>>(
+                future: _fetchConsumableData,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(
+                      margin: EdgeInsets.only(top: 10),
+                      child: SpinKitCircle(
+                        color: (Colors.yellow[700]),
+                        size: 70,
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return const Center(
+                      child: Text('Something went wrong...'),
+                    );
+                  } else if (!snapshot.hasData) {
+                    return const Center(
+                      child: Text('No consumable data found'),
+                    );
+                  }
+                  final consumableData = snapshot.data!;
+                  return DropdownButton<Consumable>(
+                      value: _selectedConsumableValue,
+                      items: consumableData.map((Consumable consumable) {
+                        return DropdownMenuItem(
+                            value: consumable,
+                            child: Text(consumable.name! ?? ''));
+                      }).toList(),
+                      onChanged: (Consumable? newValue) async {
+                        if (newValue == null) {
+                          return;
+                        }
+
+                        int consumableId = newValue.id!;
+
+                        int? parentOrgId = campusAppsPortalInstance
+                            .getUserPerson()
+                            .organization!
+                            .id;
+
+                        _fetchedConsumableYearlySummaryData =
+                            await getConsumableYearlyReport(
+                                parentOrgId!, consumableId, _selectedYear.year);
+
+                        _selectedConsumableUnitValue =
+                            _fetchedConsumableYearlySummaryData
+                                .first.resource_property!.value;
+
+                        _consumableItemQuantityInForYear =
+                            _fetchedConsumableYearlySummaryData
+                                .map((consumableMonthObject) =>
+                                    consumableMonthObject.quantity_in!)
+                                .toList();
+                        _consumableItemQuantityOutForYear =
+                            _fetchedConsumableYearlySummaryData
+                                .map((consumableMonthObject) =>
+                                    consumableMonthObject.quantity_out!)
+                                .toList();
+
+                        setState(() {
+                          _fetchedConsumableYearlySummaryData;
+                          _selectedConsumableValue = newValue;
+                          _consumableItemQuantityInForYear;
+                          _consumableItemQuantityOutForYear;
+                        });
+                      });
+                }),
+            const SizedBox(
+              width: 20.0,
+            ),
+            Text(
+              'Select a Year:',
+              style: TextStyle(
+                  fontStyle: FontStyle.normal, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            TextButton(
+              onPressed: () => _showPicker(context),
+              child: Icon(Icons.calendar_month),
+            ),
+            if (_selectedYear == null)
+              Container(
+                margin: EdgeInsets.only(left: 10.0),
+                child: const Text(
+                  'No year selected.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              )
+            else
+              Container(
+                child: Text(
+                  _selectedYear.year.toString(),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+                ),
+              ),
+            SizedBox(
+              width: 20.0,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [],
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [],
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 15.0,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Center(
+              child: Text(
+                'Unit - ${_selectedConsumableUnitValue ?? ''}',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 20,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 70.0,
+                  height: 30.0,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 5.0),
+                    child: Text(
+                      'Quantity In',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                SizedBox(
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              width: 15.0,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 80.0,
+                    height: 30.0,
+                    child: Text(
+                      'Quantity Out',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  SizedBox(
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 20.0,
+        ),
+        if (_consumableItemQuantityInForYear.length > 0 &&
+            _consumableItemQuantityOutForYear.length > 0)
+          Container(
+            height: screenHeight * 0.5,
+            child: BarChart(
+              BarChartData(
+                groupsSpace: 30.0,
+                alignment: BarChartAlignment.spaceAround,
+                barGroups: _getBarGroups(),
+                titlesData: FlTitlesData(
+                    show: true,
+                    rightTitles:
+                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles:
+                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                            getTitlesWidget: getTitles,
+                            showTitles: true,
+                            reservedSize: 50))),
+                gridData: FlGridData(
+                    show: true,
+                    drawHorizontalLine: true,
+                    drawVerticalLine: false),
+              ),
+            ),
+          )
+        else
+          Container(
+            margin: EdgeInsets.only(left: 10.0),
+            child: const Text(
+              'No data',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ),
+      ],
     );
+    // );
   }
 }

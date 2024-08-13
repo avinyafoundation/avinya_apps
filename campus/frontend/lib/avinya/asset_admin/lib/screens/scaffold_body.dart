@@ -10,6 +10,7 @@ import 'package:gallery/avinya/asset_admin/lib/screens/consumable_monthly_report
 import 'package:gallery/avinya/asset_admin/lib/screens/consumable_weekly_report.dart';
 import 'package:gallery/avinya/asset_admin/lib/screens/vehicle_fuel_consumption.dart';
 import 'package:gallery/avinya/asset_admin/lib/widgets/resource_allocation_report.dart';
+import 'package:gallery/avinya/asset_admin/lib/screens/vehicle_fuel_consumption_monthly_report.dart';
 
 import '../routing.dart';
 import '../widgets/fade_transition_page.dart';
@@ -70,11 +71,17 @@ class SMSScaffoldBody extends StatelessWidget {
             key: ValueKey('consumable_weekly_report'),
             child: ConsumableWeeklyReportScreen(),
           )
-         else if (currentRoute.pathTemplate
+        else if (currentRoute.pathTemplate
             .startsWith('/vehicle_fuel_consumption'))
           const FadeTransitionPage<void>(
             key: ValueKey('vehicle_fuel_consumption'),
             child: VehicleFuelConsumptionScreen(),
+          )
+        else if (currentRoute.pathTemplate
+            .startsWith('/vehicle_fuel_consumption_monthly_report'))
+          const FadeTransitionPage<void>(
+            key: ValueKey('vehicle_fuel_consumption_monthly_report'),
+            child: VehicleFuelConsumptionMonthlyReportScreen(),
           )
         // Avoid building a Navigator with an empty `pages` list when the
         // RouteState is set to an unexpected path, such as /signin.

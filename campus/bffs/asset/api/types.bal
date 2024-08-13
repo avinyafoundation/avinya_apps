@@ -141,6 +141,7 @@ public type Consumable record {
     string? description?;
     string? model?;
     string? serial_number?;
+    anydata? threshold?;
     int? id?;
     string? updated?;
     string? record_type?;
@@ -242,6 +243,7 @@ public type Inventory record {
     int? avinya_type_id?;
     string? description?;
     int? asset_id?;
+    int? is_below_threshold?;
     string? record_type?;
     string? manufacturer?;
     anydata? quantity_out?;
@@ -1095,6 +1097,7 @@ public type GetInventoryDataByOrganizationResponse record {|
         anydata? quantity_in;
         anydata? quantity_out;
         anydata? prev_quantity;
+        int? is_below_threshold;
         record {|
             int? id;
             string? property;

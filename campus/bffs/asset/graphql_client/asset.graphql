@@ -655,6 +655,7 @@ query getInventoryDataByOrganization($organization_id: Int!,$date: String!) {
        quantity_in
        quantity_out
        prev_quantity
+       is_below_threshold
        resource_property{
         id
         property
