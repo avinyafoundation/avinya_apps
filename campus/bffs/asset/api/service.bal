@@ -859,4 +859,28 @@ service / on new http:Listener(9094) {
                 ":: Detail: " + getConsumableMonthlyReportResponse.detail().toString());
         }
     }
+
+    resource function get consumable_yearly_report/[int organization_id]/[int consumable_id]/[int year]() returns Inventory[]|error {
+        GetConsumableYearlyReportResponse|graphql:ClientError getConsumableYearlyReportResponse = globalDataClient->getConsumableYearlyReport(consumable_id,year,organization_id);
+        if (getConsumableYearlyReportResponse is GetConsumableYearlyReportResponse) {
+            Inventory[] yearly_summary_consumable_datas = [];
+            foreach var yearly_summary_consumable_data in getConsumableYearlyReportResponse.consumable_yearly_report {
+                Inventory|error yearly_summary_consumable_data_record = yearly_summary_consumable_data.cloneWithType(Inventory);
+                if (yearly_summary_consumable_data_record is Inventory) {
+                    yearly_summary_consumable_datas.push(yearly_summary_consumable_data_record);
+                } else {
+                    log:printError("Error while processing Application record received", yearly_summary_consumable_data_record);
+                    return error("Error while processing Application record received: " + yearly_summary_consumable_data_record.message() +
+                        ":: Detail: " + yearly_summary_consumable_data_record.detail().toString());
+                }
+            }
+
+            return yearly_summary_consumable_datas;
+
+        } else {
+            log:printError("Error while getting application", getConsumableYearlyReportResponse);
+            return error("Error while getting application: " + getConsumableYearlyReportResponse.message() +
+                ":: Detail: " + getConsumableYearlyReportResponse.detail().toString());
+        }
+    }
 }
