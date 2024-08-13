@@ -655,6 +655,7 @@ query getInventoryDataByOrganization($organization_id: Int!,$date: String!) {
        quantity_in
        quantity_out
        prev_quantity
+       is_below_threshold
        resource_property{
         id
         property
@@ -700,6 +701,23 @@ query getConsumableMonthlyReport($organization_id: Int!,$year: Int!,$month: Int!
             manufacturer
         }
         quantity
+        quantity_in
+        quantity_out
+        resource_property{
+            id
+            property
+            value
+        }
+    }      
+}
+
+query getConsumableYearlyReport($organization_id: Int!,$consumable_id: Int!,$year: Int!) {
+    consumable_yearly_report(organization_id: $organization_id,consumable_id: $consumable_id,year: $year) {
+        consumable{
+            id
+            name
+        }
+        month_name
         quantity_in
         quantity_out
         resource_property{

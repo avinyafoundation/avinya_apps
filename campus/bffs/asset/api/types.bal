@@ -141,6 +141,7 @@ public type Consumable record {
     string? description?;
     string? model?;
     string? serial_number?;
+    anydata? threshold?;
     int? id?;
     string? updated?;
     string? record_type?;
@@ -234,6 +235,7 @@ public type EvaluationMetadata record {
 //     int? person_id?;
 // };
 public type Inventory record {
+    string? month_name?;
     int? consumable_id?;
     anydata? quantity?;
     string? created?;
@@ -241,6 +243,7 @@ public type Inventory record {
     int? avinya_type_id?;
     string? description?;
     int? asset_id?;
+    int? is_below_threshold?;
     string? record_type?;
     string? manufacturer?;
     anydata? quantity_out?;
@@ -1094,6 +1097,7 @@ public type GetInventoryDataByOrganizationResponse record {|
         anydata? quantity_in;
         anydata? quantity_out;
         anydata? prev_quantity;
+        int? is_below_threshold;
         record {|
             int? id;
             string? property;
@@ -1149,4 +1153,22 @@ public type GetConsumableMonthlyReportResponse record {|
             string? value;
         |}? resource_property;
     |}[] consumable_monthly_report;
+|};
+
+public type GetConsumableYearlyReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        record {|
+            int? id;
+            string? name;
+        |}? consumable;
+        string? month_name;
+        anydata? quantity_in;
+        anydata? quantity_out;
+        record {|
+            int? id;
+            string? property;
+            string? value;
+        |}? resource_property;
+    |}[] consumable_yearly_report;
 |};
