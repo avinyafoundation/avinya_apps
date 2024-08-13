@@ -2,10 +2,9 @@ import 'dart:developer';
 
 //import 'package:ShoolManagementSystem/src/data/address.dart';
 import 'package:gallery/avinya/asset/lib/data/address.dart';
+import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
 
 class Person {
   int? id;
@@ -97,8 +96,7 @@ class Person {
         if (passport_no != null) 'passport_no': passport_no,
         if (permanent_address_id != null)
           'permanent_address_id': permanent_address_id,
-        if(digital_id !=null)
-          'digital_id' : digital_id,
+        if (digital_id != null) 'digital_id': digital_id,
         if (mailing_address_id != null)
           'mailing_address_id': mailing_address_id,
         if (nic_no != null) 'nic_no': nic_no,
