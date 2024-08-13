@@ -13,13 +13,13 @@ public function initClientConfig() returns ConnectionConfig {
     } else {
         _clientConig = {};
     }
-    log:printDebug("debug log");
-    log:printError("error log");
-    log:printInfo("info log");
-    log:printWarn("warn log");
-    log:printInfo("CHOREO_TOKEN_URL: " + CHOREO_TOKEN_URL);
-    log:printInfo("GLOBAL_DATA_CLIENT_ID: " + GLOBAL_DATA_CLIENT_ID);
-    log:printInfo("GLOBAL_DATA_CLIENT_SECRET: " + GLOBAL_DATA_CLIENT_SECRET);
+    // log:printDebug("debug log");
+    // log:printError("error log");
+    // log:printInfo("info log");
+    // log:printWarn("warn log");
+    // log:printInfo("CHOREO_TOKEN_URL: " + CHOREO_TOKEN_URL);
+    // log:printInfo("GLOBAL_DATA_CLIENT_ID: " + GLOBAL_DATA_CLIENT_ID);
+    // log:printInfo("GLOBAL_DATA_CLIENT_SECRET: " + GLOBAL_DATA_CLIENT_SECRET);
     return _clientConig;
 }
 
@@ -861,7 +861,7 @@ service / on new http:Listener(9094) {
     }
 
     resource function get consumable_yearly_report/[int organization_id]/[int consumable_id]/[int year]() returns Inventory[]|error {
-        GetConsumableYearlyReportResponse|graphql:ClientError getConsumableYearlyReportResponse = globalDataClient->getConsumableYearlyReport(consumable_id,year,organization_id);
+        GetConsumableYearlyReportResponse|graphql:ClientError getConsumableYearlyReportResponse = globalDataClient->getConsumableYearlyReport(consumable_id, year, organization_id);
         if (getConsumableYearlyReportResponse is GetConsumableYearlyReportResponse) {
             Inventory[] yearly_summary_consumable_datas = [];
             foreach var yearly_summary_consumable_data in getConsumableYearlyReportResponse.consumable_yearly_report {
