@@ -2,11 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/src/material/data_table.dart';
 import 'package:gallery/avinya/attendance/lib/data.dart';
+import 'package:gallery/config/app_config.dart';
 import 'package:gallery/data/address.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
 
 class Name {
   String? name_en;
@@ -85,15 +84,15 @@ class Organization {
         'people': List<dynamic>.from(people.map((x) => x.toJson())),
         // if (employees != null) 'employees': List<dynamic>.from(employees!.map((x) => x.toJson())),
       };
-
-
 }
 
-Future<List<Organization>> fetchOrganizationsByAvinyaType(int avinya_type) async {
-    final uri = Uri.parse(AppConfig.campusAssetBffApiUrl + '/organizations_by_avinya_type')
+Future<List<Organization>> fetchOrganizationsByAvinyaType(
+    int avinya_type) async {
+  final uri = Uri.parse(
+          AppConfig.campusAssetBffApiUrl + '/organizations_by_avinya_type')
       .replace(queryParameters: {'avinya_type': avinya_type.toString()});
 
-    final response = await http.get(
+  final response = await http.get(
     uri,
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
@@ -103,11 +102,9 @@ Future<List<Organization>> fetchOrganizationsByAvinyaType(int avinya_type) async
   );
 
   if (response.statusCode == 200) {
-
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
 
-    List<Organization> organization =
-        await resultsJson
+    List<Organization> organization = await resultsJson
         .map<Organization>((json) => Organization.fromJson(json))
         .toList();
 
@@ -116,5 +113,3 @@ Future<List<Organization>> fetchOrganizationsByAvinyaType(int avinya_type) async
     throw Exception('Failed to load organizations');
   }
 }
-
-
