@@ -8,10 +8,10 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/services.dart';
 import 'package:gallery/avinya/asset/lib/data/campus_config_system.dart';
 import 'package:gallery/avinya/asset/lib/data/prospect.dart';
+import 'package:gallery/config/app_config.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../config/app_config.dart';
 import '../routing.dart';
 
 class SubscribeScreen extends StatefulWidget {
@@ -478,7 +478,6 @@ class _SubscribeScreenState extends State<SubscribeScreen> {
         log(createProspectResponse.body.toString());
         return true;
         //Navigator.of(context).pop(true);
-
       } else {
         log('addProspect form invalid');
         return false;

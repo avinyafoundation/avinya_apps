@@ -6,7 +6,9 @@ class AppConfig {
   static String apiUrl = '';
   static String campusAttendanceBffApiUrl = '';
   static String campusProfileBffApiUrl = '';
+  static String campusAssetBffApiUrl = '';
   static String campusBffApiKey = '';
+  static String campusConfigBffApiKey = '';
   static String refreshToken = '';
   static String choreoSTSEndpoint = "";
   static String choreoSTSClientID = "x23_1tY7kAUtLUH9il9I3YwyrJca";

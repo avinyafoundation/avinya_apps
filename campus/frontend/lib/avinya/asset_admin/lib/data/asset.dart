@@ -1,9 +1,8 @@
 //import 'package:ShoolManagementSystem/src/data/avinya_type.dart';
 import 'package:gallery/avinya/asset_admin/lib/data.dart';
+import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
 
 class Asset {
   int? id;
