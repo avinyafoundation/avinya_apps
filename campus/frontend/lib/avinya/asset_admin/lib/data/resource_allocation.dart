@@ -76,12 +76,12 @@ class ResourceAllocation {
 
 Future<List<ResourceAllocation>> fetchResourceAllocation(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl +
+    Uri.parse(AppConfig.campusAssetsBffApiUrl +
         '/resource_allocation?resourceAllocationId=$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -97,7 +97,7 @@ Future<List<ResourceAllocation>> fetchResourceAllocation(int id) async {
 }
 
 Future<List<ResourceAllocation>> fetchResourceAllocations(int personId) async {
-  final response = await http.get(Uri.parse(AppConfig.campusAssetBffApiUrl +
+  final response = await http.get(Uri.parse(AppConfig.campusAssetsBffApiUrl +
       '/resource_allocation_by_person?personId=$personId'));
 
   if (response.statusCode == 200) {
@@ -114,7 +114,7 @@ Future<List<ResourceAllocation>> fetchResourceAllocations(int personId) async {
 Future<http.Response> createResourceAllocation(
     ResourceAllocation resourceAllocation) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/resource_allocation'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -130,11 +130,11 @@ Future<http.Response> createResourceAllocation(
 
 Future<List<AvinyaType>> fetchAvinyaTypesByAsset() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/avinyaTypesByAsset'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/avinyaTypesByAsset'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -152,11 +152,11 @@ Future<List<AvinyaType>> fetchAvinyaTypesByAsset() async {
 Future<Asset> fetchAssetByAvinyaType(int id) async {
   final response = await http.get(
     Uri.parse(
-        AppConfig.campusAssetBffApiUrl + '/assetByAvinyaType?avinyaType=$id'),
+        AppConfig.campusAssetsBffApiUrl + '/assetByAvinyaType?avinyaType=$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -173,11 +173,11 @@ Future<List<ResourceAllocation>> getResourceAllocationReport(
     int organization_id, int avinya_type_id) async {
   final response = await http.get(
     Uri.parse(
-        '${AppConfig.campusAssetBffApiUrl}/resource_allocations_report/$organization_id/$avinya_type_id'),
+        '${AppConfig.campusAssetsBffApiUrl}/resource_allocations_report/$organization_id/$avinya_type_id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusConfigBffApiKey}',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
   if (response.statusCode > 199 && response.statusCode < 300) {
@@ -277,11 +277,11 @@ Future<List<ResourceAllocation>> getResourceAllocationReport(
 
 //   Future<List<ResourceAllocation>> fetchResourceAllocations() async {
 //     final response = await http.get(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocations'),
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl + '/resource_allocations'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
 //         'accept': 'application/json',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //     );
 
@@ -299,12 +299,12 @@ Future<List<ResourceAllocation>> getResourceAllocationReport(
 //   Future<List<ResourceAllocation>> fetchResourceAllocationsByPersonId(
 //       int id) async {
 //     final response = await http.get(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl +
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl +
 //           '/resource_allocation_by_person?personId=$id'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
 //         'accept': 'application/json',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //     );
 
@@ -321,12 +321,12 @@ Future<List<ResourceAllocation>> getResourceAllocationReport(
 
 //   Future<List<ResourceAllocation>> fetchResourceAllocation(int id) async {
 //     final response = await http.get(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl +
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl +
 //           '/resource_allocation?resourceAllocationId=$id'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
 //         'accept': 'application/json',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //     );
 
@@ -344,10 +344,10 @@ Future<List<ResourceAllocation>> getResourceAllocationReport(
 //   Future<http.Response> createResourceAllocation(
 //       ResourceAllocation resourceAllocation) async {
 //     final response = await http.post(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation'),
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl + '/resource_allocation'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //       body: jsonEncode(resourceAllocation.toJson()),
 //     );
@@ -361,10 +361,10 @@ Future<List<ResourceAllocation>> getResourceAllocationReport(
 //   Future<http.Response> updateResourceAllocation(
 //       ResourceAllocation resourceAllocation) async {
 //     final response = await http.put(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation'),
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl + '/resource_allocation'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //       body: jsonEncode(resourceAllocation.toJson()),
 //     );
@@ -377,10 +377,10 @@ Future<List<ResourceAllocation>> getResourceAllocationReport(
 
 //   Future<http.Response> deleteResourceAllocation(int id) async {
 //     final response = await http.delete(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation/$id'),
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl + '/resource_allocation/$id'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //     );
 //     if (response.statusCode == 200) {

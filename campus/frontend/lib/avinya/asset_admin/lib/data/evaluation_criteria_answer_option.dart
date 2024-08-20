@@ -36,12 +36,12 @@ class EvaluationCriteriaAnswerOption {
 Future<List<EvaluationCriteriaAnswerOption>>
     fetchEvaluationCriteriaAnswerOptions() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl +
+    Uri.parse(AppConfig.campusAssetsBffApiUrl +
         '/evaluation_criteria_answer_option/evaluation_criteria_answer_options'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -61,12 +61,12 @@ Future<List<EvaluationCriteriaAnswerOption>>
 Future<EvaluationCriteriaAnswerOption> fetchEvaluationCriteriaAnswerOption(
     String id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl +
+    Uri.parse(AppConfig.campusAssetsBffApiUrl +
         '/evaluation_criteria_answer_option/evaluation_criteria_answer_options/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -84,11 +84,11 @@ Future<EvaluationCriteriaAnswerOption> fetchEvaluationCriteriaAnswerOption(
 Future<http.Response> createEvaluationCriteriaAnswerOption(
     EvaluationCriteriaAnswerOption evaluationCriteriaAnswerOption) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAssetBffApiUrl +
+    Uri.parse(AppConfig.campusAssetsBffApiUrl +
         '/evaluation_criteria_answer_option/evaluation_criteria_answer_options'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(evaluationCriteriaAnswerOption.toJson()),
   );
@@ -102,11 +102,11 @@ Future<http.Response> createEvaluationCriteriaAnswerOption(
 Future<http.Response> updateEvaluationCriteriaAnswerOption(
     EvaluationCriteriaAnswerOption evaluationCriteriaAnswerOption) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusAssetBffApiUrl +
+    Uri.parse(AppConfig.campusAssetsBffApiUrl +
         '/evaluation_criteria_answer_option/evaluation_criteria_answer_options'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(evaluationCriteriaAnswerOption.toJson()),
   );
@@ -119,11 +119,11 @@ Future<http.Response> updateEvaluationCriteriaAnswerOption(
 
 Future<http.Response> deleteEvaluationCriteriaAnswerOption(String id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusAssetBffApiUrl +
+    Uri.parse(AppConfig.campusAssetsBffApiUrl +
         '/evaluation_criteria_answer_option/evaluation_criteria_answer_options/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 

@@ -61,11 +61,11 @@ class Asset {
 
 Future<List<Asset>> fetchAssets() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/assets'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/assets'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -81,11 +81,11 @@ Future<List<Asset>> fetchAssets() async {
 
 Future<Asset> fetchAsset(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/asset?assetId=$id'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/asset?assetId=$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -100,10 +100,10 @@ Future<Asset> fetchAsset(int id) async {
 
 Future<http.Response> createAsset(Asset asset) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/asset'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/asset'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(asset.toJson()),
   );
@@ -116,10 +116,10 @@ Future<http.Response> createAsset(Asset asset) async {
 
 Future<http.Response> updateAsset(Asset asset) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/asset'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/asset'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(asset.toJson()),
   );
@@ -132,10 +132,10 @@ Future<http.Response> updateAsset(Asset asset) async {
 
 Future<http.Response> deleteAsset(int id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/asset?assetId=$id'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/asset?assetId=$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
