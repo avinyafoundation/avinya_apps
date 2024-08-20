@@ -89,7 +89,7 @@ class Organization {
 Future<List<Organization>> fetchOrganizationsByAvinyaType(
     int avinya_type) async {
   final uri = Uri.parse(
-          AppConfig.campusAssetBffApiUrl + '/organizations_by_avinya_type')
+          AppConfig.campusAssetsBffApiUrl + '/organizations_by_avinya_type')
       .replace(queryParameters: {'avinya_type': avinya_type.toString()});
 
   final response = await http.get(
@@ -97,7 +97,7 @@ Future<List<Organization>> fetchOrganizationsByAvinyaType(
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 

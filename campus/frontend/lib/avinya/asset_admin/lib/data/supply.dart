@@ -55,11 +55,11 @@ class Supply {
 
 Future<List<Supply>> fetchSupplies() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/supplies'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/supplies'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -75,11 +75,11 @@ Future<List<Supply>> fetchSupplies() async {
 
 Future<Supply> fetchSupply(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/supplies/$id'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/supplies/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -95,10 +95,10 @@ Future<Supply> fetchSupply(int id) async {
 
 Future<http.Response> createSupply(Supply supply) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/supplies'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/supplies'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(supply.toJson()),
   );
@@ -111,10 +111,10 @@ Future<http.Response> createSupply(Supply supply) async {
 
 Future<http.Response> updateSupply(Supply supply) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/supplies'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/supplies'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(supply.toJson()),
   );
@@ -127,10 +127,10 @@ Future<http.Response> updateSupply(Supply supply) async {
 
 Future<http.Response> deleteSupply(int id) async {
   final http.Response response = await http.delete(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/supplies/$id'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/supplies/$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 

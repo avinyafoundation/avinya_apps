@@ -77,7 +77,7 @@ class Prospect {
 
 Future<http.Response> createProspect(Prospect prospect) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/prospect'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/prospect'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },

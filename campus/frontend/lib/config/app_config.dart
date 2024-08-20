@@ -6,9 +6,8 @@ class AppConfig {
   static String apiUrl = '';
   static String campusAttendanceBffApiUrl = '';
   static String campusProfileBffApiUrl = '';
-  static String campusAssetBffApiUrl = '';
+  static String campusAssetsBffApiUrl = '';
   static String campusBffApiKey = '';
-  static String campusConfigBffApiKey = '';
   static String refreshToken = '';
   static String choreoSTSEndpoint = "";
   static String choreoSTSClientID = "x23_1tY7kAUtLUH9il9I3YwyrJca";
@@ -21,7 +20,6 @@ class AppConfig {
   static String applicationVersion = '1.0.0';
   static String mainCampusActivity = 'school-day';
   static String campusPctiNotesBffApiUrl = '';
-  static String campusAssetsBffApiUrl = '';
   static String campusPctiFeedbackBffApiUrl = '';
   static String asgardeoLogoutUrl = '';
 
