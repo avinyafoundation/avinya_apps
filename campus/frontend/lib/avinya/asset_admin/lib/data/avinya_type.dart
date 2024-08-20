@@ -50,7 +50,7 @@ class AvinyaType {
 
 Future<List<AvinyaType>> fetchAvinyaTypes() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/all_avinya_types'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/all_avinya_types'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
