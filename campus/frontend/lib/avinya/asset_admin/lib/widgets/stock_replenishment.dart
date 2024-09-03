@@ -204,9 +204,9 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
               _isUpdate = false;
             } else {
               _isSubmitting = false;
-              _showQtyIn = true;
+              _showQtyIn = false;
               _backDate = false;
-              _isUpdate = true;
+              _isUpdate = false;
             }
           } else if (_selectedDate.isBefore(currentDate)) {
             if (_selectedDate.isAfter(itemDateOnly) && item.quantity_in != 0) {

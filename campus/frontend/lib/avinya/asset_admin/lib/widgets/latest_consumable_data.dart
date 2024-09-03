@@ -122,13 +122,13 @@ class _LatestConsumableDataState extends State<LatestConsumableData> {
               }),
               child: Container(
                 width: screenWidth * 0.95,
-                height: screenHeight * 1.2,
+                height: screenHeight * 1.8,
                 child: PaginatedDataTable(
                   showCheckboxColumn: false,
                   source: _data,
                   columns: _buildDataColumns(),
                   columnSpacing: 50,
-                  rowsPerPage: 10,
+                  rowsPerPage: 20,
                 ),
               ),
             ),
