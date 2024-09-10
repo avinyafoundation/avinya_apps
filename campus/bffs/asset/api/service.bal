@@ -883,4 +883,47 @@ service / on new http:Listener(9094) {
                 ":: Detail: " + getConsumableYearlyReportResponse.detail().toString());
         }
     }
+
+    resource function post add_vehicle_fuel_consumption(@http:Payload VehicleFuelConsumption vehicleFuelConsumption) returns VehicleFuelConsumption|error {
+        AddVehicleFuelConsumptionResponse|graphql:ClientError addVehicleFuelConsumption = globalDataClient->addVehicleFuelConsumption(vehicleFuelConsumption);
+        if (addVehicleFuelConsumption is AddVehicleFuelConsumptionResponse) {
+            VehicleFuelConsumption|error vehicle_fuel_consumption_record = addVehicleFuelConsumption.add_vehicle_fuel_consumption.cloneWithType(VehicleFuelConsumption);
+            if (vehicle_fuel_consumption_record is VehicleFuelConsumption) {
+                return vehicle_fuel_consumption_record;
+            } else {
+                log:printError("Error while processing Application record received", vehicle_fuel_consumption_record);
+                return error("Error while processing Application record received: " + vehicle_fuel_consumption_record.message() +
+                    ":: Detail: " + vehicle_fuel_consumption_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", addVehicleFuelConsumption);
+            return error("Error while creating application: " + addVehicleFuelConsumption.message() +
+                ":: Detail: " + addVehicleFuelConsumption.detail().toString());
+        }
+    }
+
+    resource function get vehicle_fuel_consumption_by_date/[int organization_id]/[string date]() returns VehicleFuelConsumption[]|error {
+        GetVehicleFuelConsumptionByDateResponse|graphql:ClientError getVehicleFuelConsumptionByDateResponse = globalDataClient->getVehicleFuelConsumptionByDate(date, organization_id);
+        if (getVehicleFuelConsumptionByDateResponse is GetVehicleFuelConsumptionByDateResponse) {
+            VehicleFuelConsumption[] vehicle_fuel_consumption_by_date_datas = [];
+            foreach var vehicle_fuel_consumption_by_data in getVehicleFuelConsumptionByDateResponse.vehicle_fuel_consumption_by_date {
+                VehicleFuelConsumption|error vehicle_fuel_consumption_by_data_record = vehicle_fuel_consumption_by_data.cloneWithType(VehicleFuelConsumption);
+                if (vehicle_fuel_consumption_by_data_record is VehicleFuelConsumption) {
+                    vehicle_fuel_consumption_by_date_datas.push(vehicle_fuel_consumption_by_data_record);
+                } else {
+                    log:printError("Error while processing Application record received", vehicle_fuel_consumption_by_data_record);
+                    return error("Error while processing Application record received: " + vehicle_fuel_consumption_by_data_record.message() +
+                        ":: Detail: " + vehicle_fuel_consumption_by_data_record.detail().toString());
+                }
+            }
+
+            return vehicle_fuel_consumption_by_date_datas;
+
+        } else {
+            log:printError("Error while getting application", getVehicleFuelConsumptionByDateResponse);
+            return error("Error while getting application: " + getVehicleFuelConsumptionByDateResponse.message() +
+                ":: Detail: " + getVehicleFuelConsumptionByDateResponse.detail().toString());
+        }
+    }
+    
 }
