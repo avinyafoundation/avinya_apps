@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-class VehicleFuelConsumption extends StatefulWidget {
-  const VehicleFuelConsumption({super.key});
+class VehicleFuelConsumptionEdit extends StatefulWidget {
+  const VehicleFuelConsumptionEdit({super.key});
 
   @override
-  State<VehicleFuelConsumption> createState() => _VehicleFuelConsumptionState();
+  State<VehicleFuelConsumptionEdit> createState() =>
+      _VehicleFuelConsumptionEditState();
 }
 
-class _VehicleFuelConsumptionState extends State<VehicleFuelConsumption> {
+class _VehicleFuelConsumptionEditState
+    extends State<VehicleFuelConsumptionEdit> {
   DateTime? _selectedDate;
   String reasonValue = 'Student Shuttle-Morning';
   final List<String> reasonValues = [
