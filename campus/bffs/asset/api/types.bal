@@ -257,7 +257,6 @@ public type Inventory record {
     int? person_id?;
 };
 
-
 public type Organization record {
     int[]? parent_organizations?;
     string? notes?;
@@ -393,6 +392,23 @@ public type Vacancy record {
     int? head_count?;
     int? id?;
     string? record_type?;
+};
+
+public type Vehicle record {
+    string? record_type?;
+    int? id?;
+    string? vehicle_number?;
+    int? organization_id?;
+    int? person_id?;
+    string? created?;
+    string? updated?;
+};
+
+public type VehicleReasonMetadata record {
+    string? record_type?;
+    int? id?;
+    string? reason?;
+    string? created?;
 };
 
 public type VehicleFuelConsumption record {
@@ -1269,7 +1285,7 @@ public type GetVehiclesResponse record {|
             string? preferred_name;
             string? digital_id;
         |}? person;
-    |}[]? vehicles;
+    |}[] vehicles;
 |};
 
 public type GetVehicleReasonsResponse record {|
@@ -1277,5 +1293,5 @@ public type GetVehicleReasonsResponse record {|
     record {|
         int? id;
         string? reason;
-    |}[]? vehicle_reasons;
+    |}[] vehicle_reasons;
 |};
