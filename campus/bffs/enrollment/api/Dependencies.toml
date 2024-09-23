@@ -9,7 +9,7 @@ distribution-version = "2201.8.7"
 
 [[package]]
 org = "avinyafoundation"
-name = "campus_attendance_bff"
+name = "enrollment_bff"
 version = "1.1.0"
 dependencies = [
 	{org = "ballerina", name = "graphql"},
@@ -20,7 +20,7 @@ dependencies = [
 	{org = "ballerinai", name = "observe"}
 ]
 modules = [
-	{org = "avinyafoundation", packageName = "campus_attendance_bff", moduleName = "campus_attendance_bff"}
+	{org = "avinyafoundation", packageName = "enrollment_bff", moduleName = "enrollment_bff"}
 ]
 
 [[package]]
