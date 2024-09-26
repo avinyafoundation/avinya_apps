@@ -2,9 +2,85 @@ import 'dart:developer';
 
 //import 'package:ShoolManagementSystem/src/data/address.dart';
 import 'package:gallery/avinya/asset/lib/data/address.dart';
+import 'package:gallery/avinya/attendance/lib/data.dart';
 import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+class MainOrganization {
+  int? id;
+  String? description;
+  String? notes;
+  String? address;
+  AvinyaType? avinya_type;
+  Name? name;
+
+  MainOrganization({
+    this.id,
+    this.description,
+    this.notes,
+    this.address,
+    this.avinya_type,
+    this.name,
+  });
+
+  factory MainOrganization.fromJson(Map<String, dynamic> json) {
+    return MainOrganization(
+      id: json['id'],
+      description: json['description'],
+      notes: json['notes'],
+      address: json['address'],
+      avinya_type: json['avinya_type'] != null
+          ? AvinyaType.fromJson(json['avinya_type'])
+          : null,
+      name: json['name'] != null ? Name.fromJson(json['name']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        if (description != null) 'description': description,
+        if (notes != null) 'notes': notes,
+        if (address != null) 'address': address,
+        if (avinya_type != null) 'avinya_type': avinya_type!.toJson(),
+        if (name != null) 'name': name!.toJson(),
+      };
+}
+
+class AvinyaType {
+  int? id;
+  String? name;
+
+  AvinyaType({this.id, this.name});
+
+  factory AvinyaType.fromJson(Map<String, dynamic> json) {
+    return AvinyaType(
+      id: json['id'],
+      name: json['name'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        if (name != null) 'name': name,
+      };
+}
+
+class Name {
+  String? nameEn;
+
+  Name({this.nameEn});
+
+  factory Name.fromJson(Map<String, dynamic> json) {
+    return Name(
+      nameEn: json['name_en'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (nameEn != null) 'name_en': nameEn,
+      };
+}
 
 class Person {
   int? id;
@@ -29,31 +105,32 @@ class Person {
   String? email;
   Address? permanent_address;
   Address? mailing_address;
+  MainOrganization? organization;
 
-  Person({
-    this.id,
-    this.record_type,
-    this.preferred_name,
-    this.full_name,
-    this.notes,
-    this.date_of_birth,
-    this.sex,
-    this.avinya_type_id,
-    this.passport_no,
-    this.permanent_address_id,
-    this.digital_id,
-    this.mailing_address_id,
-    this.nic_no,
-    this.id_no,
-    this.phone,
-    this.organization_id,
-    this.asgardeo_id,
-    this.jwt_sub_id,
-    this.jwt_email,
-    this.email,
-    this.permanent_address,
-    this.mailing_address,
-  });
+  Person(
+      {this.id,
+      this.record_type,
+      this.preferred_name,
+      this.full_name,
+      this.notes,
+      this.date_of_birth,
+      this.sex,
+      this.avinya_type_id,
+      this.passport_no,
+      this.permanent_address_id,
+      this.digital_id,
+      this.mailing_address_id,
+      this.nic_no,
+      this.id_no,
+      this.phone,
+      this.organization_id,
+      this.asgardeo_id,
+      this.jwt_sub_id,
+      this.jwt_email,
+      this.email,
+      this.permanent_address,
+      this.mailing_address,
+      this.organization});
 
   factory Person.fromJson(Map<String, dynamic> json) {
     return Person(
@@ -81,6 +158,9 @@ class Person {
           json['permanent_address'] != null ? json['permanent_address'] : {}),
       mailing_address: Address.fromJson(
           json['mailing_address'] != null ? json['mailing_address'] : {}),
+      organization: json['organization'] != null
+          ? MainOrganization.fromJson(json['organization'])
+          : null,
     );
   }
 
@@ -111,26 +191,48 @@ class Person {
           'permanent_address': permanent_address!.toJson(),
         if (mailing_address != null)
           'mailing_address': mailing_address!.toJson(),
+        if (organization != null) 'organization': organization!.toJson(),
       };
 }
 
-Future<List<Person>> fetchPersons() async {
+// Future<List<Person>> fetchPersons() async {
+//   final response = await http.get(
+//     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
+//     headers: <String, String>{
+//       'Content-Type': 'application/json; charset=UTF-8',
+//       'accept': 'application/json',
+//       'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+//     },
+//   );
+
+//   if (response.statusCode == 200) {
+//     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+//     List<Person> persons =
+//         await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
+//     return persons;
+//   } else {
+//     throw Exception('Failed to load Person');
+//   }
+// }
+
+Future<List<Person>> fetchPersons(
+    int organization_id, int avinya_type_id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
+    Uri.parse(
+        '${AppConfig.campusEnrollmentsBffApiUrl}/persons/$organization_id/$avinya_type_id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
-
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    List<Person> persons =
+    List<Person> activityAttendances =
         await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
-    return persons;
+    return activityAttendances;
   } else {
-    throw Exception('Failed to load Person');
+    throw Exception('Failed to get Daily Attendances Summary Data');
   }
 }
 

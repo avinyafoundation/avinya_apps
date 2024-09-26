@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:attendance/data/activity_attendance.dart';
 import 'package:attendance/data/organization.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gallery/avinya/enrollment/lib/data/person.dart';
+import 'package:gallery/avinya/enrollment/lib/screens/student_update_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:attendance/widgets/date_range_picker.dart';
 
-import 'attendance_summary_excel_report_export.dart';
+import 'person_data_excel_report.dart';
 
 enum AvinyaTypeId { Empower, IT, CS }
 
@@ -28,8 +30,8 @@ class Students extends StatefulWidget {
 }
 
 class _StudentsState extends State<Students> {
-  List<ActivityAttendance> _fetchedDailyAttendanceSummaryData = [];
-  List<ActivityAttendance> _fetchedExcelReportData = [];
+  List<Person> _fetchedPersonData = [];
+  List<Person> _fetchedExcelReportData = [];
   late Future<List<Organization>> _fetchBatchData;
   bool _isFetching = false;
   Organization? _selectedValue;
@@ -44,7 +46,7 @@ class _StudentsState extends State<Students> {
 
   late DataTableSource _data;
 
-  List<ActivityAttendance> filteredStudents = [];
+  List<Person> filteredStudents = [];
 
   //calendar specific variables
 
@@ -52,7 +54,7 @@ class _StudentsState extends State<Students> {
   void initState() {
     super.initState();
     _fetchBatchData = _loadBatchData();
-    // filteredStudents = _fetchedDailyAttendanceSummaryData;
+    // filteredStudents = _fetchedPersonData;
   }
 
   Future<List<Organization>> _loadBatchData() async {
@@ -60,8 +62,8 @@ class _StudentsState extends State<Students> {
   }
 
   void updateExcelState() {
-    AttendanceSummaryExcelReportExport(
-      fetchedDailyAttendanceSummaryData: _fetchedDailyAttendanceSummaryData,
+    PersonDataExcelReport(
+      fetchedPersonData: _fetchedPersonData,
       columnNames: columnNames,
       updateExcelState: updateExcelState,
       isFetching: _isFetching,
@@ -73,7 +75,7 @@ class _StudentsState extends State<Students> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _data = MyData(_fetchedDailyAttendanceSummaryData, updateSelected);
+    _data = MyData(_fetchedPersonData, updateSelected, context);
   }
 
   void updateSelected(int index, bool value, List<bool> selected) {
@@ -86,22 +88,22 @@ class _StudentsState extends State<Students> {
     List<DataColumn> ColumnNames = [];
 
     ColumnNames.add(DataColumn(
-        label: Text('Date',
+        label: Text('Name',
             style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
     ColumnNames.add(DataColumn(
-        label: Text('Daily Count',
+        label: Text('NIC Number',
             style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
     ColumnNames.add(DataColumn(
-        label: Text('Daily Attendance Percentage',
+        label: Text('Birth Date',
             style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
     ColumnNames.add(DataColumn(
-        label: Text('Late Count',
+        label: Text('Digital ID',
             style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
     ColumnNames.add(DataColumn(
-        label: Text('Late Attendance Percentage',
+        label: Text('Gender',
             style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
     ColumnNames.add(DataColumn(
-        label: Text('Total Count',
+        label: Text('Organization',
             style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
 
     return ColumnNames;
@@ -110,11 +112,11 @@ class _StudentsState extends State<Students> {
   // void searchStudents(String query) {
   //   setState(() {
   //     if (query.isEmpty) {
-  //       filteredStudents = _fetchedDailyAttendanceSummaryData;
+  //       filteredStudents = _fetchedPersonData;
   //     } else {
   //       query = query.toLowerCase();
 
-  //       filteredStudents = _fetchedDailyAttendanceSummaryData.where((student) {
+  //       filteredStudents = _fetchedPersonData.where((student) {
   //         final presentCountString =
   //             student.present_count?.toString().toLowerCase() ?? '';
   //         final attendancePercentageString =
@@ -130,24 +132,22 @@ class _StudentsState extends State<Students> {
   void searchStudents(String query) {
     setState(() {
       if (query.isEmpty) {
-        filteredStudents = _fetchedDailyAttendanceSummaryData;
+        filteredStudents = _fetchedPersonData;
       } else {
-        filteredStudents = _fetchedDailyAttendanceSummaryData.where((student) {
+        filteredStudents = _fetchedPersonData.where((student) {
           print('Searching for: $query');
-          print('Present count: ${student.present_count}');
-          print(
-              'Attendance percentage: ${student.present_attendance_percentage}');
+          print('Present count: ${student.preferred_name}');
+          print('Attendance percentage: ${student.nic_no}');
 
           final lowerCaseQuery = query.toLowerCase();
-          final presentCountString = student.present_count?.toString() ?? '';
-          final attendancePercentageString =
-              student.present_attendance_percentage?.toString() ?? '';
+          final presentCountString = student.preferred_name?.toString() ?? '';
+          final attendancePercentageString = student.nic_no?.toString() ?? '';
 
           return presentCountString.contains(lowerCaseQuery) ||
               attendancePercentageString.contains(lowerCaseQuery);
         }).toList();
       }
-      _data = MyData(filteredStudents, updateSelected);
+      _data = MyData(filteredStudents, updateSelected, context);
     });
   }
 
@@ -231,35 +231,25 @@ class _StudentsState extends State<Students> {
 
                               if (filteredAvinyaTypeIdValues
                                   .contains(_selectedAvinyaTypeId)) {
-                                _fetchedDailyAttendanceSummaryData =
-                                    await getDailyAttendanceSummaryReport(
-                                  newValue.id!,
-                                  avinyaTypeId[_selectedAvinyaTypeId]!,
-                                  newValue.organization_metadata[0].value!,
-                                  newValue.organization_metadata[1].value!,
-                                );
+                                _fetchedPersonData = await fetchPersons(
+                                    newValue.id!,
+                                    avinyaTypeId[_selectedAvinyaTypeId]!);
                               } else {
                                 _selectedAvinyaTypeId =
                                     filteredAvinyaTypeIdValues.first;
 
-                                _fetchedDailyAttendanceSummaryData =
-                                    await getDailyAttendanceSummaryReport(
-                                  newValue.id!,
-                                  avinyaTypeId[_selectedAvinyaTypeId]!,
-                                  newValue.organization_metadata[0].value!,
-                                  newValue.organization_metadata[1].value!,
-                                );
+                                _fetchedPersonData = await fetchPersons(
+                                    newValue.id!,
+                                    avinyaTypeId[_selectedAvinyaTypeId]!);
                               }
 
                               setState(() {
                                 _selectedValue = newValue;
                                 this._isFetching = false;
                                 _selectedAvinyaTypeId;
-                                _data = MyData(
-                                    _fetchedDailyAttendanceSummaryData,
-                                    updateSelected);
-                                filteredStudents =
-                                    _fetchedDailyAttendanceSummaryData;
+                                _data = MyData(_fetchedPersonData,
+                                    updateSelected, context);
+                                filteredStudents = _fetchedPersonData;
                               });
                             });
                       },
@@ -296,21 +286,15 @@ class _StudentsState extends State<Students> {
                             this._isFetching = true;
                           });
 
-                          _fetchedDailyAttendanceSummaryData =
-                              await getDailyAttendanceSummaryReport(
-                            _selectedValue!.id!,
-                            avinyaTypeId[value]!,
-                            _selectedValue!.organization_metadata[0].value!,
-                            _selectedValue!.organization_metadata[1].value!,
-                          );
+                          _fetchedPersonData = await fetchPersons(
+                              _selectedValue!.id!, avinyaTypeId[value]!);
 
                           setState(() {
                             _selectedAvinyaTypeId = value;
                             this._isFetching = false;
-                            _data = MyData(_fetchedDailyAttendanceSummaryData,
-                                updateSelected);
-                            filteredStudents =
-                                _fetchedDailyAttendanceSummaryData;
+                            _data = MyData(
+                                _fetchedPersonData, updateSelected, context);
+                            filteredStudents = _fetchedPersonData;
                           });
                         }),
                     SizedBox(
@@ -344,9 +328,8 @@ class _StudentsState extends State<Students> {
                         width: 25.0,
                         height: 30.0,
                         child: _selectedValue != null
-                            ? AttendanceSummaryExcelReportExport(
-                                fetchedDailyAttendanceSummaryData:
-                                    filteredStudents,
+                            ? PersonDataExcelReport(
+                                fetchedPersonData: filteredStudents,
                                 columnNames: columnNames,
                                 updateExcelState: updateExcelState,
                                 isFetching: _isFetching,
@@ -374,7 +357,7 @@ class _StudentsState extends State<Students> {
                       size: 50, // Customize the size of the indicator
                     ),
                   )
-                else if (_fetchedDailyAttendanceSummaryData.length > 0)
+                else if (_fetchedPersonData.length > 0)
                   ScrollConfiguration(
                     behavior:
                         ScrollConfiguration.of(context).copyWith(dragDevices: {
@@ -406,9 +389,10 @@ class _StudentsState extends State<Students> {
 }
 
 class MyData extends DataTableSource {
-  MyData(this._fetchedDailyAttendanceSummaryData, this.updateSelected);
+  final BuildContext context;
+  MyData(this._fetchedPersonData, this.updateSelected, this.context);
 
-  final List<ActivityAttendance> _fetchedDailyAttendanceSummaryData;
+  final List<Person> _fetchedPersonData;
   final Function(int, bool, List<bool>) updateSelected;
 
   @override
@@ -420,42 +404,51 @@ class MyData extends DataTableSource {
       );
     }
 
-    if (_fetchedDailyAttendanceSummaryData.length > 0 &&
-        index <= _fetchedDailyAttendanceSummaryData.length) {
+    if (_fetchedPersonData.length > 0 && index <= _fetchedPersonData.length) {
       List<DataCell> cells = List<DataCell>.filled(6, DataCell.empty);
 
       cells[0] = DataCell(Center(
-          child: Text(
-              _fetchedDailyAttendanceSummaryData[index - 1].sign_in_date!)));
+          child: Text(_fetchedPersonData[index - 1].preferred_name ?? "N/A")));
 
       cells[1] = DataCell(Center(
-          child: Text(_fetchedDailyAttendanceSummaryData[index - 1]
-              .present_count!
-              .toString())));
+          child:
+              Text(_fetchedPersonData[index - 1].nic_no?.toString() ?? "N/A")));
 
       cells[2] = DataCell(Center(
-          child: Text(_fetchedDailyAttendanceSummaryData[index - 1]
-                  .present_attendance_percentage!
-                  .toString() +
-              " %")));
+          child: Text(_fetchedPersonData[index - 1].date_of_birth?.toString() ??
+              "N/A")));
 
       cells[3] = DataCell(Center(
-          child: Text(_fetchedDailyAttendanceSummaryData[index - 1]
-              .late_count!
-              .toString())));
+          child: Text(
+              _fetchedPersonData[index - 1].digital_id?.toString() ?? "N/A")));
 
-      cells[4] = DataCell(Center(
-          child: Text(_fetchedDailyAttendanceSummaryData[index - 1]
-                  .late_attendance_percentage!
-                  .toString() +
-              " %")));
+      cells[4] = DataCell(
+          Center(child: Text(_fetchedPersonData[index - 1].sex ?? "N/A")));
 
       cells[5] = DataCell(Center(
-          child: Text(_fetchedDailyAttendanceSummaryData[index - 1]
-              .total_count
-              .toString())));
+        child: Text(
+          _fetchedPersonData[index - 1].organization?.avinya_type?.name ??
+              "N/A",
+        ),
+      ));
 
-      return DataRow(cells: cells);
+      // return DataRow(cells: cells);
+      return DataRow(
+        cells: cells,
+        onSelectChanged: (selected) {
+          if (selected != null && selected) {
+            // Navigate to the new screen with the id
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => StudentUpdateScreen(
+                  id: _fetchedPersonData[index - 1].id!, // Pass the ID
+                ),
+              ),
+            );
+          }
+        },
+      );
     }
 
     return null; // Return null for invalid index values
@@ -467,7 +460,7 @@ class MyData extends DataTableSource {
   @override
   int get rowCount {
     int count = 0;
-    count = _fetchedDailyAttendanceSummaryData.length + 1;
+    count = _fetchedPersonData.length + 1;
     return count;
   }
 
