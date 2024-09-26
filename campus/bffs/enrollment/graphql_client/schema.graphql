@@ -652,9 +652,6 @@ type Mutation {
   consumable_depletion(person_id: Int!, organization_id: Int!, date: String!, inventories: [Inventory!]!): [InventoryData!]
   update_consumable_replenishment(inventories: [Inventory!]!): [InventoryData!]
   update_consumable_depletion(inventories: [Inventory!]!): [InventoryData!]
-  add_vehicle_fuel_consumption(vehicle_fuel_consumption: VehicleFuelConsumption!): VehicleFuelConsumptionData
-  update_vehicle_fuel_consumption(vehicle_fuel_consumption: VehicleFuelConsumption!): VehicleFuelConsumptionData
-  delete_vehicle_fuel_consumption_by_id(id: Int): Int
 }
 
 input Organization {
@@ -909,11 +906,8 @@ type Query {
   consumable_weekly_report(organization_id: Int, from_date: String = "", to_date: String = ""): [InventoryData!]
   consumable_monthly_report(organization_id: Int, year: Int, month: Int): [InventoryData!]
   consumable_yearly_report(organization_id: Int, consumable_id: Int, year: Int): [InventoryData!]
-  vehicle_fuel_consumption_by_date(organization_id: Int, date: String = ""): [VehicleFuelConsumptionData!]
-  vehicle_fuel_consumption_by_id(id: Int): VehicleFuelConsumptionData
-  vehicles(organization_id: Int): [VehicleData!]
-  vehicle_reasons: [VehicleReasonMetaData!]
   persons(organization_id: Int, avinya_type_id: Int): [PersonData!]
+  person_by_id(id: Int): PersonData
 }
 
 input ResourceAllocation {
@@ -1043,51 +1037,6 @@ type VacancyData {
   description: String
   head_count: Int
   evaluation_criteria: [EvaluationCriteriaData!]
-}
-
-type VehicleData {
-  id: Int
-  vehicle_number: String
-  organization: OrganizationData
-  person_id: Int
-  person: PersonData
-  created: String
-  updated: String
-}
-
-input VehicleFuelConsumption {
-  record_type: String = "vehicle_fuel_consumption"
-  id: Int
-  vehicle_id: Int
-  date_time: String
-  reason_id: Int
-  starting_meter: String
-  ending_meter: String
-  distance: String
-  comment: String
-  created: String
-  updated: String
-}
-
-type VehicleFuelConsumptionData {
-  id: Int
-  vehicle_id: Int
-  vehicle: VehicleData
-  date_time: String
-  reason_id: Int
-  reason: VehicleReasonMetaData
-  starting_meter: String
-  ending_meter: String
-  distance: String
-  comment: String
-  created: String
-  updated: String
-}
-
-type VehicleReasonMetaData {
-  id: Int
-  reason: String
-  created: String
 }
 
 input WorkExperience {

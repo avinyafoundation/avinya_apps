@@ -33,7 +33,7 @@ final GraphqlClient globalDataClient = check new (GLOBAL_DATA_API_URL,
     }
 }
 service / on new http:Listener(9095) {
-    
+
     resource function get persons/[int organization_id]/[int avinya_type_id]() returns Person[]|error {
         GetPersonsResponse|graphql:ClientError getPersonsResponse = globalDataClient->getPersons(organization_id, avinya_type_id);
         if (getPersonsResponse is GetPersonsResponse) {
@@ -55,6 +55,24 @@ service / on new http:Listener(9095) {
             log:printError("Error while getting application", getPersonsResponse);
             return error("Error while getting application: " + getPersonsResponse.message() +
                 ":: Detail: " + getPersonsResponse.detail().toString());
+        }
+    }
+
+    resource function get  person_by_id/[int id]() returns Person|error {
+        GetPersonByIdResponse|graphql:ClientError getPersonByIdResponse = globalDataClient->getPersonById(id);
+        if (getPersonByIdResponse is GetPersonByIdResponse) {
+            Person|error person_by_id_record = getPersonByIdResponse.person_by_id.cloneWithType(Person);
+            if (person_by_id_record is Person) {
+                return person_by_id_record;
+            } else {
+                log:printError("Error while processing Application record received", person_by_id_record);
+                return error("Error while processing Application record received: " + person_by_id_record.message() +
+                    ":: Detail: " + person_by_id_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", getPersonByIdResponse);
+            return error("Error while creating application: " + getPersonByIdResponse.message() +
+                ":: Detail: " + getPersonByIdResponse.detail().toString());
         }
     }
 }
