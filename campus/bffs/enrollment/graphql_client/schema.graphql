@@ -166,9 +166,6 @@ input Address {
   street_address: String!
   phone: Int
   city_id: Int!
-  name_en: String!
-  name_ta: String
-  name_si: String
 }
 
 type AddressData {
@@ -652,6 +649,7 @@ type Mutation {
   consumable_depletion(person_id: Int!, organization_id: Int!, date: String!, inventories: [Inventory!]!): [InventoryData!]
   update_consumable_replenishment(inventories: [Inventory!]!): [InventoryData!]
   update_consumable_depletion(inventories: [Inventory!]!): [InventoryData!]
+  update_person(person: Person!, permanent_address: Address, mailing_address: Address): PersonData
 }
 
 input Organization {
@@ -733,6 +731,8 @@ input Person {
   academy_org_id: Int
   academy_org_name: String
   branch_code: String
+  created_by: Int
+  updated_by: Int
 }
 
 type PersonData {
@@ -769,6 +769,8 @@ type PersonData {
   academy_org_id: Int
   organization_id: Int
   branch_code: String
+  created_by: Int
+  updated_by: Int
 }
 
 type PlaceData {
@@ -908,6 +910,8 @@ type Query {
   consumable_yearly_report(organization_id: Int, consumable_id: Int, year: Int): [InventoryData!]
   persons(organization_id: Int, avinya_type_id: Int): [PersonData!]
   person_by_id(id: Int): PersonData
+  districts: [DistrictData!]
+  all_organizations: [OrganizationData!]
 }
 
 input ResourceAllocation {
