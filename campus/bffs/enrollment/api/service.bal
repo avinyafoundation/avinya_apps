@@ -58,7 +58,7 @@ service / on new http:Listener(9095) {
         }
     }
 
-    resource function get  person_by_id/[int id]() returns Person|error {
+    resource function get person_by_id/[int id]() returns Person|error {
         GetPersonByIdResponse|graphql:ClientError getPersonByIdResponse = globalDataClient->getPersonById(id);
         if (getPersonByIdResponse is GetPersonByIdResponse) {
             Person|error person_by_id_record = getPersonByIdResponse.person_by_id.cloneWithType(Person);
@@ -75,4 +75,29 @@ service / on new http:Listener(9095) {
                 ":: Detail: " + getPersonByIdResponse.detail().toString());
         }
     }
+
+    resource function get districts() returns District[]|error {
+        GetDistrictsResponse|graphql:ClientError getDistrictsResponse = globalDataClient->getDistricts();
+        if(getDistrictsResponse is GetDistrictsResponse) {
+            District[] districtsData = [];
+            foreach var district in getDistrictsResponse.districts {
+                District|error districtData = district.cloneWithType(District);
+                if(districtData is District) {
+                    districtsData.push(districtData);
+                } else {
+                    log:printError("Error while processing Application record received", districtData);
+                    return error("Error while processing Application record received: " + districtData.message() + 
+                        ":: Detail: " + districtData.detail().toString());
+                }
+            }
+
+            return districtsData;
+            
+        } else {
+            log:printError("Error while getting application", getDistrictsResponse);
+            return error("Error while getting application: " + getDistrictsResponse.message() + 
+                ":: Detail: " + getDistrictsResponse.detail().toString());
+        }
+    }
+
 }
