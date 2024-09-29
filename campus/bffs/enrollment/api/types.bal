@@ -9,6 +9,53 @@ public type Address record {
     string name_en?;
 };
 
+public type AvinyaType record {
+    int? level?;
+    string? name?;
+    boolean active?;
+    string? description?;
+    string? foundation_type?;
+    string? focus?;
+    int? id?;
+    string? record_type?;
+    string global_type?;
+};
+
+public type District record {
+    string name_en?;
+    string? name_ta?;
+    string? name_si?;
+    int? id?;
+    string? record_type?;
+    int? province_id?;
+    Province? province?;
+    City[]? cities?;
+};
+
+public type City record {
+    string? record_type?;
+    int? id?;
+    District? district?;
+    int? district_id?;
+    string name_en?;
+    string? name_ta?;
+    string? name_si?;
+    string? suburb_name_en?;
+    string? suburb_name_ta?;
+    string? suburb_name_si?;
+    string? postcode?;
+    decimal? latitude?;
+    decimal? longitude?;
+};
+
+public type Province record {
+    string? record_type?;
+    int? id?;
+    string name_en?;
+    string? name_ta?;
+    string? name_si?;
+};
+
 public type Person record {
     int? permanent_address_id?;
     string? street_address?;
@@ -43,6 +90,8 @@ public type Person record {
     string? preferred_name?;
     string? jwt_sub_id?;
     int? academy_org_id?;
+    int? created_by?;
+    int? updated_by?;
 };
 
 public type GetPersonsResponse record {|
@@ -193,4 +242,135 @@ public type GetPersonByIdResponse record {|
         int? academy_org_id;
         string? bank_branch;
     |}? person_by_id;
+|};
+
+public type UpdatePersonResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? preferred_name;
+        string? full_name;
+        string? date_of_birth;
+        string? sex;
+        string? asgardeo_id;
+        string? jwt_sub_id;
+        string? created;
+        string? updated;
+        string? jwt_email;
+        record {|
+            record {|
+                int? id;
+                record {|
+                    string name_en;
+                    string? name_si;
+                    string? name_ta;
+                |} name;
+            |} city;
+            string street_address;
+            int? phone;
+            int? id;
+        |}? permanent_address;
+        record {|
+            record {|
+                int? id;
+                record {|
+                    string name_en;
+                    string? name_si;
+                    string? name_ta;
+                |} name;
+            |} city;
+            string street_address;
+            int? phone;
+            int? id;
+        |}? mailing_address;
+        int? phone;
+        record {|
+            int? id;
+            string? description;
+            string? notes;
+            record {|
+                int? id;
+            |}? address;
+            record {|
+                int? id;
+                string? name;
+            |}? avinya_type;
+            record {|
+                string name_en;
+            |} name;
+        |}? organization;
+        record {|
+            int? id;
+            string? name;
+        |}? avinya_type;
+        string? notes;
+        string? nic_no;
+        string? passport_no;
+        string? id_no;
+        string? email;
+        string? street_address;
+        string? digital_id;
+        int? avinya_phone;
+        string? bank_name;
+        string? bank_account_number;
+        string? bank_account_name;
+        int? academy_org_id;
+        string? bank_branch;
+    |}? update_person;
+|};
+
+public type GetDistrictsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            record {|
+                string name_en;
+            |} name;
+        |} province;
+        record {|
+            string name_en;
+        |} name;
+        record {|
+            int? id;
+            record {|
+                string name_en;
+            |} name;
+        |}[] cities;
+    |}[] districts;
+|};
+
+public type GetAvinyaTypesResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        boolean active;
+        string? name;
+        string global_type;
+        string? foundation_type;
+        string? focus;
+        int? level;
+    |}[] avinya_types;
+|};
+
+public type GetAllOrganizationsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string name_en;
+        |} name;
+        record {|
+            int? id;
+            string street_address;
+        |}? address;
+        record {|
+            int? id;
+            string? name;
+        |}? avinya_type;
+        string? description;
+        int? phone;
+        string? notes;
+    |}[]? all_organizations;
 |};

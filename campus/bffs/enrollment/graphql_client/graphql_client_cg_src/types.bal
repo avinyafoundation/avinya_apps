@@ -70,13 +70,10 @@ public type ActivitySequencePlan record {
 
 public type Address record {
     string street_address?;
-    string? name_ta?;
     int? phone?;
-    string? name_si?;
     int? id?;
     string? record_type?;
     int city_id?;
-    string name_en?;
 };
 
 public type ApplicantConsent record {
@@ -297,6 +294,7 @@ public type Person record {
     string? digital_id?;
     string? sex?;
     string? passport_no?;
+    int? created_by?;
     string? record_type?;
     Address? mailing_address?;
     string? branch_code?;
@@ -307,6 +305,7 @@ public type Person record {
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    int? updated_by?;
     string? academy_org_name?;
     string? asgardeo_id?;
     string? updated?;
@@ -559,4 +558,135 @@ public type GetPersonByIdResponse record {|
         int? academy_org_id;
         string? bank_branch;
     |}? person_by_id;
+|};
+
+public type UpdatePersonResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? preferred_name;
+        string? full_name;
+        string? date_of_birth;
+        string? sex;
+        string? asgardeo_id;
+        string? jwt_sub_id;
+        string? created;
+        string? updated;
+        string? jwt_email;
+        record {|
+            record {|
+                int? id;
+                record {|
+                    string name_en;
+                    string? name_si;
+                    string? name_ta;
+                |} name;
+            |} city;
+            string street_address;
+            int? phone;
+            int? id;
+        |}? permanent_address;
+        record {|
+            record {|
+                int? id;
+                record {|
+                    string name_en;
+                    string? name_si;
+                    string? name_ta;
+                |} name;
+            |} city;
+            string street_address;
+            int? phone;
+            int? id;
+        |}? mailing_address;
+        int? phone;
+        record {|
+            int? id;
+            string? description;
+            string? notes;
+            record {|
+                int? id;
+            |}? address;
+            record {|
+                int? id;
+                string? name;
+            |}? avinya_type;
+            record {|
+                string name_en;
+            |} name;
+        |}? organization;
+        record {|
+            int? id;
+            string? name;
+        |}? avinya_type;
+        string? notes;
+        string? nic_no;
+        string? passport_no;
+        string? id_no;
+        string? email;
+        string? street_address;
+        string? digital_id;
+        int? avinya_phone;
+        string? bank_name;
+        string? bank_account_number;
+        string? bank_account_name;
+        int? academy_org_id;
+        string? bank_branch;
+    |}? update_person;
+|};
+
+public type GetDistrictsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            record {|
+                string name_en;
+            |} name;
+        |} province;
+        record {|
+            string name_en;
+        |} name;
+        record {|
+            int? id;
+            record {|
+                string name_en;
+            |} name;
+        |}[] cities;
+    |}[]? districts;
+|};
+
+public type GetAvinyaTypesResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        boolean active;
+        string? name;
+        string global_type;
+        string? foundation_type;
+        string? focus;
+        int? level;
+    |}[] avinya_types;
+|};
+
+public type GetAllOrganizationsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string name_en;
+        |} name;
+        record {|
+            int? id;
+            string street_address;
+        |}? address;
+        record {|
+            int? id;
+            string? name;
+        |}? avinya_type;
+        string? description;
+        int? phone;
+        string? notes;
+    |}[]? all_organizations;
 |};
