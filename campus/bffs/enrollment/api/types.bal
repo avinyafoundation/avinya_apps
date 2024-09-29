@@ -44,7 +44,7 @@ public type District record {
     string? name_si?;
     int? id?;
     string? record_type?;
-    int? province_id?;
+    int province_id?;
     Province? province?;
     City[]? cities?;
 };
@@ -53,7 +53,7 @@ public type City record {
     string? record_type?;
     int? id?;
     District? district?;
-    int? district_id?;
+    int district_id?;
     string name_en?;
     string? name_ta?;
     string? name_si?;
@@ -61,8 +61,8 @@ public type City record {
     string? suburb_name_ta?;
     string? suburb_name_si?;
     string? postcode?;
-    decimal? latitude?;
-    decimal? longitude?;
+    decimal latitude?;
+    decimal longitude?;
 };
 
 public type Province record {
