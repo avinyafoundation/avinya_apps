@@ -54,16 +54,11 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetDistrictsResponse>check performDataBinding(graphqlResponse, GetDistrictsResponse);
     }
-    remote isolated function getAvinyaTypes() returns GetAvinyaTypesResponse|graphql:ClientError {
-        string query = string `query getAvinyaTypes {avinya_types {id active name global_type foundation_type focus level}}`;
-        map<anydata> variables = {};
-        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <GetAvinyaTypesResponse>check performDataBinding(graphqlResponse, GetAvinyaTypesResponse);
-    }
     remote isolated function getAllOrganizations() returns GetAllOrganizationsResponse|graphql:ClientError {
         string query = string `query getAllOrganizations {all_organizations {id name {name_en} address {id street_address} avinya_type {id name} description phone notes}}`;
         map<anydata> variables = {};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetAllOrganizationsResponse>check performDataBinding(graphqlResponse, GetAllOrganizationsResponse);
     }
+
 }
