@@ -1,15 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import 'package:attendance/data/activity_attendance.dart';
 import 'package:attendance/data/organization.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gallery/avinya/enrollment/lib/data/person.dart';
 import 'package:gallery/avinya/enrollment/lib/screens/student_update_screen.dart';
-import 'package:intl/intl.dart';
-import 'package:gallery/data/campus_apps_portal.dart';
-import 'package:attendance/widgets/date_range_picker.dart';
-
 import 'person_data_excel_report.dart';
 
 enum AvinyaTypeId { Empower, IT, CS }

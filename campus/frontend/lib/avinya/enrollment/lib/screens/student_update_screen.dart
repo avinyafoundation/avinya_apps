@@ -15,25 +15,11 @@ class _StudentUpdateScreenState extends State<StudentUpdateScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Student Enrollment & Records",
-            style: TextStyle(color: Colors.black)),
+        title: Text("Student Profile", style: TextStyle(color: Colors.black)),
         backgroundColor: Color.fromARGB(255, 120, 224, 158),
       ),
-      body: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight:
-                MediaQuery.of(context).size.height, // Ensure minimum height
-          ),
-          child: IntrinsicHeight(
-            child: Column(
-              children: [
-                StudentUpdate(id: widget.id), // Pass the ID
-                // Add other widgets or buttons if needed
-              ],
-            ),
-          ),
-        ),
+      body: Container(
+        child: StudentUpdate(id: widget.id),
       ),
     );
   }
