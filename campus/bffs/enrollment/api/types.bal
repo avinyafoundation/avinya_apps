@@ -21,6 +21,23 @@ public type AvinyaType record {
     string global_type?;
 };
 
+public type Organization record {
+    int[]? parent_organizations?;
+    string? name_ta?;
+    int[]? child_organizations?;
+    int? phone?;
+    int? address_id?;
+    string? name_si?;
+    int? avinya_type_id?;
+    int? id?;
+    string? record_type?;
+    string name_en?;
+    string? description?;
+    string? notes?;
+    Address? address?;
+    AvinyaType? avinya_type?;
+};
+
 public type District record {
     string name_en?;
     string? name_ta?;
@@ -341,19 +358,6 @@ public type GetDistrictsResponse record {|
     |}[] districts;
 |};
 
-public type GetAvinyaTypesResponse record {|
-    map<json?> __extensions?;
-    record {|
-        int? id;
-        boolean active;
-        string? name;
-        string global_type;
-        string? foundation_type;
-        string? focus;
-        int? level;
-    |}[] avinya_types;
-|};
-
 public type GetAllOrganizationsResponse record {|
     map<json?> __extensions?;
     record {|
@@ -372,5 +376,5 @@ public type GetAllOrganizationsResponse record {|
         string? description;
         int? phone;
         string? notes;
-    |}[]? all_organizations;
+    |}[] all_organizations;
 |};
