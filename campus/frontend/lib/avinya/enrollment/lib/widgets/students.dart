@@ -7,12 +7,13 @@ import 'package:gallery/avinya/enrollment/lib/data/person.dart';
 import 'package:gallery/avinya/enrollment/lib/screens/student_update_screen.dart';
 import 'person_data_excel_report.dart';
 
-enum AvinyaTypeId { Empower, IT, CS }
+enum AvinyaTypeId { Empower, IT, CS, FutureEnrollees }
 
 const avinyaTypeId = {
   AvinyaTypeId.Empower: 37,
   AvinyaTypeId.IT: 10,
-  AvinyaTypeId.CS: 96
+  AvinyaTypeId.CS: 96,
+  AvinyaTypeId.FutureEnrollees: 103,
 };
 
 class Students extends StatefulWidget {
@@ -34,7 +35,8 @@ class _StudentsState extends State<Students> {
   List<AvinyaTypeId> filteredAvinyaTypeIdValues = [
     AvinyaTypeId.Empower,
     AvinyaTypeId.IT,
-    AvinyaTypeId.CS
+    AvinyaTypeId.CS,
+    AvinyaTypeId.FutureEnrollees
   ];
 
   List<String?> columnNames = [];
@@ -129,19 +131,24 @@ class _StudentsState extends State<Students> {
       if (query.isEmpty) {
         filteredStudents = _fetchedPersonData;
       } else {
+        final lowerCaseQuery = query.toLowerCase();
+
         filteredStudents = _fetchedPersonData.where((student) {
           print('Searching for: $query');
           print('Present count: ${student.preferred_name}');
-          print('Attendance percentage: ${student.nic_no}');
+          print('NIC number: ${student.nic_no}');
 
-          final lowerCaseQuery = query.toLowerCase();
-          final presentCountString = student.preferred_name?.toString() ?? '';
+          // Ensure preferred_name is not null and trimmed
+          final presentCountString =
+              student.preferred_name?.trim().toLowerCase() ?? '';
           final attendancePercentageString = student.nic_no?.toString() ?? '';
 
+          // Check for matching query
           return presentCountString.contains(lowerCaseQuery) ||
               attendancePercentageString.contains(lowerCaseQuery);
         }).toList();
       }
+
       _data = MyData(filteredStudents, updateSelected, context);
     });
   }
@@ -209,13 +216,15 @@ class _StudentsState extends State<Students> {
                                       .toString())
                                   .isBefore(DateTime.parse('2024-03-01'))) {
                                 filteredAvinyaTypeIdValues = [
-                                  AvinyaTypeId.Empower
+                                  AvinyaTypeId.Empower,
+                                  AvinyaTypeId.FutureEnrollees
                                 ];
                               } else {
                                 filteredAvinyaTypeIdValues = [
                                   AvinyaTypeId.Empower,
                                   AvinyaTypeId.IT,
-                                  AvinyaTypeId.CS
+                                  AvinyaTypeId.CS,
+                                  AvinyaTypeId.FutureEnrollees
                                 ];
                               }
 
@@ -262,7 +271,11 @@ class _StudentsState extends State<Students> {
                             .map(
                               (typeId) => DropdownMenuItem(
                                 value: typeId,
-                                child: Text(typeId.name.toUpperCase()),
+                                child: Text(
+                                  typeId.name == 'FutureEnrollees'
+                                      ? 'FUTURE ENROLLEES'
+                                      : typeId.name.toUpperCase(),
+                                ),
                               ),
                             )
                             .toList(),
