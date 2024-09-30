@@ -124,4 +124,32 @@ service / on new http:Listener(9095) {
         }
     }
 
+    resource function put update_person(@http:Payload Person person) returns Person|error {
+
+       Address permanent_address = <Address>person?.permanent_address;
+       Address mailing_address = <Address>person?.mailing_address;
+       anydata remove_permanent_address = person.remove("permanent_address");
+       anydata remove_mailing_address = person.remove("mailing_address");
+
+       log:printDebug(remove_permanent_address.toString());
+       log:printDebug(remove_mailing_address.toString());
+
+
+        UpdatePersonResponse|graphql:ClientError updatePersonResponse = globalDataClient->updatePerson(mailing_address,person,permanent_address);
+        if (updatePersonResponse is UpdatePersonResponse) {
+            Person|error person_record = updatePersonResponse.update_person.cloneWithType(Person);
+            if (person_record is Person) {
+                return person_record;
+            }
+            else {
+                return error("Error while processing Application record received: " + person_record.message() +
+                    ":: Detail: " + person_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while updating record", updatePersonResponse);
+            return error("Error while updating record: " + updatePersonResponse.message() +
+                ":: Detail: " + updatePersonResponse.detail().toString());
+        }
+    }
+
 }
