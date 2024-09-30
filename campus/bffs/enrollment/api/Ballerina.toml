@@ -1,8 +1,8 @@
 [package]
 org = "avinyafoundation"
 name = "enrollment_bff"
-version = "1.1.0"
-distribution = "2201.5.0"
+version = "2.1.0"
+distribution = "2201.8.7"
 
 [build-options]
 observabilityIncluded = true

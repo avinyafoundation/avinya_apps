@@ -71,6 +71,7 @@ public type ActivitySequencePlan record {
 public type Address record {
     string street_address?;
     int? phone?;
+    City? city?;
     int? id?;
     string? record_type?;
     int city_id?;
@@ -132,6 +133,21 @@ public type AvinyaType record {
     int? id?;
     string? record_type?;
     string global_type?;
+};
+
+public type City record {
+    string? suburb_name_en?;
+    string? suburb_name_si?;
+    string? name_ta?;
+    string? suburb_name_ta?;
+    anydata latitude?;
+    string? postcode?;
+    string? name_si?;
+    int? id?;
+    int? district_id?;
+    string? record_type?;
+    string name_en?;
+    anydata longitude?;
 };
 
 public type Consumable record {

@@ -7,6 +7,7 @@ public type Address record {
     string? record_type?;
     int city_id?;
     string name_en?;
+    City? city?;
 };
 
 public type AvinyaType record {

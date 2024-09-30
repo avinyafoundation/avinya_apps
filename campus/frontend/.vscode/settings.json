@@ -1,7 +1,8 @@
 {
-    "githubPullRequests.ignoredPullRequestBranches": [
-        "main"
-    ],
-    "editor.formatOnSave": true,
-    "editor.formatOnPaste": true
+  "githubPullRequests.ignoredPullRequestBranches": [
+    "main"
+  ],
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "dart.flutterSdkPath": ".fvm/versions/3.13.1"
 }
