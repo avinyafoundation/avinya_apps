@@ -166,6 +166,7 @@ input Address {
   street_address: String!
   phone: Int
   city_id: Int!
+  city: City
 }
 
 type AddressData {
@@ -307,6 +308,21 @@ type AvinyaTypeData {
   focus: String
   level: Int
   description: String
+}
+
+input City {
+  record_type: String = "city"
+  id: Int
+  district_id: Int
+  suburb_name_en: String
+  suburb_name_ta: String
+  suburb_name_si: String
+  postcode: String
+  name_en: String!
+  name_ta: String
+  name_si: String
+  latitude: Decimal!
+  longitude: Decimal!
 }
 
 type CityData {
