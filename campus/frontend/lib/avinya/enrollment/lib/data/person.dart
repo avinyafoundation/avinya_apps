@@ -1,10 +1,181 @@
 import 'dart:developer';
 
 //import 'package:ShoolManagementSystem/src/data/address.dart';
-import 'package:gallery/avinya/asset/lib/data/address.dart';
+import 'package:flutter/material.dart';
 import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+class MainOrganization {
+  int? id;
+  String? description;
+  String? notes;
+  Address? address;
+  AvinyaType? avinya_type;
+  Name? name;
+  String? phone;
+
+  MainOrganization(
+      {this.id,
+      this.description,
+      this.notes,
+      this.address,
+      this.avinya_type,
+      this.name,
+      this.phone});
+
+  factory MainOrganization.fromJson(Map<String, dynamic> json) {
+    return MainOrganization(
+      id: json['id'],
+      description: json['description'],
+      notes: json['notes'],
+      address:
+          json['address'] != null ? Address.fromJson(json['address']) : null,
+      avinya_type: json['avinya_type'] != null
+          ? AvinyaType.fromJson(json['avinya_type'])
+          : null,
+      name: json['name'] != null ? Name.fromJson(json['name']) : null,
+      phone: json['phone'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        if (description != null) 'description': description,
+        if (notes != null) 'notes': notes,
+        if (address != null) 'address': address!.toJson(),
+        if (avinya_type != null) 'avinya_type': avinya_type!.toJson(),
+        if (name != null) 'name': name!.toJson(),
+        if (phone != null) 'phone': phone,
+      };
+}
+
+class AvinyaType {
+  int? id;
+  String? name;
+  int? level;
+  bool? active;
+  String? foundationType;
+  String? focus;
+  String? globalType;
+
+  AvinyaType({
+    this.id,
+    this.name,
+    this.level,
+    this.active,
+    this.foundationType,
+    this.focus,
+    this.globalType,
+  });
+
+  factory AvinyaType.fromJson(Map<String, dynamic> json) {
+    return AvinyaType(
+      id: json['id'],
+      name: json['name'],
+      level: json['level'],
+      active: json['active'],
+      foundationType: json['foundation_type'],
+      focus: json['focus'],
+      globalType: json['global_type'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        if (name != null) 'name': name,
+        if (level != null) 'level': level,
+        if (active != null) 'active': active,
+        if (foundationType != null) 'foundation_type': foundationType,
+        if (focus != null) 'focus': focus,
+        if (globalType != null) 'global_type': globalType,
+      };
+}
+
+class Name {
+  String? name_en;
+
+  Name({this.name_en});
+
+  factory Name.fromJson(Map<String, dynamic> json) {
+    return Name(
+      name_en: json['name_en'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (name_en != null) 'name_en': name_en,
+      };
+}
+
+class City {
+  int? id;
+  Name? name;
+
+  City({this.id, this.name});
+
+  factory City.fromJson(Map<String, dynamic> json) {
+    return City(
+      id: json['id'],
+      name: Name.fromJson(json['name']),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        if (name != null) 'name': name?.toJson(),
+      };
+}
+
+class Address {
+  String? record_type;
+  int? id;
+  String? name_en;
+  String? street_address;
+  int? phone;
+  int? city_id;
+  int? district_id;
+  City? city;
+  District? district;
+
+  Address(
+      {this.id,
+      this.name_en,
+      this.street_address,
+      this.phone,
+      this.city_id,
+      this.district_id,
+      this.record_type,
+      this.city,
+      this.district});
+
+  factory Address.fromJson(Map<String, dynamic> json) {
+    return Address(
+      id: json['id'],
+      name_en: json['name_en'],
+      street_address: json['street_address'],
+      phone: json['phone'],
+      city_id: json['city_id'],
+      district_id: json['district_id'],
+      record_type: json['record_type'],
+      city: json['city'] != null ? City.fromJson(json['city']) : null,
+      district:
+          json['district'] != null ? District.fromJson(json['district']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        if (name_en != null) 'name_en': name_en,
+        if (street_address != null) 'street_address': street_address,
+        if (phone != null) 'phone': phone,
+        if (city_id != null) 'city_id': city_id,
+        if (district_id != null) 'district_id': district_id,
+        if (record_type != null) 'record_type': record_type,
+        if (city != null) 'city': city,
+        if (district != null) 'district': district,
+      };
+}
 
 class Person {
   int? id;
@@ -17,18 +188,30 @@ class Person {
   int? avinya_type_id;
   String? passport_no;
   int? permanent_address_id;
-  String? digital_id;
   int? mailing_address_id;
   String? nic_no;
   String? id_no;
   int? phone;
   int? organization_id;
+  MainOrganization? organization;
+  AvinyaType? avinya_type;
   String? asgardeo_id;
   String? jwt_sub_id;
   String? jwt_email;
   String? email;
   Address? permanent_address;
   Address? mailing_address;
+  String? street_address;
+  String? bank_account_number;
+  String? bank_name;
+  String? bank_branch;
+  String? digital_id;
+  String? bank_account_name;
+  int? avinya_phone;
+  int? academy_org_id;
+  String? created;
+  String? updated;
+  var parent_students = <Person>[];
 
   Person({
     this.id,
@@ -41,18 +224,30 @@ class Person {
     this.avinya_type_id,
     this.passport_no,
     this.permanent_address_id,
-    this.digital_id,
     this.mailing_address_id,
     this.nic_no,
     this.id_no,
     this.phone,
     this.organization_id,
+    this.organization,
+    this.avinya_type,
     this.asgardeo_id,
     this.jwt_sub_id,
     this.jwt_email,
     this.email,
     this.permanent_address,
     this.mailing_address,
+    this.street_address,
+    this.bank_account_number,
+    this.bank_name,
+    this.bank_branch,
+    this.digital_id,
+    this.bank_account_name,
+    this.avinya_phone,
+    this.academy_org_id,
+    this.created,
+    this.updated,
+    this.parent_students = const [],
   });
 
   factory Person.fromJson(Map<String, dynamic> json) {
@@ -67,7 +262,6 @@ class Person {
       avinya_type_id: json['avinya_type_id'],
       passport_no: json['passport_no'],
       permanent_address_id: json['permanent_address_id'],
-      digital_id: json['digital_id'],
       mailing_address_id: json['mailing_address_id'],
       nic_no: json['nic_no'],
       id_no: json['id_no'],
@@ -81,6 +275,25 @@ class Person {
           json['permanent_address'] != null ? json['permanent_address'] : {}),
       mailing_address: Address.fromJson(
           json['mailing_address'] != null ? json['mailing_address'] : {}),
+      street_address: json['street_address'],
+      bank_account_number: json['bank_account_number'],
+      bank_name: json['bank_name'],
+      bank_branch: json['bank_branch'],
+      digital_id: json['digital_id'],
+      bank_account_name: json['bank_account_name'],
+      avinya_phone: json['avinya_phone'],
+      academy_org_id: json['academy_org_id'],
+      organization: MainOrganization.fromJson(
+          json['organization'] != null ? json['organization'] : {}),
+      avinya_type: AvinyaType.fromJson(
+          json['avinya_type'] != null ? json['avinya_type'] : {}),
+      created: json['created'],
+      updated: json['updated'],
+      parent_students: json['parent_students'] != null
+          ? json['parent_students']
+              .map<Person>((eval_json) => Person.fromJson(eval_json))
+              .toList()
+          : [],
     );
   }
 
@@ -96,7 +309,6 @@ class Person {
         if (passport_no != null) 'passport_no': passport_no,
         if (permanent_address_id != null)
           'permanent_address_id': permanent_address_id,
-        if (digital_id != null) 'digital_id': digital_id,
         if (mailing_address_id != null)
           'mailing_address_id': mailing_address_id,
         if (nic_no != null) 'nic_no': nic_no,
@@ -111,33 +323,116 @@ class Person {
           'permanent_address': permanent_address!.toJson(),
         if (mailing_address != null)
           'mailing_address': mailing_address!.toJson(),
+        if (street_address != null) 'street_address': street_address,
+        if (bank_account_number != null)
+          'bank_account_number': bank_account_number,
+        if (bank_name != null) 'bank_name': bank_name,
+        if (bank_branch != null) 'bank_name': bank_branch,
+        if (digital_id != null) 'digital_id': digital_id,
+        if (bank_account_name != null) 'bank_account_name': bank_account_name,
+        if (avinya_phone != null) 'avinya_phone': avinya_phone,
+        if (academy_org_id != null) 'academy_org_id': academy_org_id,
+        if (organization != null) 'organization': organization!.toJson(),
+        if (avinya_type != null) 'avinya_type': avinya_type!.toJson(),
+        if (created != null) 'created': created,
+        if (updated != null) 'updated': updated,
+        'parent_students': [parent_students],
+      };
+
+  map(DataRow Function(dynamic evaluation) param0) {}
+}
+
+class District {
+  int? id;
+  Province? province;
+  List<City>? cities;
+  Name? name;
+
+  District({this.id, this.province, this.cities, this.name});
+
+  factory District.fromJson(Map<String, dynamic> json) {
+    return District(
+      id: json['id'],
+      province: Province.fromJson(json['province']),
+      cities:
+          (json['cities'] as List).map((city) => City.fromJson(city)).toList(),
+      name: Name.fromJson(json['name']),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        if (province != null) 'province': province?.toJson(),
+        if (cities != null)
+          'cities': cities!.map((city) => city.toJson()).toList(),
+        if (name != null) 'name': name?.toJson(),
       };
 }
 
-Future<List<Person>> fetchPersons() async {
+class Province {
+  int? id;
+  Name? name;
+
+  Province({this.id, this.name});
+
+  factory Province.fromJson(Map<String, dynamic> json) {
+    return Province(
+      id: json['id'],
+      name: Name.fromJson(json['name']),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        if (name != null) 'name': name?.toJson(),
+      };
+}
+
+// Future<List<Person>> fetchPersons() async {
+//   final response = await http.get(
+//     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
+//     headers: <String, String>{
+//       'Content-Type': 'application/json; charset=UTF-8',
+//       'accept': 'application/json',
+//       'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+//     },
+//   );
+
+//   if (response.statusCode == 200) {
+//     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+//     List<Person> persons =
+//         await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
+//     return persons;
+//   } else {
+//     throw Exception('Failed to load Person');
+//   }
+// }
+
+Future<List<Person>> fetchPersons(
+    int organization_id, int avinya_type_id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
+    Uri.parse(
+        '${AppConfig.campusEnrollmentsBffApiUrl}/persons/$organization_id/$avinya_type_id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
-
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    List<Person> persons =
+    List<Person> activityAttendances =
         await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
-    return persons;
+    return activityAttendances;
   } else {
-    throw Exception('Failed to load Person');
+    throw Exception('Failed to get Daily Attendances Summary Data');
   }
 }
 
-Future<Person> fetchPerson(String jwt_sub_id) async {
+Future<Person> fetchPerson(int? person_id) async {
   final response = await http.get(
     Uri.parse(
-        AppConfig.campusAssetsBffApiUrl + '/student_applicant/$jwt_sub_id'),
+        AppConfig.campusEnrollmentsBffApiUrl + '/person_by_id/$person_id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -145,7 +440,7 @@ Future<Person> fetchPerson(String jwt_sub_id) async {
     },
   );
 
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     Person person = Person.fromJson(json.decode(response.body));
     return person;
   } else {
@@ -155,7 +450,7 @@ Future<Person> fetchPerson(String jwt_sub_id) async {
 
 Future<Person> createPerson(Person person) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
+    Uri.parse(AppConfig.campusEnrollmentsBffApiUrl + '/student_applicant'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
@@ -174,7 +469,7 @@ Future<Person> createPerson(Person person) async {
 
 Future<http.Response> updatePerson(Person person) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
+    Uri.parse(AppConfig.campusEnrollmentsBffApiUrl + '/update_person'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
@@ -201,5 +496,65 @@ Future<http.Response> deletePerson(String id) async {
     return response;
   } else {
     throw Exception('Failed to delete Person.');
+  }
+}
+
+Future<List<AvinyaType>> fetchAvinyaTypes() async {
+  final response = await http.get(
+    Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/avinya_types'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<AvinyaType> activityAttendances = await resultsJson
+        .map<AvinyaType>((json) => AvinyaType.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception('Failed to get AvinyaType Data');
+  }
+}
+
+Future<List<MainOrganization>> fetchOrganizations() async {
+  final response = await http.get(
+    Uri.parse('${AppConfig.campusEnrollmentsBffApiUrl}/all_organizations'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<MainOrganization> activityAttendances = await resultsJson
+        .map<MainOrganization>((json) => MainOrganization.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception('Failed to get Org Data');
+  }
+}
+
+Future<List<District>> fetchDistricts() async {
+  final response = await http.get(
+    Uri.parse('${AppConfig.campusEnrollmentsBffApiUrl}/districts'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<District> activityAttendances = await resultsJson
+        .map<District>((json) => District.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception('Failed to get Org Data');
   }
 }
