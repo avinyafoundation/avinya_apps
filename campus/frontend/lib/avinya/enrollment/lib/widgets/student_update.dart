@@ -12,10 +12,14 @@ class StudentUpdate extends StatefulWidget {
 
 class _StudentUpdateState extends State<StudentUpdate> {
   late Person userPerson = Person();
+  List<District> districts = [];
+  List<MainOrganization> organizations = [];
+  List<AvinyaType> avinyaTypes = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? selectedSex;
   int? selectedCityId;
+  int? selectedDistrictId;
   int? selectedOrgId;
   int? selectedClassId;
   DateTime? selectedDateOfBirth;
@@ -23,7 +27,14 @@ class _StudentUpdateState extends State<StudentUpdate> {
   @override
   void initState() {
     super.initState();
-    getUserPerson();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    await getUserPerson();
+    await fetchDistrictList();
+    await fetchOrganizationList();
+    await fetchAvinyaTypeList();
   }
 
   Future<void> getUserPerson() async {
@@ -32,9 +43,31 @@ class _StudentUpdateState extends State<StudentUpdate> {
       userPerson = user;
       selectedSex = userPerson.sex;
       selectedCityId = userPerson.mailing_address?.city?.id;
+      selectedDistrictId = userPerson.mailing_address?.district?.id;
       selectedOrgId = userPerson.organization?.id;
       selectedClassId = userPerson.organization?.id;
       selectedDateOfBirth = DateTime.tryParse(userPerson.date_of_birth ?? '');
+    });
+  }
+
+  Future<void> fetchDistrictList() async {
+    List<District> districtList = await fetchDistricts();
+    setState(() {
+      districts = districtList;
+    });
+  }
+
+  Future<void> fetchOrganizationList() async {
+    List<MainOrganization> orgList = await fetchOrganizations();
+    setState(() {
+      organizations = orgList;
+    });
+  }
+
+  Future<void> fetchAvinyaTypeList() async {
+    List<AvinyaType> avinyaTypeList = await fetchAvinyaTypes();
+    setState(() {
+      avinyaTypes = avinyaTypeList;
     });
   }
 
@@ -90,6 +123,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
                             userPerson.mailing_address!.street_address = value;
                           }
                         }),
+                        _buildDistrictField(),
                         _buildCityField(),
                         const SizedBox(height: 20),
                         _buildSectionTitle(context, 'Digital Information'),
@@ -97,10 +131,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
                             (value) {
                           userPerson.digital_id = value;
                         }),
-                        _buildEditableField('Avinya Type',
-                            userPerson.avinya_type?.name ?? 'N/A', (value) {
-                          userPerson.avinya_type?.name = value;
-                        }),
+                        _buildAvinyaTypeField(),
                         _buildOrganizationField(),
                         const SizedBox(height: 20),
                         _buildSectionTitle(context, 'Bank Information'),
@@ -154,7 +185,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
               style: Theme.of(context).textTheme.headline6,
             ),
             Text(
-              userPerson.organization?.name?.nameEn ?? 'N/A',
+              userPerson.organization?.name?.name_en ?? 'N/A',
               style: Theme.of(context).textTheme.subtitle1,
             ),
           ],
@@ -238,6 +269,40 @@ class _StudentUpdateState extends State<StudentUpdate> {
     );
   }
 
+  Widget _buildDistrictField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 4,
+            child: Text(
+              'District',
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+          ),
+          Expanded(
+            flex: 6,
+            child: DropdownButtonFormField<int>(
+              value: selectedDistrictId,
+              items: _getDistrictOptions(),
+              onChanged: (value) {
+                setState(() {
+                  selectedDistrictId = value;
+                  userPerson.mailing_address?.district_id = value;
+                });
+              },
+              decoration: const InputDecoration(
+                labelText: 'Select District',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCityField() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -253,8 +318,12 @@ class _StudentUpdateState extends State<StudentUpdate> {
           Expanded(
             flex: 6,
             child: DropdownButtonFormField<int>(
-              value: selectedCityId,
-              items: _getCityOptions(),
+              value: selectedCityId != null &&
+                      _getCityOptions()
+                          .any((item) => item.value == selectedCityId)
+                  ? selectedCityId
+                  : null, // Set value to null if the selectedCityId is not in the list
+              items: _getCityOptions(), // Pass the city options
               onChanged: (value) {
                 setState(() {
                   selectedCityId = value;
@@ -273,13 +342,6 @@ class _StudentUpdateState extends State<StudentUpdate> {
   }
 
   Widget _buildOrganizationField() {
-    // Example list of organizations
-    List<Map<String, dynamic>> organizations = [
-      {'id': 1, 'name': 'Org 1'},
-      {'id': 2, 'name': 'Org 2'},
-      {'id': 18, 'name': 'Bandaragama - Group 1'}, // Make sure this is included
-    ];
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -298,8 +360,8 @@ class _StudentUpdateState extends State<StudentUpdate> {
                     ?.id, // Set the initial value to match one in the list
                 items: organizations.map((org) {
                   return DropdownMenuItem<int>(
-                    value: org['id'],
-                    child: Text(org['name']),
+                    value: org.id,
+                    child: Text(org.name?.name_en ?? 'Unknown'),
                   );
                 }).toList(),
                 onChanged: (int? newValue) {
@@ -318,47 +380,74 @@ class _StudentUpdateState extends State<StudentUpdate> {
     );
   }
 
+  Widget _buildAvinyaTypeField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 4,
+            child: Text(
+              'Avinya Type',
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+          ),
+          Expanded(
+              flex: 6,
+              child: DropdownButtonFormField<int>(
+                value: userPerson.avinya_type_id,
+                items: avinyaTypes.map((org) {
+                  return DropdownMenuItem<int>(
+                    value: org.id,
+                    child: Text(org.name ?? 'Unknown'),
+                  );
+                }).toList(),
+                onChanged: (int? newValue) {
+                  setState(() {
+                    userPerson.avinya_type_id =
+                        newValue; // Update the organization ID
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'Select Avinya Type',
+                  border: OutlineInputBorder(),
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
   String _formatDate(String? date) {
     if (date == null) return 'N/A';
     return DateFormat('d MMM, yyyy').format(DateTime.parse(date));
   }
 
-  List<DropdownMenuItem<int>> _getCityOptions() {
-    // You can replace this with the actual data source
-    List<Map<String, dynamic>> cities = [
-      {
-        'id': 690,
-        'name': {'name_en': 'Horana', 'name_si': 'හොරණ', 'name_ta': 'ஹொரன'}
-      },
-      {
-        'id': 1,
-        'name': {'name_en': 'Colombo', 'name_si': 'කොළඹ', 'name_ta': 'கொலம்பு'}
-      },
-      {
-        'id': 2,
-        'name': {'name_en': 'Galle', 'name_si': 'ගාලු', 'name_ta': 'கல்லி'}
-      },
-      {
-        'id': 3,
-        'name': {'name_en': 'Kandy', 'name_si': 'කාන්ඩි', 'name_ta': 'காண்டி'}
-      },
-      {
-        'id': 4,
-        'name': {
-          'name_en': 'Jaffna',
-          'name_si': 'යාපනය',
-          'name_ta': 'யாழ்ப்பாணம்'
-        }
-      },
-    ];
-
-    return cities.map((city) {
+  List<DropdownMenuItem<int>> _getDistrictOptions() {
+    return districts.map((district) {
       return DropdownMenuItem<int>(
-        value: city['id'] as int, // Explicitly cast to int
-        child: Text(city['name']['name_en']
-            as String), // Use the English name or adjust as needed
+        value: district.id as int,
+        child: Text(district.name?.name_en ?? 'Unknown'),
       );
     }).toList();
+  }
+
+  List<DropdownMenuItem<int>> _getCityOptions() {
+    if (selectedDistrictId != null) {
+      final selectedDistrict =
+          districts.firstWhere((district) => district.id == selectedDistrictId);
+
+      List<City>? cities = selectedDistrict.cities;
+
+      return cities!.map((city) {
+        return DropdownMenuItem<int>(
+          value: city.id as int, // Cast city ID to int
+          child: Text(city.name?.name_en as String), // Display the English name
+        );
+      }).toList();
+    } else {
+      return [];
+    }
   }
 
   List<DropdownMenuItem<int>> _getClassOptions() {
@@ -378,21 +467,6 @@ class _StudentUpdateState extends State<StudentUpdate> {
         .toList();
   }
 
-  List<DropdownMenuItem<int>> _getOrganizationOptions() {
-    List<Map<String, dynamic>> organizations = [
-      {'id': 1, 'name': 'Avinya Academy - Colombo'},
-      {'id': 2, 'name': 'Avinya Academy - Galle'},
-      {'id': 3, 'name': 'Avinya Academy - Jaffna'},
-    ];
-
-    return organizations
-        .map((org) => DropdownMenuItem(
-              value: org['id'] as int,
-              child: Text(org['name'] as String),
-            ))
-        .toList();
-  }
-
   Widget _buildSaveButton() {
     return Center(
       child: ElevatedButton(
@@ -400,7 +474,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
           if (_formKey.currentState!.validate()) {
             _formKey.currentState!.save();
             // Save userPerson changes
-            // savePerson(userPerson);
+            updatePerson(userPerson);
           }
         },
         child: const Text('Save Changes'),
