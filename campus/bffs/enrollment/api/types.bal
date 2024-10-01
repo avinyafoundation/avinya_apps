@@ -1,11 +1,11 @@
 public type Address record {
-    string street_address?;
+    string? street_address?;
     string? name_ta?;
     int? phone?;
     string? name_si?;
     int? id?;
     string? record_type?;
-    int city_id?;
+    int? city_id?;
     string name_en?;
     City? city?;
 };
@@ -32,7 +32,7 @@ public type Organization record {
     int? avinya_type_id?;
     int? id?;
     string? record_type?;
-    string name_en?;
+    string? name_en?;
     string? description?;
     string? notes?;
     Address? address?;
@@ -55,15 +55,15 @@ public type City record {
     int? id?;
     District? district?;
     int district_id?;
-    string name_en?;
+    string? name_en?;
     string? name_ta?;
     string? name_si?;
     string? suburb_name_en?;
     string? suburb_name_ta?;
     string? suburb_name_si?;
     string? postcode?;
-    decimal latitude?;
-    decimal longitude?;
+    anydata? latitude?;
+    anydata? longitude?;
 };
 
 public type Province record {
@@ -129,12 +129,12 @@ public type GetPersonsResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? permanent_address;
@@ -142,12 +142,12 @@ public type GetPersonsResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? mailing_address;
@@ -164,8 +164,14 @@ public type GetPersonsResponse record {|
                 string? name;
             |}? avinya_type;
             record {|
-                string name_en;
+                string? name_en;
             |} name;
+            record {|
+                int? id;
+                record {|
+                    string? name_en;
+                |} name;
+            |}[]? parent_organizations;
         |}? organization;
         record {|
             int? id;
@@ -204,12 +210,12 @@ public type GetPersonByIdResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? permanent_address;
@@ -217,12 +223,12 @@ public type GetPersonByIdResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? mailing_address;
@@ -239,8 +245,14 @@ public type GetPersonByIdResponse record {|
                 string? name;
             |}? avinya_type;
             record {|
-                string name_en;
+                string? name_en;
             |} name;
+            record {|
+                int? id;
+                record {|
+                    string? name_en;
+                |} name;
+            |}[]? parent_organizations;
         |}? organization;
         record {|
             int? id;
@@ -279,12 +291,12 @@ public type UpdatePersonResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? permanent_address;
@@ -292,12 +304,12 @@ public type UpdatePersonResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? mailing_address;
@@ -314,8 +326,14 @@ public type UpdatePersonResponse record {|
                 string? name;
             |}? avinya_type;
             record {|
-                string name_en;
+                string? name_en;
             |} name;
+            record {|
+                int? id;
+                record {|
+                    string? name_en;
+                |} name;
+            |}[]? parent_organizations;
         |}? organization;
         record {|
             int? id;
@@ -344,19 +362,32 @@ public type GetDistrictsResponse record {|
         record {|
             int? id;
             record {|
-                string name_en;
+                string? name_en;
             |} name;
         |} province;
         record {|
-            string name_en;
+            string? name_en;
         |} name;
         record {|
             int? id;
             record {|
-                string name_en;
+                string? name_en;
             |} name;
         |}[] cities;
     |}[] districts;
+|};
+
+public type GetAvinyaTypesResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        boolean active;
+        string? name;
+        string global_type;
+        string? foundation_type;
+        string? focus;
+        int? level;
+    |}[] avinya_types;
 |};
 
 public type GetAllOrganizationsResponse record {|
@@ -364,11 +395,11 @@ public type GetAllOrganizationsResponse record {|
     record {|
         int? id;
         record {|
-            string name_en;
+            string? name_en;
         |} name;
         record {|
             int? id;
-            string street_address;
+            string? street_address;
         |}? address;
         record {|
             int? id;

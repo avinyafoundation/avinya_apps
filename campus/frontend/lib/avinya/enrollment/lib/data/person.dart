@@ -14,6 +14,7 @@ class MainOrganization {
   AvinyaType? avinya_type;
   Name? name;
   String? phone;
+  List<ParentOrganization>? parent_organizations;
 
   MainOrganization(
       {this.id,
@@ -22,7 +23,8 @@ class MainOrganization {
       this.address,
       this.avinya_type,
       this.name,
-      this.phone});
+      this.phone,
+      this.parent_organizations});
 
   factory MainOrganization.fromJson(Map<String, dynamic> json) {
     return MainOrganization(
@@ -36,6 +38,12 @@ class MainOrganization {
           : null,
       name: json['name'] != null ? Name.fromJson(json['name']) : null,
       phone: json['phone'],
+      // Safely handle 'parent_organizations' being null
+      parent_organizations: json['parent_organizations'] != null
+          ? (json['parent_organizations'] as List)
+              .map((item) => ParentOrganization.fromJson(item))
+              .toList()
+          : [],
     );
   }
 
@@ -47,6 +55,11 @@ class MainOrganization {
         if (avinya_type != null) 'avinya_type': avinya_type!.toJson(),
         if (name != null) 'name': name!.toJson(),
         if (phone != null) 'phone': phone,
+        // Correctly handling 'parent_organizations' as a list
+        if (parent_organizations != null)
+          'parent_organizations': parent_organizations!
+              .map((parentOrg) => parentOrg.toJson())
+              .toList(),
       };
 }
 
@@ -105,6 +118,27 @@ class Name {
 
   Map<String, dynamic> toJson() => {
         if (name_en != null) 'name_en': name_en,
+      };
+}
+
+class ParentOrganization {
+  int? id;
+  Name? name;
+
+  ParentOrganization({this.id, this.name});
+
+  factory ParentOrganization.fromJson(Map<String, dynamic> json) {
+    return ParentOrganization(
+      id: json['id'],
+      name: json['name'] is Map<String, dynamic>
+          ? Name.fromJson(json['name'])
+          : null, // Handle cases where 'name' is not a Map
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        if (name != null) 'name': name?.toJson(),
       };
 }
 
@@ -516,6 +550,35 @@ Future<List<AvinyaType>> fetchAvinyaTypes() async {
     return activityAttendances;
   } else {
     throw Exception('Failed to get AvinyaType Data');
+  }
+}
+
+Future<List<MainOrganization>> fetchClasses(int? id) async {
+  final uri = Uri.parse(AppConfig.campusProfileBffApiUrl + '/organization')
+      .replace(queryParameters: {'id': id.toString()});
+
+  final response = await http.get(
+    uri,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    // Parse the response body as JSON
+    final Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+    // Extract the child_organizations_for_dashboard field
+    final List<MainOrganization> classes =
+        (jsonResponse['child_organizations_for_dashboard'] as List)
+            .map((data) => MainOrganization.fromJson(data))
+            .toList();
+
+    return classes;
+  } else {
+    throw Exception('Failed to load Classes');
   }
 }
 

@@ -58,6 +58,32 @@ class _StudentsState extends State<Students> {
     return await fetchOrganizationsByAvinyaType(86);
   }
 
+  Future<List<AvinyaTypeId>> fetchAvinyaTypes(newValue) async {
+    if (newValue != null) {
+      if (DateTime.parse(newValue.organization_metadata[1].value.toString())
+          .isBefore(DateTime.parse('2024-03-01'))) {
+        filteredAvinyaTypeIdValues = [
+          AvinyaTypeId.Empower,
+          AvinyaTypeId.IT,
+          AvinyaTypeId.CS,
+          AvinyaTypeId.FutureEnrollees
+        ];
+      } else {
+        filteredAvinyaTypeIdValues = [
+          AvinyaTypeId.Empower,
+          AvinyaTypeId.FutureEnrollees
+        ];
+      }
+    } else {
+      filteredAvinyaTypeIdValues = [
+        AvinyaTypeId.Empower,
+        AvinyaTypeId.FutureEnrollees
+      ];
+    }
+
+    return filteredAvinyaTypeIdValues;
+  }
+
   void updateExcelState() {
     PersonDataExcelReport(
       fetchedPersonData: _fetchedPersonData,
@@ -265,46 +291,70 @@ class _StudentsState extends State<Students> {
                     SizedBox(
                       width: 10,
                     ),
-                    DropdownButton(
-                        value: _selectedAvinyaTypeId,
-                        items: filteredAvinyaTypeIdValues
-                            .map(
-                              (typeId) => DropdownMenuItem(
-                                value: typeId,
-                                child: Text(
-                                  typeId.name == 'FutureEnrollees'
-                                      ? 'FUTURE ENROLLEES'
-                                      : typeId.name.toUpperCase(),
-                                ),
+                    FutureBuilder<List<AvinyaTypeId>>(
+                      future: fetchAvinyaTypes(_selectedValue),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Container(
+                            margin: EdgeInsets.only(top: 10),
+                            child: SpinKitCircle(
+                              color: Colors.deepPurpleAccent,
+                              size: 70,
+                            ),
+                          );
+                        } else if (snapshot.hasError) {
+                          return const Center(
+                            child: Text('Something went wrong...'),
+                          );
+                        } else if (!snapshot.hasData) {
+                          return const Center(
+                            child: Text('No Avinya Type found'),
+                          );
+                        }
+
+                        final avinyaTypeData = snapshot.data!;
+                        return DropdownButton<AvinyaTypeId>(
+                          value: _selectedAvinyaTypeId,
+                          items: avinyaTypeData.map((typeId) {
+                            return DropdownMenuItem<AvinyaTypeId>(
+                              value: typeId,
+                              child: Text(
+                                typeId.name == 'FutureEnrollees'
+                                    ? 'FUTURE ENROLLEES'
+                                    : typeId.name.toUpperCase(),
                               ),
-                            )
-                            .toList(),
-                        onChanged: (AvinyaTypeId? value) async {
-                          if (value == null) {
-                            return;
-                          }
+                            );
+                          }).toList(),
+                          onChanged: (AvinyaTypeId? value) async {
+                            if (value == null) {
+                              return;
+                            }
 
-                          if (_selectedValue == null ||
-                              _selectedValue!.organization_metadata.length ==
-                                  0) {
-                            return;
-                          }
+                            setState(() {
+                              _selectedAvinyaTypeId = value;
+                              _isFetching = true;
+                            });
 
-                          setState(() {
-                            this._isFetching = true;
-                          });
+                            if (avinyaTypeId[value] == 103 ||
+                                _selectedValue == null) {
+                              _fetchedPersonData =
+                                  await fetchPersons(-1, avinyaTypeId[value]!);
+                            } else {
+                              _fetchedPersonData = await fetchPersons(
+                                  _selectedValue!.id!, avinyaTypeId[value]!);
+                            }
 
-                          _fetchedPersonData = await fetchPersons(
-                              _selectedValue!.id!, avinyaTypeId[value]!);
-
-                          setState(() {
-                            _selectedAvinyaTypeId = value;
-                            this._isFetching = false;
-                            _data = MyData(
-                                _fetchedPersonData, updateSelected, context);
-                            filteredStudents = _fetchedPersonData;
-                          });
-                        }),
+                            setState(() {
+                              _isFetching = false;
+                              _data = MyData(
+                                  _fetchedPersonData, updateSelected, context);
+                              filteredStudents = _fetchedPersonData;
+                            });
+                          },
+                        );
+                      },
+                    ),
                     SizedBox(
                       width: 30,
                     ),
