@@ -11,6 +11,21 @@ class StudentsScreen extends StatefulWidget {
 class _StudentsScreenState extends State<StudentsScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Students();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Student Enrollment & Records",
+            style: TextStyle(color: Colors.black)),
+        backgroundColor: Color.fromARGB(255, 120, 224, 158),
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          child: Column(
+            children: [
+              Students(),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
