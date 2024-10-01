@@ -69,12 +69,12 @@ public type ActivitySequencePlan record {
 };
 
 public type Address record {
-    string street_address?;
+    string? street_address?;
     int? phone?;
     City? city?;
     int? id?;
     string? record_type?;
-    int city_id?;
+    int? city_id?;
 };
 
 public type ApplicantConsent record {
@@ -140,14 +140,14 @@ public type City record {
     string? suburb_name_si?;
     string? name_ta?;
     string? suburb_name_ta?;
-    anydata latitude?;
+    anydata? latitude?;
     string? postcode?;
     string? name_si?;
     int? id?;
     int? district_id?;
     string? record_type?;
-    string name_en?;
-    anydata longitude?;
+    string? name_en?;
+    anydata? longitude?;
 };
 
 public type Consumable record {
@@ -287,7 +287,7 @@ public type Organization record {
     int[]? parent_organizations?;
     int? phone?;
     int? id?;
-    string name_en?;
+    string? name_en?;
 };
 
 public type Person record {
@@ -443,12 +443,12 @@ public type GetPersonsResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? permanent_address;
@@ -456,12 +456,12 @@ public type GetPersonsResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? mailing_address;
@@ -478,8 +478,14 @@ public type GetPersonsResponse record {|
                 string? name;
             |}? avinya_type;
             record {|
-                string name_en;
+                string? name_en;
             |} name;
+            record {|
+                int? id;
+                record {|
+                    string? name_en;
+                |} name;
+            |}[]? parent_organizations;
         |}? organization;
         record {|
             int? id;
@@ -518,12 +524,12 @@ public type GetPersonByIdResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? permanent_address;
@@ -531,12 +537,12 @@ public type GetPersonByIdResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? mailing_address;
@@ -553,8 +559,14 @@ public type GetPersonByIdResponse record {|
                 string? name;
             |}? avinya_type;
             record {|
-                string name_en;
+                string? name_en;
             |} name;
+            record {|
+                int? id;
+                record {|
+                    string? name_en;
+                |} name;
+            |}[]? parent_organizations;
         |}? organization;
         record {|
             int? id;
@@ -593,12 +605,12 @@ public type UpdatePersonResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? permanent_address;
@@ -606,12 +618,12 @@ public type UpdatePersonResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? mailing_address;
@@ -628,8 +640,14 @@ public type UpdatePersonResponse record {|
                 string? name;
             |}? avinya_type;
             record {|
-                string name_en;
+                string? name_en;
             |} name;
+            record {|
+                int? id;
+                record {|
+                    string? name_en;
+                |} name;
+            |}[]? parent_organizations;
         |}? organization;
         record {|
             int? id;
@@ -658,16 +676,16 @@ public type GetDistrictsResponse record {|
         record {|
             int? id;
             record {|
-                string name_en;
+                string? name_en;
             |} name;
         |} province;
         record {|
-            string name_en;
+            string? name_en;
         |} name;
         record {|
             int? id;
             record {|
-                string name_en;
+                string? name_en;
             |} name;
         |}[] cities;
     |}[]? districts;
@@ -691,11 +709,11 @@ public type GetAllOrganizationsResponse record {|
     record {|
         int? id;
         record {|
-            string name_en;
+            string? name_en;
         |} name;
         record {|
             int? id;
-            string street_address;
+            string? street_address;
         |}? address;
         record {|
             int? id;

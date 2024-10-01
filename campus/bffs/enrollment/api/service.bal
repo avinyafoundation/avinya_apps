@@ -128,14 +128,19 @@ service / on new http:Listener(9095) {
 
        Address permanent_address = <Address>person?.permanent_address;
        Address mailing_address = <Address>person?.mailing_address;
+       City permanent_address_city = <City>permanent_address?.city;
+       City mailing_address_city = <City>mailing_address?.city;
+       anydata remove_permanent_address_city = permanent_address.remove("city");
+       anydata remove_mailing_address_city = mailing_address.remove("city");
        anydata remove_permanent_address = person.remove("permanent_address");
        anydata remove_mailing_address = person.remove("mailing_address");
-
        log:printDebug(remove_permanent_address.toString());
        log:printDebug(remove_mailing_address.toString());
+       log:printDebug(remove_permanent_address_city.toString());
+       log:printDebug(remove_mailing_address_city.toString());
 
 
-        UpdatePersonResponse|graphql:ClientError updatePersonResponse = globalDataClient->updatePerson(mailing_address,person,permanent_address);
+        UpdatePersonResponse|graphql:ClientError updatePersonResponse = globalDataClient->updatePerson(permanent_address_city,mailing_address,person,permanent_address,mailing_address_city);
         if (updatePersonResponse is UpdatePersonResponse) {
             Person|error person_record = updatePersonResponse.update_person.cloneWithType(Person);
             if (person_record is Person) {
