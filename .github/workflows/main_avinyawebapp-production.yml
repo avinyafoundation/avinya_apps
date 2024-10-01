@@ -45,7 +45,7 @@ jobs:
           flutter config --enable-web
 
       - name: Upload Flutter build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: flutter-build
           path: campus/frontend/build/web

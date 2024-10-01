@@ -15,6 +15,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
   List<District> districts = [];
   List<MainOrganization> organizations = [];
   List<AvinyaType> avinyaTypes = [];
+  List<MainOrganization> classes = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? selectedSex;
@@ -39,7 +40,9 @@ class _StudentUpdateState extends State<StudentUpdate> {
 
   Future<void> getUserPerson() async {
     Person user = await fetchPerson(widget.id);
+    classes = await fetchClasses(user.organization?.id);
     setState(() {
+      classes = classes;
       userPerson = user;
       selectedSex = userPerson.sex;
       selectedCityId = userPerson.mailing_address?.city?.id;

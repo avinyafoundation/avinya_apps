@@ -42,12 +42,12 @@ class _PersonDataExcelReportState extends State<PersonDataExcelReport> {
     if (_fetchedPersonData.length > 0) {
       if (columnNamesWithoutDates.isEmpty) {
         columnNamesWithoutDates.addAll([
-          "Date",
-          "Daily Count",
-          "Daily Attendance Percentage",
-          "Late Count",
-          "Late Attendance Percentage",
-          "Total Count"
+          "Preferred Name",
+          "NIC Number",
+          "Mobile Number",
+          "Digital ID",
+          "Date of Birth",
+          "Class"
         ]);
       }
 
@@ -104,7 +104,7 @@ class _PersonDataExcelReportState extends State<PersonDataExcelReport> {
       sheet
               .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0))
               .value =
-          "Avinya Foundation Daily Attendance Summary Report From ${widget.formattedStartDate} to ${widget.formattedEndDate}";
+          "Avinya Foundation Student Enrollment Records for ${widget.formattedEndDate}";
       sheet
           .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0))
           .cellStyle = organizationHeaderStyle;
@@ -112,6 +112,7 @@ class _PersonDataExcelReportState extends State<PersonDataExcelReport> {
       if (_fetchedPersonData.isNotEmpty) {
         for (var index = 0; index < _fetchedPersonData.length; index++) {
           var personData = _fetchedPersonData[index];
+          var org = personData.organization?.avinya_type?.name;
 
           sheet
               .cell(CellIndex.indexByColumnRow(
@@ -143,13 +144,13 @@ class _PersonDataExcelReportState extends State<PersonDataExcelReport> {
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 5, rowIndex: index + 2))
-              .value = personData.organization_id?.toString() ?? '';
+              .value = personData.organization?.description?.toString() ?? '';
         }
       }
 
       excel.save(
           fileName:
-              "DailyAttendanceSummaryReport_${widget.formattedStartDate}_to_${widget.formattedEndDate}.xlsx");
+              "Student Enrollment Records for ${widget.formattedEndDate}.xlsx");
     }
   }
 
