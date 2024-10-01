@@ -27,6 +27,8 @@ import 'package:pcti_feedback/app.dart' deferred as feedback;
 import 'package:pcti_feedback/routes.dart' as feedback_routes;
 import 'package:consumable/app.dart' deferred as consumable;
 import 'package:consumable/routes.dart' as consumable_routes;
+import 'package:enrollment/app.dart' deferred as enrollment;
+import 'package:enrollment/routes.dart' as enrollment_routes;
 
 typedef PathWidgetBuilder = Widget Function(BuildContext, String?);
 
@@ -116,6 +118,16 @@ class RouteConfiguration {
             assetadmin.loadLibrary,
             () => assetadmin
                 .AssetAdminSystem()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),
+    Path(
+      r'^' + enrollment_routes.enrollmentRoute,
+      (context, match) => StudyWrapper(
+        study: DeferredWidget(
+            enrollment.loadLibrary,
+            () => enrollment
+                .EnrollmentSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),

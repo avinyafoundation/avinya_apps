@@ -1,5 +1,5 @@
-import ballerina/http;
 import ballerina/graphql;
+import ballerina/http;
 import ballerina/log;
 
 public function initClientConfig() returns ConnectionConfig {
@@ -883,4 +883,136 @@ service / on new http:Listener(9094) {
                 ":: Detail: " + getConsumableYearlyReportResponse.detail().toString());
         }
     }
+
+    resource function post add_vehicle_fuel_consumption(@http:Payload VehicleFuelConsumption vehicleFuelConsumption) returns VehicleFuelConsumption|error {
+        AddVehicleFuelConsumptionResponse|graphql:ClientError addVehicleFuelConsumption = globalDataClient->addVehicleFuelConsumption(vehicleFuelConsumption);
+        if (addVehicleFuelConsumption is AddVehicleFuelConsumptionResponse) {
+            VehicleFuelConsumption|error vehicle_fuel_consumption_record = addVehicleFuelConsumption.add_vehicle_fuel_consumption.cloneWithType(VehicleFuelConsumption);
+            if (vehicle_fuel_consumption_record is VehicleFuelConsumption) {
+                return vehicle_fuel_consumption_record;
+            } else {
+                log:printError("Error while processing Application record received", vehicle_fuel_consumption_record);
+                return error("Error while processing Application record received: " + vehicle_fuel_consumption_record.message() +
+                    ":: Detail: " + vehicle_fuel_consumption_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", addVehicleFuelConsumption);
+            return error("Error while creating application: " + addVehicleFuelConsumption.message() +
+                ":: Detail: " + addVehicleFuelConsumption.detail().toString());
+        }
+    }
+
+    resource function get vehicle_fuel_consumption_by_date/[int organization_id]/[string date]() returns VehicleFuelConsumption[]|error {
+        GetVehicleFuelConsumptionByDateResponse|graphql:ClientError getVehicleFuelConsumptionByDateResponse = globalDataClient->getVehicleFuelConsumptionByDate(date, organization_id);
+        if (getVehicleFuelConsumptionByDateResponse is GetVehicleFuelConsumptionByDateResponse) {
+            VehicleFuelConsumption[] vehicle_fuel_consumption_by_date_datas = [];
+            foreach var vehicle_fuel_consumption_by_data in getVehicleFuelConsumptionByDateResponse.vehicle_fuel_consumption_by_date {
+                VehicleFuelConsumption|error vehicle_fuel_consumption_by_data_record = vehicle_fuel_consumption_by_data.cloneWithType(VehicleFuelConsumption);
+                if (vehicle_fuel_consumption_by_data_record is VehicleFuelConsumption) {
+                    vehicle_fuel_consumption_by_date_datas.push(vehicle_fuel_consumption_by_data_record);
+                } else {
+                    log:printError("Error while processing Application record received", vehicle_fuel_consumption_by_data_record);
+                    return error("Error while processing Application record received: " + vehicle_fuel_consumption_by_data_record.message() +
+                        ":: Detail: " + vehicle_fuel_consumption_by_data_record.detail().toString());
+                }
+            }
+
+            return vehicle_fuel_consumption_by_date_datas;
+
+        } else {
+            log:printError("Error while getting application", getVehicleFuelConsumptionByDateResponse);
+            return error("Error while getting application: " + getVehicleFuelConsumptionByDateResponse.message() +
+                ":: Detail: " + getVehicleFuelConsumptionByDateResponse.detail().toString());
+        }
+    }
+    resource function get vehicle_fuel_consumption_by_id/[int id]() returns VehicleFuelConsumption|error {
+        GetVehicleFuelConsumptionByIdResponse|graphql:ClientError getVehicleFuelConsumptionByIdResponse = globalDataClient->getVehicleFuelConsumptionById(id);
+        if (getVehicleFuelConsumptionByIdResponse is GetVehicleFuelConsumptionByIdResponse) {
+            VehicleFuelConsumption|error vehicle_fuel_consumption_by_id_record = getVehicleFuelConsumptionByIdResponse.vehicle_fuel_consumption_by_id.cloneWithType(VehicleFuelConsumption);
+            if (vehicle_fuel_consumption_by_id_record is VehicleFuelConsumption) {
+                return vehicle_fuel_consumption_by_id_record;
+            } else {
+                log:printError("Error while processing Application record received", vehicle_fuel_consumption_by_id_record);
+                return error("Error while processing Application record received: " + vehicle_fuel_consumption_by_id_record.message() +
+                    ":: Detail: " + vehicle_fuel_consumption_by_id_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", getVehicleFuelConsumptionByIdResponse);
+            return error("Error while creating application: " + getVehicleFuelConsumptionByIdResponse.message() +
+                ":: Detail: " + getVehicleFuelConsumptionByIdResponse.detail().toString());
+        }
+    }
+
+    resource function put update_vehicle_fuel_consumption(@http:Payload VehicleFuelConsumption vehicleFuelConsumption) returns VehicleFuelConsumption|error {
+        UpdateVehicleFuelConsumptionResponse|graphql:ClientError updateVehicleFuelConsumptionResponse = globalDataClient->updateVehicleFuelConsumption(vehicleFuelConsumption);
+        if (updateVehicleFuelConsumptionResponse is UpdateVehicleFuelConsumptionResponse) {
+            VehicleFuelConsumption|error vehicle_fuel_consumption_record = updateVehicleFuelConsumptionResponse.update_vehicle_fuel_consumption.cloneWithType(VehicleFuelConsumption);
+            if (vehicle_fuel_consumption_record is VehicleFuelConsumption) {
+                return vehicle_fuel_consumption_record;
+            }
+            else {
+                return error("Error while processing Application record received: " + vehicle_fuel_consumption_record.message() +
+                    ":: Detail: " + vehicle_fuel_consumption_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating evaluation", updateVehicleFuelConsumptionResponse);
+            return error("Error while creating evaluation: " + updateVehicleFuelConsumptionResponse.message() +
+                ":: Detail: " + updateVehicleFuelConsumptionResponse.detail().toString());
+        }
+    }
+
+    resource function delete vehicle_fuel_consumption_by_id/[int id]() returns json|error {
+        json|error delete_count = globalDataClient->deleteVehicleFuelConsumptionById(id);
+        return delete_count;
+    }
+ 
+    
+    resource function get  vehicles/[int organization_id]() returns Vehicle[]|error {
+        GetVehiclesResponse|graphql:ClientError getVehiclesResponse= globalDataClient->getVehicles(organization_id);
+        if (getVehiclesResponse is GetVehiclesResponse) {
+            Vehicle[] vehicle_datas = [];
+            foreach var vehicle_data in getVehiclesResponse.vehicles {
+                Vehicle|error vehicle_data_record = vehicle_data.cloneWithType(Vehicle);
+                if (vehicle_data_record is Vehicle) {
+                    vehicle_datas.push(vehicle_data_record);
+                } else {
+                    log:printError("Error while processing Application record received", vehicle_data_record);
+                    return error("Error while processing Application record received: " + vehicle_data_record.message() +
+                        ":: Detail: " + vehicle_data_record.detail().toString());
+                }
+            }
+
+            return vehicle_datas;
+
+        } else {
+            log:printError("Error while getting application", getVehiclesResponse);
+            return error("Error while getting application: " + getVehiclesResponse.message() +
+                ":: Detail: " + getVehiclesResponse.detail().toString());
+        }
+    }
+
+    resource function get vehicle_reasons() returns VehicleReasonMetadata[]|error {
+        GetVehicleReasonsResponse|graphql:ClientError getVehicleReasonsResponse = globalDataClient->getVehicleReasons();
+        if(getVehicleReasonsResponse is GetVehicleReasonsResponse) {
+            VehicleReasonMetadata[] vehicleReasonsMetaData = [];
+            foreach var vehicle_reason in getVehicleReasonsResponse.vehicle_reasons {
+                VehicleReasonMetadata|error vehicleReasonMetaData = vehicle_reason.cloneWithType(VehicleReasonMetadata);
+                if(vehicleReasonMetaData is VehicleReasonMetadata) {
+                    vehicleReasonsMetaData.push(vehicleReasonMetaData);
+                } else {
+                    log:printError("Error while processing Application record received", vehicleReasonMetaData);
+                    return error("Error while processing Application record received: " + vehicleReasonMetaData.message() + 
+                        ":: Detail: " + vehicleReasonMetaData.detail().toString());
+                }
+            }
+
+            return vehicleReasonsMetaData;
+            
+        } else {
+            log:printError("Error while getting application", getVehicleReasonsResponse);
+            return error("Error while getting application: " + getVehicleReasonsResponse.message() + 
+                ":: Detail: " + getVehicleReasonsResponse.detail().toString());
+        }
+    }
+    
 }

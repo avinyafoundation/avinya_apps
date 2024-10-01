@@ -23,6 +23,7 @@ import 'package:pcti_notes/routes.dart' as campus_pcti_routes;
 import 'package:pcti_notes_admin/routes.dart' as campus_pcti_admin;
 import 'package:pcti_feedback/routes.dart' as feedback_routes;
 import 'package:consumable/routes.dart' as consumable_routes;
+import 'package:enrollment/routes.dart' as enrollment_routes;
 
 const _horizontalPadding = 32.0;
 const _carouselItemMargin = 8.0;
@@ -61,26 +62,28 @@ class HomePage extends StatelessWidget {
           studyRoute: attendance_routes.attendanceRoute,
         ),
       ),
-      //2023-04-19 commented for prod and stag branches
-      // Padding(
-      //   padding: const EdgeInsets.all(10.0),
-      //   child: _CarouselCard(
-      //     //2023-03-09 lahiru added for campus_pcti
-      //     demo: studyDemos['campuspctiApp'],
-      //     asset: const AssetImage(
-      //       'assets/images/pcti_notes.png',
-      //       // package: 'flutter_gallery_assets',
-      //     ),
-      //     assetColor: const Color(0xFFFFFFFF),
-      //     // assetDark: const AssetImage(
-      //     //   'assets/studies/rally_card_dark.png',
-      //     //   package: 'flutter_gallery_assets',
-      //     // ),
-      //     //assetDarkColor: const Color(0xFF253538),
-      //     textColor: Colors.black,
-      //     studyRoute: campus_pcti_routes.campuspctiRoute,
-      //   ),
-      // ),
+
+      if (campusAppsPortalInstance.isTeacher ||
+          campusAppsPortalInstance.isFoundation)
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: _CarouselCard(
+            //2023-03-09 lahiru added for campus_pcti
+            demo: studyDemos['enrollmentApp'],
+            asset: const AssetImage(
+              'assets/images/pcti_notes.png',
+              // package: 'flutter_gallery_assets',
+            ),
+            assetColor: const Color(0xFFFFFFFF),
+            // assetDark: const AssetImage(
+            //   'assets/studies/rally_card_dark.png',
+            //   package: 'flutter_gallery_assets',
+            // ),
+            //assetDarkColor: const Color(0xFF253538),
+            textColor: Colors.black,
+            studyRoute: enrollment_routes.enrollmentRoute,
+          ),
+        ),
       // Padding(
       //   padding: const EdgeInsets.all(10.0),
       //   child: _CarouselCard(
