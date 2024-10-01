@@ -40,7 +40,11 @@ class _StudentUpdateState extends State<StudentUpdate> {
 
   Future<void> getUserPerson() async {
     Person user = await fetchPerson(widget.id);
-    classes = await fetchClasses(user.organization?.id);
+    classes = await fetchClasses(
+        (user.organization?.parent_organizations?.isNotEmpty ?? false)
+            ? user.organization?.parent_organizations?.first.id
+            : null);
+
     setState(() {
       classes = classes;
       userPerson = user;
@@ -454,18 +458,11 @@ class _StudentUpdateState extends State<StudentUpdate> {
   }
 
   List<DropdownMenuItem<int>> _getClassOptions() {
-    List<Map<String, dynamic>> classes = [
-      {'id': 18, 'description': 'Leopards'},
-      {'id': 2, 'description': 'Dolphine'},
-      {'id': 3, 'description': 'Bees'},
-      {'id': 4, 'description': 'Elephents'},
-    ];
-
     return classes
         .map((classe) => DropdownMenuItem<int>(
-              value: classe['id'] as int, // Explicitly cast to int
-              child: Text(
-                  classe['description'] as String), // Explicitly cast to String
+              value: classe.id, // Access id directly from MainOrganization
+              child: Text(classe.description ??
+                  'No description'), // Handle null description
             ))
         .toList();
   }
