@@ -519,6 +519,35 @@ Future<List<AvinyaType>> fetchAvinyaTypes() async {
   }
 }
 
+Future<List<MainOrganization>> fetchClasses(int? id) async {
+  final uri = Uri.parse(AppConfig.campusProfileBffApiUrl + '/organization')
+      .replace(queryParameters: {'id': id.toString()});
+
+  final response = await http.get(
+    uri,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    // Parse the response body as JSON
+    final Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+    // Extract the child_organizations_for_dashboard field
+    final List<MainOrganization> classes =
+        (jsonResponse['child_organizations_for_dashboard'] as List)
+            .map((data) => MainOrganization.fromJson(data))
+            .toList();
+
+    return classes;
+  } else {
+    throw Exception('Failed to load Classes');
+  }
+}
+
 Future<List<MainOrganization>> fetchOrganizations() async {
   final response = await http.get(
     Uri.parse('${AppConfig.campusEnrollmentsBffApiUrl}/all_organizations'),
