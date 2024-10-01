@@ -163,15 +163,15 @@ type ActivitySequencePlanData {
 input Address {
   record_type: String = "address"
   id: Int
-  street_address: String!
+  street_address: String
   phone: Int
-  city_id: Int!
+  city_id: Int
   city: City
 }
 
 type AddressData {
   city: CityData!
-  street_address: String!
+  street_address: String
   phone: Int
   id: Int
 }
@@ -318,11 +318,11 @@ input City {
   suburb_name_ta: String
   suburb_name_si: String
   postcode: String
-  name_en: String!
+  name_en: String
   name_ta: String
   name_si: String
-  latitude: Decimal!
-  longitude: Decimal!
+  latitude: Decimal
+  longitude: Decimal
 }
 
 type CityData {
@@ -602,7 +602,7 @@ type InventoryData {
 }
 
 type LocalizedName {
-  name_en: String!
+  name_en: String
   name_ta: String
   name_si: String
 }
@@ -665,7 +665,7 @@ type Mutation {
   consumable_depletion(person_id: Int!, organization_id: Int!, date: String!, inventories: [Inventory!]!): [InventoryData!]
   update_consumable_replenishment(inventories: [Inventory!]!): [InventoryData!]
   update_consumable_depletion(inventories: [Inventory!]!): [InventoryData!]
-  update_person(person: Person!, permanent_address: Address, mailing_address: Address): PersonData
+  update_person(person: Person!, permanent_address: Address, permanent_address_city: City, mailing_address: Address, mailing_address_city: City): PersonData
 }
 
 input Organization {
@@ -679,7 +679,7 @@ input Organization {
   phone: Int
   description: String
   notes: String
-  name_en: String!
+  name_en: String
   name_ta: String
   name_si: String
 }
