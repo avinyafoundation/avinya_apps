@@ -3106,13 +3106,9 @@
                         {
                             "name": "street_address",
                             "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "String",
-                                    "ofType": null
-                                }
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
                             },
                             "defaultValue": null
                         },
@@ -3128,13 +3124,9 @@
                         {
                             "name": "city_id",
                             "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "Int",
-                                    "ofType": null
-                                }
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
                             },
                             "defaultValue": null
                         },
@@ -5891,13 +5883,9 @@
                             "name": "name_en",
                             "args": [],
                             "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "String",
-                                    "ofType": null
-                                }
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
@@ -6242,13 +6230,9 @@
                         {
                             "name": "name_en",
                             "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "String",
-                                    "ofType": null
-                                }
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
                             },
                             "defaultValue": null
                         },
@@ -6273,26 +6257,18 @@
                         {
                             "name": "latitude",
                             "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "Decimal",
-                                    "ofType": null
-                                }
+                                "kind": "SCALAR",
+                                "name": "Decimal",
+                                "ofType": null
                             },
                             "defaultValue": null
                         },
                         {
                             "name": "longitude",
                             "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "Decimal",
-                                    "ofType": null
-                                }
+                                "kind": "SCALAR",
+                                "name": "Decimal",
+                                "ofType": null
                             },
                             "defaultValue": null
                         }
@@ -8660,10 +8636,28 @@
                                     "defaultValue": null
                                 },
                                 {
+                                    "name": "permanent_address_city",
+                                    "type": {
+                                        "kind": "INPUT_OBJECT",
+                                        "name": "City",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
                                     "name": "mailing_address",
                                     "type": {
                                         "kind": "INPUT_OBJECT",
                                         "name": "Address",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "mailing_address_city",
+                                    "type": {
+                                        "kind": "INPUT_OBJECT",
+                                        "name": "City",
                                         "ofType": null
                                     },
                                     "defaultValue": null
@@ -9824,13 +9818,9 @@
                         {
                             "name": "name_en",
                             "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "String",
-                                    "ofType": null
-                                }
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
                             },
                             "defaultValue": null
                         },
@@ -11160,13 +11150,9 @@
                             "name": "street_address",
                             "args": [],
                             "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "String",
-                                    "ofType": null
-                                }
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
