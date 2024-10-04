@@ -392,6 +392,17 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "current_job",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "created_by",
                             "args": [],
                             "type": {
@@ -8670,6 +8681,49 @@
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
+                        },
+                        {
+                            "name": "insert_person",
+                            "args": [
+                                {
+                                    "name": "person",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "INPUT_OBJECT",
+                                            "name": "Person",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "mailing_address",
+                                    "type": {
+                                        "kind": "INPUT_OBJECT",
+                                        "name": "Address",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "mailing_address_city",
+                                    "type": {
+                                        "kind": "INPUT_OBJECT",
+                                        "name": "City",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "PersonData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
                         }
                     ],
                     "inputFields": null,
@@ -9173,6 +9227,15 @@
                         },
                         {
                             "name": "branch_code",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "current_job",
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "String",

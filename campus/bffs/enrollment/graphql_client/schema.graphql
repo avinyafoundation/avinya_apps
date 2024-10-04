@@ -666,6 +666,7 @@ type Mutation {
   update_consumable_replenishment(inventories: [Inventory!]!): [InventoryData!]
   update_consumable_depletion(inventories: [Inventory!]!): [InventoryData!]
   update_person(person: Person!, permanent_address: Address, permanent_address_city: City, mailing_address: Address, mailing_address_city: City): PersonData
+  insert_person(person: Person!, mailing_address: Address, mailing_address_city: City): PersonData
 }
 
 input Organization {
@@ -747,6 +748,7 @@ input Person {
   academy_org_id: Int
   academy_org_name: String
   branch_code: String
+  current_job: String
   created_by: Int
   updated_by: Int
 }
@@ -785,6 +787,7 @@ type PersonData {
   academy_org_id: Int
   organization_id: Int
   branch_code: String
+  current_job: String
   created_by: Int
   updated_by: Int
 }
