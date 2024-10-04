@@ -94,8 +94,11 @@ public type Person record {
     string? digital_id?;
     string? sex?;
     string? passport_no?;
+    string? current_job?;
+    int? created_by?;
     string? record_type?;
     Address? mailing_address?;
+    string? branch_code?;
     int[]? child_student?;
     string? bank_account_name?;
     int? avinya_phone?;
@@ -103,13 +106,13 @@ public type Person record {
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    int? updated_by?;
+    string? academy_org_name?;
     string? asgardeo_id?;
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
     int? academy_org_id?;
-    int? created_by?;
-    int? updated_by?;
 };
 
 public type GetPersonsResponse record {|
@@ -352,6 +355,9 @@ public type UpdatePersonResponse record {|
         string? bank_account_name;
         int? academy_org_id;
         string? bank_branch;
+        int? created_by;
+        int? updated_by;
+        string? current_job;
     |}? update_person;
 |};
 

@@ -310,6 +310,7 @@ public type Person record {
     string? digital_id?;
     string? sex?;
     string? passport_no?;
+    string? current_job?;
     int? created_by?;
     string? record_type?;
     Address? mailing_address?;
@@ -666,6 +667,9 @@ public type UpdatePersonResponse record {|
         string? bank_account_name;
         int? academy_org_id;
         string? bank_branch;
+        int? created_by;
+        int? updated_by;
+        string? current_job;
     |}? update_person;
 |};
 
