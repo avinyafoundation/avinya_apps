@@ -58,10 +58,18 @@ class _StudentsState extends State<Students> {
     return await fetchOrganizationsByAvinyaType(86);
   }
 
-  Future<List<AvinyaTypeId>> fetchAvinyaTypes(newValue) async {
-    if (newValue != null) {
-      if (DateTime.parse(newValue.organization_metadata[1].value.toString())
-          .isBefore(DateTime.parse('2024-03-01'))) {
+  Future<List<AvinyaTypeId>> fetchAvinyaTypes(dynamic newValue) async {
+    List<AvinyaTypeId> filteredAvinyaTypeIdValues;
+
+    // Check if newValue is not null and contains valid metadata
+    if (newValue != null &&
+        newValue.organization_metadata != null &&
+        newValue.organization_metadata.isNotEmpty) {
+      // Parse the metadata value to a DateTime and perform date range checks
+      DateTime metadataDate =
+          DateTime.parse(newValue.organization_metadata[1].value.toString());
+
+      if (newValue.organization_metadata[1].value.toString() == '2024-07-26') {
         filteredAvinyaTypeIdValues = [
           AvinyaTypeId.Empower,
           AvinyaTypeId.IT,
@@ -75,6 +83,7 @@ class _StudentsState extends State<Students> {
         ];
       }
     } else {
+      // Default value if newValue is null or invalid
       filteredAvinyaTypeIdValues = [
         AvinyaTypeId.Empower,
         AvinyaTypeId.FutureEnrollees
