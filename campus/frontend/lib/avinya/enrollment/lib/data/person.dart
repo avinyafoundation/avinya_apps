@@ -245,44 +245,45 @@ class Person {
   int? academy_org_id;
   String? created;
   String? updated;
+  String? current_job;
   var parent_students = <Person>[];
 
-  Person({
-    this.id,
-    this.record_type,
-    this.preferred_name,
-    this.full_name,
-    this.notes,
-    this.date_of_birth,
-    this.sex,
-    this.avinya_type_id,
-    this.passport_no,
-    this.permanent_address_id,
-    this.mailing_address_id,
-    this.nic_no,
-    this.id_no,
-    this.phone,
-    this.organization_id,
-    this.organization,
-    this.avinya_type,
-    this.asgardeo_id,
-    this.jwt_sub_id,
-    this.jwt_email,
-    this.email,
-    this.permanent_address,
-    this.mailing_address,
-    this.street_address,
-    this.bank_account_number,
-    this.bank_name,
-    this.bank_branch,
-    this.digital_id,
-    this.bank_account_name,
-    this.avinya_phone,
-    this.academy_org_id,
-    this.created,
-    this.updated,
-    this.parent_students = const [],
-  });
+  Person(
+      {this.id,
+      this.record_type,
+      this.preferred_name,
+      this.full_name,
+      this.notes,
+      this.date_of_birth,
+      this.sex,
+      this.avinya_type_id,
+      this.passport_no,
+      this.permanent_address_id,
+      this.mailing_address_id,
+      this.nic_no,
+      this.id_no,
+      this.phone,
+      this.organization_id,
+      this.organization,
+      this.avinya_type,
+      this.asgardeo_id,
+      this.jwt_sub_id,
+      this.jwt_email,
+      this.email,
+      this.permanent_address,
+      this.mailing_address,
+      this.street_address,
+      this.bank_account_number,
+      this.bank_name,
+      this.bank_branch,
+      this.digital_id,
+      this.bank_account_name,
+      this.avinya_phone,
+      this.academy_org_id,
+      this.created,
+      this.updated,
+      this.parent_students = const [],
+      this.current_job});
 
   factory Person.fromJson(Map<String, dynamic> json) {
     return Person(
@@ -328,6 +329,7 @@ class Person {
               .map<Person>((eval_json) => Person.fromJson(eval_json))
               .toList()
           : [],
+      current_job: json['current_job'],
     );
   }
 
@@ -348,7 +350,7 @@ class Person {
         if (nic_no != null) 'nic_no': nic_no,
         if (id_no != null) 'id_no': id_no,
         if (phone != null) 'phone': phone,
-        if (organization_id != null) 'organization_id': organization_id,
+        if (organization != null) 'organization_id': organization!.id,
         if (asgardeo_id != null) 'asgardeo_id': asgardeo_id,
         if (jwt_sub_id != null) 'jwt_sub_id': jwt_sub_id,
         if (jwt_email != null) 'jwt_email': jwt_email,
@@ -361,16 +363,17 @@ class Person {
         if (bank_account_number != null)
           'bank_account_number': bank_account_number,
         if (bank_name != null) 'bank_name': bank_name,
-        if (bank_branch != null) 'bank_name': bank_branch,
+        if (bank_branch != null) 'bank_branch': bank_branch,
         if (digital_id != null) 'digital_id': digital_id,
         if (bank_account_name != null) 'bank_account_name': bank_account_name,
         if (avinya_phone != null) 'avinya_phone': avinya_phone,
         if (academy_org_id != null) 'academy_org_id': academy_org_id,
-        if (organization != null) 'organization': organization!.toJson(),
-        if (avinya_type != null) 'avinya_type': avinya_type!.toJson(),
+        // if (organization != null) 'organization': organization!.toJson(),
+        // if (avinya_type != null) 'avinya_type': avinya_type!.toJson(),
         if (created != null) 'created': created,
         if (updated != null) 'updated': updated,
-        'parent_students': [parent_students],
+        // 'parent_students': [parent_students],
+        if (current_job != null) 'current_job': current_job,
       };
 
   map(DataRow Function(dynamic evaluation) param0) {}
