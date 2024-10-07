@@ -94,8 +94,11 @@ public type Person record {
     string? digital_id?;
     string? sex?;
     string? passport_no?;
+    string? current_job?;
+    int? created_by?;
     string? record_type?;
     Address? mailing_address?;
+    string? branch_code?;
     int[]? child_student?;
     string? bank_account_name?;
     int? avinya_phone?;
@@ -103,13 +106,13 @@ public type Person record {
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    int? updated_by?;
+    string? academy_org_name?;
     string? asgardeo_id?;
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
     int? academy_org_id?;
-    int? created_by?;
-    int? updated_by?;
 };
 
 public type GetPersonsResponse record {|
@@ -173,10 +176,7 @@ public type GetPersonsResponse record {|
                 |} name;
             |}[]? parent_organizations;
         |}? organization;
-        record {|
-            int? id;
-            string? name;
-        |}? avinya_type;
+        int? avinya_type_id;
         string? notes;
         string? nic_no;
         string? passport_no;
@@ -190,6 +190,9 @@ public type GetPersonsResponse record {|
         string? bank_account_name;
         int? academy_org_id;
         string? bank_branch;
+        int? created_by;
+        int? updated_by;
+        string? current_job;
     |}[] persons;
 |};
 
@@ -254,10 +257,7 @@ public type GetPersonByIdResponse record {|
                 |} name;
             |}[]? parent_organizations;
         |}? organization;
-        record {|
-            int? id;
-            string? name;
-        |}? avinya_type;
+        int? avinya_type_id;
         string? notes;
         string? nic_no;
         string? passport_no;
@@ -271,6 +271,9 @@ public type GetPersonByIdResponse record {|
         string? bank_account_name;
         int? academy_org_id;
         string? bank_branch;
+        int? created_by;
+        int? updated_by;
+        string? current_job;
     |}? person_by_id;
 |};
 
@@ -335,10 +338,7 @@ public type UpdatePersonResponse record {|
                 |} name;
             |}[]? parent_organizations;
         |}? organization;
-        record {|
-            int? id;
-            string? name;
-        |}? avinya_type;
+        int? avinya_type_id;
         string? notes;
         string? nic_no;
         string? passport_no;
@@ -352,6 +352,9 @@ public type UpdatePersonResponse record {|
         string? bank_account_name;
         int? academy_org_id;
         string? bank_branch;
+        int? created_by;
+        int? updated_by;
+        string? current_job;
     |}? update_person;
 |};
 
@@ -409,4 +412,85 @@ public type GetAllOrganizationsResponse record {|
         int? phone;
         string? notes;
     |}[] all_organizations;
+|};
+
+public type InsertPersonResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? preferred_name;
+        string? full_name;
+        string? date_of_birth;
+        string? sex;
+        string? asgardeo_id;
+        string? jwt_sub_id;
+        string? created;
+        string? updated;
+        string? jwt_email;
+        record {|
+            record {|
+                int? id;
+                record {|
+                    string? name_en;
+                    string? name_si;
+                    string? name_ta;
+                |} name;
+            |} city;
+            string? street_address;
+            int? phone;
+            int? id;
+        |}? permanent_address;
+        record {|
+            record {|
+                int? id;
+                record {|
+                    string? name_en;
+                    string? name_si;
+                    string? name_ta;
+                |} name;
+            |} city;
+            string? street_address;
+            int? phone;
+            int? id;
+        |}? mailing_address;
+        int? phone;
+        record {|
+            int? id;
+            string? description;
+            string? notes;
+            record {|
+                int? id;
+            |}? address;
+            record {|
+                int? id;
+                string? name;
+            |}? avinya_type;
+            record {|
+                string? name_en;
+            |} name;
+            record {|
+                int? id;
+                record {|
+                    string? name_en;
+                |} name;
+            |}[]? parent_organizations;
+        |}? organization;
+        int? avinya_type_id;
+        string? notes;
+        string? nic_no;
+        string? passport_no;
+        string? id_no;
+        string? email;
+        string? street_address;
+        string? digital_id;
+        int? avinya_phone;
+        string? bank_name;
+        string? bank_account_number;
+        string? bank_account_name;
+        int? academy_org_id;
+        string? bank_branch;
+        int? created_by;
+        int? updated_by;
+        string? current_job;
+    |}? insert_person;
 |};

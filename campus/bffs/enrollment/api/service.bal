@@ -78,69 +78,71 @@ service / on new http:Listener(9095) {
 
     resource function get districts() returns District[]|error {
         GetDistrictsResponse|graphql:ClientError getDistrictsResponse = globalDataClient->getDistricts();
-        if(getDistrictsResponse is GetDistrictsResponse) {
+        if (getDistrictsResponse is GetDistrictsResponse) {
             District[] districtsData = [];
             foreach var district in getDistrictsResponse.districts {
                 District|error districtData = district.cloneWithType(District);
-                if(districtData is District) {
+                if (districtData is District) {
                     districtsData.push(districtData);
                 } else {
                     log:printError("Error while processing Application record received", districtData);
-                    return error("Error while processing Application record received: " + districtData.message() + 
+                    return error("Error while processing Application record received: " + districtData.message() +
                         ":: Detail: " + districtData.detail().toString());
                 }
             }
 
             return districtsData;
-            
+
         } else {
             log:printError("Error while getting application", getDistrictsResponse);
-            return error("Error while getting application: " + getDistrictsResponse.message() + 
+            return error("Error while getting application: " + getDistrictsResponse.message() +
                 ":: Detail: " + getDistrictsResponse.detail().toString());
         }
     }
 
     resource function get all_organizations() returns Organization[]|error {
         GetAllOrganizationsResponse|graphql:ClientError getAllOrganizationsResponse = globalDataClient->getAllOrganizations();
-        if(getAllOrganizationsResponse is GetAllOrganizationsResponse) {
+        if (getAllOrganizationsResponse is GetAllOrganizationsResponse) {
             Organization[] organizationsData = [];
             foreach var organization in getAllOrganizationsResponse.all_organizations {
                 Organization|error organizationData = organization.cloneWithType(Organization);
-                if(organizationData is Organization) {
+                if (organizationData is Organization) {
                     organizationsData.push(organizationData);
                 } else {
                     log:printError("Error while processing Application record received", organizationData);
-                    return error("Error while processing Application record received: " + organizationData.message() + 
+                    return error("Error while processing Application record received: " + organizationData.message() +
                         ":: Detail: " + organizationData.detail().toString());
                 }
             }
 
             return organizationsData;
-            
+
         } else {
             log:printError("Error while getting application", getAllOrganizationsResponse);
-            return error("Error while getting application: " + getAllOrganizationsResponse.message() + 
+            return error("Error while getting application: " + getAllOrganizationsResponse.message() +
                 ":: Detail: " + getAllOrganizationsResponse.detail().toString());
         }
     }
 
     resource function put update_person(@http:Payload Person person) returns Person|error {
 
-       Address permanent_address = <Address>person?.permanent_address;
-       Address mailing_address = <Address>person?.mailing_address;
-       City permanent_address_city = <City>permanent_address?.city;
-       City mailing_address_city = <City>mailing_address?.city;
-       anydata remove_permanent_address_city = permanent_address.remove("city");
-       anydata remove_mailing_address_city = mailing_address.remove("city");
-       anydata remove_permanent_address = person.remove("permanent_address");
-       anydata remove_mailing_address = person.remove("mailing_address");
-       log:printDebug(remove_permanent_address.toString());
-       log:printDebug(remove_mailing_address.toString());
-       log:printDebug(remove_permanent_address_city.toString());
-       log:printDebug(remove_mailing_address_city.toString());
+        Address? permanent_address = person?.permanent_address;
+        Address? mailing_address = person?.mailing_address;
+        City? permanent_address_city = permanent_address?.city;
+        City? mailing_address_city = mailing_address?.city;
 
+        if(permanent_address is Address){
+            permanent_address.city = ();
+        }
 
-        UpdatePersonResponse|graphql:ClientError updatePersonResponse = globalDataClient->updatePerson(permanent_address_city,mailing_address,person,permanent_address,mailing_address_city);
+        if(mailing_address is Address){
+            mailing_address.city = ();
+        }
+
+        person.permanent_address = ();
+        person.mailing_address = ();
+
+        UpdatePersonResponse|graphql:ClientError updatePersonResponse = globalDataClient->updatePerson(person, permanent_address_city, mailing_address, permanent_address, mailing_address_city);
         if (updatePersonResponse is UpdatePersonResponse) {
             Person|error person_record = updatePersonResponse.update_person.cloneWithType(Person);
             if (person_record is Person) {
@@ -157,4 +159,31 @@ service / on new http:Listener(9095) {
         }
     }
 
+    resource function post add_person(@http:Payload Person person) returns Person|error {
+
+        Address? mailing_address = person?.mailing_address;
+        City? mailing_address_city = mailing_address?.city;
+
+        if(mailing_address is Address){
+            mailing_address.city = ();
+        }
+
+        person.mailing_address = ();
+
+        InsertPersonResponse|graphql:ClientError addPersonResponse = globalDataClient->insertPerson(person,mailing_address,mailing_address_city);
+        if (addPersonResponse is InsertPersonResponse) {
+            Person|error person_record = addPersonResponse.insert_person.cloneWithType(Person);
+            if (person_record is Person) {
+                return person_record;
+            } else {
+                log:printError("Error while processing Application record received", person_record);
+                return error("Error while processing Application record received: " + person_record.message() +
+                    ":: Detail: " + person_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", addPersonResponse);
+            return error("Error while creating application: " + addPersonResponse.message() +
+                ":: Detail: " + addPersonResponse.detail().toString());
+        }
+    }
 }

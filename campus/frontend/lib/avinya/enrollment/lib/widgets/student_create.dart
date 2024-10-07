@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:gallery/avinya/enrollment/lib/data/person.dart';
 
-class StudentUpdate extends StatefulWidget {
+class StudentCreate extends StatefulWidget {
   final int? id;
-  const StudentUpdate({Key? key, this.id}) : super(key: key);
+  const StudentCreate({Key? key, this.id}) : super(key: key);
 
   @override
-  State<StudentUpdate> createState() => _StudentUpdateState();
+  State<StudentCreate> createState() => _StudentCreateState();
 }
 
-class _StudentUpdateState extends State<StudentUpdate> {
+class _StudentCreateState extends State<StudentCreate> {
   late Person userPerson = Person();
   List<District> districts = [];
   List<MainOrganization> organizations = [];
@@ -32,51 +32,9 @@ class _StudentUpdateState extends State<StudentUpdate> {
   }
 
   Future<void> loadData() async {
-    await getUserPerson();
     await fetchDistrictList();
     await fetchOrganizationList();
     await fetchAvinyaTypeList();
-  }
-
-  Future<void> getUserPerson() async {
-    Person user = await fetchPerson(widget.id);
-    classes = await fetchClasses(
-        (user.organization?.parent_organizations?.isNotEmpty ?? false)
-            ? user.organization?.parent_organizations?.first.id
-            : null);
-
-    setState(() {
-      classes = classes;
-      userPerson = user;
-      selectedSex = userPerson.sex;
-      userPerson.avinya_type_id = user.avinya_type_id;
-
-      // Safely assign city and organization IDs with fallbacks
-      selectedCityId = userPerson.mailing_address?.city?.id ??
-          0; // Default to 0 or another fallback value
-      selectedOrgId =
-          userPerson.organization?.id ?? 0; // Similarly handle organization ID
-      selectedClassId = userPerson.organization?.id ??
-          0; // Ensure organization ID is used for class as well
-
-      // Handling date of birth
-      String? dob = userPerson.date_of_birth;
-      print("Date of Birth String: $dob");
-
-      // Safely try parsing the date of birth
-      if (dob == null || dob.isEmpty) {
-        selectedDateOfBirth = DateTime.now(); // Default if dob is null or empty
-      } else {
-        try {
-          selectedDateOfBirth =
-              DateTime.parse(dob); // Use DateTime.parse directly
-        } catch (e) {
-          print('Error parsing date: $e');
-          selectedDateOfBirth =
-              DateTime.now(); // Fallback to now if parsing fails
-        }
-      }
-    });
   }
 
   Future<void> fetchDistrictList() async {
@@ -86,10 +44,6 @@ class _StudentUpdateState extends State<StudentUpdate> {
       setState(() {
         districts = districtList;
         selectedDistrictId = districtId ?? selectedDistrictId;
-        // if (districtId != null) {
-        //   // Update the cities based on the district
-        //   selectedCityId = null; // Reset city selection when district changes
-        // }
       });
     }
   }
@@ -130,167 +84,116 @@ class _StudentUpdateState extends State<StudentUpdate> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: userPerson.preferred_name == null
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: SizedBox(
-                  width: 800,
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildProfileHeader(context),
-                        const SizedBox(height: 20),
-                        _buildSectionTitle(context, 'Student Information'),
-                        _buildEditableField(
-                            'Preferred Name', userPerson.preferred_name,
-                            (value) {
-                          userPerson.preferred_name = value;
-                        },
-                            validator: (value) => value!.isEmpty
-                                ? 'Preferred name is required'
-                                : null),
-                        _buildEditableField('Full Name', userPerson.full_name,
-                            (value) {
-                          userPerson.full_name = value;
-                        },
-                            validator: (value) => value!.isEmpty
-                                ? 'Full name is required'
-                                : null),
-                        _buildEditableField('NIC Number', userPerson.nic_no,
-                            (value) {
-                          userPerson.nic_no = value;
-                        }, validator: _validateNIC),
-                        _buildDateOfBirthField(context),
-                        _buildSexField(),
-                        const SizedBox(height: 10),
-                        _buildOrganizationField(),
-                        _buildStudentClassField(), // Student Class based on organization.description
-                        const SizedBox(height: 20),
-                        _buildSectionTitle(context, 'Contact Information'),
-                        _buildEditableField('Personal Email', userPerson.email,
-                            (value) {
-                          userPerson.email = value;
-                        }),
-                        _buildEditableField(
-                            'Phone', userPerson.phone?.toString() ?? '',
-                            (value) {
-                          userPerson.phone = int.tryParse(value);
-                        }, validator: _validatePhone),
-                        _buildEditableField('Street Address',
-                            userPerson.mailing_address?.street_address ?? 'N/A',
-                            (value) {
-                          if (userPerson.mailing_address == null) {
-                            userPerson.mailing_address =
-                                Address(street_address: value);
-                          } else {
-                            userPerson.mailing_address!.street_address = value;
-                          }
-                        }),
-                        _buildDistrictField(),
-                        _buildCityField(),
-                        const SizedBox(height: 20),
-                        _buildSectionTitle(context, 'Digital Information'),
-                        _buildEditableField('Digital ID', userPerson.digital_id,
-                            (value) {
-                          userPerson.digital_id = value;
-                        }),
-                        _buildAvinyaTypeField(),
-                        const SizedBox(height: 20),
-                        _buildSectionTitle(context, 'Bank Information'),
-                        _buildEditableField('Bank Name', userPerson.bank_name,
-                            (value) {
-                          userPerson.bank_name = value;
-                        }),
-                        _buildEditableField(
-                            'Bank Branch', userPerson.bank_branch, (value) {
-                          userPerson.bank_branch = value;
-                        }),
-                        _buildEditableField(
-                            'Bank Account Name', userPerson.bank_account_name,
-                            (value) {
-                          userPerson.bank_account_name = value;
-                        }),
-                        _buildEditableField(
-                            'Account Number', userPerson.bank_account_number,
-                            (value) {
-                          userPerson.bank_account_number = value;
-                        }),
-                        const SizedBox(height: 20),
-                        _buildSectionTitle(context, 'Professional Information'),
-                        _buildEditableField(
-                            'Current Job', userPerson.current_job, (value) {
-                          userPerson.current_job = value;
-                        }),
-                        _buildEditableTextArea('Comments', userPerson.notes,
-                            (value) {
-                          userPerson.notes = value;
-                        }),
-                        const SizedBox(height: 40),
-                        _buildSaveButton(),
-                      ],
-                    ),
-                  ),
-                ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: SizedBox(
+            width: 800,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // _buildProfileHeader(context),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle(context, 'Student Information'),
+                  _buildEditableField(
+                      'Preferred Name', userPerson.preferred_name, (value) {
+                    userPerson.preferred_name = value;
+                  },
+                      validator: (value) =>
+                          value!.isEmpty ? 'Preferred name is required' : null),
+                  _buildEditableField('Full Name', userPerson.full_name,
+                      (value) {
+                    userPerson.full_name = value;
+                  },
+                      validator: (value) =>
+                          value!.isEmpty ? 'Full name is required' : null),
+                  _buildEditableField('NIC Number', userPerson.nic_no, (value) {
+                    userPerson.nic_no = value;
+                  }, validator: _validateNIC),
+                  _buildDateOfBirthField(context),
+                  _buildSexField(),
+                  const SizedBox(height: 10),
+                  _buildOrganizationField(),
+                  _buildStudentClassField(), // Student Class based on organization.description
+                  const SizedBox(height: 20),
+                  _buildSectionTitle(context, 'Contact Information'),
+                  _buildEditableField('Personal Email', userPerson.email,
+                      (value) {
+                    userPerson.email = value;
+                  }), // Email format validation
+
+                  _buildEditableField(
+                      'Phone', userPerson.phone?.toString() ?? '', (value) {
+                    userPerson.phone = int.tryParse(value);
+                  }, validator: _validatePhone),
+                  _buildEditableField('Street Address',
+                      userPerson.mailing_address?.street_address ?? 'N/A',
+                      (value) {
+                    if (userPerson.mailing_address == null) {
+                      userPerson.mailing_address =
+                          Address(street_address: value);
+                    } else {
+                      userPerson.mailing_address!.street_address = value;
+                    }
+                  }),
+                  _buildDistrictField(),
+                  _buildCityField(),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle(context, 'Digital Information'),
+                  _buildEditableField('Digital ID', userPerson.digital_id,
+                      (value) {
+                    userPerson.digital_id = value;
+                  }),
+                  _buildAvinyaTypeField(),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle(context, 'Bank Information'),
+                  _buildEditableField('Bank Name', userPerson.bank_name,
+                      (value) {
+                    userPerson.bank_name = value;
+                  }),
+                  _buildEditableField('Bank Branch', userPerson.bank_branch,
+                      (value) {
+                    userPerson.bank_branch = value;
+                  }),
+                  _buildEditableField(
+                      'Bank Account Name', userPerson.bank_account_name,
+                      (value) {
+                    userPerson.bank_account_name = value;
+                  }),
+                  _buildEditableField(
+                      'Account Number', userPerson.bank_account_number,
+                      (value) {
+                    userPerson.bank_account_number = value;
+                  }),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle(context, 'Professional Information'),
+                  _buildEditableField('Current Job', userPerson.current_job,
+                      (value) {
+                    userPerson.current_job = value;
+                  }),
+                  _buildEditableTextArea('Comments', userPerson.notes, (value) {
+                    userPerson.notes = value;
+                  }),
+                  const SizedBox(height: 40),
+                  _buildSaveButton(context),
+                ],
               ),
             ),
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context) {
-    String imagePath = selectedSex == 'Male'
-        ? 'assets/images/student_profile_male.jpg' // Replace with the male profile image path
-        : 'assets/images/student_profile.jpeg'; // Default or female profile image
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CircleAvatar(
-          radius: 40,
-          backgroundImage: AssetImage(imagePath),
-        ),
-        const SizedBox(width: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              userPerson.full_name ?? 'N/A',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(width: 16),
-            Text(
-              userPerson.organization?.parent_organizations != null &&
-                      userPerson.organization!.parent_organizations!.isNotEmpty
-                  ? userPerson.organization?.parent_organizations!.first.name
-                          ?.name_en ??
-                      'N/A'
-                  : 'N/A',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(width: 56),
-            Text(
-              userPerson.organization?.avinya_type != null
-                  ? userPerson.organization?.avinya_type!.name ?? 'N/A'
-                  : 'N/A',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  String? _validateNIC(String? value) {
+  String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
-      return 'NIC Number is required';
+      return 'Email is required';
     }
-    final oldNICRegex = RegExp(r'^\d{9}[vVxX]$');
-    final newNICRegex = RegExp(r'^\d{12}$');
-    if (!oldNICRegex.hasMatch(value) && !newNICRegex.hasMatch(value)) {
-      return 'Enter a valid NIC number (old or new format)';
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    if (!emailRegex.hasMatch(value)) {
+      return 'Enter a valid email address';
     }
     return null;
   }
@@ -302,6 +205,18 @@ class _StudentUpdateState extends State<StudentUpdate> {
     final phoneRegex = RegExp(r'^[0-9]+$');
     if (!phoneRegex.hasMatch(value) || value.length < 10) {
       return 'Enter a valid phone number (at least 10 digits)';
+    }
+    return null;
+  }
+
+  String? _validateNIC(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'NIC Number is required';
+    }
+    final oldNICRegex = RegExp(r'^\d{9}[vVxX]$');
+    final newNICRegex = RegExp(r'^\d{12}$');
+    if (!oldNICRegex.hasMatch(value) && !newNICRegex.hasMatch(value)) {
+      return 'Enter a valid NIC number (old or new format)';
     }
     return null;
   }
@@ -555,22 +470,28 @@ class _StudentUpdateState extends State<StudentUpdate> {
           Expanded(
             flex: 6,
             child: DropdownButtonFormField<int>(
-              value:
-                  userPerson.organization?.parent_organizations?.first.id ?? 0,
-              items: organizations
-                  .where((org) =>
-                      org.avinya_type?.id == 105 ||
-                      org.avinya_type?.id == 86) // Filter organizations
-                  .map((org) {
-                return DropdownMenuItem<int>(
-                  value: org.id,
-                  child: Text(org.name?.name_en ?? 'Unknown'),
-                );
-              }).toList(),
+              value: userPerson.organization?.parent_organizations?.first.id,
+              items: [
+                DropdownMenuItem<int>(
+                  value: null, // Default item for when no selection is made
+                  child: const Text('Select an organization'),
+                ),
+                ...organizations
+                    .where((org) =>
+                        org.avinya_type?.id == 105 ||
+                        org.avinya_type?.id == 86) // Filter organizations
+                    .map((org) {
+                  return DropdownMenuItem<int>(
+                    value: org.id,
+                    child: Text(org.name?.name_en ?? 'Unknown'),
+                  );
+                }).toList(),
+              ],
               onChanged: (int? newValue) async {
-                classes = await fetchClasses(newValue);
+                if (newValue != null) {
+                  classes = await fetchClasses(newValue);
+                }
                 setState(() {
-                  classes = classes;
                   userPerson.organization_id =
                       newValue; // Update the organization ID
                 });
@@ -637,6 +558,10 @@ class _StudentUpdateState extends State<StudentUpdate> {
           org.id == 94; // dropout-student-applicant
     }).toList();
 
+    filteredAvinyaTypes.any((org) => org.id == avinyaTypeId)
+        ? userPerson.avinya_type_id = avinyaTypeId
+        : null;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -684,11 +609,6 @@ class _StudentUpdateState extends State<StudentUpdate> {
     );
   }
 
-  String _formatDate(String? date) {
-    if (date == null) return 'N/A';
-    return DateFormat('d MMM, yyyy').format(DateTime.parse(date));
-  }
-
   List<DropdownMenuItem<int>> _getDistrictOptions() {
     return districts.map((district) {
       return DropdownMenuItem<int>(
@@ -696,24 +616,6 @@ class _StudentUpdateState extends State<StudentUpdate> {
         child: Text(district.name?.name_en ?? 'Unknown'),
       );
     }).toList();
-  }
-
-  List<DropdownMenuItem<int>> _getCityOptions() {
-    if (selectedDistrictId != null) {
-      final selectedDistrict =
-          districts.firstWhere((district) => district.id == selectedDistrictId);
-
-      List<City>? cities = selectedDistrict.cities;
-
-      return cities!.map((city) {
-        return DropdownMenuItem<int>(
-          value: city.id as int, // Cast city ID to int
-          child: Text(city.name?.name_en as String), // Display the English name
-        );
-      }).toList();
-    } else {
-      return [];
-    }
   }
 
   List<DropdownMenuItem<int>> _getClassOptions() {
@@ -726,17 +628,17 @@ class _StudentUpdateState extends State<StudentUpdate> {
         .toList();
   }
 
-  Widget _buildSaveButton() {
+  Widget _buildSaveButton(context) {
     return Center(
       child: ElevatedButton(
         onPressed: () {
           if (_formKey.currentState!.validate()) {
             _formKey.currentState!.save();
             // Save userPerson changes
-            updatePerson(userPerson);
+            createPerson(context, userPerson);
           }
         },
-        child: const Text('Save Changes'),
+        child: const Text('Create Student'),
       ),
     );
   }
