@@ -159,4 +159,31 @@ service / on new http:Listener(9095) {
         }
     }
 
+    resource function post add_person(@http:Payload Person person) returns Person|error {
+
+        Address? mailing_address = person?.mailing_address;
+        City? mailing_address_city = mailing_address?.city;
+
+        if(mailing_address is Address){
+            mailing_address.city = ();
+        }
+
+        person.mailing_address = ();
+
+        InsertPersonResponse|graphql:ClientError addPersonResponse = globalDataClient->insertPerson(person,mailing_address,mailing_address_city);
+        if (addPersonResponse is InsertPersonResponse) {
+            Person|error person_record = addPersonResponse.insert_person.cloneWithType(Person);
+            if (person_record is Person) {
+                return person_record;
+            } else {
+                log:printError("Error while processing Application record received", person_record);
+                return error("Error while processing Application record received: " + person_record.message() +
+                    ":: Detail: " + person_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", addPersonResponse);
+            return error("Error while creating application: " + addPersonResponse.message() +
+                ":: Detail: " + addPersonResponse.detail().toString());
+        }
+    }
 }
