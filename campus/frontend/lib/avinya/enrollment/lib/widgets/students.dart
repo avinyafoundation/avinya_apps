@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:attendance/data/organization.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gallery/avinya/enrollment/lib/data/person.dart';
+import 'package:gallery/avinya/enrollment/lib/screens/student_create_screen.dart';
 import 'package:gallery/avinya/enrollment/lib/screens/student_update_screen.dart';
 import 'person_data_excel_report.dart';
 
@@ -58,10 +59,18 @@ class _StudentsState extends State<Students> {
     return await fetchOrganizationsByAvinyaType(86);
   }
 
-  Future<List<AvinyaTypeId>> fetchAvinyaTypes(newValue) async {
-    if (newValue != null) {
-      if (DateTime.parse(newValue.organization_metadata[1].value.toString())
-          .isBefore(DateTime.parse('2024-03-01'))) {
+  Future<List<AvinyaTypeId>> fetchAvinyaTypes(dynamic newValue) async {
+    List<AvinyaTypeId> filteredAvinyaTypeIdValues;
+
+    // Check if newValue is not null and contains valid metadata
+    if (newValue != null &&
+        newValue.organization_metadata != null &&
+        newValue.organization_metadata.isNotEmpty) {
+      // Parse the metadata value to a DateTime and perform date range checks
+      DateTime metadataDate =
+          DateTime.parse(newValue.organization_metadata[1].value.toString());
+
+      if (newValue.organization_metadata[1].value.toString() == '2024-07-26') {
         filteredAvinyaTypeIdValues = [
           AvinyaTypeId.Empower,
           AvinyaTypeId.IT,
@@ -75,6 +84,7 @@ class _StudentsState extends State<Students> {
         ];
       }
     } else {
+      // Default value if newValue is null or invalid
       filteredAvinyaTypeIdValues = [
         AvinyaTypeId.Empower,
         AvinyaTypeId.FutureEnrollees
@@ -86,13 +96,11 @@ class _StudentsState extends State<Students> {
 
   void updateExcelState() {
     PersonDataExcelReport(
-      fetchedPersonData: _fetchedPersonData,
-      columnNames: columnNames,
-      updateExcelState: updateExcelState,
-      isFetching: _isFetching,
-      formattedStartDate: _selectedValue!.organization_metadata[0].value!,
-      formattedEndDate: _selectedValue!.organization_metadata[1].value!,
-    );
+        fetchedPersonData: _fetchedPersonData,
+        columnNames: columnNames,
+        updateExcelState: updateExcelState,
+        isFetching: _isFetching,
+        selectedAvinyaTypeId: _selectedAvinyaTypeId);
   }
 
   @override
@@ -132,26 +140,6 @@ class _StudentsState extends State<Students> {
     return ColumnNames;
   }
 
-  // void searchStudents(String query) {
-  //   setState(() {
-  //     if (query.isEmpty) {
-  //       filteredStudents = _fetchedPersonData;
-  //     } else {
-  //       query = query.toLowerCase();
-
-  //       filteredStudents = _fetchedPersonData.where((student) {
-  //         final presentCountString =
-  //             student.present_count?.toString().toLowerCase() ?? '';
-  //         final attendancePercentageString =
-  //             student.present_attendance_percentage?.toString().toLowerCase() ??
-  //                 '';
-
-  //         return presentCountString.contains(query) ||
-  //             attendancePercentageString.contains(query);
-  //       }).toList();
-  //     }
-  //   });
-  // }
   void searchStudents(String query) {
     setState(() {
       if (query.isEmpty) {
@@ -382,22 +370,44 @@ class _StudentsState extends State<Students> {
                     Expanded(
                       child: Container(
                         alignment: Alignment.bottomRight,
-                        margin: EdgeInsets.only(right: 20.0),
+                        margin: const EdgeInsets.only(right: 20.0),
                         width: 25.0,
                         height: 30.0,
-                        child: _selectedValue != null
-                            ? PersonDataExcelReport(
-                                fetchedPersonData: filteredStudents,
-                                columnNames: columnNames,
-                                updateExcelState: updateExcelState,
-                                isFetching: _isFetching,
-                                formattedStartDate: _selectedValue!
-                                    .organization_metadata[0].value!,
-                                formattedEndDate: _selectedValue!
-                                    .organization_metadata[1].value!,
-                              )
-                            : SizedBox(),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => StudentCreateScreen(
+                                  id: null, // Since it's for creating a new student, no ID is passed
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text('Create New'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 5.0),
+                            textStyle: const TextStyle(fontSize: 16),
+                          ),
+                        ),
                       ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: Container(
+                          alignment: Alignment.bottomRight,
+                          margin: EdgeInsets.only(right: 20.0),
+                          width: 25.0,
+                          height: 30.0,
+                          child: PersonDataExcelReport(
+                              fetchedPersonData: filteredStudents,
+                              columnNames: columnNames,
+                              updateExcelState: updateExcelState,
+                              isFetching: _isFetching,
+                              selectedAvinyaTypeId: _selectedAvinyaTypeId)),
                     )
                   ],
                 ),
