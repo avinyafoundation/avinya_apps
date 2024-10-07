@@ -2,6 +2,7 @@ import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance/data/activity_attendance.dart';
 import 'package:gallery/avinya/enrollment/lib/data/person.dart';
+import 'package:gallery/avinya/enrollment/lib/widgets/students.dart';
 import 'package:intl/intl.dart';
 
 class PersonDataExcelReport extends StatefulWidget {
@@ -9,8 +10,7 @@ class PersonDataExcelReport extends StatefulWidget {
   final List<String?> columnNames;
   final Function() updateExcelState;
   final bool isFetching;
-  final String formattedStartDate;
-  final String formattedEndDate;
+  final AvinyaTypeId selectedAvinyaTypeId;
 
   const PersonDataExcelReport(
       {Key? key,
@@ -18,8 +18,7 @@ class PersonDataExcelReport extends StatefulWidget {
       required this.columnNames,
       required this.updateExcelState,
       required this.isFetching,
-      required this.formattedStartDate,
-      required this.formattedEndDate})
+      required this.selectedAvinyaTypeId})
       : super(key: key);
 
   @override
@@ -104,7 +103,7 @@ class _PersonDataExcelReportState extends State<PersonDataExcelReport> {
       sheet
               .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0))
               .value =
-          "Avinya Foundation Student Enrollment Records for ${widget.formattedEndDate}";
+          "Avinya Foundation Student Enrollment Records for ${widget.selectedAvinyaTypeId}";
       sheet
           .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0))
           .cellStyle = organizationHeaderStyle;
@@ -150,7 +149,7 @@ class _PersonDataExcelReportState extends State<PersonDataExcelReport> {
 
       excel.save(
           fileName:
-              "Student Enrollment Records for ${widget.formattedEndDate}.xlsx");
+              "Student Enrollment Records for ${widget.selectedAvinyaTypeId}.xlsx");
     }
   }
 

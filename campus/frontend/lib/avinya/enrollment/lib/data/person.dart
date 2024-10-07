@@ -1,6 +1,7 @@
 import 'dart:developer';
-
-//import 'package:ShoolManagementSystem/src/data/address.dart';
+import 'package:gallery/avinya/enrollment/lib/screens/students_screen.dart';
+import 'package:gallery/widgets/success_message.dart';
+import 'package:gallery/widgets/error_message.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
@@ -206,7 +207,8 @@ class Address {
         if (city_id != null) 'city_id': city_id,
         if (district_id != null) 'district_id': district_id,
         if (record_type != null) 'record_type': record_type,
-        if (city != null) 'city': city,
+        // if (city != null) 'city': city,
+        if (city != null) 'city': city!.toJson(),
         if (district != null) 'district': district,
       };
 }
@@ -351,6 +353,7 @@ class Person {
         if (id_no != null) 'id_no': id_no,
         if (phone != null) 'phone': phone,
         if (organization != null) 'organization_id': organization!.id,
+        if (organization_id != null) 'organization_id': organization_id,
         if (asgardeo_id != null) 'asgardeo_id': asgardeo_id,
         if (jwt_sub_id != null) 'jwt_sub_id': jwt_sub_id,
         if (jwt_email != null) 'jwt_email': jwt_email,
@@ -425,26 +428,6 @@ class Province {
       };
 }
 
-// Future<List<Person>> fetchPersons() async {
-//   final response = await http.get(
-//     Uri.parse(AppConfig.campusAssetsBffApiUrl + '/student_applicant'),
-//     headers: <String, String>{
-//       'Content-Type': 'application/json; charset=UTF-8',
-//       'accept': 'application/json',
-//       'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
-//     },
-//   );
-
-//   if (response.statusCode == 200) {
-//     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-//     List<Person> persons =
-//         await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
-//     return persons;
-//   } else {
-//     throw Exception('Failed to load Person');
-//   }
-// }
-
 Future<List<Person>> fetchPersons(
     int organization_id, int avinya_type_id) async {
   final response = await http.get(
@@ -485,22 +468,30 @@ Future<Person> fetchPerson(int? person_id) async {
   }
 }
 
-Future<Person> createPerson(Person person) async {
+Future<Person> createPerson(BuildContext context, Person person) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusEnrollmentsBffApiUrl + '/student_applicant'),
+    Uri.parse(AppConfig.campusEnrollmentsBffApiUrl + '/add_person'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(person.toJson()),
   );
-  if (response.statusCode == 200) {
-    // var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+  if (response.statusCode == 201) {
     Person person = Person.fromJson(json.decode(response.body));
+    showSuccessToast("Student Profile Successfully Created!");
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StudentsScreen(),
+      ),
+    );
     return person;
   } else {
     log(response.body + " Status code =" + response.statusCode.toString());
-    throw Exception('Failed to create Person.');
+    showErrorToast("Student Account Already Exists");
+    return person;
+    // throw Exception('Failed to create Person.');
   }
 }
 
@@ -514,9 +505,13 @@ Future<http.Response> updatePerson(Person person) async {
     body: jsonEncode(person.toJson()),
   );
   if (response.statusCode == 200) {
+    showSuccessToast("Student Profile Successfully Updated!");
     return response;
   } else {
-    throw Exception('Failed to update Person.');
+    showErrorToast(
+        response.body + " Status code =" + response.statusCode.toString());
+    return response;
+    // throw Exception('Failed to update Person.');
   }
 }
 
