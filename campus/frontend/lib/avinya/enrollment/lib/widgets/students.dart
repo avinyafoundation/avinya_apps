@@ -273,7 +273,7 @@ class _StudentsState extends State<Students> {
                       },
                     ),
                     SizedBox(
-                      width: 30,
+                      width: 10,
                     ),
                     Text('Select a Programme :'),
                     SizedBox(
@@ -344,13 +344,13 @@ class _StudentsState extends State<Students> {
                       },
                     ),
                     SizedBox(
-                      width: 30,
+                      width: 10,
                     ),
                     Center(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: SizedBox(
-                          width: 300,
+                          width: 250,
                           child: TextField(
                             decoration: InputDecoration(
                               labelText: 'Search by Name or NIC',
@@ -367,11 +367,13 @@ class _StudentsState extends State<Students> {
                     SizedBox(
                       width: 10,
                     ),
-                    Expanded(
+                    FittedBox(
+                      alignment: Alignment.topLeft,
+                      fit: BoxFit.contain,
                       child: Container(
                         alignment: Alignment.bottomRight,
                         margin: const EdgeInsets.only(right: 20.0),
-                        width: 25.0,
+                        width: 100.0,
                         height: 30.0,
                         child: ElevatedButton(
                           onPressed: () {
@@ -384,7 +386,10 @@ class _StudentsState extends State<Students> {
                               ),
                             );
                           },
-                          child: const Text('Create New'),
+                          child: const Text(
+                            'Create New',
+                            style: TextStyle(fontSize: 12),
+                          ),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10.0, vertical: 5.0),
@@ -394,14 +399,16 @@ class _StudentsState extends State<Students> {
                       ),
                     ),
                     SizedBox(
-                      width: 10,
+                      width: 5,
                     ),
-                    Expanded(
+                    FittedBox(
+                      alignment: Alignment.topLeft,
+                      fit: BoxFit.contain,
                       child: Container(
-                          alignment: Alignment.bottomRight,
-                          margin: EdgeInsets.only(right: 20.0),
-                          width: 25.0,
-                          height: 30.0,
+                          alignment: Alignment.centerLeft,
+                          margin: EdgeInsets.only(right: 10.0),
+                          width: 140.0,
+                          height: 50.0,
                           child: PersonDataExcelReport(
                               fetchedPersonData: filteredStudents,
                               columnNames: columnNames,
