@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:gallery/avinya/enrollment/lib/data/person.dart';
 
@@ -25,46 +26,62 @@ class _StudentCreateState extends State<StudentCreate> {
   int? selectedClassId;
   DateTime? selectedDateOfBirth;
 
+  bool isDistrictsDataLoaded = false;
+  bool isOrganizationsDataLoaded = false;
+  bool isAvinyaTypesDataLoaded = false;
+
   @override
   void initState() {
     super.initState();
-    loadData();
+    //loadData();
   }
 
-  Future<void> loadData() async {
-    await fetchDistrictList();
-    await fetchOrganizationList();
-    await fetchAvinyaTypeList();
+  // Future<void> loadData() async {
+  //   await fetchDistrictList();
+  //   await fetchOrganizationList();
+  //   await fetchAvinyaTypeList();
+  // }
+
+  Future<List<District>> fetchDistrictList() async {
+    return await fetchDistricts();
   }
 
-  Future<void> fetchDistrictList() async {
-    List<District> districtList = await fetchDistricts();
-    int? districtId = getDistrictIdByCityId(selectedCityId, districtList);
-    if (mounted) {
-      setState(() {
-        districts = districtList;
-        selectedDistrictId = districtId ?? selectedDistrictId;
-      });
-    }
+  // Future<void> fetchDistrictList() async {
+  //   List<District> districtList = await fetchDistricts();
+  //   int? districtId = getDistrictIdByCityId(selectedCityId, districtList);
+  //   if (mounted) {
+  //     setState(() {
+  //       districts = districtList;
+  //       selectedDistrictId = districtId ?? selectedDistrictId;
+  //     });
+  //   }
+  // }
+
+  Future<List<MainOrganization>> fetchOrganizationList() async {
+    return await fetchOrganizations();
   }
 
-  Future<void> fetchOrganizationList() async {
-    List<MainOrganization> orgList = await fetchOrganizations();
-    if (mounted) {
-      setState(() {
-        organizations = orgList;
-      });
-    }
+  // Future<void> fetchOrganizationList() async {
+  //   List<MainOrganization> orgList = await fetchOrganizations();
+  //   if (mounted) {
+  //     setState(() {
+  //       organizations = orgList;
+  //     });
+  //   }
+  // }
+
+  Future<List<AvinyaType>> fetchAvinyaTypeList() async {
+    return await fetchAvinyaTypes();
   }
 
-  Future<void> fetchAvinyaTypeList() async {
-    List<AvinyaType> avinyaTypeList = await fetchAvinyaTypes();
-    if (mounted) {
-      setState(() {
-        avinyaTypes = avinyaTypeList;
-      });
-    }
-  }
+  // Future<void> fetchAvinyaTypeList() async {
+  //   List<AvinyaType> avinyaTypeList = await fetchAvinyaTypes();
+  //   if (mounted) {
+  //     setState(() {
+  //       avinyaTypes = avinyaTypeList;
+  //     });
+  //   }
+  // }
 
   int? getDistrictIdByCityId(int? selectedCityId, List<District> districtList) {
     for (var district in districtList) {
@@ -115,7 +132,43 @@ class _StudentCreateState extends State<StudentCreate> {
                   _buildDateOfBirthField(context),
                   _buildSexField(),
                   const SizedBox(height: 10),
-                  _buildOrganizationField(),
+                  FutureBuilder<List<MainOrganization>>(
+                      future: fetchOrganizationList(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Container(
+                            margin: EdgeInsets.only(top: 10),
+                            child: SpinKitCircle(
+                              color: (Color.fromARGB(255, 74, 161, 70)),
+                              size: 70,
+                            ),
+                          );
+                        } else if (snapshot.hasError) {
+                          return const Center(
+                            child: Text('Something went wrong...'),
+                          );
+                        } else if (!snapshot.hasData) {
+                          return const Center(
+                            child: Text('No organizations found'),
+                          );
+                        } else if (snapshot.connectionState ==
+                                ConnectionState.done &&
+                            snapshot.hasData) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (!isOrganizationsDataLoaded) {
+                              setState(() {
+                                isOrganizationsDataLoaded = true;
+                                print(
+                                    "isorgdataload:${isOrganizationsDataLoaded}");
+                              });
+                            }
+                          });
+                          organizations = snapshot.data!;
+                          return _buildOrganizationField();
+                        }
+                        return SizedBox();
+                      }),
                   _buildStudentClassField(), // Student Class based on organization.description
                   const SizedBox(height: 20),
                   _buildSectionTitle(context, 'Contact Information'),
@@ -138,15 +191,94 @@ class _StudentCreateState extends State<StudentCreate> {
                       userPerson.mailing_address!.street_address = value;
                     }
                   }),
-                  _buildDistrictField(),
-                  _buildCityField(),
+                  FutureBuilder<List<District>>(
+                      future: fetchDistrictList(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Container(
+                            margin: EdgeInsets.only(top: 10),
+                            child: SpinKitCircle(
+                              color: (Color.fromARGB(255, 74, 161, 70)),
+                              size: 70,
+                            ),
+                          );
+                        } else if (snapshot.hasError) {
+                          return const Center(
+                            child: Text('Something went wrong...'),
+                          );
+                        } else if (!snapshot.hasData) {
+                          return const Center(
+                            child: Text('No districts found'),
+                          );
+                        } else if (snapshot.connectionState ==
+                                ConnectionState.done &&
+                            snapshot.hasData) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (!isDistrictsDataLoaded) {
+                              setState(() {
+                                isDistrictsDataLoaded = true;
+                                print(
+                                    "isDistrictsDataLoaded:${isDistrictsDataLoaded}");
+                              });
+                            }
+                          });
+                          districts = snapshot.data!;
+                          int? districtId =
+                              getDistrictIdByCityId(selectedCityId, districts);
+                          selectedDistrictId = districtId ?? selectedDistrictId;
+                          return Column(
+                            children: [
+                              _buildDistrictField(),
+                              _buildCityField(),
+                            ],
+                          );
+                        }
+                        return SizedBox();
+                      }),
                   const SizedBox(height: 20),
                   _buildSectionTitle(context, 'Digital Information'),
                   _buildEditableField('Digital ID', userPerson.digital_id,
                       (value) {
                     userPerson.digital_id = value;
                   }),
-                  _buildAvinyaTypeField(),
+                  FutureBuilder<List<AvinyaType>>(
+                      future: fetchAvinyaTypeList(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Container(
+                            margin: EdgeInsets.only(top: 10),
+                            child: SpinKitCircle(
+                              color: (Color.fromARGB(255, 74, 161, 70)),
+                              size: 70,
+                            ),
+                          );
+                        } else if (snapshot.hasError) {
+                          return const Center(
+                            child: Text('Something went wrong...'),
+                          );
+                        } else if (!snapshot.hasData) {
+                          return const Center(
+                            child: Text('No avinya types found'),
+                          );
+                        } else if (snapshot.connectionState ==
+                                ConnectionState.done &&
+                            snapshot.hasData) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (!isAvinyaTypesDataLoaded) {
+                              setState(() {
+                                isAvinyaTypesDataLoaded = true;
+                                print(
+                                    "isAvinyaTypesDataLoaded:${isAvinyaTypesDataLoaded}");
+                              });
+                            }
+                          });
+                          avinyaTypes = snapshot.data!;
+                          return _buildAvinyaTypeField();
+                        }
+                        return SizedBox();
+                      }),
                   const SizedBox(height: 20),
                   _buildSectionTitle(context, 'Bank Information'),
                   _buildEditableField('Bank Name', userPerson.bank_name,
@@ -167,17 +299,18 @@ class _StudentCreateState extends State<StudentCreate> {
                       (value) {
                     userPerson.bank_account_number = value;
                   }),
-                  const SizedBox(height: 20),
-                  _buildSectionTitle(context, 'Professional Information'),
-                  _buildEditableField('Current Job', userPerson.current_job,
-                      (value) {
-                    userPerson.current_job = value;
-                  }),
-                  _buildEditableTextArea('Comments', userPerson.notes, (value) {
-                    userPerson.notes = value;
-                  }),
+                  // const SizedBox(height: 20),
+                  // _buildSectionTitle(context, 'Professional Information'),
+                  // _buildEditableField('Current Job', userPerson.current_job,
+                  //     (value) {
+                  //   userPerson.current_job = value;
+                  // }),
+                  // _buildEditableTextArea('Comments', userPerson.notes, (value) {
+                  //   userPerson.notes = value;
+                  // }),
                   const SizedBox(height: 40),
-                  _buildSaveButton(context),
+                  _buildSaveButton(isDistrictsDataLoaded,
+                      isOrganizationsDataLoaded, isAvinyaTypesDataLoaded),
                 ],
               ),
             ),
@@ -628,16 +761,24 @@ class _StudentCreateState extends State<StudentCreate> {
         .toList();
   }
 
-  Widget _buildSaveButton(context) {
+  Widget _buildSaveButton(bool isDistrictsDataLoaded,
+      bool isOrganizationsDataLoaded, bool isAvinyaTypesDataLoaded) {
+    bool isEnabled = isDistrictsDataLoaded &&
+        isOrganizationsDataLoaded &&
+        isAvinyaTypesDataLoaded;
+    print('is enabled:${isEnabled}');
+
     return Center(
       child: ElevatedButton(
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            _formKey.currentState!.save();
-            // Save userPerson changes
-            createPerson(context, userPerson);
-          }
-        },
+        onPressed: isEnabled
+            ? () {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  // Save userPerson changes
+                  createPerson(context, userPerson);
+                }
+              }
+            : null,
         child: const Text('Create Student'),
       ),
     );
