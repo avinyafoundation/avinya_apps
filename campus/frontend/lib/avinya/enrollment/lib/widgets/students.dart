@@ -195,7 +195,7 @@ class _StudentsState extends State<Students> {
                           return Container(
                             margin: EdgeInsets.only(top: 10),
                             child: SpinKitCircle(
-                              color: (Colors.deepPurpleAccent),
+                              color: (Color.fromARGB(255, 74, 161, 70)),
                               size: 70,
                             ),
                           );
