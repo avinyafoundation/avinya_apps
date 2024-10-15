@@ -299,15 +299,15 @@ class _StudentCreateState extends State<StudentCreate> {
                       (value) {
                     userPerson.bank_account_number = value;
                   }),
-                  const SizedBox(height: 20),
-                  _buildSectionTitle(context, 'Professional Information'),
-                  _buildEditableField('Current Job', userPerson.current_job,
-                      (value) {
-                    userPerson.current_job = value;
-                  }),
-                  _buildEditableTextArea('Comments', userPerson.notes, (value) {
-                    userPerson.notes = value;
-                  }),
+                  // const SizedBox(height: 20),
+                  // _buildSectionTitle(context, 'Professional Information'),
+                  // _buildEditableField('Current Job', userPerson.current_job,
+                  //     (value) {
+                  //   userPerson.current_job = value;
+                  // }),
+                  // _buildEditableTextArea('Comments', userPerson.notes, (value) {
+                  //   userPerson.notes = value;
+                  // }),
                   const SizedBox(height: 40),
                   _buildSaveButton(isDistrictsDataLoaded,
                       isOrganizationsDataLoaded, isAvinyaTypesDataLoaded),
