@@ -34,7 +34,7 @@ public isolated client class GraphqlClient {
         return <GetPersonsResponse> check performDataBinding(graphqlResponse, GetPersonsResponse);
     }
     remote isolated function getPersonById(int id) returns GetPersonByIdResponse|graphql:ClientError {
-        string query = string `query getPersonById($id:Int!) {person_by_id(id:$id) {id preferred_name full_name date_of_birth sex asgardeo_id jwt_sub_id created updated jwt_email permanent_address {city {id name {name_en name_si name_ta}} street_address phone id} mailing_address {city {id name {name_en name_si name_ta}} street_address phone id} phone organization {id description notes address {id} avinya_type {id name} name {name_en} parent_organizations {id name {name_en}}} avinya_type_id notes nic_no passport_no id_no email street_address digital_id avinya_phone bank_name bank_account_number bank_account_name academy_org_id bank_branch created_by updated_by current_job}}`;
+        string query = string `query getPersonById($id:Int!) {person_by_id(id:$id) {id preferred_name full_name date_of_birth sex asgardeo_id jwt_sub_id created updated jwt_email mailing_address {city {id name {name_en name_si name_ta} district {id name {name_en}}} street_address phone id} phone organization {id description notes address {id} avinya_type {id name} name {name_en} parent_organizations {id name {name_en}}} avinya_type_id notes nic_no passport_no id_no email street_address digital_id avinya_phone bank_name bank_account_number bank_account_name academy_org_id bank_branch created_by updated_by current_job}}`;
         map<anydata> variables = {"id": id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetPersonByIdResponse> check performDataBinding(graphqlResponse, GetPersonByIdResponse);
@@ -52,7 +52,7 @@ public isolated client class GraphqlClient {
         return <GetDistrictsResponse> check performDataBinding(graphqlResponse, GetDistrictsResponse);
     }
     remote isolated function getCities(int district_id) returns GetCitiesResponse|graphql:ClientError {
-        string query = string `query getCities($district_id:Int!) {cities(district_id:$district_id) {id name {name_en} district {id name {name_en}}}}`;
+        string query = string `query getCities($district_id:Int!) {cities(district_id:$district_id) {id name {name_en}}}`;
         map<anydata> variables = {"district_id": district_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetCitiesResponse> check performDataBinding(graphqlResponse, GetCitiesResponse);
