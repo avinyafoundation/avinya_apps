@@ -100,6 +100,30 @@ service / on new http:Listener(9095) {
         }
     }
 
+    resource function get cities/[int district_id]() returns City[]|error {
+        GetCitiesResponse|graphql:ClientError getCitiesResponse = globalDataClient->getCities(district_id);
+        if (getCitiesResponse is GetCitiesResponse) {
+            City[] citiesData = [];
+            foreach var city in getCitiesResponse.cities {
+                City|error cityData = city.cloneWithType(City);
+                if (cityData is City) {
+                    citiesData.push(cityData);
+                } else {
+                    log:printError("Error while processing Application record received", cityData);
+                    return error("Error while processing Application record received: " + cityData.message() +
+                        ":: Detail: " + cityData.detail().toString());
+                }
+            }
+
+            return citiesData;
+
+        } else {
+            log:printError("Error while getting application", getCitiesResponse);
+            return error("Error while getting application: " + getCitiesResponse.message() +
+                ":: Detail: " + getCitiesResponse.detail().toString());
+        }
+    }
+
     resource function get all_organizations() returns Organization[]|error {
         GetAllOrganizationsResponse|graphql:ClientError getAllOrganizationsResponse = globalDataClient->getAllOrganizations();
         if (getAllOrganizationsResponse is GetAllOrganizationsResponse) {

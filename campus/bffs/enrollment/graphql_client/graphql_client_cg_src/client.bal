@@ -46,10 +46,16 @@ public isolated client class GraphqlClient {
         return <UpdatePersonResponse> check performDataBinding(graphqlResponse, UpdatePersonResponse);
     }
     remote isolated function getDistricts() returns GetDistrictsResponse|graphql:ClientError {
-        string query = string `query getDistricts {districts {id province {id name {name_en}} name {name_en} cities {id name {name_en}}}}`;
+        string query = string `query getDistricts {districts {id province {id name {name_en}} name {name_en}}}`;
         map<anydata> variables = {};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetDistrictsResponse> check performDataBinding(graphqlResponse, GetDistrictsResponse);
+    }
+    remote isolated function getCities(int district_id) returns GetCitiesResponse|graphql:ClientError {
+        string query = string `query getCities($district_id:Int!) {cities(district_id:$district_id) {id name {name_en}}}`;
+        map<anydata> variables = {"district_id": district_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetCitiesResponse> check performDataBinding(graphqlResponse, GetCitiesResponse);
     }
     remote isolated function getAvinyaTypes() returns GetAvinyaTypesResponse|graphql:ClientError {
         string query = string `query getAvinyaTypes {avinya_types {id active name global_type foundation_type focus level}}`;

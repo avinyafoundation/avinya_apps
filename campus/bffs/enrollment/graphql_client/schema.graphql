@@ -930,6 +930,7 @@ type Query {
   persons(organization_id: Int, avinya_type_id: Int): [PersonData!]
   person_by_id(id: Int): PersonData
   districts: [DistrictData!]
+  cities(district_id: Int): [CityData!]
   all_organizations: [OrganizationData!]
 }
 
