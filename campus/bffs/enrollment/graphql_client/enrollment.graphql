@@ -90,19 +90,6 @@ query getPersonById($id: Int!) {
     created
     updated
     jwt_email
-    permanent_address {
-      city {
-        id
-        name {
-          name_en
-          name_si
-          name_ta
-        }
-      }
-      street_address
-      phone
-      id
-    }
     mailing_address {
       city {
         id
@@ -110,6 +97,12 @@ query getPersonById($id: Int!) {
           name_en
           name_si
           name_ta
+        }
+        district {
+          id
+          name {
+            name_en
+          }
         }
       }
       street_address
@@ -270,12 +263,6 @@ query getCities($district_id: Int!) {
     id
     name {
       name_en
-    }
-    district {
-      id
-      name {
-        name_en
-      }
     }
   }
 }
