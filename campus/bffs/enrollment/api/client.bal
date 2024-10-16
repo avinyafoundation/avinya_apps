@@ -53,10 +53,10 @@ public isolated client class GraphqlClient {
         return <GetDistrictsResponse>check performDataBinding(graphqlResponse, GetDistrictsResponse);
     }
     remote isolated function getCities(int district_id) returns GetCitiesResponse|graphql:ClientError {
-        string query = string `query getCities($district_id:Int!) {cities(district_id:$district_id) {id name {name_en}}}`;
+        string query = string `query getCities($district_id:Int!) {cities(district_id:$district_id) {id name {name_en} district {id name {name_en}}}}`;
         map<anydata> variables = {"district_id": district_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <GetCitiesResponse>check performDataBinding(graphqlResponse, GetCitiesResponse);
+        return <GetCitiesResponse> check performDataBinding(graphqlResponse, GetCitiesResponse);
     }
     remote isolated function getAllOrganizations() returns GetAllOrganizationsResponse|graphql:ClientError {
         string query = string `query getAllOrganizations {all_organizations {id name {name_en} address {id street_address} avinya_type {id name} description phone notes}}`;
