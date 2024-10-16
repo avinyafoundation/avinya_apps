@@ -18,6 +18,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
   List<AvinyaType> avinyaTypes = [];
   List<MainOrganization> classes = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  List<City> cityList = [];
 
   String? selectedSex;
   int? selectedCityId;
@@ -117,20 +118,20 @@ class _StudentUpdateState extends State<StudentUpdate> {
     }
   }
 
-  int? getDistrictIdByCityId(int? selectedCityId, List<District> districtList) {
-    for (var district in districtList) {
-      if (district.cities != null) {
-        // Check if cities is not null
-        for (var city in district.cities!) {
-          // Use the non-null assertion operator
-          if (city.id == selectedCityId) {
-            return district.id; // Return the district ID if the city ID matches
-          }
-        }
-      }
-    }
-    return null; // Return null if no matching district is found
-  }
+  // int? getDistrictIdByCityId(int? selectedCityId, List<District> districtList) {
+  //   for (var district in districtList) {
+  //     if (district.cities != null) {
+  //       // Check if cities is not null
+  //       for (var city in district.cities!) {
+  //         // Use the non-null assertion operator
+  //         if (city.id == selectedCityId) {
+  //           return district.id; // Return the district ID if the city ID matches
+  //         }
+  //       }
+  //     }
+  //   }
+  //   return null; // Return null if no matching district is found
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -267,10 +268,6 @@ class _StudentUpdateState extends State<StudentUpdate> {
                                   }
                                 });
                                 districts = snapshot.data!;
-                                int? districtId = getDistrictIdByCityId(
-                                    selectedCityId, districts);
-                                selectedDistrictId =
-                                    districtId ?? selectedDistrictId;
                                 return Column(
                                   children: [
                                     _buildDistrictField(),
@@ -521,6 +518,14 @@ class _StudentUpdateState extends State<StudentUpdate> {
     );
   }
 
+  Future<void> _loadCities(int? districtId) async {
+    final fetchedCities = await fetchCities(districtId);
+    setState(() {
+      cityList = fetchedCities;
+      selectedCityId = null; // Reset selected city
+    });
+  }
+
   Widget _buildDistrictField() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -538,7 +543,8 @@ class _StudentUpdateState extends State<StudentUpdate> {
             child: DropdownButtonFormField<int>(
               value: selectedDistrictId,
               items: _getDistrictOptions(),
-              onChanged: (value) {
+              onChanged: (value) async {
+                await _loadCities(value);
                 setState(() {
                   selectedDistrictId = value;
                   userPerson.mailing_address?.district_id = value;
@@ -556,26 +562,6 @@ class _StudentUpdateState extends State<StudentUpdate> {
   }
 
   Widget _buildCityField() {
-    List<City> cityList = districts
-            .firstWhere(
-              (district) => district.id == selectedDistrictId,
-              orElse: () => District(
-                id: 0,
-                name: Name(name_en: 'Unknown'),
-                cities: [],
-              ),
-            )
-            .cities ??
-        [];
-
-    // Ensure selectedCityId is valid or set to null if not found in the current city's list
-    if (cityList.isNotEmpty && selectedCityId != null) {
-      bool cityExists = cityList.any((city) => city.id == selectedCityId);
-      if (!cityExists) {
-        selectedCityId = null;
-      }
-    }
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -774,11 +760,6 @@ class _StudentUpdateState extends State<StudentUpdate> {
     );
   }
 
-  String _formatDate(String? date) {
-    if (date == null) return 'N/A';
-    return DateFormat('d MMM, yyyy').format(DateTime.parse(date));
-  }
-
   List<DropdownMenuItem<int>> _getDistrictOptions() {
     return districts.map((district) {
       return DropdownMenuItem<int>(
@@ -786,24 +767,6 @@ class _StudentUpdateState extends State<StudentUpdate> {
         child: Text(district.name?.name_en ?? 'Unknown'),
       );
     }).toList();
-  }
-
-  List<DropdownMenuItem<int>> _getCityOptions() {
-    if (selectedDistrictId != null) {
-      final selectedDistrict =
-          districts.firstWhere((district) => district.id == selectedDistrictId);
-
-      List<City>? cities = selectedDistrict.cities;
-
-      return cities!.map((city) {
-        return DropdownMenuItem<int>(
-          value: city.id as int, // Cast city ID to int
-          child: Text(city.name?.name_en as String), // Display the English name
-        );
-      }).toList();
-    } else {
-      return [];
-    }
   }
 
   List<DropdownMenuItem<int>> _getClassOptions() {

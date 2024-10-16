@@ -394,8 +394,8 @@ class District {
     return District(
       id: json['id'],
       province: Province.fromJson(json['province']),
-      cities:
-          (json['cities'] as List).map((city) => City.fromJson(city)).toList(),
+      // cities:
+      //     (json['cities'] as List).map((city) => City.fromJson(city)).toList(),
       name: Name.fromJson(json['name']),
     );
   }
@@ -403,8 +403,8 @@ class District {
   Map<String, dynamic> toJson() => {
         if (id != null) 'id': id,
         if (province != null) 'province': province?.toJson(),
-        if (cities != null)
-          'cities': cities!.map((city) => city.toJson()).toList(),
+        // if (cities != null)
+        //   'cities': cities!.map((city) => city.toJson()).toList(),
         if (name != null) 'name': name?.toJson(),
       };
 }
@@ -616,6 +616,25 @@ Future<List<District>> fetchDistricts() async {
         .toList();
     return activityAttendances;
   } else {
-    throw Exception('Failed to get Org Data');
+    throw Exception('Failed to get District Data');
+  }
+}
+
+Future<List<City>> fetchCities(id) async {
+  final response = await http.get(
+    Uri.parse('${AppConfig.campusEnrollmentsBffApiUrl}/cities/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<City> activityAttendances =
+        await resultsJson.map<City>((json) => City.fromJson(json)).toList();
+    return activityAttendances;
+  } else {
+    throw Exception('Failed to get City Data');
   }
 }

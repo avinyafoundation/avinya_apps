@@ -18,6 +18,7 @@ class _StudentCreateState extends State<StudentCreate> {
   List<AvinyaType> avinyaTypes = [];
   List<MainOrganization> classes = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  List<City> cityList = [];
 
   String? selectedSex;
   int? selectedCityId;
@@ -479,6 +480,14 @@ class _StudentCreateState extends State<StudentCreate> {
     );
   }
 
+  Future<void> _loadCities(int? districtId) async {
+    final fetchedCities = await fetchCities(districtId);
+    setState(() {
+      cityList = fetchedCities;
+      selectedCityId = null; // Reset selected city
+    });
+  }
+
   Widget _buildDistrictField() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -496,7 +505,8 @@ class _StudentCreateState extends State<StudentCreate> {
             child: DropdownButtonFormField<int>(
               value: selectedDistrictId,
               items: _getDistrictOptions(),
-              onChanged: (value) {
+              onChanged: (value) async {
+                await _loadCities(value);
                 setState(() {
                   selectedDistrictId = value;
                   userPerson.mailing_address?.district_id = value;
@@ -514,18 +524,6 @@ class _StudentCreateState extends State<StudentCreate> {
   }
 
   Widget _buildCityField() {
-    List<City> cityList = districts
-            .firstWhere(
-              (district) => district.id == selectedDistrictId,
-              orElse: () => District(
-                id: 0,
-                name: Name(name_en: 'Unknown'),
-                cities: [],
-              ),
-            )
-            .cities ??
-        [];
-
     // Ensure selectedCityId is valid or set to null if not found in the current city's list
     if (cityList.isNotEmpty && selectedCityId != null) {
       bool cityExists = cityList.any((city) => city.id == selectedCityId);
