@@ -158,11 +158,20 @@ query getPersonById($id: Int!) {
   }
 }
 
-mutation updatePerson($person: Person!,$permanent_address: Address,$permanent_address_city: City,
-                      $mailing_address: Address,$mailing_address_city: City) {
-  update_person(person: $person,permanent_address: $permanent_address,
-                permanent_address_city: $permanent_address_city,mailing_address: $mailing_address,
-                mailing_address_city: $mailing_address_city) {
+mutation updatePerson(
+  $person: Person!
+  $permanent_address: Address
+  $permanent_address_city: City
+  $mailing_address: Address
+  $mailing_address_city: City
+) {
+  update_person(
+    person: $person
+    permanent_address: $permanent_address
+    permanent_address_city: $permanent_address_city
+    mailing_address: $mailing_address
+    mailing_address_city: $mailing_address_city
+  ) {
     id
     preferred_name
     full_name
@@ -241,62 +250,72 @@ mutation updatePerson($person: Person!,$permanent_address: Address,$permanent_ad
   }
 }
 
-
 query getDistricts {
-    districts {
-        id
-        province{
-            id
-            name{
-                name_en
-            }
-        }
-        name{
-            name_en
-        }
-        cities{
-            id
-            name{
-                name_en
-            }
-        }
+  districts {
+    id
+    province {
+      id
+      name {
+        name_en
+      }
     }
+    name {
+      name_en
+    }
+  }
+}
+
+query getCities($district_id: Int!) {
+  cities(district_id: $district_id) {
+    id
+    name {
+      name_en
+    }
+  }
 }
 
 query getAvinyaTypes {
-    avinya_types {
-        id
-        active
-        name
-        global_type
-        foundation_type
-        focus
-        level
-   }
+  avinya_types {
+    id
+    active
+    name
+    global_type
+    foundation_type
+    focus
+    level
+  }
 }
 
 query getAllOrganizations {
-    all_organizations {
-        id
-        name{
-            name_en
-        }
-        address{
-            id
-            street_address
-        }
-        avinya_type{
-            id
-            name
-        }
-        description
-        phone
-        notes
+  all_organizations {
+    id
+    name {
+      name_en
     }
+    address {
+      id
+      street_address
+    }
+    avinya_type {
+      id
+      name
+    }
+    description
+    phone
+    notes
+  }
 }
 
-mutation insertPerson($person: Person!,$mailing_address: Address,$mailing_address_city: City) {
-  insert_person(person: $person,mailing_address: $mailing_address,mailing_address_city: $mailing_address_city) {
+mutation insertPerson(
+  $person: Person!
+  $mailing_address: Address
+  $mailing_address_city: City
+) {
+  insert_person(
+    person: $person
+    mailing_address: $mailing_address
+    mailing_address_city: $mailing_address_city
+  ) {
     id
     preferred_name
     full_name
@@ -374,4 +393,3 @@ mutation insertPerson($person: Person!,$mailing_address: Address,$mailing_addres
     current_job
   }
 }
-
