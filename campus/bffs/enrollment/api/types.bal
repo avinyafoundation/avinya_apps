@@ -381,10 +381,14 @@ public type GetCitiesResponse record {|
         record {|
             string? name_en;
         |} name;
+        record {|
+            int? id;
+            record {|
+                string? name_en;
+            |} name;
+        |} district;
     |}[] cities;
 |};
-
-
 public type GetAvinyaTypesResponse record {|
     map<json?> __extensions?;
     record {|

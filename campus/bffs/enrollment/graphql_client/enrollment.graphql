@@ -271,6 +271,12 @@ query getCities($district_id: Int!) {
     name {
       name_en
     }
+    district {
+      id
+      name {
+        name_en
+      }
+    }
   }
 }
 
