@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:gallery/avinya/enrollment/lib/data/person.dart';
 
@@ -17,6 +18,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
   List<AvinyaType> avinyaTypes = [];
   List<MainOrganization> classes = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  List<City> cityList = [];
 
   String? selectedSex;
   int? selectedCityId;
@@ -24,6 +26,9 @@ class _StudentUpdateState extends State<StudentUpdate> {
   int? selectedOrgId;
   int? selectedClassId;
   DateTime? selectedDateOfBirth;
+
+  bool isDistrictsDataLoaded = false;
+  bool isOrganizationsDataLoaded = false;
 
   @override
   void initState() {
@@ -33,8 +38,6 @@ class _StudentUpdateState extends State<StudentUpdate> {
 
   Future<void> loadData() async {
     await getUserPerson();
-    await fetchDistrictList();
-    await fetchOrganizationList();
     await fetchAvinyaTypeList();
   }
 
@@ -50,10 +53,14 @@ class _StudentUpdateState extends State<StudentUpdate> {
       userPerson = user;
       selectedSex = userPerson.sex;
       userPerson.avinya_type_id = user.avinya_type_id;
-
+      selectedDistrictId = user.mailing_address?.city?.district!.id;
       // Safely assign city and organization IDs with fallbacks
       selectedCityId = userPerson.mailing_address?.city?.id ??
           0; // Default to 0 or another fallback value
+      if (selectedDistrictId != null) {
+        _loadCities(selectedDistrictId, selectedCityId);
+      }
+
       selectedOrgId =
           userPerson.organization?.id ?? 0; // Similarly handle organization ID
       selectedClassId = userPerson.organization?.id ??
@@ -79,29 +86,32 @@ class _StudentUpdateState extends State<StudentUpdate> {
     });
   }
 
-  Future<void> fetchDistrictList() async {
-    List<District> districtList = await fetchDistricts();
-    int? districtId = getDistrictIdByCityId(selectedCityId, districtList);
-    if (mounted) {
-      setState(() {
-        districts = districtList;
-        selectedDistrictId = districtId ?? selectedDistrictId;
-        // if (districtId != null) {
-        //   // Update the cities based on the district
-        //   selectedCityId = null; // Reset city selection when district changes
-        // }
-      });
-    }
+  Future<List<District>> fetchDistrictList() async {
+    return await fetchDistricts();
   }
 
-  Future<void> fetchOrganizationList() async {
-    List<MainOrganization> orgList = await fetchOrganizations();
-    if (mounted) {
-      setState(() {
-        organizations = orgList;
-      });
-    }
+  // Future<void> fetchDistrictList() async {
+  //   List<District> districtList = await fetchDistricts();
+  //   int? districtId = getDistrictIdByCityId(selectedCityId, districtList);
+  //   if (mounted) {
+  //     setState(() {
+  //       districts = districtList;
+  //       selectedDistrictId = districtId ?? selectedDistrictId;
+  //     });
+  //   }
+  // }
+  Future<List<MainOrganization>> fetchOrganizationList() async {
+    return await fetchOrganizations();
   }
+
+  // Future<void> fetchOrganizationList() async {
+  //   List<MainOrganization> orgList = await fetchOrganizations();
+  //   if (mounted) {
+  //     setState(() {
+  //       organizations = orgList;
+  //     });
+  //   }
+  // }
 
   Future<void> fetchAvinyaTypeList() async {
     List<AvinyaType> avinyaTypeList = await fetchAvinyaTypes();
@@ -112,20 +122,20 @@ class _StudentUpdateState extends State<StudentUpdate> {
     }
   }
 
-  int? getDistrictIdByCityId(int? selectedCityId, List<District> districtList) {
-    for (var district in districtList) {
-      if (district.cities != null) {
-        // Check if cities is not null
-        for (var city in district.cities!) {
-          // Use the non-null assertion operator
-          if (city.id == selectedCityId) {
-            return district.id; // Return the district ID if the city ID matches
-          }
-        }
-      }
-    }
-    return null; // Return null if no matching district is found
-  }
+  // int? getDistrictIdByCityId(int? selectedCityId, List<District> districtList) {
+  //   for (var district in districtList) {
+  //     if (district.cities != null) {
+  //       // Check if cities is not null
+  //       for (var city in district.cities!) {
+  //         // Use the non-null assertion operator
+  //         if (city.id == selectedCityId) {
+  //           return district.id; // Return the district ID if the city ID matches
+  //         }
+  //       }
+  //     }
+  //   }
+  //   return null; // Return null if no matching district is found
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +177,45 @@ class _StudentUpdateState extends State<StudentUpdate> {
                         _buildDateOfBirthField(context),
                         _buildSexField(),
                         const SizedBox(height: 10),
-                        _buildOrganizationField(),
+                        FutureBuilder<List<MainOrganization>>(
+                            future: fetchOrganizationList(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Container(
+                                  margin: EdgeInsets.only(top: 10),
+                                  child: SpinKitCircle(
+                                    color: (Color.fromARGB(255, 74, 161, 70)),
+                                    size: 70,
+                                  ),
+                                );
+                              } else if (snapshot.hasError) {
+                                return const Center(
+                                  child: Text('Something went wrong...'),
+                                );
+                              } else if (!snapshot.hasData) {
+                                return const Center(
+                                  child: Text('No organizations found'),
+                                );
+                              } else if (snapshot.connectionState ==
+                                      ConnectionState.done &&
+                                  snapshot.hasData) {
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  if (!isOrganizationsDataLoaded) {
+                                    setState(() {
+                                      isOrganizationsDataLoaded = true;
+                                      print(
+                                          "isorgdataload:${isOrganizationsDataLoaded}");
+                                    });
+                                  }
+                                });
+                                organizations = snapshot.data!;
+                                return _buildOrganizationField();
+                              }
+                              return SizedBox();
+                            }),
+                        // _buildOrganizationField(),
                         _buildStudentClassField(), // Student Class based on organization.description
                         const SizedBox(height: 20),
                         _buildSectionTitle(context, 'Contact Information'),
@@ -190,8 +238,50 @@ class _StudentUpdateState extends State<StudentUpdate> {
                             userPerson.mailing_address!.street_address = value;
                           }
                         }),
-                        _buildDistrictField(),
-                        _buildCityField(),
+                        FutureBuilder<List<District>>(
+                            future: fetchDistrictList(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Container(
+                                  margin: EdgeInsets.only(top: 10),
+                                  child: SpinKitCircle(
+                                    color: (Color.fromARGB(255, 74, 161, 70)),
+                                    size: 70,
+                                  ),
+                                );
+                              } else if (snapshot.hasError) {
+                                return const Center(
+                                  child: Text('Something went wrong...'),
+                                );
+                              } else if (!snapshot.hasData) {
+                                return const Center(
+                                  child: Text('No districts found'),
+                                );
+                              } else if (snapshot.connectionState ==
+                                      ConnectionState.done &&
+                                  snapshot.hasData) {
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  if (!isDistrictsDataLoaded) {
+                                    setState(() {
+                                      isDistrictsDataLoaded = true;
+                                      print(
+                                          "isDistrictsDataLoaded:${isDistrictsDataLoaded}");
+                                    });
+                                  }
+                                });
+                                districts = snapshot.data!;
+                                return Column(
+                                  children: [
+                                    _buildDistrictField(),
+                                    _buildCityField(),
+                                  ],
+                                );
+                              }
+
+                              return SizedBox();
+                            }),
                         const SizedBox(height: 20),
                         _buildSectionTitle(context, 'Digital Information'),
                         _buildEditableField('Digital ID', userPerson.digital_id,
@@ -230,7 +320,8 @@ class _StudentUpdateState extends State<StudentUpdate> {
                           userPerson.notes = value;
                         }),
                         const SizedBox(height: 40),
-                        _buildSaveButton(),
+                        _buildSaveButton(
+                            isDistrictsDataLoaded, isOrganizationsDataLoaded),
                       ],
                     ),
                   ),
@@ -431,6 +522,14 @@ class _StudentUpdateState extends State<StudentUpdate> {
     );
   }
 
+  Future<void> _loadCities(int? districtId, int? cityid) async {
+    final fetchedCities = await fetchCities(districtId);
+    setState(() {
+      cityList = fetchedCities;
+      selectedCityId = cityid;
+    });
+  }
+
   Widget _buildDistrictField() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -448,7 +547,8 @@ class _StudentUpdateState extends State<StudentUpdate> {
             child: DropdownButtonFormField<int>(
               value: selectedDistrictId,
               items: _getDistrictOptions(),
-              onChanged: (value) {
+              onChanged: (value) async {
+                await _loadCities(value, null);
                 setState(() {
                   selectedDistrictId = value;
                   userPerson.mailing_address?.district_id = value;
@@ -466,26 +566,6 @@ class _StudentUpdateState extends State<StudentUpdate> {
   }
 
   Widget _buildCityField() {
-    List<City> cityList = districts
-            .firstWhere(
-              (district) => district.id == selectedDistrictId,
-              orElse: () => District(
-                id: 0,
-                name: Name(name_en: 'Unknown'),
-                cities: [],
-              ),
-            )
-            .cities ??
-        [];
-
-    // Ensure selectedCityId is valid or set to null if not found in the current city's list
-    if (cityList.isNotEmpty && selectedCityId != null) {
-      bool cityExists = cityList.any((city) => city.id == selectedCityId);
-      if (!cityExists) {
-        selectedCityId = null;
-      }
-    }
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -684,11 +764,6 @@ class _StudentUpdateState extends State<StudentUpdate> {
     );
   }
 
-  String _formatDate(String? date) {
-    if (date == null) return 'N/A';
-    return DateFormat('d MMM, yyyy').format(DateTime.parse(date));
-  }
-
   List<DropdownMenuItem<int>> _getDistrictOptions() {
     return districts.map((district) {
       return DropdownMenuItem<int>(
@@ -696,24 +771,6 @@ class _StudentUpdateState extends State<StudentUpdate> {
         child: Text(district.name?.name_en ?? 'Unknown'),
       );
     }).toList();
-  }
-
-  List<DropdownMenuItem<int>> _getCityOptions() {
-    if (selectedDistrictId != null) {
-      final selectedDistrict =
-          districts.firstWhere((district) => district.id == selectedDistrictId);
-
-      List<City>? cities = selectedDistrict.cities;
-
-      return cities!.map((city) {
-        return DropdownMenuItem<int>(
-          value: city.id as int, // Cast city ID to int
-          child: Text(city.name?.name_en as String), // Display the English name
-        );
-      }).toList();
-    } else {
-      return [];
-    }
   }
 
   List<DropdownMenuItem<int>> _getClassOptions() {
@@ -726,16 +783,21 @@ class _StudentUpdateState extends State<StudentUpdate> {
         .toList();
   }
 
-  Widget _buildSaveButton() {
+  Widget _buildSaveButton(
+      bool isDistrictsDataLoaded, bool isOrganizationsDataLoaded) {
+    bool isEnabled = isDistrictsDataLoaded && isOrganizationsDataLoaded;
+    print('is enabled:${isEnabled}');
     return Center(
       child: ElevatedButton(
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            _formKey.currentState!.save();
-            // Save userPerson changes
-            updatePerson(userPerson);
-          }
-        },
+        onPressed: isEnabled
+            ? () {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  // Save userPerson changes
+                  updatePerson(userPerson);
+                }
+              }
+            : null,
         child: const Text('Save Changes'),
       ),
     );

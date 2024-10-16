@@ -159,7 +159,7 @@ class _PersonDataExcelReportState extends State<PersonDataExcelReport> {
       ignoring: widget.isFetching,
       child: ElevatedButton.icon(
         icon: Icon(Icons.download),
-        label: Text('Excel Export'),
+        label: Text('Excel Export',style: TextStyle(fontSize: 12),),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.deepPurpleAccent,
           shape:
