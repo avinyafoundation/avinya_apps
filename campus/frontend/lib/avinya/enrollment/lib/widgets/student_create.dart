@@ -601,7 +601,8 @@ class _StudentCreateState extends State<StudentCreate> {
           Expanded(
             flex: 6,
             child: DropdownButtonFormField<int>(
-              value: userPerson.organization?.parent_organizations?.first.id,
+              value: userPerson.organization?.parent_organizations?.first.id ??
+                  userPerson.organization_id,
               items: [
                 DropdownMenuItem<int>(
                   value: null, // Default item for when no selection is made

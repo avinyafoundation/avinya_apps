@@ -146,19 +146,23 @@ class ParentOrganization {
 class City {
   int? id;
   Name? name;
+  District? district;
 
-  City({this.id, this.name});
+  City({this.id, this.name, this.district});
 
   factory City.fromJson(Map<String, dynamic> json) {
     return City(
       id: json['id'],
-      name: Name.fromJson(json['name']),
+      name: json['name'] != null ? Name.fromJson(json['name']) : null,
+      district:
+          json['district'] != null ? District.fromJson(json['district']) : null,
     );
   }
 
   Map<String, dynamic> toJson() => {
         if (id != null) 'id': id,
         if (name != null) 'name': name?.toJson(),
+        if (district != null) 'district': district?.toJson(),
       };
 }
 
@@ -393,18 +397,15 @@ class District {
   factory District.fromJson(Map<String, dynamic> json) {
     return District(
       id: json['id'],
-      province: Province.fromJson(json['province']),
-      // cities:
-      //     (json['cities'] as List).map((city) => City.fromJson(city)).toList(),
-      name: Name.fromJson(json['name']),
+      province:
+          json['province'] != null ? Province.fromJson(json['province']) : null,
+      name: json['name'] != null ? Name.fromJson(json['name']) : null,
     );
   }
 
   Map<String, dynamic> toJson() => {
         if (id != null) 'id': id,
         if (province != null) 'province': province?.toJson(),
-        // if (cities != null)
-        //   'cities': cities!.map((city) => city.toJson()).toList(),
         if (name != null) 'name': name?.toJson(),
       };
 }

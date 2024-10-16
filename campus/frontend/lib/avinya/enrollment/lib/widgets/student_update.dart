@@ -53,10 +53,14 @@ class _StudentUpdateState extends State<StudentUpdate> {
       userPerson = user;
       selectedSex = userPerson.sex;
       userPerson.avinya_type_id = user.avinya_type_id;
-
+      selectedDistrictId = user.mailing_address?.city?.district!.id;
       // Safely assign city and organization IDs with fallbacks
       selectedCityId = userPerson.mailing_address?.city?.id ??
           0; // Default to 0 or another fallback value
+      if (selectedDistrictId != null) {
+        _loadCities(selectedDistrictId, selectedCityId);
+      }
+
       selectedOrgId =
           userPerson.organization?.id ?? 0; // Similarly handle organization ID
       selectedClassId = userPerson.organization?.id ??
@@ -518,11 +522,11 @@ class _StudentUpdateState extends State<StudentUpdate> {
     );
   }
 
-  Future<void> _loadCities(int? districtId) async {
+  Future<void> _loadCities(int? districtId, int? cityid) async {
     final fetchedCities = await fetchCities(districtId);
     setState(() {
       cityList = fetchedCities;
-      selectedCityId = null; // Reset selected city
+      selectedCityId = cityid;
     });
   }
 
@@ -544,7 +548,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
               value: selectedDistrictId,
               items: _getDistrictOptions(),
               onChanged: (value) async {
-                await _loadCities(value);
+                await _loadCities(value, null);
                 setState(() {
                   selectedDistrictId = value;
                   userPerson.mailing_address?.district_id = value;
