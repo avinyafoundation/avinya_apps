@@ -529,19 +529,12 @@ public type GetPersonByIdResponse record {|
                     string? name_si;
                     string? name_ta;
                 |} name;
-            |} city;
-            string? street_address;
-            int? phone;
-            int? id;
-        |}? permanent_address;
-        record {|
-            record {|
-                int? id;
                 record {|
-                    string? name_en;
-                    string? name_si;
-                    string? name_ta;
-                |} name;
+                    int? id;
+                    record {|
+                        string? name_en;
+                    |} name;
+                |} district;
             |} city;
             string? street_address;
             int? phone;
@@ -683,13 +676,17 @@ public type GetDistrictsResponse record {|
         record {|
             string? name_en;
         |} name;
-        record {|
-            int? id;
-            record {|
-                string? name_en;
-            |} name;
-        |}[] cities;
     |}[]? districts;
+|};
+
+public type GetCitiesResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string? name_en;
+        |} name;
+    |}[]? cities;
 |};
 
 public type GetAvinyaTypesResponse record {|
