@@ -413,3 +413,42 @@ query getOrganizationsByAvinyaType($avinya_type: Int!) {
         }
     }
 }
+
+mutation createMonthlyLeaveDates($monthlyLeaveDates: MonthlyLeaveDates!) {
+    add_monthly_leave_dates(monthly_leave_dates: $monthlyLeaveDates) {
+        id
+        year
+        month
+        organization_id
+        leave_dates_list
+        daily_amount
+        created
+        updated
+   }
+}
+
+mutation updateMonthlyLeaveDates($monthlyLeaveDates: MonthlyLeaveDates!) {
+    update_monthly_leave_dates(monthly_leave_dates: $monthlyLeaveDates) {
+        id
+        year
+        month
+        organization_id
+        leave_dates_list
+        daily_amount
+        created
+        updated
+    }
+}
+
+query getMonthlyLeaveDatesRecordById($id: Int!) {
+    monthly_leave_dates_record_by_id(id: $id) {
+        id
+        year
+        month
+        organization_id
+        leave_dates_list
+        daily_amount
+        created
+        updated
+    }
+}

@@ -314,4 +314,23 @@ log:printInfo("Formatted Response: " + formattedJson);
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetOrganizationsByAvinyaTypeResponse> check performDataBinding(graphqlResponse, GetOrganizationsByAvinyaTypeResponse);
     }
+   
+    remote isolated function createMonthlyLeaveDates(MonthlyLeaveDates monthlyLeaveDates) returns CreateMonthlyLeaveDatesResponse|graphql:ClientError {
+        string query = string `mutation createMonthlyLeaveDates($monthlyLeaveDates:MonthlyLeaveDates!) {add_monthly_leave_dates(monthly_leave_dates:$monthlyLeaveDates) {id year month organization_id leave_dates_list daily_amount created updated}}`;
+        map<anydata> variables = {"monthlyLeaveDates": monthlyLeaveDates};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <CreateMonthlyLeaveDatesResponse> check performDataBinding(graphqlResponse, CreateMonthlyLeaveDatesResponse);
+    }
+    remote isolated function updateMonthlyLeaveDates(MonthlyLeaveDates monthlyLeaveDates) returns UpdateMonthlyLeaveDatesResponse|graphql:ClientError {
+        string query = string `mutation updateMonthlyLeaveDates($monthlyLeaveDates:MonthlyLeaveDates!) {update_monthly_leave_dates(monthly_leave_dates:$monthlyLeaveDates) {id year month organization_id leave_dates_list daily_amount created updated}}`;
+        map<anydata> variables = {"monthlyLeaveDates": monthlyLeaveDates};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <UpdateMonthlyLeaveDatesResponse> check performDataBinding(graphqlResponse, UpdateMonthlyLeaveDatesResponse);
+    }
+    remote isolated function getMonthlyLeaveDatesRecordById(int id) returns GetMonthlyLeaveDatesRecordByIdResponse|graphql:ClientError {
+        string query = string `query getMonthlyLeaveDatesRecordById($id:Int!) {monthly_leave_dates_record_by_id(id:$id) {id year month organization_id leave_dates_list daily_amount created updated}}`;
+        map<anydata> variables = {"id": id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetMonthlyLeaveDatesRecordByIdResponse> check performDataBinding(graphqlResponse, GetMonthlyLeaveDatesRecordByIdResponse);
+    }
 }
