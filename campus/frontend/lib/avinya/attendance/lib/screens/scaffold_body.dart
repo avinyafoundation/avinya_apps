@@ -14,6 +14,7 @@ import 'package:attendance/screens/duty_attendance_marker.dart';
 import 'package:attendance/screens/late_attendance_report.dart';
 import 'package:attendance/screens/dashboard/dashboard_screen.dart';
 import 'package:attendance/screens/daily_attendance_summary_report.dart';
+import 'package:gallery/avinya/attendance/lib/screens/monthly_payment_report.dart';
 
 import '../routing.dart';
 import '../widgets/fade_transition_page.dart';
@@ -82,6 +83,12 @@ class SMSScaffoldBody extends StatelessWidget {
           const FadeTransitionPage<void>(
             key: ValueKey('weekly_payment_report'),
             child: WeeklyPaymentReportScreen(),
+          )
+        else if (currentRoute.pathTemplate
+            .startsWith('/monthly_payment_report'))
+          const FadeTransitionPage<void>(
+            key: ValueKey('monthly_payment_report'),
+            child: MonthlyPaymentReportScreen(),
           )
         else if (currentRoute.pathTemplate
             .startsWith('/person_attendance_report'))

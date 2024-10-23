@@ -118,8 +118,8 @@ class _SMSScaffoldState extends State<SMSScaffold> {
             padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
             child: ListTile(
               hoverColor: Colors.white.withOpacity(0.3),
-              leading: Icon(Icons.summarize_sharp,
-                  color: Colors.white, size: 20.0),
+              leading:
+                  Icon(Icons.summarize_sharp, color: Colors.white, size: 20.0),
               title: Container(
                 margin: EdgeInsets.only(left: 12.0),
                 transform: Matrix4.translationValues(-25, 0.0, 0.0),
@@ -161,6 +161,29 @@ class _SMSScaffoldState extends State<SMSScaffold> {
             ),
           ),
         ),
+        // Material(
+        //   type: MaterialType.transparency,
+        //   child: Container(
+        //     padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
+        //     child: ListTile(
+        //       hoverColor: Colors.white.withOpacity(0.3),
+        //       leading:
+        //           Icon(Icons.paid_outlined, color: Colors.white, size: 20.0),
+        //       title: Container(
+        //         margin: EdgeInsets.only(left: 12.0),
+        //         transform: Matrix4.translationValues(-25, 0.0, 0.0),
+        //         child: Text(
+        //           "Weekly Payment Report",
+        //           style: TextStyle(color: Colors.white, fontSize: 12),
+        //         ),
+        //       ),
+        //       onTap: () {
+        //         Navigator.pop(context); // Close the drawer
+        //         routeState.go('/weekly_payment_report');
+        //       },
+        //     ),
+        //   ),
+        // ),
         Material(
           type: MaterialType.transparency,
           child: Container(
@@ -173,13 +196,13 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                 margin: EdgeInsets.only(left: 12.0),
                 transform: Matrix4.translationValues(-25, 0.0, 0.0),
                 child: Text(
-                  "Weekly Payment Report",
+                  "Monthly Payment Report",
                   style: TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ),
               onTap: () {
                 Navigator.pop(context); // Close the drawer
-                routeState.go('/weekly_payment_report');
+                routeState.go('/monthly_payment_report');
               },
             ),
           ),
@@ -319,12 +342,16 @@ class _SMSScaffoldState extends State<SMSScaffold> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Avinya Academy - Campus Attendance Portal",style: TextStyle(color: Colors.white)),
+        title: Text("Avinya Academy - Campus Attendance Portal",
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepPurpleAccent,
         iconTheme: IconThemeData(color: Colors.white),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.logout,color: Colors.white,),
+            icon: const Icon(
+              Icons.logout,
+              color: Colors.white,
+            ),
             tooltip: 'Logout',
             onPressed: () {
               SMSAuthScope.of(context).signOut();
@@ -333,7 +360,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.info,color: Colors.white),
+            icon: const Icon(Icons.info, color: Colors.white),
             tooltip: 'Help',
             onPressed: () {
               Navigator.push(context, MaterialPageRoute<void>(
