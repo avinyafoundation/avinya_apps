@@ -959,7 +959,7 @@ type Query {
   districts: [DistrictData!]
   cities(district_id: Int): [CityData!]
   all_organizations: [OrganizationData!]
-  monthly_leave_dates_record_by_id(id: Int): MonthlyLeaveDatesData
+  monthly_leave_dates_record_by_id(organization_id: Int!, year: Int!, month: Int!): MonthlyLeaveDatesData
 }
 
 input ResourceAllocation {
