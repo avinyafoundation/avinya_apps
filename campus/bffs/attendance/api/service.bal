@@ -917,8 +917,8 @@ service / on new http:Listener(9091) {
         }
     }
     
-    resource function get monthly_leave_dates_record_by_id/[int id]() returns MonthlyLeaveDates|error {
-        GetMonthlyLeaveDatesRecordByIdResponse|graphql:ClientError getMonthlyLeaveDatesRecordByIdResponse = globalDataClient->getMonthlyLeaveDatesRecordById(id);
+    resource function get monthly_leave_dates_record_by_id/[int organization_id]/[int year]/[int month]() returns MonthlyLeaveDates|error {
+        GetMonthlyLeaveDatesRecordByIdResponse|graphql:ClientError getMonthlyLeaveDatesRecordByIdResponse = globalDataClient->getMonthlyLeaveDatesRecordById(month,year,organization_id);
         if (getMonthlyLeaveDatesRecordByIdResponse is GetMonthlyLeaveDatesRecordByIdResponse) {
             MonthlyLeaveDates|error monthly_leave_dates_record_by_id_record = getMonthlyLeaveDatesRecordByIdResponse.monthly_leave_dates_record_by_id.cloneWithType(MonthlyLeaveDates);
             if (monthly_leave_dates_record_by_id_record is MonthlyLeaveDates) {

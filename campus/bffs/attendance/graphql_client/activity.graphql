@@ -440,8 +440,8 @@ mutation updateMonthlyLeaveDates($monthlyLeaveDates: MonthlyLeaveDates!) {
     }
 }
 
-query getMonthlyLeaveDatesRecordById($id: Int!) {
-    monthly_leave_dates_record_by_id(id: $id) {
+query getMonthlyLeaveDatesRecordById($organization_id:Int!,$year:Int!,$month:Int!) {
+    monthly_leave_dates_record_by_id(organization_id: $organization_id,year:$year,month:$month) {
         id
         year
         month
@@ -450,5 +450,6 @@ query getMonthlyLeaveDatesRecordById($id: Int!) {
         daily_amount
         created
         updated
-    }
+    }      
 }
+

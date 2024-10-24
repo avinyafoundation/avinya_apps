@@ -231,9 +231,9 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <UpdateMonthlyLeaveDatesResponse> check performDataBinding(graphqlResponse, UpdateMonthlyLeaveDatesResponse);
     }
-    remote isolated function getMonthlyLeaveDatesRecordById(int id) returns GetMonthlyLeaveDatesRecordByIdResponse|graphql:ClientError {
-        string query = string `query getMonthlyLeaveDatesRecordById($id:Int!) {monthly_leave_dates_record_by_id(id:$id) {id year month organization_id leave_dates_list daily_amount created updated}}`;
-        map<anydata> variables = {"id": id};
+    remote isolated function getMonthlyLeaveDatesRecordById(int month, int year, int organization_id) returns GetMonthlyLeaveDatesRecordByIdResponse|graphql:ClientError {
+        string query = string `query getMonthlyLeaveDatesRecordById($organization_id:Int!,$year:Int!,$month:Int!) {monthly_leave_dates_record_by_id(organization_id:$organization_id,year:$year,month:$month) {id year month organization_id leave_dates_list daily_amount created updated}}`;
+        map<anydata> variables = {"month": month, "year": year, "organization_id": organization_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetMonthlyLeaveDatesRecordByIdResponse> check performDataBinding(graphqlResponse, GetMonthlyLeaveDatesRecordByIdResponse);
     }
