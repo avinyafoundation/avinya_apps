@@ -36,6 +36,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   List<Person> _fetchedStudentList = [];
   Organization? _fetchedOrganization;
   bool _isFetching = true;
+  int? organization_id = null;
 
   //calendar specific variables
   DateTime _focusedDay = DateTime.now();
@@ -237,6 +238,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
 
     setState(() {
       _fetchedOrganization;
+      organization_id = _fetchedOrganization!.id;
       this._isFetching = false;
       _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
           updateSelected);
@@ -405,7 +407,9 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => LeaveDatePicker(),
+                                builder: (context) => LeaveDatePicker(
+                                  organizationId: organization_id,
+                                ),
                               ),
                             );
                           },
