@@ -141,6 +141,7 @@ public type Consumable record {
     string? description?;
     string? model?;
     string? serial_number?;
+    anydata? threshold?;
     int? id?;
     string? updated?;
     string? record_type?;
@@ -214,18 +215,45 @@ public type EvaluationMetadata record {
     string? status?;
 };
 
+// public type Inventory record {
+//     int? consumable_id?;
+//     anydata? quantity?;
+//     string? created?;
+//     int? avinya_type_id?;
+//     string? description?;
+//     int? asset_id?;
+//     string? record_type?;
+//     string? manufacturer?;
+//     anydata? quantity_out?;
+//     int? resource_property_id?;
+//     anydata? quantity_in?;
+//     int? organization_id?;
+//     string? name?;
+//     int? id?;
+//     string? updated?;
+//     string? resource_property_value?;
+//     int? person_id?;
+// };
 public type Inventory record {
-    int? quantity_out?;
+    string? month_name?;
     int? consumable_id?;
-    int? quantity?;
-    int? quantity_in?;
+    anydata? quantity?;
     string? created?;
-    int? organization_id?;
+    anydata? prev_quantity?;
     int? avinya_type_id?;
-    int? id?;
+    string? description?;
     int? asset_id?;
-    string? updated?;
+    int? is_below_threshold?;
     string? record_type?;
+    string? manufacturer?;
+    anydata? quantity_out?;
+    int? resource_property_id?;
+    anydata? quantity_in?;
+    int? organization_id?;
+    string? name?;
+    int? id?;
+    string? updated?;
+    string? resource_property_value?;
     int? person_id?;
 };
 
@@ -364,6 +392,37 @@ public type Vacancy record {
     int? head_count?;
     int? id?;
     string? record_type?;
+};
+
+public type Vehicle record {
+    string? record_type?;
+    int? id?;
+    string? vehicle_number?;
+    int? organization_id?;
+    int? person_id?;
+    string? created?;
+    string? updated?;
+};
+
+public type VehicleReasonMetadata record {
+    string? record_type?;
+    int? id?;
+    string? reason?;
+    string? created?;
+};
+
+public type VehicleFuelConsumption record {
+    string? date_time?;
+    string? distance?;
+    string? starting_meter?;
+    string? created?;
+    string? ending_meter?;
+    string? comment?;
+    int? id?;
+    int? vehicle_id?;
+    string? updated?;
+    string? record_type?;
+    int? reason_id?;
 };
 
 public type WorkExperience record {
@@ -871,9 +930,9 @@ public type GetInventoryResponse record {|
             string? name;
         |}? avinya_type;
         int? avinya_type_id;
-        int? quantity;
-        int? quantity_in;
-        int? quantity_out;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
     |}? inventory;
 |};
 
@@ -904,9 +963,9 @@ public type GetInventoriesResponse record {|
             string? name;
         |}? avinya_type;
         int? avinya_type_id;
-        int? quantity;
-        int? quantity_in;
-        int? quantity_out;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
     |}[] inventories;
 |};
 
@@ -929,9 +988,9 @@ public type AddInventoryResponse record {|
         record {|
             int? id;
         |}? avinya_type;
-        int? quantity;
-        int? quantity_in;
-        int? quantity_out;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
     |}? add_inventory;
 |};
 
@@ -954,9 +1013,9 @@ public type UpdateInventoryResponse record {|
         record {|
             int? id;
         |}? avinya_type;
-        int? quantity;
-        int? quantity_in;
-        int? quantity_out;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
     |}? update_inventory;
 |};
 
@@ -1052,4 +1111,187 @@ public type GetAvinyaTypesResponse record {|
         int? level;
         string? description;
     |}[] avinya_types;
+|};
+
+public type GetInventoryDataByOrganizationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? avinya_type_id;
+        int? consumable_id;
+        record {|
+            int? id;
+            string? name;
+        |}? consumable;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
+        anydata? prev_quantity;
+        int? is_below_threshold;
+        record {|
+            int? id;
+            string? property;
+            string? value;
+        |}? resource_property;
+        string? created;
+        string? updated;
+    |}[] inventory_data_by_organization;
+|};
+
+public type GetConsumableWeeklyReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string global_type;
+            string? name;
+        |}? avinya_type;
+        record {|
+            int? id;
+            string? name;
+            string? description;
+            string? manufacturer;
+        |}? consumable;
+        anydata? prev_quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
+        record {|
+            int? id;
+            string? property;
+            string? value;
+        |}? resource_property;
+        string? updated;
+    |}[] consumable_weekly_report;
+|};
+
+public type GetConsumableMonthlyReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        record {|
+            int? id;
+            string? name;
+            string? description;
+            string? manufacturer;
+        |}? consumable;
+        anydata? quantity;
+        anydata? quantity_in;
+        anydata? quantity_out;
+        record {|
+            int? id;
+            string? property;
+            string? value;
+        |}? resource_property;
+    |}[] consumable_monthly_report;
+|};
+
+public type GetConsumableYearlyReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        record {|
+            int? id;
+            string? name;
+        |}? consumable;
+        string? month_name;
+        anydata? quantity_in;
+        anydata? quantity_out;
+        record {|
+            int? id;
+            string? property;
+            string? value;
+        |}? resource_property;
+    |}[] consumable_yearly_report;
+|};
+
+public type AddVehicleFuelConsumptionResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? vehicle_id;
+        string? date_time;
+        int? reason_id;
+        string? starting_meter;
+        string? ending_meter;
+        string? distance;
+        string? comment;
+    |}? add_vehicle_fuel_consumption;
+|};
+
+public type UpdateVehicleFuelConsumptionResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? vehicle_id;
+        string? date_time;
+        int? reason_id;
+        string? starting_meter;
+        string? ending_meter;
+        string? distance;
+        string? comment;
+    |}? update_vehicle_fuel_consumption;
+|};
+
+public type GetVehicleFuelConsumptionByDateResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string? vehicle_number;
+        |}? vehicle;
+        string? date_time;
+        record {|
+            int? id;
+            string? reason;
+        |}? reason;
+        string? starting_meter;
+        string? ending_meter;
+        string? distance;
+        string? comment;
+        string? created;
+        string? updated;
+    |}[] vehicle_fuel_consumption_by_date;
+|};
+
+public type GetVehicleFuelConsumptionByIdResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string? vehicle_number;
+        |}? vehicle;
+        string? date_time;
+        record {|
+            int? id;
+            string? reason;
+        |}? reason;
+        string? starting_meter;
+        string? ending_meter;
+        string? distance;
+        string? comment;
+        string? created;
+        string? updated;
+    |}? vehicle_fuel_consumption_by_id;
+|};
+
+public type GetVehiclesResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? vehicle_number;
+        record {|
+            int? id;
+            string? preferred_name;
+            string? digital_id;
+        |}? person;
+    |}[] vehicles;
+|};
+
+public type GetVehicleReasonsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? reason;
+    |}[] vehicle_reasons;
 |};

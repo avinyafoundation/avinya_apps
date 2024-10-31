@@ -68,7 +68,7 @@ class _SMSNavigatorState extends State<SMSNavigator> {
 
         if (route.settings is Page &&
             (route.settings as Page).key == _assetDetailsKey) {
-          routeState.go('/resource_allocations');
+          routeState.go('/stock_replenishment');
         }
 
         return route.didPop(result);
@@ -90,7 +90,7 @@ class _SMSNavigatorState extends State<SMSNavigator> {
                 var signedIn = await authState.signIn(
                     credentials.username, credentials.password);
                 if (signedIn) {
-                  await routeState.go('/resource_allocation_report');
+                  await routeState.go('/asset_dashboard');
                 }
               },
             ),
@@ -99,7 +99,7 @@ class _SMSNavigatorState extends State<SMSNavigator> {
           // Display the app
           FadeTransitionPage<void>(
             key: _scaffoldKey,
-            child: const SMSScaffold(),
+            child: SMSScaffold(),
           ),
           // Add an additional page to the stack if the user is viewing a book
           // or an author

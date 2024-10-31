@@ -174,9 +174,9 @@ class Demos {
         category: GalleryDemoCategory.study,
         studyId: 'reply',
       ),
-      'campuspctiApp': GalleryDemo(
-        title: "Campus Pcti App",
-        subtitle: "Campus Pcti App for the Educators",
+      'enrollmentApp': GalleryDemo(
+        title: "Enrollment App",
+        subtitle: "enrollment App for the Educators",
         category: GalleryDemoCategory.study,
         studyId: 'starter',
       ),

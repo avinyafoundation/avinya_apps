@@ -1,8 +1,7 @@
 import 'dart:developer';
+import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../config/app_config.dart';
 import '../data.dart';
 
 class ResourceAllocation {
@@ -31,32 +30,31 @@ class ResourceAllocation {
     this.consumable,
     this.organization,
     this.person,
-    this.resource_properties = const[],
+    this.resource_properties = const [],
   });
 
   factory ResourceAllocation.fromJson(Map<String, dynamic> json) {
     return ResourceAllocation(
-      id: json['id'],
-      startDate: json['start_date'] != null
-          ? DateTime.parse(json['start_date'])
-          : null,
-      endDate:
-          json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
-      quantity: json['quantity'],
-      requested: json['requested'],
-      approved: json['approved'],
-      allocated: json['allocated'],
-      asset: json['asset'] != null ? Asset.fromJson(json['asset']) : null,
-      consumable: json['consumable'],
-      organization: json['organization'] != null
-          ? Organization.fromJson(json['organization'])
-          : null,
-      person: json['person'] != null ? Person.fromJson(json['person']) : null,
-      resource_properties: json['resource_properties'] !=null 
-        ? List<ResourceProperty>.from(
-          json['resource_properties'].map((x)=>ResourceProperty.fromJson(x)))
-          :[]
-    );
+        id: json['id'],
+        startDate: json['start_date'] != null
+            ? DateTime.parse(json['start_date'])
+            : null,
+        endDate:
+            json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
+        quantity: json['quantity'],
+        requested: json['requested'],
+        approved: json['approved'],
+        allocated: json['allocated'],
+        asset: json['asset'] != null ? Asset.fromJson(json['asset']) : null,
+        consumable: json['consumable'],
+        organization: json['organization'] != null
+            ? Organization.fromJson(json['organization'])
+            : null,
+        person: json['person'] != null ? Person.fromJson(json['person']) : null,
+        resource_properties: json['resource_properties'] != null
+            ? List<ResourceProperty>.from(json['resource_properties']
+                .map((x) => ResourceProperty.fromJson(x)))
+            : []);
   }
 
   Map<String, dynamic> toJson() => {
@@ -71,18 +69,19 @@ class ResourceAllocation {
         if (consumable != null) 'consumable': consumable,
         if (organization != null) 'organization': organization,
         if (person != null) 'person': person,
-        if(resource_properties != null) 'resource_properties' : resource_properties,
+        if (resource_properties != null)
+          'resource_properties': resource_properties,
       };
 }
 
 Future<List<ResourceAllocation>> fetchResourceAllocation(int id) async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl +
+    Uri.parse(AppConfig.campusAssetsBffApiUrl +
         '/resource_allocation?resourceAllocationId=$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -98,7 +97,7 @@ Future<List<ResourceAllocation>> fetchResourceAllocation(int id) async {
 }
 
 Future<List<ResourceAllocation>> fetchResourceAllocations(int personId) async {
-  final response = await http.get(Uri.parse(AppConfig.campusAssetBffApiUrl +
+  final response = await http.get(Uri.parse(AppConfig.campusAssetsBffApiUrl +
       '/resource_allocation_by_person?personId=$personId'));
 
   if (response.statusCode == 200) {
@@ -115,7 +114,7 @@ Future<List<ResourceAllocation>> fetchResourceAllocations(int personId) async {
 Future<http.Response> createResourceAllocation(
     ResourceAllocation resourceAllocation) async {
   final response = await http.post(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/resource_allocation'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -131,11 +130,11 @@ Future<http.Response> createResourceAllocation(
 
 Future<List<AvinyaType>> fetchAvinyaTypesByAsset() async {
   final response = await http.get(
-    Uri.parse(AppConfig.campusAssetBffApiUrl + '/avinyaTypesByAsset'),
+    Uri.parse(AppConfig.campusAssetsBffApiUrl + '/avinyaTypesByAsset'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -153,11 +152,11 @@ Future<List<AvinyaType>> fetchAvinyaTypesByAsset() async {
 Future<Asset> fetchAssetByAvinyaType(int id) async {
   final response = await http.get(
     Uri.parse(
-        AppConfig.campusAssetBffApiUrl + '/assetByAvinyaType?avinyaType=$id'),
+        AppConfig.campusAssetsBffApiUrl + '/assetByAvinyaType?avinyaType=$id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
@@ -170,22 +169,21 @@ Future<Asset> fetchAssetByAvinyaType(int id) async {
   }
 }
 
-Future<List<ResourceAllocation>> getResourceAllocationReport(int organization_id,int avinya_type_id) async{
-
- final response = await http.get(
-   Uri.parse(
-    '${AppConfig.campusAssetBffApiUrl}/resource_allocations_report/$organization_id/$avinya_type_id'),
-    headers: <String,String>{
-     'Content-Type': 'application/json; charset=UTF-8',
-     'accept': 'application/json',
-     'Authorization': 'Bearer ${AppConfig.campusConfigBffApiKey}',
+Future<List<ResourceAllocation>> getResourceAllocationReport(
+    int organization_id, int avinya_type_id) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAssetsBffApiUrl}/resource_allocations_report/$organization_id/$avinya_type_id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
- );
- if(response.statusCode > 199 && response.statusCode < 300 ){
-    
-    var resultsJson = json.decode(response.body).cast<Map<String,dynamic>>();
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
     List<ResourceAllocation> resourceAllocations = await resultsJson
-    .map<ResourceAllocation>((json) => ResourceAllocation.fromJson(json))
+        .map<ResourceAllocation>((json) => ResourceAllocation.fromJson(json))
         .toList();
     print("Resource Allocations report" + "$resourceAllocations");
     return resourceAllocations;
@@ -193,7 +191,6 @@ Future<List<ResourceAllocation>> getResourceAllocationReport(int organization_id
     throw Exception(
         'Failed to get Resource Allocations report for organization ID $organization_id and avinya type ID $avinya_type_id for result limit.');
   }
-
 }
 
 
@@ -280,11 +277,11 @@ Future<List<ResourceAllocation>> getResourceAllocationReport(int organization_id
 
 //   Future<List<ResourceAllocation>> fetchResourceAllocations() async {
 //     final response = await http.get(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocations'),
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl + '/resource_allocations'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
 //         'accept': 'application/json',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //     );
 
@@ -302,12 +299,12 @@ Future<List<ResourceAllocation>> getResourceAllocationReport(int organization_id
 //   Future<List<ResourceAllocation>> fetchResourceAllocationsByPersonId(
 //       int id) async {
 //     final response = await http.get(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl +
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl +
 //           '/resource_allocation_by_person?personId=$id'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
 //         'accept': 'application/json',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //     );
 
@@ -324,12 +321,12 @@ Future<List<ResourceAllocation>> getResourceAllocationReport(int organization_id
 
 //   Future<List<ResourceAllocation>> fetchResourceAllocation(int id) async {
 //     final response = await http.get(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl +
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl +
 //           '/resource_allocation?resourceAllocationId=$id'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
 //         'accept': 'application/json',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //     );
 
@@ -347,10 +344,10 @@ Future<List<ResourceAllocation>> getResourceAllocationReport(int organization_id
 //   Future<http.Response> createResourceAllocation(
 //       ResourceAllocation resourceAllocation) async {
 //     final response = await http.post(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation'),
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl + '/resource_allocation'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //       body: jsonEncode(resourceAllocation.toJson()),
 //     );
@@ -364,10 +361,10 @@ Future<List<ResourceAllocation>> getResourceAllocationReport(int organization_id
 //   Future<http.Response> updateResourceAllocation(
 //       ResourceAllocation resourceAllocation) async {
 //     final response = await http.put(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation'),
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl + '/resource_allocation'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //       body: jsonEncode(resourceAllocation.toJson()),
 //     );
@@ -380,10 +377,10 @@ Future<List<ResourceAllocation>> getResourceAllocationReport(int organization_id
 
 //   Future<http.Response> deleteResourceAllocation(int id) async {
 //     final response = await http.delete(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation/$id'),
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl + '/resource_allocation/$id'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //     );
 //     if (response.statusCode == 200) {

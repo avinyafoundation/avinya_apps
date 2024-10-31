@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/gestures.dart';
+import 'package:gallery/config/app_config.dart';
 import 'package:intl/intl.dart';
 // import 'package:ShoolManagementSystem/src/data.dart';
 // import 'package:ShoolManagementSystem/src/data/applicant_consent.dart';
@@ -12,7 +13,6 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../asset/lib/data/campus_config_system.dart';
 import '../../../asset/lib/data/applicant_consent.dart';
-import '../config/app_config.dart';
 import '../routing.dart';
 
 class PreconditionsScreen extends StatefulWidget {

@@ -1,5 +1,5 @@
 input Activity {
-  record_type: String = ""
+  record_type: String = "activity"
   id: Int
   name: String
   description: String
@@ -24,7 +24,7 @@ type ActivityData {
 }
 
 input ActivityInstance {
-  record_type: String = ""
+  record_type: String = "activity_instance"
   id: Int
   activity_id: Int
   name: String
@@ -62,7 +62,7 @@ type ActivityInstanceData {
 }
 
 input ActivityParticipant {
-  record_type: String = ""
+  record_type: String = "activity_participant"
   id: Int
   activity_instance_id: Int
   person_id: Int
@@ -76,7 +76,7 @@ input ActivityParticipant {
 }
 
 input ActivityParticipantAttendance {
-  record_type: String = ""
+  record_type: String = "activity_participant_attendance"
   id: Int
   person_id: Int
   activity_instance_id: Int
@@ -101,6 +101,29 @@ type ActivityParticipantAttendanceData {
   out_marked_by: String
 }
 
+type ActivityParticipantAttendanceDataForLateAttendance {
+  id: Int
+  activity_instance_id: Int
+  person_id: Int
+  person: PersonData
+  sign_in_time: String
+  description: String
+  preferred_name: String
+  digital_id: String
+  sign_out_time: String
+  created: String
+  updated: String
+  in_marked_by: String
+  out_marked_by: String
+}
+
+type ActivityParticipantAttendanceMissedBySecurityData {
+  sign_in_time: String
+  description: String
+  preferred_name: String
+  digital_id: String
+}
+
 type ActivityParticipantData {
   id: Int
   activity_instance_id: Int
@@ -115,7 +138,7 @@ type ActivityParticipantData {
 }
 
 input ActivitySequencePlan {
-  record_type: String = ""
+  record_type: String = "activity_sequence_plan"
   id: Int
   activity_id: Int
   sequence_number: Int
@@ -138,7 +161,7 @@ type ActivitySequencePlanData {
 }
 
 input Address {
-  record_type: String = ""
+  record_type: String = "address"
   id: Int
   street_address: String!
   phone: Int
@@ -156,7 +179,7 @@ type AddressData {
 }
 
 input ApplicantConsent {
-  record_type: String = ""
+  record_type: String = "applicant_consent"
   id: Int
   active: Boolean
   organization_id: Int
@@ -165,8 +188,11 @@ input ApplicantConsent {
   application_id: Int
   name: String
   date_of_birth: String
-  done_ol: Boolean
+  done_ol: String
   ol_year: Int
+  done_al: String
+  al_year: Int
+  al_stream: String
   distance_to_school: Int
   phone: Int
   email: String
@@ -184,15 +210,22 @@ type ApplicantConsentData {
   id: Int
   email: String
   date_of_birth: String
-  done_ol: Boolean
+  done_ol: String
   ol_year: Int
+  done_al: String
+  al_year: Int
+  al_stream: String
   distance_to_school: Int
   information_correct_consent: Boolean
   agree_terms_consent: Boolean
+  application_id: Int
+  person_id: Int
+  avinya_type_id: Int
+  organization_id: Int
 }
 
 input Application {
-  record_type: String = ""
+  record_type: String = "application"
   id: Int
   person_id: Int
   vacancy_id: Int
@@ -215,7 +248,7 @@ type ApplicationStatusData {
 }
 
 input Asset {
-  record_type: String = ""
+  record_type: String = "asset"
   id: Int
   name: String
   manufacturer: String
@@ -242,8 +275,22 @@ type AssetData {
   updated: String
 }
 
+type AttendanceDashboardData {
+  record_type: String
+  title: String
+  numOfFiles: Int
+  svgSrc: String
+  color: String
+  percentage: Decimal
+}
+
+type AttendanceDashboardDataMain {
+  record_type: String
+  attendance_dashboard_data: AttendanceDashboardData
+}
+
 input AvinyaType {
-  record_type: String = ""
+  record_type: String = "avinya_type"
   id: Int
   active: Boolean!
   global_type: String!
@@ -272,7 +319,7 @@ type CityData {
 }
 
 input Consumable {
-  record_type: String = ""
+  record_type: String = "consumable"
   id: Int
   avinya_type_id: Int
   name: String
@@ -280,6 +327,7 @@ input Consumable {
   manufacturer: String
   model: String
   serial_number: String
+  threshold: Decimal
   created: String
   updated: String
 }
@@ -292,9 +340,29 @@ type ConsumableData {
   manufacturer: String
   model: String
   serial_number: String
+  threshold: Decimal
   created: String
   updated: String
 }
+
+type DailyActivityParticipantAttendanceByParentOrgData {
+  description: String
+  present_count: Int
+  total_student_count: Int
+  svg_src: String
+  color: String
+}
+
+type DailyActivityParticipantAttendanceSummaryReportData {
+  sign_in_date: String
+  present_count: Int
+  late_count: Int
+  total_count: Int
+  present_attendance_percentage: Decimal
+  late_attendance_percentage: Decimal
+}
+
+scalar Decimal
 
 type DistrictData {
   name: LocalizedName!
@@ -303,8 +371,46 @@ type DistrictData {
   cities: [CityData!]!
 }
 
+input DutyParticipant {
+  record_type: String = "duty_participant"
+  id: Int
+  activity_id: Int
+  activity: Activity
+  person_id: Int
+  person: Person
+  role: String
+  created: String
+  updated: String
+}
+
+type DutyParticipantData {
+  id: Int
+  person_id: Int
+  person: PersonData
+  activity: ActivityData
+  activity_id: Int
+  role: String
+  created: String
+  updated: String
+}
+
+type DutyRotationMetaData {
+  id: Int
+  start_date: String
+  end_date: String
+  organization_id: Int
+}
+
+input DutyRotationMetaDetails {
+  record_type: String = "duty_rotation_metadata"
+  id: Int
+  start_date: String
+  end_date: String
+  organization_id: Int
+}
+
 input EducationExperience {
-  record_type: String = ""
+  record_type: String = "education_experience"
   id: Int
   person_id: Int
   school: String
@@ -322,7 +428,7 @@ type EducationExperienceData {
 }
 
 input Evaluation {
-  record_type: String = ""
+  record_type: String = "evaluation"
   id: Int
   evaluatee_id: Int
   evaluator_id: Int
@@ -338,7 +444,7 @@ input Evaluation {
 }
 
 input EvaluationCriteria {
-  record_type: String = ""
+  record_type: String = "evaluation_criteria"
   id: Int
   prompt: String
   description: String
@@ -349,7 +455,7 @@ input EvaluationCriteria {
 }
 
 input EvaluationCriteriaAnswerOption {
-  record_type: String = ""
+  record_type: String = "evaluation_criteria_answer_option"
   id: Int
   evaluation_criteria_id: Int
   answer: String
@@ -374,7 +480,7 @@ type EvaluationCriteriaData {
 }
 
 input EvaluationCycle {
-  record_type: String = ""
+  record_type: String = "evaluation_cycle"
   id: Int
   name: String
   description: String
@@ -405,7 +511,7 @@ type EvaluationData {
 }
 
 input EvaluationMetadata {
-  record_type: String = ""
+  record_type: String = "metadata"
   id: Int
   evaluation_id: Int
   location: String
@@ -437,16 +543,24 @@ type GeoData {
 }
 
 input Inventory {
-  record_type: String = ""
+  record_type: String = "inventory"
   id: Int
   avinya_type_id: Int
   asset_id: Int
   consumable_id: Int
+  name: String
+  month_name: String
+  description: String
+  manufacturer: String
   organization_id: Int
   person_id: Int
-  quantity: Int
-  quantity_in: Int
-  quantity_out: Int
+  quantity: Decimal
+  quantity_in: Decimal
+  quantity_out: Decimal
+  prev_quantity: Decimal
+  resource_property_id: Int
+  resource_property_value: String
+  is_below_threshold: Int
   created: String
   updated: String
 }
@@ -457,11 +571,19 @@ type InventoryData {
   avinya_type_id: Int
   asset: AssetData
   consumable: ConsumableData
+  consumable_id: Int
   organization: OrganizationData
   person: PersonData
-  quantity: Int
-  quantity_in: Int
-  quantity_out: Int
+  quantity: Decimal
+  quantity_in: Decimal
+  quantity_out: Decimal
+  prev_quantity: Decimal
+  resource_property: ResourcePropertyData
+  name: String
+  month_name: String
+  description: String
+  manufacturer: String
+  is_below_threshold: Int
   created: String
   updated: String
 }
@@ -521,13 +643,26 @@ type Mutation {
   update_resource_allocation(resourceAllocation: ResourceAllocation!): ResourceAllocationData
   add_inventory(inventory: Inventory!): InventoryData
   update_inventory(inventory: Inventory!): InventoryData
+  add_duty_for_participant(dutyparticipant: DutyParticipant!): DutyParticipantData
+  delete_duty_for_participant(id: Int!): Int
+  update_duty_rotation_metadata(duty_rotation: DutyRotationMetaDetails!): DutyRotationMetaData
+  add_duty_attendance(duty_attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
+  add_duty_evaluation(duty_evaluation: Evaluation!): EvaluationData
+  consumable_replenishment(person_id: Int!, organization_id: Int!, date: String!, inventories: [Inventory!]!): [InventoryData!]
+  consumable_depletion(person_id: Int!, organization_id: Int!, date: String!, inventories: [Inventory!]!): [InventoryData!]
+  update_consumable_replenishment(inventories: [Inventory!]!): [InventoryData!]
+  update_consumable_depletion(inventories: [Inventory!]!): [InventoryData!]
+  add_vehicle_fuel_consumption(vehicle_fuel_consumption: VehicleFuelConsumption!): VehicleFuelConsumptionData
+  update_vehicle_fuel_consumption(vehicle_fuel_consumption: VehicleFuelConsumption!): VehicleFuelConsumptionData
+  delete_vehicle_fuel_consumption_by_id(id: Int): Int
 }
 
 input Organization {
-  record_type: String = ""
+  record_type: String = "organization"
   id: Int
   child_organizations: [Int!]
   parent_organizations: [Int!]
+  child_organizations_for_dashboard: [Int!]
   address_id: Int
   avinya_type: Int
   phone: Int
@@ -547,9 +682,18 @@ type OrganizationData {
   phone: Int
   name: LocalizedName!
   child_organizations: [OrganizationData!]
+  child_organizations_for_dashboard: [OrganizationData!]
   parent_organizations: [OrganizationData!]
   people: [PersonData!]
   vacancies: [VacancyData!]
+  organization_metadata: [OrganizationMetaData!]
+}
+
+type OrganizationMetaData {
+  id: Int
+  organization_id: Int
+  key_name: String
+  value: String
 }
 
 type OrganizationStructureData {
@@ -557,7 +701,7 @@ type OrganizationStructureData {
 }
 
 input Person {
-  record_type: String = ""
+  record_type: String = "person"
   id: Int
   preferred_name: String
   full_name: String
@@ -590,6 +734,8 @@ input Person {
   bank_account_number: String
   bank_account_name: String
   academy_org_id: Int
+  academy_org_name: String
+  branch_code: String
 }
 
 type PersonData {
@@ -624,6 +770,8 @@ type PersonData {
   bank_account_number: String
   bank_account_name: String
   academy_org_id: Int
+  organization_id: Int
+  branch_code: String
 }
 
 type PlaceData {
@@ -644,7 +792,7 @@ type PlaceData {
 }
 
 input Prospect {
-  record_type: String = ""
+  record_type: String = "prospect"
   id: Int
   active: Boolean
   name: String
@@ -721,18 +869,20 @@ type Query {
   education_experience_byPerson(person_id: Int): [EducationExperienceData!]!
   work_experience(id: Int): WorkExperienceData
   work_experience_ByPerson(person_id: Int): [WorkExperienceData!]
-  activity(name: String, id: Int): ActivityData
+  activity(name: String, id: Int = 0): ActivityData
   class_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_today(person_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
-  person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int): [ActivityParticipantAttendanceData!]
-  class_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
+  person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int = 0): [ActivityParticipantAttendanceData!]
+  class_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
+  late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceDataForLateAttendance!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
   supplier(id: Int!): SupplierData
   suppliers: [SupplierData!]!
   consumable(id: Int!): ConsumableData
   consumableByUpdate(updated: String, avinya_type_id: Int): [ConsumableData!]
-  consumables: [ConsumableData!]!
+  consumables: [ConsumableData!]
+  activeActivityInstance: [ActivityInstanceData!]!
   resource_property(id: Int!): ResourcePropertyData
   resource_properties: [ResourcePropertyData!]!
   supply(id: Int!): SupplyData
@@ -744,10 +894,29 @@ type Query {
   inventory(id: Int!): InventoryData
   inventories: [InventoryData!]!
   resource_allocations_report(organization_id: Int, avinya_type_id: Int): [ResourceAllocationData!]!
+  duty_participants(organization_id: Int): [DutyParticipantData!]!
+  activities_by_avinya_type(avinya_type_id: Int): [ActivityData!]
+  duty_rotation_metadata_by_organization(organization_id: Int): DutyRotationMetaData
+  duty_participants_by_duty_activity_id(organization_id: Int, duty_activity_id: Int): [DutyParticipantData!]!
+  duty_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
+  duty_participant(person_id: Int): DutyParticipantData
+  attendance_dashboard_data_by_date(organization_id: Int, parent_organization_id: Int, activity_id: Int, from_date: String = "", to_date: String = ""): [AttendanceDashboardDataMain!]
+  attendance_missed_by_security(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceMissedBySecurityData!]
+  daily_students_attendance_by_parent_org(parent_organization_id: Int): [DailyActivityParticipantAttendanceByParentOrgData!]
+  total_attendance_count_by_date(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [TotalActivityParticipantAttendanceCountByDateData!]
+  daily_attendance_summary_report(organization_id: Int, avinya_type_id: Int, from_date: String = "", to_date: String = ""): [DailyActivityParticipantAttendanceSummaryReportData!]
+  inventory_data_by_organization(organization_id: Int, date: String = ""): [InventoryData!]
+  consumable_weekly_report(organization_id: Int, from_date: String = "", to_date: String = ""): [InventoryData!]
+  consumable_monthly_report(organization_id: Int, year: Int, month: Int): [InventoryData!]
+  consumable_yearly_report(organization_id: Int, consumable_id: Int, year: Int): [InventoryData!]
+  vehicle_fuel_consumption_by_date(organization_id: Int, date: String = ""): [VehicleFuelConsumptionData!]
+  vehicle_fuel_consumption_by_id(id: Int): VehicleFuelConsumptionData
+  vehicles(organization_id: Int): [VehicleData!]
+  vehicle_reasons: [VehicleReasonMetaData!]
 }
 
 input ResourceAllocation {
-  record_type: String = ""
+  record_type: String = "resource_allocation"
   id: Int
   requested: Boolean
   approved: Boolean
@@ -782,7 +951,7 @@ type ResourceAllocationData {
 }
 
 input ResourceProperty {
-  record_type: String = ""
+  record_type: String = "resource_property"
   id: Int
   asset_id: Int
   consumable_id: Int
@@ -799,7 +968,7 @@ type ResourcePropertyData {
 }
 
 input Supplier {
-  record_type: String = ""
+  record_type: String = "supplier"
   id: Int
   name: String
   description: String
@@ -822,7 +991,7 @@ type SupplierData {
 }
 
 input Supply {
-  record_type: String = ""
+  record_type: String = "supply"
   id: Int
   asset_id: Int
   consumable_id: Int
@@ -850,8 +1019,13 @@ type SupplyData {
   updated: String
 }
 
+type TotalActivityParticipantAttendanceCountByDateData {
+  attendance_date: String
+  daily_total: Int
+}
+
 input Vacancy {
-  record_type: String = ""
+  record_type: String = "vacancy"
   id: Int
   name: String
   description: String
@@ -870,8 +1044,53 @@ type VacancyData {
   evaluation_criteria: [EvaluationCriteriaData!]
 }
 
+type VehicleData {
+  id: Int
+  vehicle_number: String
+  organization: OrganizationData
+  person_id: Int
+  person: PersonData
+  created: String
+  updated: String
+}
+
+input VehicleFuelConsumption {
+  record_type: String = "vehicle_fuel_consumption"
+  id: Int
+  vehicle_id: Int
+  date_time: String
+  reason_id: Int
+  starting_meter: String
+  ending_meter: String
+  distance: String
+  comment: String
+  created: String
+  updated: String
+}
+
+type VehicleFuelConsumptionData {
+  id: Int
+  vehicle_id: Int
+  vehicle: VehicleData
+  date_time: String
+  reason_id: Int
+  reason: VehicleReasonMetaData
+  starting_meter: String
+  ending_meter: String
+  distance: String
+  comment: String
+  created: String
+  updated: String
+}
+
+type VehicleReasonMetaData {
+  id: Int
+  reason: String
+  created: String
+}
+
 input WorkExperience {
-  record_type: String = ""
+  record_type: String = "work_experience"
   id: Int
   person_id: Int
   organization: String

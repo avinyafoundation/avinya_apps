@@ -50,7 +50,7 @@ bool organizationsLoaded = false;
    }
 
     setState(() {
-      assetTypesLoaded = true;
+      assetTypesLoaded = false;
     });
   }
 
@@ -60,6 +60,7 @@ bool organizationsLoaded = false;
 
     setState(() {
           organizationsLoaded = true;
+          assetTypesLoaded = true;
     }); 
   }
 
@@ -170,8 +171,7 @@ bool organizationsLoaded = false;
                           Container(
                             margin: EdgeInsets.only(top: 10),
                             child: SpinKitCircle(
-                            color: (Colors
-                              .blue), // Customize the color of the indicator
+                            color: (Colors.yellow[700]), // Customize the color of the indicator
                             size: 40, // Customize the size of the indicator
                             ),
                           ),
@@ -217,12 +217,11 @@ bool organizationsLoaded = false;
                                   );
                                  }).toList(),            
                         ),
-                         if (!assetTypesLoaded)
+                        if (!assetTypesLoaded)
                           Container(
                             margin: EdgeInsets.only(top: 10),
                             child: SpinKitCircle(
-                            color: (Colors
-                              .blue), // Customize the color of the indicator
+                            color: (Colors.yellow[700]), // Customize the color of the indicator
                             size: 40, // Customize the size of the indicator
                            ),
                           ),                        

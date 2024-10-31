@@ -3,7 +3,7 @@ import ballerina/graphql;
 public isolated client class GraphqlClient {
     final graphql:Client graphqlClient;
     public isolated function init(string serviceUrl, ConnectionConfig config = {}) returns graphql:ClientError? {
-        graphql:ClientConfiguration graphqlClientConfig = {timeout: config.timeout, forwarded: config.forwarded, poolConfig: config.poolConfig, compression: config.compression, circuitBreaker: config.circuitBreaker, retryConfig: config.retryConfig, validation: config.validation};
+        graphql:ClientConfiguration graphqlClientConfig = {auth: config.oauth2ClientCredentialsGrantConfig,timeout: config.timeout, forwarded: config.forwarded, poolConfig: config.poolConfig, compression: config.compression, circuitBreaker: config.circuitBreaker, retryConfig: config.retryConfig, validation: config.validation};
         do {
             if config.http1Settings is ClientHttp1Settings {
                 ClientHttp1Settings settings = check config.http1Settings.ensureType(ClientHttp1Settings);
@@ -231,4 +231,200 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetAvinyaTypesResponse> check performDataBinding(graphqlResponse, GetAvinyaTypesResponse);
     }
+
+    remote isolated function getInventoryDataByOrganization(string date, int organization_id) returns GetInventoryDataByOrganizationResponse|graphql:ClientError {
+        string query = string `query getInventoryDataByOrganization($organization_id:Int!,$date:String!) {inventory_data_by_organization(organization_id:$organization_id,date:$date) {id avinya_type_id consumable_id consumable {id name} quantity quantity_in quantity_out prev_quantity is_below_threshold resource_property {id property value} created updated}}`;
+        map<anydata> variables = {"date": date, "organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetInventoryDataByOrganizationResponse>check performDataBinding(graphqlResponse, GetInventoryDataByOrganizationResponse);
+    }
+
+    remote isolated function consumableReplenishment(int person_id,int organization_id,string date,Inventory[] inventories) returns json|graphql:ClientError {
+        string query = string ` mutation consumableReplenishment(
+                                        $person_id: Int!,
+                                        $organization_id: Int!,
+                                        $date: String!,
+                                        $inventories: [Inventory!]!)
+                                    {
+                                        consumable_replenishment(
+                                            person_id:$person_id,
+                                            organization_id:$organization_id,
+                                            date:$date,
+                                            inventories:$inventories)
+                                            {
+                                                id
+                                                avinya_type_id
+                                                consumable_id
+                                                quantity
+                                                quantity_in
+                                                quantity_out
+                                                prev_quantity
+                                                created
+                                                updated
+                                            }
+                                    }`;
+        
+        map<anydata> variables = {"person_id": person_id, "organization_id": organization_id, "date": date, "inventories": inventories};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return graphqlResponse;
+    }
+
+    remote isolated function consumableDepletion(int person_id,int organization_id,string date,Inventory[] inventories) returns json|graphql:ClientError {
+        string query = string ` mutation consumableDepletion(
+                                        $person_id: Int!,
+                                        $organization_id: Int!,
+                                        $date: String!,
+                                        $inventories: [Inventory!]!)
+                                   {
+                                        consumable_depletion(
+                                            person_id:$person_id,
+                                            organization_id:$organization_id,
+                                            date:$date,
+                                            inventories:$inventories)
+                                            {
+                                                id
+                                                avinya_type_id
+                                                consumable_id
+                                                quantity
+                                                quantity_in
+                                                quantity_out
+                                                prev_quantity
+                                                created
+                                                updated
+                                            }
+                                    }`;
+        map<anydata> variables = {"person_id": person_id, "organization_id": organization_id, "date": date, "inventories": inventories};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+
+        return graphqlResponse;
+    }
+
+    remote isolated function getConsumableWeeklyReport(string from_date, string to_date, int organization_id) returns GetConsumableWeeklyReportResponse|graphql:ClientError {
+        string query = string `query getConsumableWeeklyReport($organization_id:Int!,$from_date:String!,$to_date:String!) {consumable_weekly_report(organization_id:$organization_id,from_date:$from_date,to_date:$to_date) {id avinya_type {id global_type name} consumable {id name description manufacturer} prev_quantity quantity_in quantity_out resource_property {id property value} updated}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetConsumableWeeklyReportResponse>check performDataBinding(graphqlResponse, GetConsumableWeeklyReportResponse);
+    }
+
+    remote isolated function updateConsumableReplenishment(Inventory[] inventories) returns json|graphql:ClientError {
+        string query = string `mutation updateConsumableReplenishment($inventories: [Inventory!]!)
+                                {
+                                  update_consumable_replenishment(inventories:$inventories)
+                                    {
+                                        id
+                                        avinya_type{
+                                            id
+                                            global_type
+                                            name
+                                        }
+                                        consumable{
+                                            id
+                                            name
+                                            description
+                                            manufacturer
+                                        }
+                                        quantity
+                                        quantity_in
+                                        quantity_out
+                                        created
+                                        updated
+                                    }
+                                }`;
+        map<anydata> variables = {"inventories": inventories};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        
+        return graphqlResponse;
+    }
+
+    remote isolated function updateConsumableDepletion(Inventory[] inventories) returns json|graphql:ClientError {
+        string query = string `mutation updateConsumableDepletion($inventories: [Inventory!]!)
+                                {
+                                    update_consumable_depletion(inventories:$inventories)
+                                        {
+                                            id
+                                            avinya_type{
+                                                id
+                                                global_type
+                                                name
+                                            }
+                                            consumable{
+                                                id
+                                                name
+                                                description
+                                                manufacturer
+                                            }
+                                            quantity
+                                            quantity_in
+                                            quantity_out
+                                            created
+                                            updated
+                                        }
+                                }`;
+        map<anydata> variables = {"inventories": inventories};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+
+        return graphqlResponse;
+    }
+
+    remote isolated function getConsumableMonthlyReport(int month, int year, int organization_id) returns GetConsumableMonthlyReportResponse|graphql:ClientError {
+        string query = string `query getConsumableMonthlyReport($organization_id:Int!,$year:Int!,$month:Int!) {consumable_monthly_report(organization_id:$organization_id,year:$year,month:$month) {consumable {id name description manufacturer} quantity quantity_in quantity_out resource_property {id property value}}}`;
+        map<anydata> variables = {"month": month, "year": year, "organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetConsumableMonthlyReportResponse>check performDataBinding(graphqlResponse, GetConsumableMonthlyReportResponse);
+    }
+
+    remote isolated function getConsumableYearlyReport(int consumable_id, int year, int organization_id) returns GetConsumableYearlyReportResponse|graphql:ClientError {
+        string query = string `query getConsumableYearlyReport($organization_id:Int!,$consumable_id:Int!,$year:Int!) {consumable_yearly_report(organization_id:$organization_id,consumable_id:$consumable_id,year:$year) {consumable {id name} month_name quantity_in quantity_out resource_property {id property value}}}`;
+        map<anydata> variables = {"consumable_id": consumable_id, "year": year, "organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetConsumableYearlyReportResponse> check performDataBinding(graphqlResponse, GetConsumableYearlyReportResponse);
+    }
+
+    remote isolated function addVehicleFuelConsumption(VehicleFuelConsumption vehicleFuelConsumption) returns AddVehicleFuelConsumptionResponse|graphql:ClientError {
+        string query = string `mutation addVehicleFuelConsumption($vehicleFuelConsumption:VehicleFuelConsumption!) {add_vehicle_fuel_consumption(vehicle_fuel_consumption:$vehicleFuelConsumption) {id vehicle_id date_time reason_id starting_meter ending_meter distance comment}}`;
+        map<anydata> variables = {"vehicleFuelConsumption": vehicleFuelConsumption};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <AddVehicleFuelConsumptionResponse>check performDataBinding(graphqlResponse, AddVehicleFuelConsumptionResponse);
+    }
+    remote isolated function updateVehicleFuelConsumption(VehicleFuelConsumption vehicleFuelConsumption) returns UpdateVehicleFuelConsumptionResponse|graphql:ClientError {
+        string query = string `mutation updateVehicleFuelConsumption($vehicleFuelConsumption:VehicleFuelConsumption!) {update_vehicle_fuel_consumption(vehicle_fuel_consumption:$vehicleFuelConsumption) {id vehicle_id date_time reason_id starting_meter ending_meter distance comment}}`;
+        map<anydata> variables = {"vehicleFuelConsumption": vehicleFuelConsumption};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <UpdateVehicleFuelConsumptionResponse>check performDataBinding(graphqlResponse, UpdateVehicleFuelConsumptionResponse);
+    }
+
+    remote isolated function deleteVehicleFuelConsumptionById(int id) returns json|error {
+        string query = string `mutation deleteVehicleFuelConsumptionById($id: Int!) {delete_vehicle_fuel_consumption_by_id(id:$id)}`;
+        map<anydata> variables = {"id": id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        map<json> responseMap = <map<json>>graphqlResponse;
+        json responseData = responseMap.get("data");
+        json|error row_count = check responseData.delete_vehicle_fuel_consumption_by_id;
+        return row_count;
+    }
+    remote isolated function getVehicleFuelConsumptionByDate(string date, int organization_id) returns GetVehicleFuelConsumptionByDateResponse|graphql:ClientError {
+        string query = string `query getVehicleFuelConsumptionByDate($organization_id:Int!,$date:String!) {vehicle_fuel_consumption_by_date(organization_id:$organization_id,date:$date) {id vehicle {id vehicle_number} date_time reason {id reason} starting_meter ending_meter distance comment created updated}}`;
+        map<anydata> variables = {"date": date, "organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetVehicleFuelConsumptionByDateResponse>check performDataBinding(graphqlResponse, GetVehicleFuelConsumptionByDateResponse);
+    }
+    remote isolated function getVehicleFuelConsumptionById(int id) returns GetVehicleFuelConsumptionByIdResponse|graphql:ClientError {
+        string query = string `query getVehicleFuelConsumptionById($id:Int!) {vehicle_fuel_consumption_by_id(id:$id) {id vehicle {id vehicle_number} date_time reason {id reason} starting_meter ending_meter distance comment created updated}}`;
+        map<anydata> variables = {"id": id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetVehicleFuelConsumptionByIdResponse>check performDataBinding(graphqlResponse, GetVehicleFuelConsumptionByIdResponse);
+    }
+    remote isolated function getVehicles(int organization_id) returns GetVehiclesResponse|graphql:ClientError {
+        string query = string `query getVehicles($organization_id:Int!) {vehicles(organization_id:$organization_id) {id vehicle_number person {id preferred_name digital_id}}}`;
+        map<anydata> variables = {"organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetVehiclesResponse>check performDataBinding(graphqlResponse, GetVehiclesResponse);
+    }
+    remote isolated function getVehicleReasons() returns GetVehicleReasonsResponse|graphql:ClientError {
+        string query = string `query getVehicleReasons {vehicle_reasons {id reason}}`;
+        map<anydata> variables = {};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetVehicleReasonsResponse>check performDataBinding(graphqlResponse, GetVehicleReasonsResponse);
+    }
+
 }

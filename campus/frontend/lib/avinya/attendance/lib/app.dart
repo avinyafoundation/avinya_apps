@@ -4,6 +4,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:gallery/auth.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 
 // import 'auth.dart';
 import 'routing.dart';
@@ -50,6 +52,7 @@ class _CampusAttendanceManagementSystemState
         '/bulk_attendance_marker/class2',
         '/daily_attendance_report',
         '/weekly_payment_report',
+        '/monthly_payment_report',
         '/avinya_types',
         '/#access_token',
         '/person_attendance_report',
@@ -90,6 +93,11 @@ class _CampusAttendanceManagementSystemState
           child: MaterialApp.router(
             routerDelegate: _routerDelegate,
             routeInformationParser: _routeParser,
+            localizationsDelegates: [
+              GlobalWidgetsLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              MonthYearPickerLocalizations.delegate,
+            ],
             // Revert back to pre-Flutter-2.5 transition behavior:
             // https://github.com/flutter/flutter/issues/82053
             theme: ThemeData(
@@ -128,26 +136,30 @@ class _CampusAttendanceManagementSystemState
         '/daily_attendance_report', '/daily_attendance_report', {}, {});
     final weeklyPaymentReportRoute =
         ParsedRoute('/weekly_payment_report', '/weekly_payment_report', {}, {});
+    final monthlyPaymentReportRoute = ParsedRoute(
+        '/monthly_payment_report', '/monthly_payment_report', {}, {});
 
     final personAttendanceReportRoute = ParsedRoute(
         '/person_attendance_report', '/person_attendance_report', {}, {});
     final lateAttendanceReportRoute = ParsedRoute(
         '/late_attendance_report', '/late_attendance_report', {}, {});
 
-    final dutyParticipantsRoute = ParsedRoute(
-        '/duty_participants','/duty_participants', {}, {});
+    final dutyParticipantsRoute =
+        ParsedRoute('/duty_participants', '/duty_participants', {}, {});
 
     final dutyAttendanceMarkerRoute = ParsedRoute(
-        '/duty_attendance_marker','/duty_attendance_marker', {}, {});
+        '/duty_attendance_marker', '/duty_attendance_marker', {}, {});
 
     final qrAttendanceMarkerRoute =
         ParsedRoute('/qr_attendance_marker', '/qr_attendance_marker', {}, {});
-    
-    final dailyDutyAttendanceReportRoute =
-        ParsedRoute('/daily_duty_attendance_report', '/daily_duty_attendance_report', {}, {});
 
-    final dailyAttendanceSummaryReportRoute =
-        ParsedRoute('/daily_attendance_summary_report', '/daily_attendance_summary_report', {}, {});
+    final dailyDutyAttendanceReportRoute = ParsedRoute(
+        '/daily_duty_attendance_report',
+        '/daily_duty_attendance_report', {}, {});
+
+    final dailyAttendanceSummaryReportRoute = ParsedRoute(
+        '/daily_attendance_summary_report',
+        '/daily_attendance_summary_report', {}, {});
 
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
@@ -168,13 +180,15 @@ class _CampusAttendanceManagementSystemState
       return dailyAttendanceReportRoute;
     } else if (signedIn && from == weeklyPaymentReportRoute) {
       return weeklyPaymentReportRoute;
-    } else if (signedIn && from == personAttendanceReportRoute){
+    } else if (signedIn && from == weeklyPaymentReportRoute) {
+      return monthlyPaymentReportRoute;
+    } else if (signedIn && from == personAttendanceReportRoute) {
       return personAttendanceReportRoute;
-    } else if (signedIn && from == dutyParticipantsRoute){
-      return dutyParticipantsRoute; 
-    } else if (signedIn && from == dutyAttendanceMarkerRoute){
-      return dutyAttendanceMarkerRoute; 
-    }else if (signedIn && from == qrAttendanceMarkerRoute) {
+    } else if (signedIn && from == dutyParticipantsRoute) {
+      return dutyParticipantsRoute;
+    } else if (signedIn && from == dutyAttendanceMarkerRoute) {
+      return dutyAttendanceMarkerRoute;
+    } else if (signedIn && from == qrAttendanceMarkerRoute) {
     } else if (signedIn && from == lateAttendanceReportRoute) {
       return lateAttendanceReportRoute;
     } else if (signedIn && from == qrAttendanceMarkerRoute) {
