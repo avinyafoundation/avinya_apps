@@ -155,6 +155,24 @@ Future<ActivityAttendance> createActivityAttendance(
   }
 }
 
+class LeaveDate {
+  final int id;
+  final DateTime date;
+  final double dailyAmount;
+  final DateTime created;
+  final DateTime updated;
+  final int organizationId;
+
+  LeaveDate({
+    required this.id,
+    required this.date,
+    required this.dailyAmount,
+    required this.created,
+    required this.updated,
+    required this.organizationId,
+  });
+}
+
 Future<void> createMonthlyLeaveDates({
   required int year,
   required int month,
@@ -195,30 +213,84 @@ Future<void> createMonthlyLeaveDates({
   }
 }
 
-Future<List<DateTime>> getLeaveDatesForMonth(
+Future<void> updateMonthlyLeaveDates({
+  required int id, // New parameter for identifying the record
+  required int year,
+  required int month,
+  required int organizationId,
+  required int totalDaysInMonth,
+  required List<int> leaveDatesList,
+}) async {
+  // Prepare the request body
+  Map<String, dynamic> requestBody = {
+    "id": id,
+    "year": year,
+    "month": month,
+    "organization_id": organizationId,
+    "total_days_in_month": totalDaysInMonth,
+    "leave_dates_list": leaveDatesList,
+  };
+
+  try {
+    final response = await http.put(
+      Uri.parse(
+          '${AppConfig.campusAttendanceBffApiUrl}/update_monthly_leave_dates'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'accept': 'application/json',
+        'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      print("Leave dates updated successfully: ${response.body}");
+    } else {
+      throw Exception(
+          'Failed to update leave dates. Status: ${response.statusCode}');
+    }
+  } catch (e) {
+    print("Error updating leave dates: $e");
+    throw Exception('An error occurred while updating leave dates.');
+  }
+}
+
+Future<List<LeaveDate>> getLeaveDatesForMonth(
     int year, int month, int? organizationId) async {
   final response = await http.get(
     Uri.parse(
-        '${AppConfig.campusAttendanceBffApiUrl}/leave_dates/$organizationId/$year/$month'),
+        '${AppConfig.campusAttendanceBffApiUrl}/monthly_leave_dates_record_by_id/$organizationId/$year/$month'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
-      'accept': 'application/json',
+      'Accept': 'application/json',
       'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
   if (response.statusCode >= 200 && response.statusCode < 300) {
-    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    final resultsJson = json.decode(response.body);
 
-    // Assuming the API returns a list of leave dates in 'yyyy-MM-dd' format
-    List<DateTime> leaveDates = resultsJson
-        .map<DateTime>((json) => DateTime.parse(json['leave_date']))
-        .toList();
+    if (resultsJson is Map<String, dynamic> &&
+        resultsJson['leave_dates_list'] is List) {
+      List<LeaveDate> leaveDates = (resultsJson['leave_dates_list'] as List)
+          .map((day) => LeaveDate(
+                id: resultsJson['id'] ?? 0,
+                date: DateTime(year, month, day as int),
+                dailyAmount: (resultsJson['daily_amount'] ?? 0.0) as double,
+                created: DateTime.parse(resultsJson['created']),
+                updated: DateTime.parse(resultsJson['updated']),
+                organizationId: resultsJson['organization_id'] ?? 0,
+              ))
+          .toList();
 
-    return leaveDates;
+      return leaveDates;
+    } else {
+      throw Exception(
+          'Unexpected response format. Expected a Map with a leave_dates_list.');
+    }
   } else {
     throw Exception(
-        'Failed to get leave dates for organization ID $organizationId for $year-$month.');
+        'Failed to get leave dates. Status code: ${response.statusCode}.');
   }
 }
 

@@ -7,6 +7,7 @@ import 'package:attendance/data/activity_attendance.dart';
 import 'package:gallery/data/person.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 
 class MonthlyPaymentReport extends StatefulWidget {
   const MonthlyPaymentReport(
@@ -37,12 +38,18 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   Organization? _fetchedOrganization;
   bool _isFetching = true;
   int? organization_id = null;
+  double? MonthlyPayment = 0.00;
+  double? DailyPayment = 0.00;
 
   //calendar specific variables
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
+  DateTime? _selected = DateTime.now();
+
+  int _year = DateTime.now().year;
+  int _month = DateTime.now().month;
 
   late DataTableSource _data;
   List<String?> columnNames = [];
@@ -75,6 +82,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
     if (parentOrgId != null) {
       setState(() {
         _isFetching = true; // Set _isFetching to true before starting the fetch
+        organization_id = parentOrgId;
       });
 
       try {
@@ -109,6 +117,32 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
     var today = DateTime.now();
     activityId = campusAppsPortalInstance.activityIds['homeroom']!;
     selectWeek(today, activityId);
+    _year = _selected?.year ?? _year;
+    _month = _selected?.month ?? _month;
+    _fetchLeaveDates(_year, _month);
+  }
+
+  Future<void> _fetchLeaveDates(int year, int month) async {
+    try {
+      // Fetch leave dates and payment details for the month
+      List<LeaveDate> fetchedDates = await getLeaveDatesForMonth(
+        year,
+        month,
+        organization_id,
+      );
+
+      setState(() {
+        if (fetchedDates.isNotEmpty) {
+          DailyPayment = fetchedDates.first.dailyAmount;
+          // MonthlyPayment = DailyPayment * fetchedDates.length;
+        } else {
+          DailyPayment = 0.00;
+          MonthlyPayment = 0.00;
+        }
+      });
+    } catch (e) {
+      print("Error fetching leave dates: $e");
+    }
   }
 
   void updateExcelState() {
@@ -124,8 +158,8 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _data = MyData(
-        _fetchedAttendance, columnNames, _fetchedOrganization, updateSelected);
+    _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
+        updateSelected, DailyPayment);
     WeekPicker(updateDateRange, formattedStartDate);
   }
 
@@ -135,10 +169,42 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
     });
   }
 
+  Future<void> _onPressed({
+    required BuildContext context,
+    String? locale,
+  }) async {
+    final localeObj = locale != null ? Locale(locale) : null;
+
+    final selected = await showMonthYearPicker(
+      context: context,
+      initialDate: _selected ?? DateTime.now(),
+      firstDate: DateTime(2019),
+      lastDate: DateTime(2100),
+      locale: localeObj,
+    );
+
+    if (selected != null) {
+      int year = selected.year;
+      int month = selected.month;
+
+      // Calculate the start and end dates of the selected month
+      final _rangeStart = DateTime(year, month, 1); // First day of the month
+      final _rangeEnd = DateTime(year, month + 1, 0); // Last day of the month
+
+      // Pass the calculated dates to updateDateRange
+      updateDateRange(_rangeStart, _rangeEnd);
+
+      setState(() {
+        _selected = selected;
+      });
+    }
+  }
+
   void updateDateRange(_rangeStart, _rangeEnd) async {
     widget.updateDateRangeForExcel(_rangeStart, _rangeEnd);
     int? parentOrgId =
         campusAppsPortalInstance.getUserPerson().organization!.id;
+    await _fetchLeaveDates(_rangeStart.year, _rangeStart.month);
     if (_fetchedOrganization != null) {
       _fetchedAttendance = await getClassActivityAttendanceReportForPayment(
           this._fetchedOrganization!.id!,
@@ -220,7 +286,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
     columnNames.insert(columnNames.length, "Present Count");
     columnNames.insert(columnNames.length, "Absent Count");
     columnNames.insert(columnNames.length, "Student Payment Rs.");
-    columnNames.insert(columnNames.length, "Phone Payment Rs.");
+    // columnNames.insert(columnNames.length, "Phone Payment Rs.");
     cols = columnNames.map((label) => DataColumn(label: Text(label!))).toList();
     print(cols.length);
     if (_fetchedAttendance.length == 0)
@@ -238,10 +304,9 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
 
     setState(() {
       _fetchedOrganization;
-      organization_id = _fetchedOrganization!.id;
       this._isFetching = false;
       _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
-          updateSelected);
+          updateSelected, DailyPayment);
     });
   }
 
@@ -340,8 +405,8 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                               "Absent Count");
                                           columnNames.insert(columnNames.length,
                                               "Student Payment Rs.");
-                                          columnNames.insert(columnNames.length,
-                                              "Phone Payment Rs.");
+                                          // columnNames.insert(columnNames.length,
+                                          //     "Phone Payment Rs.");
                                           cols = columnNames
                                               .map((label) => DataColumn(
                                                   label: Text(label!)))
@@ -379,7 +444,8 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                                 _fetchedAttendance,
                                                 columnNames,
                                                 _fetchedOrganization,
-                                                updateSelected);
+                                                updateSelected,
+                                                DailyPayment);
                                           });
                                         },
                                         items: org.child_organizations
@@ -396,6 +462,56 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                       ],
                     ),
                     SizedBox(width: 20),
+                    Container(
+                      margin: const EdgeInsets.only(left: 10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Monthly Payment Amount:',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            'Rs. ${MonthlyPayment}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 20),
+                    Container(
+                      margin: const EdgeInsets.only(left: 10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Daily Payment Amount:',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            'Rs. ${DailyPayment}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 20),
                     Expanded(
                       child: Container(
                         alignment: Alignment.bottomRight,
@@ -405,15 +521,19 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                         child: ElevatedButton(
                           onPressed: () {
                             Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LeaveDatePicker(
-                                  organizationId: organization_id,
-                                ),
-                              ),
-                            );
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => LeaveDatePicker(
+                                    organizationId: organization_id ??
+                                        0, // Provide a default value if needed
+                                    year: _selected?.year ??
+                                        _year, // Ensure an `int` value is passed
+                                    month: _selected?.month ?? _month,
+                                    selectedDay: _selectedDay ?? DateTime.now(),
+                                  ),
+                                ));
                           },
-                          child: const Text('Create New'),
+                          child: const Text('Update Monthly Leave Dates'),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10.0, vertical: 5.0),
@@ -422,53 +542,46 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                         ),
                       ),
                     ),
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        textStyle: MaterialStateProperty.all(
-                          TextStyle(fontSize: 20),
-                        ),
-                        elevation: MaterialStateProperty.all(20),
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.greenAccent),
-                        foregroundColor:
-                            MaterialStateProperty.all(Colors.black),
-                      ),
-                      onPressed: _isFetching
-                          ? null
-                          : () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => WeekPicker(
-                                        updateDateRange, formattedStartDate)),
-                              ),
-                      child: Container(
-                        height: 50, // Adjust the height as needed
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (_isFetching)
-                              Padding(
-                                padding: EdgeInsets.only(right: 10),
-                                child: SpinKitFadingCircle(
-                                  color: Colors
-                                      .black, // Customize the color of the indicator
-                                  size:
-                                      20, // Customize the size of the indicator
+                    Padding(
+                      padding: EdgeInsets.only(top: 20, left: 20),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Select a Year & Month :',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          TextButton(
+                            onPressed: () =>
+                                _onPressed(context: context, locale: 'en'),
+                            child: Icon(Icons.calendar_month),
+                          ),
+                          if (_selected == null)
+                            Container(
+                              margin: EdgeInsets.only(left: 10.0),
+                              child: const Text(
+                                'No month & year selected.',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal,
                                 ),
                               ),
-                            if (!_isFetching)
-                              Icon(Icons.calendar_today, color: Colors.black),
-                            SizedBox(width: 10),
-                            Text(
-                              '${this.formattedStartDate} - ${this.formattedEndDate}',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w400,
+                            )
+                          else
+                            Container(
+                              child: Text(
+                                DateFormat.yMMMM()
+                                    .format(_selected!)
+                                    .toString(),
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.normal),
                               ),
                             ),
-                          ],
-                        ),
+                        ],
                       ),
                     ),
                     SizedBox(width: 20),
@@ -514,12 +627,13 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
 
 class MyData extends DataTableSource {
   MyData(this._fetchedAttendance, this.columnNames, this._fetchedOrganization,
-      this.updateSelected);
+      this.updateSelected, this.DailyPayment);
 
   final List<ActivityAttendance> _fetchedAttendance;
   final List<String?> columnNames;
   final Organization? _fetchedOrganization;
   final Function(int, bool, List<bool>) updateSelected;
+  final double? DailyPayment;
 
   List<String> getDatesFromMondayToToday() {
     DateTime now = DateTime.now();
@@ -548,7 +662,7 @@ class MyData extends DataTableSource {
       );
       cells[0] = DataCell(Text(''));
       cells[1] = DataCell(Text(''));
-      cells[columnNames.length - 4] = DataCell(Text(''));
+      // cells[columnNames.length - 4] = DataCell(Text(''));
       cells[columnNames.length - 3] = DataCell(Text(''));
       cells[columnNames.length - 2] = DataCell(Text(''));
       cells[columnNames.length - 1] = DataCell(Text(''));
@@ -556,7 +670,7 @@ class MyData extends DataTableSource {
       for (final date in columnNames) {
         if (columnNames.indexOf(date) == 0 ||
             columnNames.indexOf(date) == 1 ||
-            columnNames.indexOf(date) == columnNames.length - 4 ||
+            // columnNames.indexOf(date) == columnNames.length - 4 ||
             columnNames.indexOf(date) == columnNames.length - 3 ||
             columnNames.indexOf(date) == columnNames.length - 2 ||
             columnNames.indexOf(date) == columnNames.length - 1) {
@@ -613,16 +727,6 @@ class MyData extends DataTableSource {
           }
         }
       }
-      cells[columnNames.length - 4] = DataCell(Container(
-          alignment: Alignment.center,
-          child: Text(
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 72, 90),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              '0')));
-
       cells[columnNames.length - 3] = DataCell(Container(
           alignment: Alignment.center,
           child: Text(
@@ -631,7 +735,7 @@ class MyData extends DataTableSource {
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
-              absentCount.toString())));
+              '0')));
 
       cells[columnNames.length - 2] = DataCell(Container(
           alignment: Alignment.center,
@@ -641,7 +745,7 @@ class MyData extends DataTableSource {
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
-              '0')));
+              absentCount.toString())));
 
       cells[columnNames.length - 1] = DataCell(Container(
           alignment: Alignment.center,
@@ -652,6 +756,16 @@ class MyData extends DataTableSource {
                 fontWeight: FontWeight.bold,
               ),
               '0')));
+
+      // cells[columnNames.length - 1] = DataCell(Container(
+      //     alignment: Alignment.center,
+      //     child: Text(
+      //         style: TextStyle(
+      //           color: Color.fromARGB(255, 14, 72, 90),
+      //           fontSize: 16,
+      //           fontWeight: FontWeight.bold,
+      //         ),
+      //         '0')));
 
       int presentCount = 0;
       for (final attendance in _fetchedAttendance) {
@@ -669,15 +783,6 @@ class MyData extends DataTableSource {
           }
 
           newAbsentCount = absentCount - presentCount;
-          cells[columnNames.length - 4] = DataCell(Container(
-              alignment: Alignment.center,
-              child: Text(
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 72, 90),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  presentCount.toString())));
           cells[columnNames.length - 3] = DataCell(Container(
               alignment: Alignment.center,
               child: Text(
@@ -686,8 +791,7 @@ class MyData extends DataTableSource {
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
-                  newAbsentCount.toString())));
-          int studentPayment = 100 * presentCount;
+                  presentCount.toString())));
           cells[columnNames.length - 2] = DataCell(Container(
               alignment: Alignment.center,
               child: Text(
@@ -696,7 +800,8 @@ class MyData extends DataTableSource {
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
-                  studentPayment.toDouble().toStringAsFixed(2))));
+                  newAbsentCount.toString())));
+          double studentPayment = (DailyPayment ?? 0.0) * presentCount;
           cells[columnNames.length - 1] = DataCell(Container(
               alignment: Alignment.center,
               child: Text(
@@ -706,6 +811,15 @@ class MyData extends DataTableSource {
                     fontWeight: FontWeight.bold,
                   ),
                   studentPayment.toDouble().toStringAsFixed(2))));
+          // cells[columnNames.length - 1] = DataCell(Container(
+          //     alignment: Alignment.center,
+          //     child: Text(
+          //         style: TextStyle(
+          //           color: Color.fromARGB(255, 14, 72, 90),
+          //           fontSize: 16,
+          //           fontWeight: FontWeight.bold,
+          //         ),
+          //         studentPayment.toDouble().toStringAsFixed(2))));
         }
       }
 

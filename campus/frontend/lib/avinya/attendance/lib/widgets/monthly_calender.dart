@@ -4,48 +4,73 @@ import 'package:table_calendar/table_calendar.dart';
 
 class LeaveDatePicker extends StatefulWidget {
   final int? organizationId;
+  final int year;
+  final int month;
+  final DateTime selectedDay;
 
-  LeaveDatePicker({this.organizationId});
+  LeaveDatePicker({
+    this.organizationId,
+    required this.year,
+    required this.month,
+    required this.selectedDay,
+  });
 
   @override
   _LeaveDatePickerState createState() => _LeaveDatePickerState();
 }
 
 class _LeaveDatePickerState extends State<LeaveDatePicker> {
-  List<DateTime> _selectedDates = []; // Store selected dates
-  int? _year;
-  int? _month;
-  bool _isUpdate = false; // Track if we are in update mode
+  List<LeaveDate> _selectedDates = [];
+  late DateTime _focusedDay;
+  late int _year;
+  late int _month;
+  bool _isUpdate = false;
 
   @override
   void initState() {
     super.initState();
-    _year = DateTime.now().year;
-    _month = DateTime.now().month;
-    _fetchLeaveDates(); // Check if leave dates already exist for the current month
+    _focusedDay = DateTime(widget.year, widget.month, widget.selectedDay.day);
+    _year = widget.year;
+    _month = widget.month;
+    _fetchLeaveDates(_year, _month);
   }
 
-  Future<void> _fetchLeaveDates() async {
-    List<DateTime> fetchedDates = await getLeaveDatesForMonth(
-      _year!,
-      _month!,
-      widget.organizationId,
-    );
+  Future<void> _fetchLeaveDates(int year, int month) async {
+    try {
+      List<LeaveDate> fetchedDates = await getLeaveDatesForMonth(
+        year,
+        month,
+        widget.organizationId,
+      );
 
-    setState(() {
-      _selectedDates = fetchedDates;
-      _isUpdate = fetchedDates.isNotEmpty; // Set update mode if dates exist
-    });
+      setState(() {
+        _selectedDates = fetchedDates;
+        _isUpdate = fetchedDates.isNotEmpty;
+      });
+    } catch (e) {
+      print("Error fetching leave dates: $e");
+    }
   }
 
   void _onDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
-      // Toggle date selection
-      if (_selectedDates.any((d) => _isSameDay(d, day))) {
-        _selectedDates.removeWhere((d) => _isSameDay(d, day));
+      if (_selectedDates.any((d) => _isSameDay(d.date, day))) {
+        // Remove the selected day if it already exists
+        _selectedDates.removeWhere((d) => _isSameDay(d.date, day));
       } else {
-        _selectedDates.add(day);
+        // Add the selected day with default values for other fields
+        _selectedDates.add(
+          LeaveDate(
+            id: _selectedDates.length + 1,
+            date: day,
+            dailyAmount: 0.0, // Default value; adjust if needed
+            created: DateTime.now(),
+            updated: DateTime.now(),
+            organizationId: 0, // Set a proper organization ID if needed
+          ),
+        );
       }
+      _focusedDay = focusedDay;
     });
   }
 
@@ -55,25 +80,26 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
       return;
     }
 
-    int totalDaysInMonth = DateTime(_year!, _month! + 1, 0).day;
-    List<int> leaveDatesList = _selectedDates.map((date) => date.day).toList();
+    int totalDaysInMonth = DateTime(_year, _month + 1, 0).day;
+    List<int> leaveDatesList =
+        _selectedDates.map((leaveDate) => leaveDate.date.day).toList();
 
     try {
       if (_isUpdate) {
-        // Update leave dates if they exist
+        int id = _selectedDates.first.id;
         await updateMonthlyLeaveDates(
-          year: _year!,
-          month: _month!,
+          id: id,
+          year: _year,
+          month: _month,
           organizationId: widget.organizationId ?? 2,
           totalDaysInMonth: totalDaysInMonth,
           leaveDatesList: leaveDatesList,
         );
         print("Leave dates updated: $_selectedDates");
       } else {
-        // Create new leave dates if they don't exist
         await createMonthlyLeaveDates(
-          year: _year!,
-          month: _month!,
+          year: _year,
+          month: _month,
           organizationId: widget.organizationId ?? 2,
           totalDaysInMonth: totalDaysInMonth,
           leaveDatesList: leaveDatesList,
@@ -96,27 +122,28 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
           TableCalendar(
             firstDay: DateTime.utc(2020, 1, 1),
             lastDay: DateTime.utc(2030, 12, 31),
-            focusedDay: DateTime.now(),
+            focusedDay: _focusedDay,
             selectedDayPredicate: (day) =>
-                _selectedDates.any((d) => _isSameDay(d, day)),
+                _selectedDates.any((d) => _isSameDay(d.date, day)),
             onDaySelected: _onDaySelected,
             calendarStyle: CalendarStyle(
               isTodayHighlighted: true,
-              selectedDecoration: BoxDecoration(
+              selectedDecoration: const BoxDecoration(
                 color: Colors.blue,
                 shape: BoxShape.circle,
               ),
-              todayDecoration: BoxDecoration(
+              todayDecoration: const BoxDecoration(
                 color: Colors.orange,
                 shape: BoxShape.circle,
               ),
             ),
             onPageChanged: (focusedDay) {
               setState(() {
+                _focusedDay = focusedDay;
                 _year = focusedDay.year;
                 _month = focusedDay.month;
-                _fetchLeaveDates(); // Fetch leave dates for the selected month
               });
+              _fetchLeaveDates(_year, _month);
             },
           ),
           const SizedBox(height: 20),
@@ -130,9 +157,9 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
             child: Wrap(
               spacing: 10,
               children: _selectedDates
-                  .map((date) => Chip(
+                  .map((leaveDate) => Chip(
                         label: Text(
-                          date.day.toString(),
+                          leaveDate.date.day.toString(),
                           style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
@@ -150,7 +177,6 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
     );
   }
 
-  // Helper function to compare dates without time
   bool _isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
