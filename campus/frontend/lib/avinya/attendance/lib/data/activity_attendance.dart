@@ -59,8 +59,7 @@ class ActivityAttendance {
       this.late_count,
       this.total_count,
       this.present_attendance_percentage,
-      this.late_attendance_percentage
-      });
+      this.late_attendance_percentage});
 
   factory ActivityAttendance.fromJson(Map<String, dynamic> json) {
     return ActivityAttendance(
@@ -95,8 +94,8 @@ class ActivityAttendance {
         late_count: json['late_count'],
         total_count: json['total_count'],
         present_attendance_percentage: json['present_attendance_percentage'],
-        late_attendance_percentage: json['late_attendance_percentage']
-);  }
+        late_attendance_percentage: json['late_attendance_percentage']);
+  }
 
   Map<String, dynamic> toJson() => {
         if (id != null) 'id': id,
@@ -153,6 +152,145 @@ Future<ActivityAttendance> createActivityAttendance(
     return ActivityAttendance.fromJson(jsonDecode(response.body));
   } else {
     throw Exception('Failed to create Activity Participant Attendance.');
+  }
+}
+
+class LeaveDate {
+  final int id;
+  final DateTime date;
+  final double dailyAmount;
+  final DateTime created;
+  final DateTime updated;
+  final int organizationId;
+
+  LeaveDate({
+    required this.id,
+    required this.date,
+    required this.dailyAmount,
+    required this.created,
+    required this.updated,
+    required this.organizationId,
+  });
+}
+
+Future<void> createMonthlyLeaveDates({
+  required int year,
+  required int month,
+  required int organizationId,
+  required int totalDaysInMonth,
+  required List<int> leaveDatesList,
+}) async {
+  // Prepare the request body
+  Map<String, dynamic> requestBody = {
+    "year": year,
+    "month": month,
+    "organization_id": organizationId,
+    "total_days_in_month": totalDaysInMonth,
+    "leave_dates_list": leaveDatesList,
+  };
+
+  try {
+    final response = await http.post(
+      Uri.parse(
+          '${AppConfig.campusAttendanceBffApiUrl}/add_monthly_leave_dates'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'accept': 'application/json',
+        'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      print("Leave dates created successfully: ${response.body}");
+    } else {
+      throw Exception(
+          'Failed to create leave dates. Status: ${response.statusCode}');
+    }
+  } catch (e) {
+    print("Error: $e");
+    throw Exception('An error occurred while creating leave dates.');
+  }
+}
+
+Future<void> updateMonthlyLeaveDates({
+  required int id, // New parameter for identifying the record
+  required int year,
+  required int month,
+  required int organizationId,
+  required int totalDaysInMonth,
+  required List<int> leaveDatesList,
+}) async {
+  // Prepare the request body
+  Map<String, dynamic> requestBody = {
+    "id": id,
+    "year": year,
+    "month": month,
+    "organization_id": organizationId,
+    "total_days_in_month": totalDaysInMonth,
+    "leave_dates_list": leaveDatesList,
+  };
+
+  try {
+    final response = await http.put(
+      Uri.parse(
+          '${AppConfig.campusAttendanceBffApiUrl}/update_monthly_leave_dates'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'accept': 'application/json',
+        'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      print("Leave dates updated successfully: ${response.body}");
+    } else {
+      throw Exception(
+          'Failed to update leave dates. Status: ${response.statusCode}');
+    }
+  } catch (e) {
+    print("Error updating leave dates: $e");
+    throw Exception('An error occurred while updating leave dates.');
+  }
+}
+
+Future<List<LeaveDate>> getLeaveDatesForMonth(
+    int year, int month, int? organizationId) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/monthly_leave_dates_record_by_id/$organizationId/$year/$month'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+
+  if (response.statusCode >= 200 && response.statusCode < 300) {
+    final resultsJson = json.decode(response.body);
+
+    if (resultsJson is Map<String, dynamic> &&
+        resultsJson['leave_dates_list'] is List) {
+      List<LeaveDate> leaveDates = (resultsJson['leave_dates_list'] as List)
+          .map((day) => LeaveDate(
+                id: resultsJson['id'] ?? 0,
+                date: DateTime(year, month, day as int),
+                dailyAmount: (resultsJson['daily_amount'] ?? 0.0) as double,
+                created: DateTime.parse(resultsJson['created']),
+                updated: DateTime.parse(resultsJson['updated']),
+                organizationId: resultsJson['organization_id'] ?? 0,
+              ))
+          .toList();
+
+      return leaveDates;
+    } else {
+      throw Exception(
+          'Unexpected response format. Expected a Map with a leave_dates_list.');
+    }
+  } else {
+    throw Exception(
+        'Failed to get leave dates. Status code: ${response.statusCode}.');
   }
 }
 
@@ -564,7 +702,6 @@ Future<List<ActivityAttendance>> getDailyAttendanceSummaryReport(
         .toList();
     return activityAttendances;
   } else {
-    throw Exception(
-        'Failed to get Daily Attendances Summary Data');
+    throw Exception('Failed to get Daily Attendances Summary Data');
   }
 }

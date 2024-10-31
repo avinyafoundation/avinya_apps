@@ -880,4 +880,59 @@ service / on new http:Listener(9091) {
                 ":: Detail: " + getOrganizationsByAvinyaTypeResponse.detail().toString());
         }
     }
+
+    resource function post add_monthly_leave_dates (@http:Payload MonthlyLeaveDates monthlyLeaveDates) returns MonthlyLeaveDates|error {
+        CreateMonthlyLeaveDatesResponse|graphql:ClientError addMonthlyLeaveDatesResponse = globalDataClient->createMonthlyLeaveDates(monthlyLeaveDates);
+        if(addMonthlyLeaveDatesResponse is CreateMonthlyLeaveDatesResponse) {
+            MonthlyLeaveDates|error monthly_leave_dates_record = addMonthlyLeaveDatesResponse.add_monthly_leave_dates.cloneWithType(MonthlyLeaveDates);
+            if(monthly_leave_dates_record is MonthlyLeaveDates) {
+                return monthly_leave_dates_record;
+            } else {
+                log:printError("Error while processing Application record received", monthly_leave_dates_record);
+                return error("Error while processing Application record received: " + monthly_leave_dates_record.message() + 
+                    ":: Detail: " + monthly_leave_dates_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", addMonthlyLeaveDatesResponse);
+            return error("Error while creating application: " + addMonthlyLeaveDatesResponse.message() + 
+                ":: Detail: " + addMonthlyLeaveDatesResponse.detail().toString());
+        }
+    }
+
+    resource function put update_monthly_leave_dates(@http:Payload MonthlyLeaveDates monthlyLeaveDates) returns MonthlyLeaveDates|error {
+        UpdateMonthlyLeaveDatesResponse|graphql:ClientError updateMonthlyLeaveDatesResponse = globalDataClient->updateMonthlyLeaveDates(monthlyLeaveDates);
+        if(updateMonthlyLeaveDatesResponse is  UpdateMonthlyLeaveDatesResponse) {
+            MonthlyLeaveDates|error monthly_leave_dates_record = updateMonthlyLeaveDatesResponse.update_monthly_leave_dates.cloneWithType(MonthlyLeaveDates);
+            if(monthly_leave_dates_record is  MonthlyLeaveDates) {
+                return monthly_leave_dates_record;
+            } else {
+                log:printError("Error while processing Application record received", monthly_leave_dates_record);
+                return error("Error while processing Application record received: " + monthly_leave_dates_record.message() + 
+                    ":: Detail: " + monthly_leave_dates_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while updating application", updateMonthlyLeaveDatesResponse);
+            return error("Error while updating application: " + updateMonthlyLeaveDatesResponse.message() + 
+                ":: Detail: " + updateMonthlyLeaveDatesResponse.detail().toString());
+        }
+    }
+    
+    resource function get monthly_leave_dates_record_by_id/[int organization_id]/[int year]/[int month]() returns MonthlyLeaveDates|error {
+        GetMonthlyLeaveDatesRecordByIdResponse|graphql:ClientError getMonthlyLeaveDatesRecordByIdResponse = globalDataClient->getMonthlyLeaveDatesRecordById(month,year,organization_id);
+        if (getMonthlyLeaveDatesRecordByIdResponse is GetMonthlyLeaveDatesRecordByIdResponse) {
+            MonthlyLeaveDates|error monthly_leave_dates_record_by_id_record = getMonthlyLeaveDatesRecordByIdResponse.monthly_leave_dates_record_by_id.cloneWithType(MonthlyLeaveDates);
+            if (monthly_leave_dates_record_by_id_record is MonthlyLeaveDates) {
+                return monthly_leave_dates_record_by_id_record;
+            } else {
+                log:printError("Error while processing Application record received", monthly_leave_dates_record_by_id_record);
+                return error("Error while processing Application record received: " + monthly_leave_dates_record_by_id_record.message() +
+                    ":: Detail: " + monthly_leave_dates_record_by_id_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", getMonthlyLeaveDatesRecordByIdResponse);
+            return error("Error while creating application: " + getMonthlyLeaveDatesRecordByIdResponse.message() +
+                ":: Detail: " + getMonthlyLeaveDatesRecordByIdResponse.detail().toString());
+        }
+    }
+
 }
