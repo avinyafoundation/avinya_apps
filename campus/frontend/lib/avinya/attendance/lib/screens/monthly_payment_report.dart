@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:attendance/widgets/excel_export.dart';
+import 'package:gallery/avinya/attendance/lib/widgets/monthly_payment_report_excel_export.dart';
 import 'package:gallery/data/person.dart';
 import 'package:attendance/data/activity_attendance.dart';
 import 'package:gallery/avinya/attendance/lib/widgets/monthly_payment_report.dart';
@@ -34,6 +35,8 @@ class _MonthlyPaymentReportScreenState extends State<MonthlyPaymentReportScreen>
 
   late String formattedStartDate;
   late String formattedEndDate;
+
+  List<String?> classes=[];
 
   void selectWeek(DateTime today, activityId) async {
     // Calculate the start of the week (excluding weekends) based on the selected day
@@ -97,7 +100,7 @@ class _MonthlyPaymentReportScreenState extends State<MonthlyPaymentReportScreen>
           this.formattedStartDate = formattedStartDate;
           this.formattedEndDate = formattedEndDate;
           this._fetchedStudentList = _fetchedStudentList;
-          // this.isFetching = false;
+          this.isFetching = false;
           this._fetchedExcelReportData = _fetchedExcelReportData;
         });
       } catch (e) {
@@ -114,15 +117,29 @@ class _MonthlyPaymentReportScreenState extends State<MonthlyPaymentReportScreen>
     var today = DateTime.now();
     activityId = campusAppsPortalInstance.activityIds['homeroom']!;
     selectWeek(today, activityId);
+    var organizations = campusAppsPortalInstance
+        .getUserPerson()
+        .organization!
+        .child_organizations
+        .where((org) => org.child_organizations.isNotEmpty);
+    if (organizations.length > 0)
+     classes = organizations.expand((Organization org) =>
+          (org.child_organizations.map((e) => e.description))).toList();
   }
 
   void updateExcelState() {
-    ExcelExport(
+    MonthlyPaymentReportExcelExport(
+      classes: classes,
       fetchedAttendance: _fetchedExcelReportData,
       columnNames: columnNames,
       fetchedStudentList: _fetchedStudentList,
       updateExcelState: updateExcelState,
       isFetching: isFetching,
+      totalSchoolDaysInMonth: [1, 2, 3, 4, 5],
+      dailyAmount: 333.47,
+      numberOfDaysInMonth: 30,
+      year: 2024,
+      month: "January",
     );
   }
 
@@ -154,12 +171,18 @@ class _MonthlyPaymentReportScreenState extends State<MonthlyPaymentReportScreen>
       ),
       floatingActionButton: this.isFetching
           ? null
-          : ExcelExport(
+          : MonthlyPaymentReportExcelExport(
+              classes:classes,
               fetchedAttendance: _fetchedExcelReportData,
               columnNames: columnNames,
               fetchedStudentList: _fetchedStudentList,
               updateExcelState: updateExcelState,
               isFetching: isFetching,
+              totalSchoolDaysInMonth: [1, 2, 3, 4, 5],
+              dailyAmount: 333.47,
+              numberOfDaysInMonth: 30,
+              year: 2024,
+              month: "January",
             ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
