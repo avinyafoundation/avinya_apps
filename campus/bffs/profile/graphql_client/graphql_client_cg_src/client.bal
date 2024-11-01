@@ -40,7 +40,7 @@ public isolated client class GraphqlClient {
         return <GetOrganizationResponse> check performDataBinding(graphqlResponse, GetOrganizationResponse);
     }
     remote isolated function getStudentByParentOrg(int id) returns GetStudentByParentOrgResponse|graphql:ClientError {
-        string query = string `query getStudentByParentOrg($id:Int!) {student_list_by_parent(id:$id) {id preferred_name full_name date_of_birth sex asgardeo_id jwt_sub_id created updated jwt_email phone avinya_type_id notes nic_no passport_no id_no email street_address digital_id avinya_phone bank_name bank_account_number bank_account_name bank_branch academy_org_id}}`;
+        string query = string `query getStudentByParentOrg($id:Int!) {student_list_by_parent(id:$id) {id preferred_name full_name date_of_birth sex asgardeo_id jwt_sub_id created updated jwt_email phone avinya_type_id notes nic_no passport_no id_no email street_address digital_id avinya_phone bank_name bank_account_number bank_account_name bank_branch academy_org_id organization {id name {name_en} description}}}`;
         map<anydata> variables = {"id": id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetStudentByParentOrgResponse> check performDataBinding(graphqlResponse, GetStudentByParentOrgResponse);

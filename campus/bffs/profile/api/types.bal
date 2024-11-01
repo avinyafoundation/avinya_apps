@@ -637,5 +637,12 @@ public type GetStudentByParentOrgResponse record {|
         string? bank_account_name;
         string? bank_branch;
         int? academy_org_id;
+        record {|
+            int? id;
+            record {|
+                string? name_en;
+            |} name;
+            string? description;
+        |}? organization;
     |}[] student_list_by_parent;
 |};

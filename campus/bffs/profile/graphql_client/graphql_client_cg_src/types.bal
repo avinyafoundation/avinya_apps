@@ -69,23 +69,23 @@ public type ActivitySequencePlan record {
 };
 
 public type Address record {
-    string street_address?;
-    string? name_ta?;
+    string? street_address?;
     int? phone?;
-    string? name_si?;
+    City? city?;
     int? id?;
     string? record_type?;
-    int city_id?;
-    string name_en?;
+    int? city_id?;
 };
 
 public type ApplicantConsent record {
     string? date_of_birth?;
+    string? al_stream?;
     string? created?;
     int? avinya_type_id?;
     boolean? agree_terms_consent?;
     boolean? active?;
-    boolean? done_ol?;
+    int? al_year?;
+    string? done_ol?;
     int? application_id?;
     int? ol_year?;
     string? record_type?;
@@ -96,6 +96,7 @@ public type ApplicantConsent record {
     int? id?;
     int? distance_to_school?;
     string? updated?;
+    string? done_al?;
     string? email?;
     int? person_id?;
 };
@@ -134,6 +135,21 @@ public type AvinyaType record {
     string global_type?;
 };
 
+public type City record {
+    string? suburb_name_en?;
+    string? suburb_name_si?;
+    string? name_ta?;
+    string? suburb_name_ta?;
+    anydata? latitude?;
+    string? postcode?;
+    string? name_si?;
+    int? id?;
+    int? district_id?;
+    string? record_type?;
+    string? name_en?;
+    anydata? longitude?;
+};
+
 public type Consumable record {
     string? created?;
     int? avinya_type_id?;
@@ -141,10 +157,31 @@ public type Consumable record {
     string? description?;
     string? model?;
     string? serial_number?;
+    anydata? threshold?;
     int? id?;
     string? updated?;
     string? record_type?;
     string? manufacturer?;
+};
+
+public type DutyParticipant record {
+    string? role?;
+    Activity? activity?;
+    Person? person?;
+    string? created?;
+    int? activity_id?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+};
+
+public type DutyRotationMetaDetails record {
+    string? end_date?;
+    int? organization_id?;
+    int? id?;
+    string? record_type?;
+    string? start_date?;
 };
 
 public type EducationExperience record {
@@ -215,33 +252,56 @@ public type EvaluationMetadata record {
 };
 
 public type Inventory record {
-    int? quantity_out?;
+    string? month_name?;
     int? consumable_id?;
-    int? quantity?;
-    int? quantity_in?;
+    anydata? quantity?;
     string? created?;
-    int? organization_id?;
+    anydata? prev_quantity?;
     int? avinya_type_id?;
-    int? id?;
+    string? description?;
     int? asset_id?;
-    string? updated?;
+    int? is_below_threshold?;
     string? record_type?;
+    string? manufacturer?;
+    anydata? quantity_out?;
+    int? resource_property_id?;
+    anydata? quantity_in?;
+    int? organization_id?;
+    string? name?;
+    int? id?;
+    string? updated?;
+    string? resource_property_value?;
     int? person_id?;
 };
 
+public type MonthlyLeaveDates record {
+    string? leave_dates?;
+    int? month?;
+    int[] leave_dates_list?;
+    int? year?;
+    string? created?;
+    int? total_days_in_month?;
+    int? organization_id?;
+    int? id?;
+    anydata? daily_amount?;
+    string? updated?;
+    string? record_type?;
+};
+
 public type Organization record {
-    int[]? parent_organizations?;
     string? notes?;
     string? name_ta?;
     int[]? child_organizations?;
-    int? phone?;
     int? address_id?;
     string? name_si?;
     int? avinya_type?;
     string? description?;
-    int? id?;
+    int[]? child_organizations_for_dashboard?;
     string? record_type?;
-    string name_en?;
+    int[]? parent_organizations?;
+    int? phone?;
+    int? id?;
+    string? name_en?;
 };
 
 public type Person record {
@@ -264,8 +324,11 @@ public type Person record {
     string? digital_id?;
     string? sex?;
     string? passport_no?;
+    string? current_job?;
+    int? created_by?;
     string? record_type?;
     Address? mailing_address?;
+    string? branch_code?;
     int[]? child_student?;
     string? bank_account_name?;
     int? avinya_phone?;
@@ -273,6 +336,8 @@ public type Person record {
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    int? updated_by?;
+    string? academy_org_name?;
     string? asgardeo_id?;
     string? updated?;
     string? preferred_name?;
@@ -308,6 +373,7 @@ public type ResourceAllocation record {
     string? created?;
     int? asset_id?;
     string? record_type?;
+    ResourceProperty[]? resource_properties?;
     boolean? requested?;
     boolean? approved?;
     int? organization_id?;
@@ -392,12 +458,12 @@ public type GetPersonResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? permanent_address;
@@ -405,12 +471,12 @@ public type GetPersonResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? mailing_address;
@@ -427,26 +493,26 @@ public type GetPersonResponse record {|
             |}? avinya_type;
             int? phone;
             record {|
-                string name_en;
+                string? name_en;
                 string? name_si;
                 string? name_ta;
             |} name;
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                 |} name;
                 string? description;
                 record {|
                     int? id;
                     record {|
-                        string name_en;
+                        string? name_en;
                     |} name;
                     string? description;
                     record {|
                         int? id;
                         record {|
-                            string name_en;
+                            string? name_en;
                         |} name;
                         string? description;
                         record {|
@@ -578,20 +644,20 @@ public type GetOrganizationResponse record {|
     record {|
         int? id;
         record {|
-            string name_en;
+            string? name_en;
         |} name;
         string? description;
         record {|
             int? id;
             record {|
-                string name_en;
+                string? name_en;
             |} name;
             string? description;
         |}[]? child_organizations;
         record {|
             int? id;
             record {|
-                string name_en;
+                string? name_en;
             |} name;
             string? description;
         |}[]? parent_organizations;
@@ -631,5 +697,12 @@ public type GetStudentByParentOrgResponse record {|
         string? bank_account_name;
         string? bank_branch;
         int? academy_org_id;
+        record {|
+            int? id;
+            record {|
+                string? name_en;
+            |} name;
+            string? description;
+        |}? organization;
     |}[]? student_list_by_parent;
 |};
