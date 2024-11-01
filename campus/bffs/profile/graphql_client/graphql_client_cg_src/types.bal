@@ -665,6 +665,7 @@ public type GetOrganizationResponse record {|
             int? id;
             string? preferred_name;
             string? digital_id;
+            string? nic_no;
         |}[]? people;
     |}? organization;
 |};

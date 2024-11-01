@@ -35,18 +35,35 @@ class _MonthlyPaymentReportScreenState extends State<MonthlyPaymentReportScreen>
 
   late String formattedStartDate;
   late String formattedEndDate;
+  late int _totalSchoolDaysInMonth = 0;
+  late String _monthFullName = "";
+  late double _dailyAmount = 0.0;
 
-  List<String?> classes=[];
+  List<String?> classes = [];
 
-  void selectWeek(DateTime today, activityId) async {
+  late int _organization_id;
+  late int _totalDaysInMonth;
+  int _year = DateTime.now().year;
+  int _month = DateTime.now().month;
+
+  void selectedYearAndMonth(int year, int month) async {
+    _organization_id =
+        campusAppsPortalInstance.getUserPerson().organization!.id!;
+    setState(() {
+      _year = year;
+      _month = month;
+    });
+    await _fetchLeaveDates(_year, _month);
+  }
+
+  void selectMonth(DateTime today, activityId) async {
     // Calculate the start of the week (excluding weekends) based on the selected day
-    DateTime startOfWeek = today.subtract(Duration(days: today.weekday - 1));
-    while (startOfWeek.weekday > DateTime.friday) {
-      startOfWeek = startOfWeek.subtract(Duration(days: 1));
-    }
+    // Calculate the first date of the month
+    DateTime firstDateOfMonth = DateTime(today.year, today.month, 1);
 
-    // Calculate the end of the week (excluding weekends) based on the start of the week
-    DateTime endOfWeek = startOfWeek.add(Duration(days: 4));
+    // Calculate the last date of the month
+    DateTime lastDateOfMonth =
+        DateTime(today.year, today.month + 1, 1).subtract(Duration(days: 1));
 
     int? parentOrgId =
         campusAppsPortalInstance.getUserPerson().organization!.id;
@@ -60,8 +77,8 @@ class _MonthlyPaymentReportScreenState extends State<MonthlyPaymentReportScreen>
             await getClassActivityAttendanceReportByParentOrg(
                 parentOrgId,
                 activityId,
-                DateFormat('yyyy-MM-dd').format(startOfWeek),
-                DateFormat('yyyy-MM-dd').format(endOfWeek));
+                DateFormat('yyyy-MM-dd').format(firstDateOfMonth),
+                DateFormat('yyyy-MM-dd').format(lastDateOfMonth));
         _fetchedStudentList = await fetchStudentList(parentOrgId);
 
         setState(() {
@@ -115,16 +132,19 @@ class _MonthlyPaymentReportScreenState extends State<MonthlyPaymentReportScreen>
   void initState() {
     super.initState();
     var today = DateTime.now();
+    selectedYearAndMonth(_year, _month);
     activityId = campusAppsPortalInstance.activityIds['homeroom']!;
-    selectWeek(today, activityId);
+    selectMonth(today, activityId);
     var organizations = campusAppsPortalInstance
         .getUserPerson()
         .organization!
         .child_organizations
         .where((org) => org.child_organizations.isNotEmpty);
     if (organizations.length > 0)
-     classes = organizations.expand((Organization org) =>
-          (org.child_organizations.map((e) => e.description))).toList();
+      classes = organizations
+          .expand((Organization org) =>
+              (org.child_organizations.map((e) => e.description)))
+          .toList();
   }
 
   void updateExcelState() {
@@ -135,11 +155,10 @@ class _MonthlyPaymentReportScreenState extends State<MonthlyPaymentReportScreen>
       fetchedStudentList: _fetchedStudentList,
       updateExcelState: updateExcelState,
       isFetching: isFetching,
-      totalSchoolDaysInMonth: [1, 2, 3, 4, 5],
-      dailyAmount: 333.47,
-      numberOfDaysInMonth: 30,
-      year: 2024,
-      month: "January",
+      totalSchoolDaysInMonth: _totalSchoolDaysInMonth,
+      dailyAmount: _dailyAmount,
+      year: _year,
+      month: _monthFullName,
     );
   }
 
@@ -148,12 +167,38 @@ class _MonthlyPaymentReportScreenState extends State<MonthlyPaymentReportScreen>
     super.dispose();
   }
 
+  Future<void> _fetchLeaveDates(int year, int month) async {
+    try {
+      // Fetch leave dates and payment details for the month
+      List<LeaveDate> fetchedDates = await getLeaveDatesForMonth(
+        year,
+        month,
+        _organization_id,
+      );
+
+      _totalDaysInMonth = DateTime(_year, _month + 1, 0).day;
+      _totalSchoolDaysInMonth = _totalDaysInMonth - fetchedDates.length;
+      _monthFullName = DateFormat.MMMM().format(DateTime(0, _month));
+
+      setState(() {
+        if (fetchedDates.isNotEmpty) {
+          _dailyAmount = fetchedDates.first.dailyAmount;
+          // MonthlyPayment = DailyPayment * fetchedDates.length;
+        } else {
+          _dailyAmount = 0.00;
+        }
+      });
+    } catch (e) {
+      print("Error fetching leave dates: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("Weekly Student Payment Report",
+        title: Text("Monthly Student Payment Report",
             style: TextStyle(color: Colors.black)),
         backgroundColor: Color.fromARGB(255, 236, 230, 253),
       ),
@@ -164,6 +209,7 @@ class _MonthlyPaymentReportScreenState extends State<MonthlyPaymentReportScreen>
               MonthlyPaymentReport(
                 title: 'Weekly Student Payment',
                 updateDateRangeForExcel: updateDateRange,
+                onYearMonthSelected: selectedYearAndMonth,
               )
             ],
           ),
@@ -172,17 +218,16 @@ class _MonthlyPaymentReportScreenState extends State<MonthlyPaymentReportScreen>
       floatingActionButton: this.isFetching
           ? null
           : MonthlyPaymentReportExcelExport(
-              classes:classes,
+              classes: classes,
               fetchedAttendance: _fetchedExcelReportData,
               columnNames: columnNames,
               fetchedStudentList: _fetchedStudentList,
               updateExcelState: updateExcelState,
               isFetching: isFetching,
-              totalSchoolDaysInMonth: [1, 2, 3, 4, 5],
-              dailyAmount: 333.47,
-              numberOfDaysInMonth: 30,
-              year: 2024,
-              month: "January",
+              totalSchoolDaysInMonth: _totalSchoolDaysInMonth,
+              dailyAmount: _dailyAmount,
+              year: _year,
+              month: _monthFullName,
             ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );

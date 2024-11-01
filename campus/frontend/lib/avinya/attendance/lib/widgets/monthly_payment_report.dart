@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:attendance/widgets/week_picker.dart';
 import 'package:attendance/widgets/excel_export.dart';
@@ -12,9 +14,13 @@ import 'package:month_year_picker/month_year_picker.dart';
 
 class MonthlyPaymentReport extends StatefulWidget {
   const MonthlyPaymentReport(
-      {Key? key, required this.title, required this.updateDateRangeForExcel})
+      {Key? key,
+      required this.title,
+      required this.updateDateRangeForExcel,
+      required this.onYearMonthSelected})
       : super(key: key);
   final Function(DateTime, DateTime) updateDateRangeForExcel;
+  final Function(int,int) onYearMonthSelected;
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -203,6 +209,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
       setState(() {
         _selected = selected;
       });
+      widget.onYearMonthSelected(selected.year,selected.month);
     }
   }
 
@@ -288,7 +295,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
     columnNames = columnNames.toSet().toList();
     columnNames.sort();
     columnNames.insert(0, "Name");
-    columnNames.insert(1, "Digital ID");
+    columnNames.insert(1, "NIC");
     columnNames.insert(columnNames.length, "Present Count");
     columnNames.insert(columnNames.length, "Absent Count");
     columnNames.insert(columnNames.length, "Student Payment Rs.");
@@ -409,7 +416,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                               columnNames.toSet().toList();
                                           columnNames.sort();
                                           columnNames.insert(0, "Name");
-                                          columnNames.insert(1, "Digital ID");
+                                          columnNames.insert(1, "NIC");
                                           columnNames.insert(columnNames.length,
                                               "Present Count");
                                           columnNames.insert(columnNames.length,
@@ -487,7 +494,8 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            'Rs. ${MonthlyPayment}',
+                            // 'Rs. ${MonthlyPayment}',
+                            'Rs.10000.00',
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.normal,
@@ -614,14 +622,21 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                         ),
                       )
                     else if (cols.length > 2)
-                      PaginatedDataTable(
-                        showCheckboxColumn: false,
-                        source: _data,
-                        columns: cols,
-                        // header: const Center(child: Text('Daily Attendance')),
-                        columnSpacing: 100,
-                        horizontalMargin: 60,
-                        rowsPerPage: 22,
+                      ScrollConfiguration(
+                        behavior: ScrollConfiguration.of(context)
+                            .copyWith(dragDevices: {
+                          PointerDeviceKind.touch,
+                          PointerDeviceKind.mouse,
+                        }),
+                        child: PaginatedDataTable(
+                          showCheckboxColumn: false,
+                          source: _data,
+                          columns: cols,
+                          // header: const Center(child: Text('Daily Attendance')),
+                          columnSpacing: 100,
+                          horizontalMargin: 60,
+                          rowsPerPage: 22,
+                        ),
                       )
                     else
                       Container(
@@ -721,7 +736,7 @@ class MyData extends DataTableSource {
       );
 
       cells[0] = DataCell(Text(person.preferred_name!));
-      cells[1] = DataCell(Text(person.digital_id.toString()));
+      cells[1] = DataCell(Text(person.nic_no.toString()));
 
       int absentCount = 0;
 

@@ -10,9 +10,8 @@ class MonthlyPaymentReportExcelExport extends StatefulWidget {
   final List<Person> fetchedStudentList;
   final Function() updateExcelState;
   final bool isFetching;
-  final List<int> totalSchoolDaysInMonth;
+  final int totalSchoolDaysInMonth;
   final double dailyAmount;
-  final int numberOfDaysInMonth;
   final int year;
   final String month;
   final List<String?> classes;
@@ -27,7 +26,6 @@ class MonthlyPaymentReportExcelExport extends StatefulWidget {
     required this.isFetching,
     required this.totalSchoolDaysInMonth,
     required this.dailyAmount,
-    required this.numberOfDaysInMonth,
     required this.year,
     required this.month,
   }) : super(key: key);

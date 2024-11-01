@@ -577,27 +577,20 @@ public type GetOrganizationResponse record {|
     record {|
         int? id;
         record {|
-            string name_en;
+            string? name_en;
         |} name;
         string? description;
         record {|
             int? id;
             record {|
-                string name_en;
+                string? name_en;
             |} name;
             string? description;
         |}[]? child_organizations;
         record {|
             int? id;
             record {|
-                string name_en;
-            |} name;
-            string? description;
-        |}[]? child_organizations_for_dashboard;
-        record {|
-            int? id;
-            record {|
-                string name_en;
+                string? name_en;
             |} name;
             string? description;
         |}[]? parent_organizations;
@@ -605,10 +598,10 @@ public type GetOrganizationResponse record {|
             int? id;
             string? preferred_name;
             string? digital_id;
+            string? nic_no;
         |}[]? people;
     |}? organization;
 |};
-
 public type GetStudentByParentOrgResponse record {|
     map<json?> __extensions?;
     record {|

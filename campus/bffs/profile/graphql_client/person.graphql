@@ -220,6 +220,7 @@ query getOrganization($id: Int!) {
             id
             preferred_name
             digital_id
+            nic_no
         }
     }       
 }
