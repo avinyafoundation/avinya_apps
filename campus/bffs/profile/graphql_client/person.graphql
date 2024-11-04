@@ -220,12 +220,13 @@ query getOrganization($id: Int!) {
             id
             preferred_name
             digital_id
+            nic_no
         }
     }       
 }
 
-query getStudentByParentOrg($id:Int!){
-    student_list_by_parent(id:$id) {
+query getStudentByParentOrg($id: Int!) {
+  student_list_by_parent(id: $id) {
     id
     preferred_name
     full_name
@@ -251,5 +252,12 @@ query getStudentByParentOrg($id:Int!){
     bank_account_name
     bank_branch
     academy_org_id
+    organization {
+      id
+      name {
+        name_en
+      }
+      description
+    }
   }
 }
