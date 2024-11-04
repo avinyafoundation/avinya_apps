@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:attendance/data/activity_attendance.dart';
 import 'package:intl/intl.dart';
@@ -34,54 +33,43 @@ class PersonAttendanceMarkerReport extends StatefulWidget {
 class _PersonAttendanceMarkerReportState
     extends State<PersonAttendanceMarkerReport> {
   List<ActivityAttendance> _personAttendanceReport = [];
-  var result_limit = 10;
-  DateTime fourteenDaysAgoDate = DateTime.now().subtract(Duration(days: 14));
+  var result_limit = 20;
+  DateTime twentyEightDaysAgoDate = DateTime.now().subtract(Duration(days: 28));
   List<DataColumn> _weekdaysColumns = [];
   List<String?> stringDateTimeList = [];
   List<DateTime> weekdaysList = [];
   bool isAttendanceMarkerPathTemplate = false;
-  
 
   @override
   void initState() {
     super.initState();
     _generateWeekdaysColumns();
   }
-  
-  List<DataColumn> _buildDataColumns(bool isAttendanceMarkerPathTemplate){
-    
+
+  List<DataColumn> _buildDataColumns(bool isAttendanceMarkerPathTemplate) {
     List<DataColumn> ColumnNames = [];
 
     ColumnNames.add(DataColumn(
-                        label: Text(
-                              'Date',
-                              style:TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
+        label: Text('Date',
+            style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
     ColumnNames.add(DataColumn(
-                        label: Text(
-                              'Attendance',
-                              style:TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
-  
+        label: Text('Attendance',
+            style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
 
-        if(!isAttendanceMarkerPathTemplate){
-
-       
-
-        ColumnNames.add(DataColumn(
-                        label: Text(
-                              'Daily Payment',
-                              style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
-        ColumnNames.add(DataColumn(
-                        label: Text(
-                              'Phone Payment',
-                               style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
-        }
-    
+    if (!isAttendanceMarkerPathTemplate) {
+      ColumnNames.add(DataColumn(
+          label: Text('Daily Payment',
+              style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
+      ColumnNames.add(DataColumn(
+          label: Text('Phone Payment',
+              style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
+    }
 
     return ColumnNames;
   }
 
   void _generateWeekdaysColumns() {
-    weekdaysList = getWeekdaysFromDate(fourteenDaysAgoDate, 10);
+    weekdaysList = getWeekdaysFromDate(twentyEightDaysAgoDate, 20);
     // Generate the DataColumn list
     for (DateTime date in weekdaysList) {
       _weekdaysColumns.add(DataColumn(
@@ -107,18 +95,13 @@ class _PersonAttendanceMarkerReportState
 
   @override
   Widget build(BuildContext context) {
+    final currentRoute = RouteStateScope.of(context).route;
 
-  
-   final currentRoute = RouteStateScope.of(context).route;
-
-   if(currentRoute.pathTemplate.startsWith('/attendance_marker')){
-       
-         isAttendanceMarkerPathTemplate = true;
-   }else{
-        isAttendanceMarkerPathTemplate = false;
-   }
-   
-   
+    if (currentRoute.pathTemplate.startsWith('/attendance_marker')) {
+      isAttendanceMarkerPathTemplate = true;
+    } else {
+      isAttendanceMarkerPathTemplate = false;
+    }
 
     return FutureBuilder<List<ActivityAttendance>>(
       future: refreshPersonActivityAttendanceReport(),
@@ -130,37 +113,39 @@ class _PersonAttendanceMarkerReportState
           return SingleChildScrollView(
             child: PaginatedDataTable(
               columns: _buildDataColumns(isAttendanceMarkerPathTemplate),
-              source: _PersonAttendanceMarkerReportDataSource(
-                  snapshot.data, stringDateTimeList,isAttendanceMarkerPathTemplate),
-              rowsPerPage: 11,
+              source: _PersonAttendanceMarkerReportDataSource(snapshot.data,
+                  stringDateTimeList, isAttendanceMarkerPathTemplate),
+              rowsPerPage: 20,
               dataRowHeight: 40.0,
               columnSpacing: 100,
               horizontalMargin: 60,
             ),
           );
-        }// } else if (snapshot.hasError) {
+        } // } else if (snapshot.hasError) {
         //   return Text("${snapshot.error}");
         // }
-        return  Container(
-                        margin: EdgeInsets.only(top: 10),
-                        child: SpinKitCircle(
-                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
-                          size: 70, // Customize the size of the indicator
-                        ),
-            );
+        return Container(
+          margin: EdgeInsets.only(top: 10),
+          child: SpinKitCircle(
+            color: (Colors
+                .deepPurpleAccent), // Customize the color of the indicator
+            size: 70, // Customize the size of the indicator
+          ),
+        );
       },
     );
   }
 }
 
 class _PersonAttendanceMarkerReportDataSource extends DataTableSource {
-  _PersonAttendanceMarkerReportDataSource(this._data, this.numberOfColumns,this.isAttendanceMarkerPathTemplate) {
+  _PersonAttendanceMarkerReportDataSource(
+      this._data, this.numberOfColumns, this.isAttendanceMarkerPathTemplate) {
     numberOfColumns.sort((a, b) => b!.compareTo(a!));
   }
 
   List<ActivityAttendance> _data;
   List<String?> numberOfColumns = [];
-  bool  isAttendanceMarkerPathTemplate;
+  bool isAttendanceMarkerPathTemplate;
 
   @override
   DataRow? getRow(int index) {
@@ -175,14 +160,14 @@ class _PersonAttendanceMarkerReportDataSource extends DataTableSource {
     for (; i < _data.length; i++) {
       if (_data[i].sign_in_time != null &&
           attendance == _data[i].sign_in_time!.split(" ")[0]) {
-        
-        cells.add(DataCell(Text(attendance!+"-"+"("+DateFormat.EEEE().format(DateTime.parse(attendance))+")")));
+        cells.add(DataCell(Text(attendance! +
+            "-" +
+            "(" +
+            DateFormat.EEEE().format(DateTime.parse(attendance)) +
+            ")")));
         cells.add(DataCell(Text("Present")));
 
-        if(!isAttendanceMarkerPathTemplate){
-
-         
-
+        if (!isAttendanceMarkerPathTemplate) {
           dailyPayment = 100.00;
           phonePayment = 100.00;
           cells.add(DataCell(Text("Rs.$dailyPayment")));
@@ -194,24 +179,20 @@ class _PersonAttendanceMarkerReportDataSource extends DataTableSource {
 
     if (i == _data.length) {
       if (cells.isEmpty) {
-
-      
-
-        cells.add(DataCell(Text(attendance!+"-"+"("+DateFormat.EEEE().format(DateTime.parse(attendance))+")")));
+        cells.add(DataCell(Text(attendance! +
+            "-" +
+            "(" +
+            DateFormat.EEEE().format(DateTime.parse(attendance)) +
+            ")")));
         cells
             .add(DataCell(Container(child: Text("Absent"), color: Colors.red)));
-        
-        if(!isAttendanceMarkerPathTemplate){
 
-         
-
+        if (!isAttendanceMarkerPathTemplate) {
           dailyPayment = 00.00;
           phonePayment = 00.00;
           cells.add(DataCell(Text("Rs.$dailyPayment")));
           cells.add(DataCell(Text("Rs.$phonePayment")));
-          
         }
-
       }
     }
     return DataRow(cells: cells);
