@@ -655,6 +655,7 @@ query getInventoryDataByOrganization($organization_id: Int!,$date: String!) {
        quantity_in
        quantity_out
        prev_quantity
+       is_below_threshold
        resource_property{
         id
         property
@@ -708,4 +709,108 @@ query getConsumableMonthlyReport($organization_id: Int!,$year: Int!,$month: Int!
             value
         }
     }      
+}
+
+query getConsumableYearlyReport($organization_id: Int!,$consumable_id: Int!,$year: Int!) {
+    consumable_yearly_report(organization_id: $organization_id,consumable_id: $consumable_id,year: $year) {
+        consumable{
+            id
+            name
+        }
+        month_name
+        quantity_in
+        quantity_out
+        resource_property{
+            id
+            property
+            value
+        }
+    }      
+}
+
+mutation addVehicleFuelConsumption($vehicleFuelConsumption: VehicleFuelConsumption!) {
+    add_vehicle_fuel_consumption(vehicle_fuel_consumption:$vehicleFuelConsumption) {
+        id
+        vehicle_id
+        date_time
+        reason_id
+        starting_meter
+        ending_meter
+        distance
+        comment
+    }
+}
+
+mutation updateVehicleFuelConsumption($vehicleFuelConsumption: VehicleFuelConsumption!) {
+    update_vehicle_fuel_consumption(vehicle_fuel_consumption:$vehicleFuelConsumption) {
+        id
+        vehicle_id
+        date_time
+        reason_id
+        starting_meter
+        ending_meter
+        distance
+        comment
+    }
+}
+
+query getVehicleFuelConsumptionByDate($organization_id: Int!,$date: String!) {
+    vehicle_fuel_consumption_by_date(organization_id: $organization_id,date: $date) {
+        id
+        vehicle{
+            id
+            vehicle_number
+        }
+        date_time
+        reason{
+            id
+            reason
+        }
+        starting_meter
+        ending_meter
+        distance
+        comment
+        created
+        updated
+    }      
+}
+
+query getVehicleFuelConsumptionById($id: Int!) {
+    vehicle_fuel_consumption_by_id(id: $id) {
+        id
+        vehicle{
+            id
+            vehicle_number
+        }
+        date_time
+        reason{
+            id
+            reason
+        }
+        starting_meter
+        ending_meter
+        distance
+        comment
+        created
+        updated
+    }      
+}
+
+query getVehicles($organization_id: Int!) {
+    vehicles(organization_id: $organization_id) {
+        id
+        vehicle_number
+        person{
+            id
+            preferred_name
+            digital_id
+        }
+    }      
+}
+
+query getVehicleReasons {
+    vehicle_reasons {
+        id
+        reason
+    }
 }

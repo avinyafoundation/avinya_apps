@@ -174,63 +174,70 @@ class _StockReplenishmentState extends State<StockReplenishmentForm> {
     var formattedDate = formatDateTime(_selectedDate);
 
     for (var item in _fetchedStockList) {
-      DateTime itemDate = DateTime.parse(item.updated!).toLocal();
-      DateTime itemDateOnly =
-          DateTime(itemDate.year, itemDate.month, itemDate.day);
-      DateTime currentDate = DateTime.now().toLocal();
-      if (item.quantity_out != 0) {
-        if (_selectedDate.day == currentDate.day) {
-          _isSubmitting = false;
-          _showQtyIn = false;
-          _backDate = false;
-          _isUpdate = false;
+      if (item.updated != null) {
+        DateTime itemDate = DateTime.parse(item.updated!).toLocal();
+        DateTime itemDateOnly =
+            DateTime(itemDate.year, itemDate.month, itemDate.day);
+        DateTime currentDate = DateTime.now().toLocal();
+        if (item.quantity_out != 0) {
+          if (_selectedDate.day == currentDate.day) {
+            _isSubmitting = false;
+            _showQtyIn = false;
+            _backDate = false;
+            _isUpdate = false;
+          } else {
+            _isUpdate = true;
+            _backDate = false;
+            _isSubmitting = true;
+            _showQtyIn = false;
+            // this is a depletion
+          }
         } else {
-          _isUpdate = true;
-          _backDate = false;
-          _isSubmitting = true;
-          _showQtyIn = false;
-          // this is a depletion
+          if (_selectedDate.year == currentDate.year &&
+              _selectedDate.month == currentDate.month &&
+              _selectedDate.day == currentDate.day) {
+            if (_selectedDate.isAfter(itemDateOnly) &&
+                item.quantity_in != 0 &&
+                _selectedDate.day != itemDateOnly.day) {
+              _showQtyIn = false;
+              _backDate = false;
+              _isUpdate = false;
+            } else {
+              _isSubmitting = false;
+              _showQtyIn = false;
+              _backDate = false;
+              _isUpdate = false;
+            }
+          } else if (_selectedDate.isBefore(currentDate)) {
+            if (_selectedDate.isAfter(itemDateOnly) && item.quantity_in != 0) {
+              _isSubmitting = false;
+              _showQtyIn = false;
+              _backDate = false;
+              _isUpdate = false;
+              break;
+            } else if (_selectedDate.isBefore(itemDateOnly)) {
+              _isSubmitting = true;
+              _showQtyIn = true;
+              _backDate = true;
+              _isUpdate = true;
+            } else {
+              _isSubmitting = true;
+              _backDate = false;
+              _showQtyIn = true;
+              _isUpdate = true;
+            }
+          } else {
+            _isSubmitting = false;
+            _showQtyIn = false;
+            _backDate = false;
+            _isUpdate = false;
+          }
         }
       } else {
-        if (_selectedDate.year == currentDate.year &&
-            _selectedDate.month == currentDate.month &&
-            _selectedDate.day == currentDate.day) {
-          if (_selectedDate.isAfter(itemDateOnly) &&
-              item.quantity_in != 0 &&
-              _selectedDate.day != itemDateOnly.day) {
-            _showQtyIn = false;
-            _backDate = false;
-            _isUpdate = false;
-          } else {
-            _isSubmitting = false;
-            _showQtyIn = true;
-            _backDate = false;
-            _isUpdate = true;
-          }
-        } else if (_selectedDate.isBefore(currentDate)) {
-          if (_selectedDate.isAfter(itemDateOnly) && item.quantity_in != 0) {
-            _isSubmitting = false;
-            _showQtyIn = false;
-            _backDate = false;
-            _isUpdate = false;
-            break;
-          } else if (_selectedDate.isBefore(itemDateOnly)) {
-            _isSubmitting = true;
-            _showQtyIn = true;
-            _backDate = true;
-            _isUpdate = true;
-          } else {
-            _isSubmitting = true;
-            _backDate = false;
-            _showQtyIn = true;
-            _isUpdate = true;
-          }
-        } else {
-          _isSubmitting = false;
-          _showQtyIn = false;
-          _backDate = false;
-          _isUpdate = false;
-        }
+        _isSubmitting = false;
+        _showQtyIn = false;
+        _backDate = false;
+        _isUpdate = false;
       }
     }
 

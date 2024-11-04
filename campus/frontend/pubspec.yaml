@@ -52,6 +52,8 @@ dependencies:
     path: ./lib/avinya/asset_admin
   consumable:
     path: ./lib/avinya/consumable
+  enrollment:
+    path: ./lib/avinya/enrollment
   route_observer_mixin: ^1.7.0
   sizer: ^2.0.15
   flutter_spinkit: ^5.0.0

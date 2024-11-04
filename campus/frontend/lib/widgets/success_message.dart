@@ -22,6 +22,6 @@ void showSuccessToast(item) {
       ),
     ),
     duration: Duration(seconds: 3),
-    position: ToastPosition.bottom,
+    position: ToastPosition.top,
   );
 }

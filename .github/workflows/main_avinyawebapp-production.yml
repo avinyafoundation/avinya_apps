@@ -21,13 +21,13 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: '3.16.8'
+          flutter-version: "3.13.1"
       - run: flutter doctor -v
 
       - name: Set up Node.js version
         uses: actions/setup-node@v1
         with:
-          node-version: '16.x'
+          node-version: "16.x"
       - run: npm install -g firebase-tools@11.0.1
 
       # Get dependencies and build Flutter web app
@@ -37,7 +37,7 @@ jobs:
           flutter clean
           flutter pub outdated
           flutter pub get
-          
+
       - name: Build Flutter app
         run: |
           cd campus/frontend
@@ -45,7 +45,7 @@ jobs:
           flutter config --enable-web
 
       - name: Upload Flutter build artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: flutter-build
           path: campus/frontend/build/web
@@ -53,7 +53,7 @@ jobs:
       - name: Move Flutter build contents to node-app artifact
         run: |
           cp -R campus/frontend/build/web/* campus/deployment/node-app/public-flutter
-          
+
       - name: npm install, build, and test
         run: |
           cd campus/deployment/node-app
@@ -62,7 +62,7 @@ jobs:
           npm run test --if-present
 
       - name: Upload artifact for node app
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: node-app
           path: campus/deployment/node-app
@@ -71,20 +71,20 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'Production'
+      name: "Production"
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: node-app
 
-      - name: 'Deploy to Azure Web App'
+      - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'avinyawebapp-production'
-          slot-name: 'Production'
+          app-name: "avinyawebapp-production"
+          slot-name: "Production"
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_87F56F6F4C724B4E91DFBC9BEF075487 }}
           package: .

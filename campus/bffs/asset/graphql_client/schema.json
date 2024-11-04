@@ -463,7 +463,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"activity_sequence_plan\""
                         },
                         {
                             "name": "id",
@@ -1535,7 +1535,7 @@
                                         "name": "Int",
                                         "ofType": null
                                     },
-                                    "defaultValue": "\"\""
+                                    "defaultValue": "0"
                                 }
                             ],
                             "type": {
@@ -1650,7 +1650,7 @@
                                         "name": "Int",
                                         "ofType": null
                                     },
-                                    "defaultValue": "\"\""
+                                    "defaultValue": "0"
                                 }
                             ],
                             "type": {
@@ -1706,7 +1706,7 @@
                                         "name": "Int",
                                         "ofType": null
                                     },
-                                    "defaultValue": "\"\""
+                                    "defaultValue": "0"
                                 },
                                 {
                                     "name": "from_date",
@@ -1780,7 +1780,7 @@
                                         "name": "Int",
                                         "ofType": null
                                     },
-                                    "defaultValue": "\"\""
+                                    "defaultValue": "0"
                                 },
                                 {
                                     "name": "from_date",
@@ -1993,19 +1993,15 @@
                             "name": "consumables",
                             "args": [],
                             "type": {
-                                "kind": "NON_NULL",
+                                "kind": "LIST",
                                 "name": null,
                                 "ofType": {
-                                    "kind": "LIST",
+                                    "kind": "NON_NULL",
                                     "name": null,
                                     "ofType": {
-                                        "kind": "NON_NULL",
-                                        "name": null,
-                                        "ofType": {
-                                            "kind": "OBJECT",
-                                            "name": "ConsumableData",
-                                            "ofType": null
-                                        }
+                                        "kind": "OBJECT",
+                                        "name": "ConsumableData",
+                                        "ofType": null
                                     }
                                 }
                             },
@@ -2911,6 +2907,160 @@
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
+                        },
+                        {
+                            "name": "consumable_yearly_report",
+                            "args": [
+                                {
+                                    "name": "organization_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "consumable_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "year",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "InventoryData",
+                                        "ofType": null
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "vehicle_fuel_consumption_by_date",
+                            "args": [
+                                {
+                                    "name": "organization_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "date",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": "\"\""
+                                }
+                            ],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "VehicleFuelConsumptionData",
+                                        "ofType": null
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "vehicle_fuel_consumption_by_id",
+                            "args": [
+                                {
+                                    "name": "id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "VehicleFuelConsumptionData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "vehicles",
+                            "args": [
+                                {
+                                    "name": "organization_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "VehicleData",
+                                        "ofType": null
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "vehicle_reasons",
+                            "args": [],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "VehicleReasonMetaData",
+                                        "ofType": null
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
                         }
                     ],
                     "inputFields": null,
@@ -2930,7 +3080,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"address\""
                         },
                         {
                             "name": "id",
@@ -3024,7 +3174,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"activity_instance\""
                         },
                         {
                             "name": "id",
@@ -3285,7 +3435,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"evaluation_criteria_answer_option\""
                         },
                         {
                             "name": "id",
@@ -3340,7 +3490,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"activity\""
                         },
                         {
                             "name": "id",
@@ -3955,7 +4105,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"applicant_consent\""
                         },
                         {
                             "name": "id",
@@ -4163,7 +4313,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"duty_rotation_metadata\""
                         },
                         {
                             "name": "id",
@@ -4218,7 +4368,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"activity_participant\""
                         },
                         {
                             "name": "id",
@@ -4727,7 +4877,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"asset\""
                         },
                         {
                             "name": "id",
@@ -5040,7 +5190,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"evaluation\""
                         },
                         {
                             "name": "id",
@@ -5183,7 +5333,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"metadata\""
                         },
                         {
                             "name": "id",
@@ -5802,7 +5952,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"vacancy\""
                         },
                         {
                             "name": "id",
@@ -6033,6 +6183,93 @@
                 },
                 {
                     "kind": "OBJECT",
+                    "name": "VehicleData",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "vehicle_number",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "organization",
+                            "args": [],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "OrganizationData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "person_id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "person",
+                            "args": [],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "PersonData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "created",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "updated",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        }
+                    ],
+                    "inputFields": null,
+                    "interfaces": [],
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "OBJECT",
                     "name": "InventoryData",
                     "fields": [
                         {
@@ -6190,6 +6427,17 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "month_name",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "description",
                             "args": [],
                             "type": {
@@ -6206,6 +6454,17 @@
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "is_below_threshold",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
                                 "ofType": null
                             },
                             "isDeprecated": false,
@@ -8341,10 +8600,190 @@
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
+                        },
+                        {
+                            "name": "add_vehicle_fuel_consumption",
+                            "args": [
+                                {
+                                    "name": "vehicle_fuel_consumption",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "INPUT_OBJECT",
+                                            "name": "VehicleFuelConsumption",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "VehicleFuelConsumptionData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "update_vehicle_fuel_consumption",
+                            "args": [
+                                {
+                                    "name": "vehicle_fuel_consumption",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "INPUT_OBJECT",
+                                            "name": "VehicleFuelConsumption",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "VehicleFuelConsumptionData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "delete_vehicle_fuel_consumption_by_id",
+                            "args": [
+                                {
+                                    "name": "id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
                         }
                     ],
                     "inputFields": null,
                     "interfaces": [],
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "INPUT_OBJECT",
+                    "name": "VehicleFuelConsumption",
+                    "fields": null,
+                    "inputFields": [
+                        {
+                            "name": "record_type",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": "\"vehicle_fuel_consumption\""
+                        },
+                        {
+                            "name": "id",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "vehicle_id",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "date_time",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "reason_id",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "starting_meter",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "ending_meter",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "distance",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "comment",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "created",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "updated",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        }
+                    ],
+                    "interfaces": null,
                     "enumValues": null,
                     "possibleTypes": null
                 },
@@ -8527,7 +8966,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"person\""
                         },
                         {
                             "name": "id",
@@ -8868,7 +9307,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"application\""
                         },
                         {
                             "name": "id",
@@ -8923,7 +9362,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"inventory\""
                         },
                         {
                             "name": "id",
@@ -8963,6 +9402,15 @@
                         },
                         {
                             "name": "name",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "month_name",
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "String",
@@ -9061,6 +9509,15 @@
                             "defaultValue": null
                         },
                         {
+                            "name": "is_below_threshold",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
                             "name": "created",
                             "type": {
                                 "kind": "SCALAR",
@@ -9095,7 +9552,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"activity_participant_attendance\""
                         },
                         {
                             "name": "id",
@@ -9343,7 +9800,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"organization\""
                         },
                         {
                             "name": "id",
@@ -9498,7 +9955,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"education_experience\""
                         },
                         {
                             "name": "id",
@@ -9871,7 +10328,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"supply\""
                         },
                         {
                             "name": "id",
@@ -10040,6 +10497,49 @@
                                         "ofType": null
                                     }
                                 }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        }
+                    ],
+                    "inputFields": null,
+                    "interfaces": [],
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "OBJECT",
+                    "name": "VehicleReasonMetaData",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "reason",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "created",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
@@ -10336,6 +10836,148 @@
                 },
                 {
                     "kind": "OBJECT",
+                    "name": "VehicleFuelConsumptionData",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "vehicle_id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "vehicle",
+                            "args": [],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "VehicleData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "date_time",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "reason_id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "reason",
+                            "args": [],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "VehicleReasonMetaData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "starting_meter",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "ending_meter",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "distance",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "comment",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "created",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "updated",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        }
+                    ],
+                    "inputFields": null,
+                    "interfaces": [],
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "OBJECT",
                     "name": "CityData",
                     "fields": [
                         {
@@ -10406,7 +11048,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"resource_allocation\""
                         },
                         {
                             "name": "id",
@@ -10840,7 +11482,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"supplier\""
                         },
                         {
                             "name": "id",
@@ -11251,6 +11893,17 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "threshold",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Decimal",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "created",
                             "args": [],
                             "type": {
@@ -11290,7 +11943,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"work_experience\""
                         },
                         {
                             "name": "id",
@@ -11471,7 +12124,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"consumable\""
                         },
                         {
                             "name": "id",
@@ -11532,6 +12185,15 @@
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "threshold",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Decimal",
                                 "ofType": null
                             },
                             "defaultValue": null
@@ -11926,7 +12588,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"evaluation_criteria\""
                         },
                         {
                             "name": "id",
@@ -12008,7 +12670,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"avinya_type\""
                         },
                         {
                             "name": "id",
@@ -12161,7 +12823,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"resource_property\""
                         },
                         {
                             "name": "id",
@@ -12257,7 +12919,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"evaluation_cycle\""
                         },
                         {
                             "name": "id",
@@ -12576,7 +13238,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"prospect\""
                         },
                         {
                             "name": "id",
@@ -12810,7 +13472,7 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "defaultValue": "\"\""
+                            "defaultValue": "\"duty_participant\""
                         },
                         {
                             "name": "id",

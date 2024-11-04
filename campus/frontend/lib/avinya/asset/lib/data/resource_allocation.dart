@@ -254,11 +254,11 @@ Future<Asset> fetchAssetByAvinyaType(int id) async {
 
 //   Future<List<ResourceAllocation>> fetchResourceAllocations() async {
 //     final response = await http.get(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocations'),
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl + '/resource_allocations'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
 //         'accept': 'application/json',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //     );
 
@@ -276,12 +276,12 @@ Future<Asset> fetchAssetByAvinyaType(int id) async {
 //   Future<List<ResourceAllocation>> fetchResourceAllocationsByPersonId(
 //       int id) async {
 //     final response = await http.get(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl +
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl +
 //           '/resource_allocation_by_person?personId=$id'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
 //         'accept': 'application/json',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //     );
 
@@ -298,12 +298,12 @@ Future<Asset> fetchAssetByAvinyaType(int id) async {
 
 //   Future<List<ResourceAllocation>> fetchResourceAllocation(int id) async {
 //     final response = await http.get(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl +
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl +
 //           '/resource_allocation?resourceAllocationId=$id'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
 //         'accept': 'application/json',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //     );
 
@@ -321,10 +321,10 @@ Future<Asset> fetchAssetByAvinyaType(int id) async {
 //   Future<http.Response> createResourceAllocation(
 //       ResourceAllocation resourceAllocation) async {
 //     final response = await http.post(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation'),
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl + '/resource_allocation'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //       body: jsonEncode(resourceAllocation.toJson()),
 //     );
@@ -338,10 +338,10 @@ Future<Asset> fetchAssetByAvinyaType(int id) async {
 //   Future<http.Response> updateResourceAllocation(
 //       ResourceAllocation resourceAllocation) async {
 //     final response = await http.put(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation'),
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl + '/resource_allocation'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //       body: jsonEncode(resourceAllocation.toJson()),
 //     );
@@ -354,10 +354,10 @@ Future<Asset> fetchAssetByAvinyaType(int id) async {
 
 //   Future<http.Response> deleteResourceAllocation(int id) async {
 //     final response = await http.delete(
-//       Uri.parse(AppConfig.campusAssetBffApiUrl + '/resource_allocation/$id'),
+//       Uri.parse(AppConfig.campusAssetsBffApiUrl + '/resource_allocation/$id'),
 //       headers: <String, String>{
 //         'Content-Type': 'application/json; charset=UTF-8',
-//         'Authorization': 'Bearer ' + AppConfig.campusConfigBffApiKey,
+//         'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
 //       },
 //     );
 //     if (response.statusCode == 200) {
