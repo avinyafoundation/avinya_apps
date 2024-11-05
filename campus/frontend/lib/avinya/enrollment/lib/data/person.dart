@@ -571,7 +571,7 @@ Future<List<MainOrganization>> fetchClasses(int? id) async {
 
     // Extract the child_organizations_for_dashboard field
     final List<MainOrganization> classes =
-        (jsonResponse['child_organizations_for_dashboard'] as List)
+        (jsonResponse['child_organizations'] as List)
             .map((data) => MainOrganization.fromJson(data))
             .toList();
 
