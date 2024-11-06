@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:gallery/widgets/success_message.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -202,6 +203,7 @@ Future<void> createMonthlyLeaveDates({
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
+      showSuccessToast("Monthly Leave Dates Added Successfully!");
       print("Leave dates created successfully: ${response.body}");
     } else {
       throw Exception(
@@ -244,6 +246,7 @@ Future<void> updateMonthlyLeaveDates({
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
+      showSuccessToast("Monthly Leave Dates Updated Successfully!");
       print("Leave dates updated successfully: ${response.body}");
     } else {
       throw Exception(
