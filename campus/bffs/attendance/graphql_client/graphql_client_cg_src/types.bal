@@ -296,6 +296,7 @@ public type Organization record {
     string? name_si?;
     int? avinya_type?;
     string? description?;
+    int? active?;
     int[]? child_organizations_for_dashboard?;
     string? record_type?;
     int[]? parent_organizations?;
@@ -972,4 +973,29 @@ public type GetMonthlyLeaveDatesRecordByIdResponse record {|
         string? created;
         string? updated;
     |}? monthly_leave_dates_record_by_id;
+|};
+
+public type GetOrganizationsByAvinyaTypeWithActiveStatusResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string? name_en;
+        |} name;
+        string? description;
+        record {|
+            string? key_name;
+            string? value;
+        |}[]? organization_metadata;
+        int? active;
+    |}[]? organizations_by_avinya_type;
+|};
+
+public type GetCalendarMetadataByOrgIdResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? organization_id;
+        anydata? monthly_payment_amount;
+    |}? calendar_metadata_by_org_id;
 |};

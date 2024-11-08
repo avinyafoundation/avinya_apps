@@ -453,3 +453,25 @@ query getMonthlyLeaveDatesRecordById($organization_id:Int!,$year:Int!,$month:Int
     }      
 }
 
+query getOrganizationsByAvinyaTypeWithActiveStatus($avinya_type:Int!,$active:Int!) {
+    organizations_by_avinya_type(avinya_type:$avinya_type,active:$active) {
+        id 
+        name {
+            name_en
+        } 
+        description
+        organization_metadata{
+            key_name 
+            value
+        }
+        active
+    }
+}
+
+query getCalendarMetadataByOrgId($organization_id: Int!) {
+    calendar_metadata_by_org_id(organization_id: $organization_id) {
+        id
+        organization_id
+        monthly_payment_amount
+    }
+}
