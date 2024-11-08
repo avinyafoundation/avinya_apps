@@ -935,4 +935,46 @@ service / on new http:Listener(9091) {
         }
     }
 
+    resource function get organizations_by_avinya_type_with_active_status/[int avinya_type_id]/[int active]() returns Organization[]|error {
+        GetOrganizationsByAvinyaTypeWithActiveStatusResponse|graphql:ClientError getOrganizationsByAvinyaTypeWithActiveStatusResponse = globalDataClient->getOrganizationsByAvinyaTypeWithActiveStatus(avinya_type_id,active);
+        if(getOrganizationsByAvinyaTypeWithActiveStatusResponse is GetOrganizationsByAvinyaTypeWithActiveStatusResponse) {
+            Organization[] organizations = [];
+            foreach var organization_record in getOrganizationsByAvinyaTypeWithActiveStatusResponse.organizations_by_avinya_type {
+                Organization|error organization = organization_record.cloneWithType(Organization);
+                if(organization is Organization) {
+                    organizations.push(organization);
+                } else {
+                    log:printError("Error while processing Application record received", organization);
+                    return error("Error while processing Application record received: " + organization.message() + 
+                        ":: Detail: " + organization.detail().toString());
+                }
+            }
+
+            return organizations;
+            
+        } else {
+            log:printError("Error while creating application", getOrganizationsByAvinyaTypeWithActiveStatusResponse);
+            return error("Error while creating application: " + getOrganizationsByAvinyaTypeWithActiveStatusResponse.message() + 
+                ":: Detail: " + getOrganizationsByAvinyaTypeWithActiveStatusResponse.detail().toString());
+        }
+    }
+
+    resource function get calendar_metadata_by_org_id/[int organization_id]() returns CalendarMetadata|error {
+        GetCalendarMetadataByOrgIdResponse|graphql:ClientError getCalendarMetadataByOrgIdResponse = globalDataClient->getCalendarMetadataByOrgId(organization_id);
+        if (getCalendarMetadataByOrgIdResponse is GetCalendarMetadataByOrgIdResponse) {
+            CalendarMetadata|error calendar_metadata_record = getCalendarMetadataByOrgIdResponse.calendar_metadata_by_org_id.cloneWithType(CalendarMetadata);
+            if (calendar_metadata_record is CalendarMetadata) {
+                return calendar_metadata_record;
+            } else {
+                log:printError("Error while processing Application record received", calendar_metadata_record);
+                return error("Error while processing Application record received: " + calendar_metadata_record.message() +
+                    ":: Detail: " + calendar_metadata_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", getCalendarMetadataByOrgIdResponse);
+            return error("Error while creating application: " + getCalendarMetadataByOrgIdResponse.message() +
+                ":: Detail: " + getCalendarMetadataByOrgIdResponse.detail().toString());
+        }
+    }
+
 }
