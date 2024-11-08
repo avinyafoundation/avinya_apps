@@ -77,8 +77,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     if (_selectedOrganizationValue != null) {
       int orgId = _selectedOrganizationValue!.id!;
       _fetchedOrganization = await fetchOrganization(orgId);
-      _fetchedOrganizations =
-          _fetchedOrganization?.child_organizations_for_dashboard ?? [];
+      _fetchedOrganizations = _fetchedOrganization?.child_organizations ?? [];
       setState(() {
         _fetchedOrganizations = _fetchedOrganizations;
       });
@@ -413,9 +412,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
 
                             _fetchedOrganization =
                                 await fetchOrganization(newValue!.id!);
-                            _fetchedOrganizations = _fetchedOrganization
-                                    ?.child_organizations_for_dashboard ??
-                                [];
+                            _fetchedOrganizations =
+                                _fetchedOrganization?.child_organizations ?? [];
 
                             setState(() {
                               _fetchedOrganizations;
@@ -580,7 +578,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                                   _fetchedOrganization =
                                       await fetchOrganization(newValue!.id!);
                                   _fetchedOrganizations = _fetchedOrganization
-                                          ?.child_organizations_for_dashboard ??
+                                          ?.child_organizations ??
                                       [];
 
                                   setState(() {
