@@ -161,16 +161,20 @@ public type Evaluation record {
 };
 
 public type Organization record {
-    int[]? parent_organizations?;
+    string? notes?;
     string? name_ta?;
     int[]? child_organizations?;
-    int? phone?;
     int? address_id?;
     string? name_si?;
     int? avinya_type?;
-    int? id?;
+    string? description?;
+    int? active?;
+    int[]? child_organizations_for_dashboard?;
     string? record_type?;
-    string name_en?;
+    int[]? parent_organizations?;
+    int? phone?;
+    int? id?;
+    string? name_en?;
 };
 public type Person record {
     int? permanent_address_id?;
@@ -289,6 +293,13 @@ public type MonthlyLeaveDates record {
     anydata? daily_amount?;
     string? updated?;
     string? record_type?;
+};
+
+public type CalendarMetadata record {
+    string? record_type?;
+    int? id?;
+    int? organization_id;
+    anydata? monthly_payment_amount;
 };
 
 public type GetAvinyaTypesResponse record {|
@@ -860,4 +871,29 @@ public type GetMonthlyLeaveDatesRecordByIdResponse record {|
         string? created;
         string? updated;
     |}? monthly_leave_dates_record_by_id;
+|};
+
+public type GetOrganizationsByAvinyaTypeWithActiveStatusResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string? name_en;
+        |} name;
+        string? description;
+        record {|
+            string? key_name;
+            string? value;
+        |}[]? organization_metadata;
+        int? active;
+    |}[] organizations_by_avinya_type;
+|};
+
+public type GetCalendarMetadataByOrgIdResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? organization_id;
+        anydata? monthly_payment_amount;
+    |}? calendar_metadata_by_org_id;
 |};

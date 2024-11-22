@@ -10,7 +10,7 @@ distribution-version = "2201.8.7"
 [[package]]
 org = "avinyafoundation"
 name = "profile_bff"
-version = "1.1.0"
+version = "2.1.0"
 dependencies = [
 	{org = "ballerina", name = "graphql"},
 	{org = "ballerina", name = "http"},
