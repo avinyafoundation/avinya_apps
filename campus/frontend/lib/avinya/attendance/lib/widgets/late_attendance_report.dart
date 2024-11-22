@@ -44,10 +44,14 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
 
   List<DataColumn> ColumnNames = [];
 
-
   late String formattedStartDate;
   late String formattedEndDate;
   var today = DateTime.now();
+
+  List<Organization> _batchData = [];
+  Organization? _selectedOrganizationValue;
+  List<Organization> _fetchedOrganizations = [];
+  late Future<List<Organization>> _fetchBatchData;
 
   void selectWeek(DateTime today, activityId) async {
     // Update the variables to select the week
@@ -62,6 +66,7 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
   @override
   void initState() {
     super.initState();
+    _fetchBatchData = _loadBatchData();
     var today = DateTime.now();
     activityId = campusAppsPortalInstance.activityIds['homeroom']!;
     selectWeek(today, activityId);
@@ -74,8 +79,24 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
       isFetching: _isFetching,
       selectedValue: _selectedValue,
       formattedStartDate: this.formattedStartDate,
-      formattedEndDate:this.formattedEndDate,
+      formattedEndDate: this.formattedEndDate,
     );
+  }
+
+  Future<List<Organization>> _loadBatchData() async {
+    _batchData = await fetchActiveOrganizationsByAvinyaType(86);
+    _selectedOrganizationValue = _batchData.isNotEmpty ? _batchData.last : null;
+
+    if (_selectedOrganizationValue != null) {
+      int orgId = _selectedOrganizationValue!.id!;
+      _fetchedOrganization = await fetchOrganization(orgId);
+      _fetchedOrganizations = _fetchedOrganization?.child_organizations ?? [];
+      setState(() {
+        _fetchedOrganizations = _fetchedOrganizations;
+      });
+    }
+    // this.updateDateRange(today, today);
+    return _batchData;
   }
 
   @override
@@ -170,7 +191,7 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
     });
   }
 
-   List<DataColumn> _buildDataColumns() {
+  List<DataColumn> _buildDataColumns() {
     List<DataColumn> ColumnNames = [];
 
     if (_selectedValue == null) {
@@ -214,7 +235,6 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
 
   @override
   Widget build(BuildContext context) {
-
     return SingleChildScrollView(
       child: campusAppsPortalPersonMetaDataInstance
               .getGroups()
@@ -223,140 +243,200 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
               style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold))
           : Wrap(
               children: <Widget>[
-                Row(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(width: 20),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Row(
+                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        for (var org in campusAppsPortalInstance
-                            .getUserPerson()
-                            .organization!
-                            .child_organizations)
-                          // create a text widget with some padding
-                          Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                if (org.child_organizations.length > 0)
-                                  Container(
-                                    margin: EdgeInsets.only(
-                                        left: 20, top: 20, bottom: 10),
-                                    child: Row(children: <Widget>[
-                                      Text('Select a class:'),
-                                      SizedBox(width: 10),
-                                      DropdownButton<Organization>(
-                                        value: _selectedValue,
-                                        onChanged:
-                                            (Organization? newValue) async {
-                                          _selectedValue = newValue ?? null;
-                                          int? parentOrgId =
-                                              campusAppsPortalInstance
-                                                  .getUserPerson()
-                                                  .organization!
-                                                  .id;
-                                          if (_selectedValue == null) {
-                                            // _fetchedOrganization = null;
-                                            _fetchedStudentList =
-                                                await fetchOrganizationForAll(
-                                                    parentOrgId!);
-                                          } else {
-                                            // _fetchedStudentList = <Person>[];
-                                            _fetchedOrganization =
-                                                await fetchOrganization(
-                                                    newValue!.id!);
-                                          }
+                        // for (var org in campusAppsPortalInstance
+                        //     .getUserPerson()
+                        //     .organization!
+                        //     .child_organizations)
+                        // create a text widget with some padding
+                        SizedBox(width: 10),
+                        Text('Select a Batch:'),
+                        SizedBox(width: 10),
+                        FutureBuilder<List<Organization>>(
+                          future: _fetchBatchData,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Container(
+                                margin: EdgeInsets.only(top: 10),
+                                child: SpinKitCircle(
+                                  color: (Colors.deepPurpleAccent),
+                                  size: 70,
+                                ),
+                              );
+                            } else if (snapshot.hasError) {
+                              return const Center(
+                                child: Text('Something went wrong...'),
+                              );
+                            } else if (!snapshot.hasData) {
+                              return const Center(
+                                child: Text('No batch found'),
+                              );
+                            }
+                            final batchData = snapshot.data!;
+                            return DropdownButton<Organization>(
+                                value: _selectedOrganizationValue,
+                                items: batchData.map((Organization batch) {
+                                  return DropdownMenuItem(
+                                      value: batch,
+                                      child: Text(batch.name!.name_en ?? ''));
+                                }).toList(),
+                                onChanged: (Organization? newValue) async {
+                                  if (newValue == null) {
+                                    return;
+                                  }
 
-                                          if (_selectedValue == null) {
-                                            _fetchedAttendance =
-                                                await getLateAttendanceReportByParentOrg(
-                                                    parentOrgId!,
-                                                    activityId,
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateFormat(
-                                                                'MMM d, yyyy')
-                                                            .parse(this
-                                                                .formattedStartDate)),
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateFormat(
-                                                                'MMM d, yyyy')
-                                                            .parse(this
-                                                                .formattedEndDate)));
-                                          } else {
-                                            _fetchedAttendance =
-                                                await getLateAttendanceReportByDate(
-                                                    _fetchedOrganization!.id!,
-                                                    activityId,
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateFormat(
-                                                                'MMM d, yyyy')
-                                                            .parse(this
-                                                                .formattedStartDate)),
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateFormat(
-                                                                'MMM d, yyyy')
-                                                            .parse(this
-                                                                .formattedEndDate)));
-                                          }
+                                  if (newValue.organization_metadata.isEmpty) {
+                                    return;
+                                  }
 
-                                          if (_selectedValue == null) {
-                                            setState(() {
-                                              if (_fetchedOrganization !=
-                                                  null) {
-                                                _fetchedOrganization!.people =
-                                                    _fetchedStudentList;
-                                                _fetchedOrganization!.id =
-                                                    parentOrgId;
-                                                _fetchedOrganization!
-                                                    .description = "Select All";
-                                              } else {
-                                                _fetchedOrganization =
-                                                    Organization();
-                                                _fetchedOrganization!.people =
-                                                    _fetchedStudentList;
-                                                _fetchedOrganization!.id =
-                                                    parentOrgId;
-                                                _fetchedOrganization!
-                                                    .description = "Select All";
-                                              }
-                                              _fetchedStudentList;
-                                              _data = MyData(
-                                                  _fetchedAttendance,
-                                                  _selectedValue,
-                                                  updateSelected);
-                                            });
-                                          } else {
-                                            setState(() {
-                                              _fetchedOrganization;
-                                              _fetchedStudentList;
-                                              _data = MyData(
-                                                  _fetchedAttendance,
-                                                  _selectedValue.description,
-                                                  updateSelected);
-                                            });
-                                          }
-                                        },
-                                        items: [
+                                  _fetchedOrganization =
+                                      await fetchOrganization(newValue!.id!);
+                                  _fetchedOrganizations = _fetchedOrganization
+                                          ?.child_organizations ??
+                                      [];
+
+                                  setState(() {
+                                    _fetchedOrganizations;
+                                    _selectedValue = null;
+                                    _selectedOrganizationValue = newValue;
+                                    // batchStartDate = DateFormat('MMM d, yyyy')
+                                    //     .format(DateTime.parse(
+                                    //         _selectedOrganizationValue!
+                                    //             .organization_metadata[0].value
+                                    //             .toString()));
+
+                                    // batchEndDate = DateFormat('MMM d, yyyy')
+                                    //     .format(DateTime.parse(
+                                    //         _selectedOrganizationValue!
+                                    //             .organization_metadata[1].value
+                                    //             .toString()));
+                                  });
+                                });
+                          },
+                        ),
+                        SizedBox(width: 20),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              if (_fetchedOrganizations.length > 0)
+                                Container(
+                                  margin: EdgeInsets.only(
+                                      left: 20, top: 20, bottom: 10),
+                                  child: Row(children: <Widget>[
+                                    Text('Select a class:'),
+                                    SizedBox(width: 10),
+                                    DropdownButton<Organization>(
+                                      value: _selectedValue,
+                                      onChanged:
+                                          (Organization? newValue) async {
+                                        _selectedValue = newValue ?? null;
+                                        int? parentOrgId =
+                                            campusAppsPortalInstance
+                                                .getUserPerson()
+                                                .organization!
+                                                .id;
+                                        if (_selectedValue == null) {
+                                          // _fetchedOrganization = null;
+                                          _fetchedStudentList =
+                                              await fetchOrganizationForAll(
+                                                  parentOrgId!);
+                                        } else {
+                                          // _fetchedStudentList = <Person>[];
+                                          _fetchedOrganization =
+                                              await fetchOrganization(
+                                                  newValue!.id!);
+                                        }
+
+                                        if (_selectedValue == null) {
+                                          _fetchedAttendance =
+                                              await getLateAttendanceReportByParentOrg(
+                                                  parentOrgId!,
+                                                  activityId,
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(DateFormat(
+                                                              'MMM d, yyyy')
+                                                          .parse(this
+                                                              .formattedStartDate)),
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(DateFormat(
+                                                              'MMM d, yyyy')
+                                                          .parse(this
+                                                              .formattedEndDate)));
+                                        } else {
+                                          _fetchedAttendance =
+                                              await getLateAttendanceReportByDate(
+                                                  _fetchedOrganization!.id!,
+                                                  activityId,
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(DateFormat(
+                                                              'MMM d, yyyy')
+                                                          .parse(this
+                                                              .formattedStartDate)),
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(DateFormat(
+                                                              'MMM d, yyyy')
+                                                          .parse(this
+                                                              .formattedEndDate)));
+                                        }
+
+                                        if (_selectedValue == null) {
+                                          setState(() {
+                                            if (_fetchedOrganization != null) {
+                                              _fetchedOrganization!.people =
+                                                  _fetchedStudentList;
+                                              _fetchedOrganization!.id =
+                                                  parentOrgId;
+                                              _fetchedOrganization!
+                                                  .description = "Select All";
+                                            } else {
+                                              _fetchedOrganization =
+                                                  Organization();
+                                              _fetchedOrganization!.people =
+                                                  _fetchedStudentList;
+                                              _fetchedOrganization!.id =
+                                                  parentOrgId;
+                                              _fetchedOrganization!
+                                                  .description = "Select All";
+                                            }
+                                            _fetchedStudentList;
+                                            _data = MyData(_fetchedAttendance,
+                                                _selectedValue, updateSelected);
+                                          });
+                                        } else {
+                                          setState(() {
+                                            _fetchedOrganization;
+                                            _fetchedStudentList;
+                                            _data = MyData(
+                                                _fetchedAttendance,
+                                                _selectedValue.description,
+                                                updateSelected);
+                                          });
+                                        }
+                                      },
+                                      items:
                                           // Add "Select All" option
-                                          DropdownMenuItem<Organization>(
-                                            value: null,
-                                            child: Text("Select All"),
-                                          ),
+                                          // DropdownMenuItem<Organization>(
+                                          //   value: null,
+                                          //   child: Text("Select All"),
+                                          // ),
                                           // Add other organization options
-                                          ...org.child_organizations
+                                          _fetchedOrganizations
                                               .map((Organization value) {
-                                            return DropdownMenuItem<
-                                                Organization>(
-                                              value: value,
-                                              child: Text(value.description!),
-                                            );
-                                          }),
-                                        ],
-                                      ),
-                                    ]),
-                                  ),
-                              ]),
-                      ],
-                    ),
+                                        return DropdownMenuItem<Organization>(
+                                          value: value,
+                                          child: Text(value.description!),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ]),
+                                ),
+                            ]),
                     SizedBox(width: 20),
                     ElevatedButton(
                       style: ButtonStyle(
@@ -407,40 +487,44 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
                         ),
                       ),
                     ),
-                       SizedBox(
+                    SizedBox(
                       width: 10,
                     ),
-                  Expanded(
-                    child: Container(
-                      alignment: Alignment.bottomRight,
-                      margin: EdgeInsets.only(
-                        right: 20.0
-                      ),
-                      width: 25.0,
-                      height: 30.0,
-                      child: this._isFetching ? null: DailyLateAttendanceExcelReportExport(
-                                fetchedDailyLateAttendanceData: _fetchedAttendance,
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.bottomRight,
+                        margin: EdgeInsets.only(right: 20.0),
+                        width: 25.0,
+                        height: 30.0,
+                        child: this._isFetching
+                            ? null
+                            : DailyLateAttendanceExcelReportExport(
+                                fetchedDailyLateAttendanceData:
+                                    _fetchedAttendance,
                                 updateExcelState: updateExcelState,
                                 isFetching: _isFetching,
                                 selectedValue: _selectedValue,
                                 formattedStartDate: this.formattedStartDate,
-                                formattedEndDate:this.formattedEndDate,
+                                formattedEndDate: this.formattedEndDate,
+                              ),
                       ),
+                    )
+                     ],
                     ),
-                  )
                   ],
                 ),
                 SizedBox(height: 16.0),
                 SizedBox(height: 32.0),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                Wrap(
+                  //mainAxisAlignment: MainAxisAlignment.center,
+                  //crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     if (_isFetching)
                       Container(
                         margin: EdgeInsets.only(top: 180),
                         child: SpinKitCircle(
-                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
+                          color: (Colors
+                              .deepPurpleAccent), // Customize the color of the indicator
                           size: 50, // Customize the size of the indicator
                         ),
                       )
