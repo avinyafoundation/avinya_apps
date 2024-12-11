@@ -208,6 +208,8 @@ class _DutyAttendanceMarkerState extends State<DutyAttendanceMarker> {
 
   @override
   Widget build(BuildContext context) {
+    const IconData customIcon = IconData(0xe6f2, fontFamily: 'MaterialIcons');
+
     return Container(
       margin: EdgeInsets.only(left: 10.0),
       child: Column(
@@ -218,7 +220,7 @@ class _DutyAttendanceMarkerState extends State<DutyAttendanceMarker> {
           Row(
             children: [
               Icon(
-                IconData(0xe6f2, fontFamily: 'MaterialIcons'),
+                customIcon,
                 size: 25,
                 color: Colors.deepPurpleAccent,
               ),
