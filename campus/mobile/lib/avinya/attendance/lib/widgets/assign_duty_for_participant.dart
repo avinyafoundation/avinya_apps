@@ -119,6 +119,8 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
 
   @override
   Widget build(BuildContext context) {
+    const IconData customIcon = IconData(0xe6f2, fontFamily: 'MaterialIcons');
+
     return Container(
         child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,8 +218,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                       child: Row(
                                         children: [
                                           Icon(
-                                            IconData(0xe6f2,
-                                                fontFamily: 'MaterialIcons'),
+                                            customIcon,
                                             size: 25,
                                             color: Colors.deepPurpleAccent,
                                           ),
@@ -225,11 +226,13 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
                                             width: 10,
                                           ),
                                           Text(
-                                              '${_activitiesNames[tableIndex]}',
-                                              overflow: TextOverflow.clip,
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold))
+                                            '${_activitiesNames[tableIndex]}',
+                                            overflow: TextOverflow.clip,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
