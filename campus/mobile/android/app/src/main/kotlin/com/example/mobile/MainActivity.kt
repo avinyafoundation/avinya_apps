@@ -1,4 +1,4 @@
-package com.avinya.mobile
+package com.avinyanew.mobile
 
 import io.flutter.embedding.android.FlutterActivity
 
