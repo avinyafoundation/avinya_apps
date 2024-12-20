@@ -245,6 +245,8 @@ class Person {
   String? bank_account_number;
   String? bank_name;
   String? bank_branch;
+  String? guardian_name;
+  int? guardian_contact_number;
   String? digital_id;
   String? bank_account_name;
   int? avinya_phone;
@@ -284,6 +286,8 @@ class Person {
       this.bank_branch,
       this.digital_id,
       this.bank_account_name,
+      this.guardian_name,
+      this.guardian_contact_number,
       this.avinya_phone,
       this.academy_org_id,
       this.created,
@@ -321,6 +325,8 @@ class Person {
       bank_name: json['bank_name'],
       bank_branch: json['bank_branch'],
       digital_id: json['digital_id'],
+      guardian_name: json['guardian_name'],
+      guardian_contact_number: json['guardian_contact_number'],
       bank_account_name: json['bank_account_name'],
       avinya_phone: json['avinya_phone'],
       academy_org_id: json['academy_org_id'],
@@ -370,6 +376,9 @@ class Person {
         if (bank_account_number != null)
           'bank_account_number': bank_account_number,
         if (bank_name != null) 'bank_name': bank_name,
+        if (guardian_name != null) 'guardian_name': guardian_name,
+        if (guardian_contact_number != null)
+          'guardian_contact_number': guardian_contact_number,
         if (bank_branch != null) 'bank_branch': bank_branch,
         if (digital_id != null) 'digital_id': digital_id,
         if (bank_account_name != null) 'bank_account_name': bank_account_name,
