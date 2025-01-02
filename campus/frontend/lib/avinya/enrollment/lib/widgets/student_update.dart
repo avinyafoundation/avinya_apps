@@ -115,7 +115,8 @@ class _StudentUpdateState extends State<StudentUpdate> {
         }
 
         selectedOrgId = userPerson.organization?.id ?? 0;
-        selectedClassId = classes.isNotEmpty ? classes.first.id : 0;
+        selectedClassId =
+            (userPerson.organization != null) ? userPerson.organization!.id : 0;
 
         // Handling date of birth safely
         String? dob = userPerson.date_of_birth;
@@ -446,8 +447,8 @@ class _StudentUpdateState extends State<StudentUpdate> {
       return 'Phone number is required';
     }
     final phoneRegex = RegExp(r'^[0-9]+$');
-    if (!phoneRegex.hasMatch(value) || value.length < 10) {
-      return 'Enter a valid phone number (at least 10 digits)';
+    if (!phoneRegex.hasMatch(value) || value.length < 9) {
+      return 'Enter a valid phone number (at least 9 digits)';
     }
     return null;
   }
@@ -682,6 +683,9 @@ class _StudentUpdateState extends State<StudentUpdate> {
       );
     }
 
+    // final parentOrganizationId =
+    //     (userPerson.organization != null) ? userPerson.organization!.id : 0;
+
     final parentOrganizationId =
         (userPerson.organization?.parent_organizations != null &&
                 userPerson.organization!.parent_organizations!.isNotEmpty)
@@ -708,7 +712,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
           Expanded(
             flex: 6,
             child: DropdownButtonFormField<int>(
-              value: validParentOrganizationId,
+              value: validParentOrganizationId ?? userPerson.organization_id,
               items: organizations
                   .where((org) =>
                       org.avinya_type?.id == 105 ||
@@ -945,13 +949,15 @@ class _StudentUpdateState extends State<StudentUpdate> {
               flex: 6,
               child: DropdownButtonFormField<int>(
                 value: isValidClass
-                    ? selectedClassId
-                    : null, // Validate selectedClassId
+                    ? (userPerson.organization != null)
+                        ? userPerson.organization!.id
+                        : 0
+                    : selectedClassId, // Validate selectedClassId
                 items: _getClassOptions(),
                 onChanged: (value) {
                   setState(() {
                     selectedClassId = value;
-                    userPerson.organization?.id = value;
+                    userPerson.organization_id = value;
                   });
                 },
                 decoration: const InputDecoration(
