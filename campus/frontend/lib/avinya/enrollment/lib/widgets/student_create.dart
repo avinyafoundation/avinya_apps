@@ -697,8 +697,7 @@ class _StudentCreateState extends State<StudentCreate> {
           Expanded(
             flex: 6,
             child: DropdownButtonFormField<int>(
-              value: userPerson.organization?.parent_organizations?.first.id ??
-                  userPerson.organization_id,
+              value: selectedOrgId,
               items: [
                 DropdownMenuItem<int>(
                   value: null, // Default item for when no selection is made
@@ -720,8 +719,8 @@ class _StudentCreateState extends State<StudentCreate> {
                   classes = await fetchClasses(newValue);
                 }
                 setState(() {
-                  userPerson.organization_id =
-                      newValue; // Update the organization ID
+                  selectedOrgId = newValue;
+                  userPerson.organization?.id = newValue;
                 });
               },
               decoration: InputDecoration(
@@ -955,7 +954,8 @@ class _StudentCreateState extends State<StudentCreate> {
                 onChanged: (value) {
                   setState(() {
                     selectedClassId = value;
-                    userPerson.organization?.id = value;
+                    userPerson.organization_id =
+                        value; // Update the organization ID
                   });
                 },
                 decoration: const InputDecoration(
