@@ -53,6 +53,14 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
-        }
+        },
+        {
+            "name": "debug android Tab",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "deviceId": "emulator-5556",
+            "runTestsOnDevice": false
+        },
     ]
 }
