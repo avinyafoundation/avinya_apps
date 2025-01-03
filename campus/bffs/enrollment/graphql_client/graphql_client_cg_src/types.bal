@@ -274,6 +274,20 @@ public type Inventory record {
     int? person_id?;
 };
 
+public type MonthlyLeaveDates record {
+    string? leave_dates?;
+    int? month?;
+    int[] leave_dates_list?;
+    int? year?;
+    string? created?;
+    int? total_days_in_month?;
+    int? organization_id?;
+    int? id?;
+    anydata? daily_amount?;
+    string? updated?;
+    string? record_type?;
+};
+
 public type Organization record {
     string? notes?;
     string? name_ta?;
@@ -282,6 +296,7 @@ public type Organization record {
     string? name_si?;
     int? avinya_type?;
     string? description?;
+    int? active?;
     int[]? child_organizations_for_dashboard?;
     string? record_type?;
     int[]? parent_organizations?;
@@ -321,10 +336,12 @@ public type Person record {
     string? full_name?;
     string? nic_no?;
     int? phone?;
+    UserDocument[]? documentList?;
     int? organization_id?;
     int? updated_by?;
     string? academy_org_name?;
     string? asgardeo_id?;
+    int? documents_id?;
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
@@ -404,6 +421,25 @@ public type Supply record {
     string? updated?;
     string? record_type?;
     int? person_id?;
+};
+
+public type UserDocument record {
+    string? birth_certificate_back_id?;
+    string? additional_certificate_01_id?;
+    string? additional_certificate_02_id?;
+    string? nic_back_id?;
+    string? document?;
+    string? additional_certificate_05_id?;
+    string? additional_certificate_04_id?;
+    string? additional_certificate_03_id?;
+    string? record_type?;
+    string? al_certificate_id?;
+    string? nic_front_id?;
+    string? ol_certificate_id?;
+    string? birth_certificate_front_id?;
+    int? id?;
+    string? folder_id?;
+    string? document_type?;
 };
 
 public type Vacancy record {
@@ -579,6 +615,10 @@ public type GetPersonByIdResponse record {|
         int? created_by;
         int? updated_by;
         string? current_job;
+        record {|
+            string? document;
+            string? document_type;
+        |}[]? document_list;
     |}? person_by_id;
 |};
 
@@ -801,5 +841,25 @@ public type InsertPersonResponse record {|
         int? created_by;
         int? updated_by;
         string? current_job;
+        int? documents_id;
     |}? insert_person;
+|};
+
+public type UploadDocumentResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? folder_id;
+        string? nic_front_id;
+        string? nic_back_id;
+        string? birth_certificate_front_id;
+        string? birth_certificate_back_id;
+        string? ol_certificate_id;
+        string? al_certificate_id;
+        string? additional_certificate_01_id;
+        string? additional_certificate_02_id;
+        string? additional_certificate_03_id;
+        string? additional_certificate_04_id;
+        string? additional_certificate_05_id;
+    |}? upload_document;
 |};

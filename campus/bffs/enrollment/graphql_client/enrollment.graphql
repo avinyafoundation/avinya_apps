@@ -148,6 +148,10 @@ query getPersonById($id: Int!) {
     created_by
     updated_by
     current_job
+    document_list {
+      document
+      document_type
+    }
   }
 }
 
@@ -384,5 +388,24 @@ mutation insertPerson(
     created_by
     updated_by
     current_job
+    documents_id
+  }
+}
+
+mutation uploadDocument($user_document: UserDocument!) {
+  upload_document(user_document: $user_document) {
+    id
+    folder_id
+    nic_front_id
+    nic_back_id
+    birth_certificate_front_id
+    birth_certificate_back_id
+    ol_certificate_id
+    al_certificate_id
+    additional_certificate_01_id
+    additional_certificate_02_id
+    additional_certificate_03_id
+    additional_certificate_04_id
+    additional_certificate_05_id
   }
 }
