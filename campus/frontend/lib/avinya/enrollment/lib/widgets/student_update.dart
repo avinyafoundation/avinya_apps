@@ -41,49 +41,102 @@ class _StudentUpdateState extends State<StudentUpdate> {
     await fetchAvinyaTypeList();
   }
 
+  // Future<void> getUserPerson() async {
+  //   Person user = await fetchPerson(widget.id);
+  //   classes = await fetchClasses(
+  //       (user.organization?.parent_organizations?.isNotEmpty ?? false)
+  //           ? user.organization?.parent_organizations?.first.id
+  //           : null);
+
+  //   setState(() {
+  //     classes = classes;
+  //     userPerson = user;
+  //     selectedSex = userPerson.sex;
+  //     userPerson.avinya_type_id = user.avinya_type_id;
+  //     selectedDistrictId = user.mailing_address?.city?.district!.id;
+  //     // Safely assign city and organization IDs with fallbacks
+  //     selectedCityId = userPerson.mailing_address?.city?.id ??
+  //         0; // Default to 0 or another fallback value
+  //     if (selectedDistrictId != null) {
+  //       _loadCities(selectedDistrictId, selectedCityId);
+  //     }
+
+  //     selectedOrgId =
+  //         userPerson.organization?.id ?? 0; // Similarly handle organization ID
+  //     selectedClassId = userPerson.organization?.id ??
+  //         0; // Ensure organization ID is used for class as well
+
+  //     // Handling date of birth
+  //     String? dob = userPerson.date_of_birth;
+  //     print("Date of Birth String: $dob");
+
+  //     // Safely try parsing the date of birth
+  //     if (dob == null || dob.isEmpty) {
+  //       selectedDateOfBirth = DateTime.now(); // Default if dob is null or empty
+  //     } else {
+  //       try {
+  //         selectedDateOfBirth =
+  //             DateTime.parse(dob); // Use DateTime.parse directly
+  //       } catch (e) {
+  //         print('Error parsing date: $e');
+  //         selectedDateOfBirth =
+  //             DateTime.now(); // Fallback to now if parsing fails
+  //       }
+  //     }
+  //   });
+  // }
   Future<void> getUserPerson() async {
-    Person user = await fetchPerson(widget.id);
-    classes = await fetchClasses(
-        (user.organization?.parent_organizations?.isNotEmpty ?? false)
-            ? user.organization?.parent_organizations?.first.id
-            : null);
+    try {
+      Person user = await fetchPerson(widget.id);
 
-    setState(() {
-      classes = classes;
-      userPerson = user;
-      selectedSex = userPerson.sex;
-      userPerson.avinya_type_id = user.avinya_type_id;
-      selectedDistrictId = user.mailing_address?.city?.district!.id;
-      // Safely assign city and organization IDs with fallbacks
-      selectedCityId = userPerson.mailing_address?.city?.id ??
-          0; // Default to 0 or another fallback value
-      if (selectedDistrictId != null) {
-        _loadCities(selectedDistrictId, selectedCityId);
-      }
+      // Safely check if parent_organizations exist and are not empty
+      final parentOrganizationId =
+          (user.organization?.parent_organizations?.isNotEmpty ?? false)
+              ? user.organization?.parent_organizations?.first.id
+              : null;
 
-      selectedOrgId =
-          userPerson.organization?.id ?? 0; // Similarly handle organization ID
-      selectedClassId = userPerson.organization?.id ??
-          0; // Ensure organization ID is used for class as well
-
-      // Handling date of birth
-      String? dob = userPerson.date_of_birth;
-      print("Date of Birth String: $dob");
-
-      // Safely try parsing the date of birth
-      if (dob == null || dob.isEmpty) {
-        selectedDateOfBirth = DateTime.now(); // Default if dob is null or empty
+      // Fetch classes with a fallback to an empty list if null
+      if (parentOrganizationId != null) {
+        classes = await fetchClasses(parentOrganizationId);
       } else {
-        try {
-          selectedDateOfBirth =
-              DateTime.parse(dob); // Use DateTime.parse directly
-        } catch (e) {
-          print('Error parsing date: $e');
-          selectedDateOfBirth =
-              DateTime.now(); // Fallback to now if parsing fails
-        }
+        classes = [];
       }
-    });
+
+      setState(() {
+        userPerson = user;
+        selectedSex = userPerson.sex;
+        userPerson.avinya_type_id = user.avinya_type_id;
+
+        // Safely assign district, city, and organization IDs with fallbacks
+        selectedDistrictId = user.mailing_address?.city?.district?.id;
+        selectedCityId = userPerson.mailing_address?.city?.id ?? 0;
+        if (selectedDistrictId != null) {
+          _loadCities(selectedDistrictId, selectedCityId);
+        }
+
+        selectedOrgId = userPerson.organization?.id ?? 0;
+        selectedClassId =
+            (userPerson.organization != null) ? userPerson.organization!.id : 0;
+
+        // Handling date of birth safely
+        String? dob = userPerson.date_of_birth;
+        print("Date of Birth String: $dob");
+
+        if (dob == null || dob.isEmpty) {
+          selectedDateOfBirth = DateTime.now();
+        } else {
+          try {
+            selectedDateOfBirth = DateTime.parse(dob);
+          } catch (e) {
+            print('Error parsing date: $e');
+            selectedDateOfBirth = DateTime.now();
+          }
+        }
+      });
+    } catch (e) {
+      print('Error fetching user data: $e');
+      // Optionally handle the error further, e.g., show a dialog or fallback UI
+    }
   }
 
   Future<List<District>> fetchDistrictList() async {
@@ -101,7 +154,8 @@ class _StudentUpdateState extends State<StudentUpdate> {
   //   }
   // }
   Future<List<MainOrganization>> fetchOrganizationList() async {
-    return await fetchOrganizations();
+    final result = await fetchOrganizations();
+    return result ?? []; // Fallback to an empty list
   }
 
   // Future<void> fetchOrganizationList() async {
@@ -199,7 +253,8 @@ class _StudentUpdateState extends State<StudentUpdate> {
                                 );
                               } else if (snapshot.connectionState ==
                                       ConnectionState.done &&
-                                  snapshot.hasData) {
+                                  snapshot.hasData &&
+                                  snapshot.data!.isNotEmpty) {
                                 WidgetsBinding.instance
                                     .addPostFrameCallback((_) {
                                   if (!isOrganizationsDataLoaded) {
@@ -212,8 +267,9 @@ class _StudentUpdateState extends State<StudentUpdate> {
                                 });
                                 organizations = snapshot.data!;
                                 return _buildOrganizationField();
+                              } else {
+                                return SizedBox();
                               }
-                              return SizedBox();
                             }),
                         // _buildOrganizationField(),
                         _buildStudentClassField(), // Student Class based on organization.description
@@ -391,8 +447,8 @@ class _StudentUpdateState extends State<StudentUpdate> {
       return 'Phone number is required';
     }
     final phoneRegex = RegExp(r'^[0-9]+$');
-    if (!phoneRegex.hasMatch(value) || value.length < 10) {
-      return 'Enter a valid phone number (at least 10 digits)';
+    if (!phoneRegex.hasMatch(value) || value.length < 9) {
+      return 'Enter a valid phone number (at least 9 digits)';
     }
     return null;
   }
@@ -621,6 +677,27 @@ class _StudentUpdateState extends State<StudentUpdate> {
   }
 
   Widget _buildOrganizationField() {
+    if (organizations.isEmpty) {
+      return const Center(
+        child: Text('No organizations available to display'),
+      );
+    }
+
+    // final parentOrganizationId =
+    //     (userPerson.organization != null) ? userPerson.organization!.id : 0;
+
+    final parentOrganizationId =
+        (userPerson.organization?.parent_organizations != null &&
+                userPerson.organization!.parent_organizations!.isNotEmpty)
+            ? userPerson.organization!.parent_organizations!.first.id
+            : 0;
+    // Ensure parentOrganizationId is in the organizations list or set it to null
+    final validParentOrganizationId = organizations.any((org) =>
+            org.id == parentOrganizationId &&
+            (org.avinya_type?.id == 105 || org.avinya_type?.id == 86))
+        ? parentOrganizationId
+        : null;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -635,8 +712,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
           Expanded(
             flex: 6,
             child: DropdownButtonFormField<int>(
-              value:
-                  userPerson.organization?.parent_organizations?.first.id ?? 0,
+              value: validParentOrganizationId ?? userPerson.organization_id,
               items: organizations
                   .where((org) =>
                       org.avinya_type?.id == 105 ||
@@ -873,13 +949,15 @@ class _StudentUpdateState extends State<StudentUpdate> {
               flex: 6,
               child: DropdownButtonFormField<int>(
                 value: isValidClass
-                    ? selectedClassId
-                    : null, // Validate selectedClassId
+                    ? (userPerson.organization != null)
+                        ? userPerson.organization!.id
+                        : 0
+                    : selectedClassId, // Validate selectedClassId
                 items: _getClassOptions(),
                 onChanged: (value) {
                   setState(() {
                     selectedClassId = value;
-                    userPerson.organization?.id = value;
+                    userPerson.organization_id = value;
                   });
                 },
                 decoration: const InputDecoration(
