@@ -310,6 +310,12 @@ type AvinyaTypeData {
   description: String
 }
 
+type CalendarMetaData {
+  id: Int
+  organization_id: Int
+  monthly_payment_amount: Decimal
+}
+
 input City {
   record_type: String = "city"
   id: Int
@@ -382,6 +388,24 @@ type DistrictData {
   id: Int
   province: ProvinceData!
   cities: [CityData!]!
+}
+
+type DocumentsData {
+  id: Int
+  folder_id: String
+  nic_front_id: String
+  nic_back_id: String
+  birth_certificate_front_id: String
+  birth_certificate_back_id: String
+  ol_certificate_id: String
+  al_certificate_id: String
+  additional_certificate_01_id: String
+  additional_certificate_02_id: String
+  additional_certificate_03_id: String
+  additional_certificate_04_id: String
+  additional_certificate_05_id: String
+  document_type: String
+  document: String
 }
 
 input DutyParticipant {
@@ -607,6 +631,31 @@ type LocalizedName {
   name_si: String
 }
 
+input MonthlyLeaveDates {
+  record_type: String = "monthly_leave_dates"
+  id: Int
+  year: Int
+  month: Int
+  total_days_in_month: Int
+  organization_id: Int
+  leave_dates_list: [Int!]!
+  leave_dates: String
+  daily_amount: Decimal
+  created: String
+  updated: String
+}
+
+type MonthlyLeaveDatesData {
+  id: Int
+  year: Int
+  month: Int
+  organization_id: Int
+  leave_dates_list: [Int!]
+  daily_amount: Decimal
+  created: String
+  updated: String
+}
+
 type Mutation {
   add_avinya_type(avinya_type: AvinyaType!): AvinyaTypeData
   update_avinya_type(avinya_type: AvinyaType!): AvinyaTypeData
@@ -667,6 +716,9 @@ type Mutation {
   update_consumable_depletion(inventories: [Inventory!]!): [InventoryData!]
   update_person(person: Person!, permanent_address: Address, permanent_address_city: City, mailing_address: Address, mailing_address_city: City): PersonData
   insert_person(person: Person!, mailing_address: Address, mailing_address_city: City): PersonData
+  upload_document(user_document: UserDocument!): DocumentsData
+  add_monthly_leave_dates(monthly_leave_dates: MonthlyLeaveDates!): MonthlyLeaveDatesData
+  update_monthly_leave_dates(monthly_leave_dates: MonthlyLeaveDates!): MonthlyLeaveDatesData
 }
 
 input Organization {
@@ -680,6 +732,7 @@ input Organization {
   phone: Int
   description: String
   notes: String
+  active: Int
   name_en: String
   name_ta: String
   name_si: String
@@ -699,6 +752,7 @@ type OrganizationData {
   people: [PersonData!]
   vacancies: [VacancyData!]
   organization_metadata: [OrganizationMetaData!]
+  active: Int
 }
 
 type OrganizationMetaData {
@@ -749,6 +803,8 @@ input Person {
   academy_org_name: String
   branch_code: String
   current_job: String
+  documents_id: Int
+  documentList: [UserDocument!]
   created_by: Int
   updated_by: Int
 }
@@ -790,6 +846,8 @@ type PersonData {
   current_job: String
   created_by: Int
   updated_by: Int
+  documents_id: Int
+  document_list: [DocumentsData!]
 }
 
 type PlaceData {
@@ -858,7 +916,7 @@ type Query {
   organization_structure(name: String, id: Int): OrganizationStructureData
   organizations(level: Int!): OrganizationStructureData
   organization(name: String, id: Int): OrganizationData
-  organizations_by_avinya_type(avinya_type: Int): [OrganizationData!]
+  organizations_by_avinya_type(avinya_type: Int, active: Int = 0): [OrganizationData!]
   student_list_by_parent(id: Int): [PersonData!]
   person(name: String, id: Int): PersonData
   person_by_digital_id(id: String): PersonData
@@ -932,6 +990,8 @@ type Query {
   districts: [DistrictData!]
   cities(district_id: Int): [CityData!]
   all_organizations: [OrganizationData!]
+  monthly_leave_dates_record_by_id(organization_id: Int!, year: Int!, month: Int!): MonthlyLeaveDatesData
+  calendar_metadata_by_org_id(organization_id: Int!): CalendarMetaData
 }
 
 input ResourceAllocation {
@@ -1041,6 +1101,25 @@ type SupplyData {
 type TotalActivityParticipantAttendanceCountByDateData {
   attendance_date: String
   daily_total: Int
+}
+
+input UserDocument {
+  record_type: String = "user_document"
+  id: Int
+  folder_id: String
+  nic_front_id: String
+  nic_back_id: String
+  birth_certificate_front_id: String
+  birth_certificate_back_id: String
+  ol_certificate_id: String
+  al_certificate_id: String
+  additional_certificate_01_id: String
+  additional_certificate_02_id: String
+  additional_certificate_03_id: String
+  additional_certificate_04_id: String
+  additional_certificate_05_id: String
+  document_type: String
+  document: String
 }
 
 input Vacancy {
