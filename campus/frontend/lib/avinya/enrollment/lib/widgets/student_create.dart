@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gallery/avinya/enrollment/lib/widgets/file_upload_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:gallery/avinya/enrollment/lib/data/person.dart';
 
@@ -327,60 +328,60 @@ class _StudentCreateState extends State<StudentCreate> {
                             }),
 
                             const SizedBox(height: 20),
-                            _buildSectionTitle(context, 'More Information'),
-                            ExpansionTile(
-                              title: Text(
-                                'Click to expand more information',
-                                style: Theme.of(context).textTheme.subtitle1,
-                              ),
-                              children: [
-                                // Guardian Information
-                                _buildSectionTitle(
-                                    context, 'Guardian Information'),
-                                _buildEditableField(
-                                    'Guardian Name', userPerson.guardian_name,
-                                    (value) {
-                                  userPerson.guardian_name = value;
-                                },
-                                    validator: (value) => value!.isEmpty
-                                        ? 'Guardian name is required'
-                                        : null),
-                                _buildEditableField(
-                                    'Guardian Contact Number',
-                                    userPerson.guardian_contact_number
-                                            ?.toString() ??
-                                        '', (value) {
-                                  userPerson.guardian_contact_number =
-                                      int.tryParse(value);
-                                }, validator: _validatePhone),
+                            // _buildSectionTitle(context, 'More Information'),
+                            // ExpansionTile(
+                            //   title: Text(
+                            //     'Click to expand more information',
+                            //     style: Theme.of(context).textTheme.subtitle1,
+                            //   ),
+                            //   children: [
+                            //     // Guardian Information
+                            //     _buildSectionTitle(
+                            //         context, 'Guardian Information'),
+                            //     _buildEditableField(
+                            //         'Guardian Name', userPerson.guardian_name,
+                            //         (value) {
+                            //       userPerson.guardian_name = value;
+                            //     },
+                            //         validator: (value) => value!.isEmpty
+                            //             ? 'Guardian name is required'
+                            //             : null),
+                            //     _buildEditableField(
+                            //         'Guardian Contact Number',
+                            //         userPerson.guardian_contact_number
+                            //                 ?.toString() ??
+                            //             '', (value) {
+                            //       userPerson.guardian_contact_number =
+                            //           int.tryParse(value);
+                            //     }, validator: _validatePhone),
 
-                                const SizedBox(height: 20),
+                            //     const SizedBox(height: 20),
 
-                                // O/L Results Section
-                                _buildSectionTitle(context, 'O/L Results'),
-                                // _buildEditableField('Subject 1', userPerson.ol_subject1,
-                                //     (value) {
-                                //   userPerson.ol_subject1 = value;
-                                // }),
-                                // _buildEditableField('Subject 2', userPerson.ol_subject2,
-                                //     (value) {
-                                //   userPerson.ol_subject2 = value;
-                                // }),
-                                // _buildEditableField('Subject 3', userPerson.ol_subject3,
-                                //     (value) {
-                                //   userPerson.ol_subject3 = value;
-                                // }),
-                                // _buildEditableField(
-                                //     'Other Results', userPerson.ol_other_results,
-                                //     (value) {
-                                //   userPerson.ol_other_results = value;
-                                // }),
+                            //     // O/L Results Section
+                            //     _buildSectionTitle(context, 'O/L Results'),
+                            //     // _buildEditableField('Subject 1', userPerson.ol_subject1,
+                            //     //     (value) {
+                            //     //   userPerson.ol_subject1 = value;
+                            //     // }),
+                            //     // _buildEditableField('Subject 2', userPerson.ol_subject2,
+                            //     //     (value) {
+                            //     //   userPerson.ol_subject2 = value;
+                            //     // }),
+                            //     // _buildEditableField('Subject 3', userPerson.ol_subject3,
+                            //     //     (value) {
+                            //     //   userPerson.ol_subject3 = value;
+                            //     // }),
+                            //     // _buildEditableField(
+                            //     //     'Other Results', userPerson.ol_other_results,
+                            //     //     (value) {
+                            //     //   userPerson.ol_other_results = value;
+                            //     // }),
 
-                                const SizedBox(height: 20),
+                            //     const SizedBox(height: 20),
 
-                                // Add other expandable sections here if needed
-                              ],
-                            ),
+                            //     // Add other expandable sections here if needed
+                            //   ],
+                            // ),
 
                             // const SizedBox(height: 20),
                             // _buildSectionTitle(context, 'Professional Information'),
@@ -391,11 +392,11 @@ class _StudentCreateState extends State<StudentCreate> {
                             // _buildEditableTextArea('Comments', userPerson.notes, (value) {
                             //   userPerson.notes = value;
                             // }),
-                            const SizedBox(height: 40),
-                            _buildSaveButton(
-                                isDistrictsDataLoaded,
-                                isOrganizationsDataLoaded,
-                                isAvinyaTypesDataLoaded),
+                            // const SizedBox(height: 40),
+                            // _buildSaveButton(
+                            //     isDistrictsDataLoaded,
+                            //     isOrganizationsDataLoaded,
+                            //     isAvinyaTypesDataLoaded),
                           ],
                         ),
                       ),
@@ -407,14 +408,49 @@ class _StudentCreateState extends State<StudentCreate> {
               // Step 2: File Upload
               Step(
                 title: Text('Upload Files'),
-                content: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildSectionTitle(context, 'File Upload'),
-                    _buildFileUploadWidget('Upload Profile Photo'),
-                    _buildFileUploadWidget('Upload NIC Copy'),
-                    _buildFileUploadWidget('Upload O/L Certificate'),
-                  ],
+                content: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Center(
+                    child: SizedBox(
+                      width: 800,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // _buildSectionTitle(context, 'File Upload'),
+                          // GridView inside SingleChildScrollView
+                          GridView.builder(
+                            shrinkWrap: true, // Avoid infinite size issue
+                            physics: NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2, // 2 items per row
+                              crossAxisSpacing: 16.0,
+                              mainAxisSpacing: 16.0,
+                              childAspectRatio:
+                                  1.5, // Adjust the aspect ratio to take up more space
+                            ),
+                            itemCount: 8,
+                            itemBuilder: (context, index) {
+                              List<String> documentTypes = [
+                                'NIC Front',
+                                'NIC Back',
+                                'Birth Certificate Front',
+                                'Birth Certificate Back',
+                                'O/L Certificate',
+                                'A/L  Certificate',
+                                'Additional Certificate',
+                                'Another Document'
+                              ];
+
+                              return FileUploadWidget(
+                                documentType: documentTypes[index],
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
                 isActive: _currentStep >= 1,
               ),
@@ -425,19 +461,47 @@ class _StudentCreateState extends State<StudentCreate> {
 
   // Navigate to the next step
   void _nextStep() {
-    if (_currentStep == 0) {
+    bool isEnabled = isDistrictsDataLoaded &&
+        isOrganizationsDataLoaded &&
+        isAvinyaTypesDataLoaded;
+    print('is enabled:${isEnabled}');
+    if (_currentStep == 0 && isEnabled) {
       if (_formKey.currentState!.validate()) {
         _formKey.currentState!.save();
+        createPerson(context, userPerson);
         setState(() {
           _currentStep += 1;
         });
       }
-    } else if (_currentStep < 1) {
+    } else if (_currentStep < 1 && isEnabled) {
       setState(() {
         _currentStep += 1;
       });
     }
   }
+
+  //   Widget _buildSaveButton(bool isDistrictsDataLoaded,
+  //     bool isOrganizationsDataLoaded, bool isAvinyaTypesDataLoaded) {
+  //   bool isEnabled = isDistrictsDataLoaded &&
+  //       isOrganizationsDataLoaded &&
+  //       isAvinyaTypesDataLoaded;
+  //   print('is enabled:${isEnabled}');
+
+  //   return Center(
+  //     child: ElevatedButton(
+  //       onPressed: isEnabled
+  //           ? () {
+  //               if (_formKey.currentState!.validate()) {
+  //                 _formKey.currentState!.save();
+  //                 // Save userPerson changes
+  //                 createPerson(context, userPerson);
+  //               }
+  //             }
+  //           : null,
+  //       child: const Text('Create Student & Continue'),
+  //     ),
+  //   );
+  // }
 
   // Navigate to the previous step
   void _previousStep() {
@@ -446,23 +510,6 @@ class _StudentCreateState extends State<StudentCreate> {
         _currentStep -= 1;
       });
     }
-  }
-
-  // Mock function for file upload widget
-  Widget _buildFileUploadWidget(String label) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              // Logic to handle file upload
-            },
-            child: Text('Upload $label'),
-          ),
-        ],
-      ),
-    );
   }
 
   String? _validateEmail(String? value) {
@@ -853,29 +900,6 @@ class _StudentCreateState extends State<StudentCreate> {
                   'No description'), // Handle null description
             ))
         .toList();
-  }
-
-  Widget _buildSaveButton(bool isDistrictsDataLoaded,
-      bool isOrganizationsDataLoaded, bool isAvinyaTypesDataLoaded) {
-    bool isEnabled = isDistrictsDataLoaded &&
-        isOrganizationsDataLoaded &&
-        isAvinyaTypesDataLoaded;
-    print('is enabled:${isEnabled}');
-
-    return Center(
-      child: ElevatedButton(
-        onPressed: isEnabled
-            ? () {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  // Save userPerson changes
-                  createPerson(context, userPerson);
-                }
-              }
-            : null,
-        child: const Text('Create Student'),
-      ),
-    );
   }
 
   Widget _buildDateOfBirthField(BuildContext context) {

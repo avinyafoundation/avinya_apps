@@ -1,11 +1,13 @@
 import 'dart:developer';
-import 'package:gallery/avinya/enrollment/lib/screens/students_screen.dart';
+import 'dart:typed_data';
 import 'package:gallery/widgets/success_message.dart';
 import 'package:gallery/widgets/error_message.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 
 class MainOrganization {
   int? id;
@@ -490,12 +492,12 @@ Future<Person> createPerson(BuildContext context, Person person) async {
   if (response.statusCode == 201) {
     Person person = Person.fromJson(json.decode(response.body));
     showSuccessToast("Student Profile Successfully Created!");
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => StudentsScreen(),
-      ),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => StudentsScreen(),
+    //   ),
+    // );
     return person;
   } else {
     log(response.body + " Status code =" + response.statusCode.toString());
@@ -646,5 +648,88 @@ Future<List<City>> fetchCities(id) async {
     return activityAttendances;
   } else {
     throw Exception('Failed to get City Data');
+  }
+}
+
+// Future<http.StreamedResponse?> uploadFile(
+//     Uint8List file, Map<String, dynamic> documentDetails) async {
+//   try {
+//     // Create the multipart request
+//     final uri =
+//         Uri.parse('${AppConfig.campusEnrollmentsBffApiUrl}/upload_document');
+//     final request = http.MultipartRequest('POST', uri);
+
+//     // Set the headers
+//     request.headers.addAll({
+//       'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+//       'accept': 'application/ld+json',
+//     });
+
+//     // Add the document_details as a JSON string
+//     request.fields['document_details'] = jsonEncode(documentDetails);
+
+//     // Determine the MIME type of the file
+//     final mimeType = lookupMimeType(file.path) ?? 'application/octet-stream';
+
+//     // Attach the file to the request
+//     request.files.add(
+//       http.MultipartFile(
+//         'document', // Key for the file in form-data
+//         file.readAsBytes().asStream(),
+//         file.lengthSync(),
+//         filename: basename(file.path),
+//         contentType: MediaType.parse(mimeType),
+//       ),
+//     );
+
+//     // Send the request
+//     final response = await request.send();
+
+//     return response;
+//   } catch (e) {
+//     print('Error uploading file: $e');
+//     return null;
+//   }
+// }
+
+Future<http.StreamedResponse?> uploadFile(
+    Uint8List fileBytes, Map<String, dynamic> documentDetails) async {
+  try {
+    // Create the multipart request
+    final uri =
+        Uri.parse('${AppConfig.campusEnrollmentsBffApiUrl}/upload_document');
+    final request = http.MultipartRequest('POST', uri);
+
+    // Set the headers
+    request.headers.addAll({
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+      'accept': 'application/ld+json',
+    });
+
+    // Add the document_details as a JSON string
+    request.fields['document_details'] = jsonEncode(documentDetails);
+
+    // Determine the MIME type of the file
+    final mimeType = lookupMimeType('', headerBytes: fileBytes) ??
+        'application/octet-stream';
+
+    // Attach the file to the request
+    request.files.add(
+      http.MultipartFile(
+        'document', // Key for the file in form-data
+        Stream.fromIterable([fileBytes]), // Convert Uint8List to stream
+        fileBytes.length, // The length of the file
+        filename: 'document.png', // Adjust this as needed
+        contentType: MediaType.parse(mimeType),
+      ),
+    );
+
+    // Send the request
+    final response = await request.send();
+
+    return response;
+  } catch (e) {
+    print('Error uploading file: $e');
+    return null;
   }
 }
