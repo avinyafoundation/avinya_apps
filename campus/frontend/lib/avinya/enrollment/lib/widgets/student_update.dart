@@ -772,13 +772,16 @@ class _StudentUpdateState extends State<StudentUpdate> {
     }
 
     // Determine the Avinya Type ID
-    final int? avinyaTypeId = (userPerson.date_of_birth != null &&
-            calculateAge(userPerson.date_of_birth) != null &&
-            calculateAge(userPerson.date_of_birth)! < 19)
-        ? 103 // Auto-select Future Enrollees if under 18
-        : (userPerson.avinya_type_id ??
-            userPerson.avinya_type
-                ?.id); // Fallback to avinya_type?.id if avinya_type_id is null
+    // final int? avinyaTypeId = (userPerson.date_of_birth != null &&
+    //         calculateAge(userPerson.date_of_birth) != null &&
+    //         calculateAge(userPerson.date_of_birth)! < 19)
+    //     ? 103 // Auto-select Future Enrollees if under 18
+    //     : (userPerson.avinya_type_id ??
+    //         userPerson.avinya_type
+    //             ?.id); // Fallback to avinya_type?.id if avinya_type_id is null
+
+    final int? avinyaTypeId =
+        (userPerson.avinya_type_id ?? userPerson.avinya_type?.id);
 
     // Filter avinyaTypes based on the selected IDs
     final filteredAvinyaTypes = avinyaTypes.where((org) {
