@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gallery/avinya/enrollment/lib/widgets/file_upload_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:gallery/avinya/enrollment/lib/data/person.dart';
 
@@ -17,8 +18,11 @@ class _StudentUpdateState extends State<StudentUpdate> {
   List<MainOrganization> organizations = [];
   List<AvinyaType> avinyaTypes = [];
   List<MainOrganization> classes = [];
+  int _currentStep = 0; // Track the current step
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   List<City> cityList = [];
+  late Person updatedPerson = Person();
+  List<UserDocument> userDocuments = [];
 
   String? selectedSex;
   int? selectedCityId;
@@ -195,196 +199,378 @@ class _StudentUpdateState extends State<StudentUpdate> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: userPerson.preferred_name == null
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: SizedBox(
-                  width: 800,
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildProfileHeader(context),
-                        const SizedBox(height: 20),
-                        _buildSectionTitle(context, 'Student Information'),
-                        _buildEditableField(
-                            'Preferred Name', userPerson.preferred_name,
-                            (value) {
-                          userPerson.preferred_name = value;
-                        },
-                            validator: (value) => value!.isEmpty
-                                ? 'Preferred name is required'
-                                : null),
-                        _buildEditableField('Full Name', userPerson.full_name,
-                            (value) {
-                          userPerson.full_name = value;
-                        },
-                            validator: (value) => value!.isEmpty
-                                ? 'Full name is required'
-                                : null),
-                        _buildEditableField('NIC Number', userPerson.nic_no,
-                            (value) {
-                          userPerson.nic_no = value;
-                        }, validator: _validateNIC),
-                        _buildDateOfBirthField(context),
-                        _buildSexField(),
-                        const SizedBox(height: 10),
-                        FutureBuilder<List<MainOrganization>>(
-                            future: fetchOrganizationList(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Container(
-                                  margin: EdgeInsets.only(top: 10),
-                                  child: SpinKitCircle(
-                                    color: (Color.fromARGB(255, 74, 161, 70)),
-                                    size: 70,
-                                  ),
-                                );
-                              } else if (snapshot.hasError) {
-                                return const Center(
-                                  child: Text('Something went wrong...'),
-                                );
-                              } else if (!snapshot.hasData) {
-                                return const Center(
-                                  child: Text('No organizations found'),
-                                );
-                              } else if (snapshot.connectionState ==
-                                      ConnectionState.done &&
-                                  snapshot.hasData &&
-                                  snapshot.data!.isNotEmpty) {
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  if (!isOrganizationsDataLoaded) {
-                                    setState(() {
-                                      isOrganizationsDataLoaded = true;
-                                      print(
-                                          "isorgdataload:${isOrganizationsDataLoaded}");
-                                    });
-                                  }
-                                });
-                                organizations = snapshot.data!;
-                                return _buildOrganizationField();
-                              } else {
-                                return SizedBox();
-                              }
-                            }),
-                        // _buildOrganizationField(),
-                        _buildStudentClassField(), // Student Class based on organization.description
-                        const SizedBox(height: 20),
-                        _buildSectionTitle(context, 'Contact Information'),
-                        _buildEditableField('Personal Email', userPerson.email,
-                            (value) {
-                          userPerson.email = value;
-                        }),
-                        _buildEditableField(
-                            'Phone', userPerson.phone?.toString() ?? '',
-                            (value) {
-                          userPerson.phone = int.tryParse(value);
-                        }, validator: _validatePhone),
-                        _buildEditableField('Street Address',
-                            userPerson.mailing_address?.street_address ?? 'N/A',
-                            (value) {
-                          if (userPerson.mailing_address == null) {
-                            userPerson.mailing_address =
-                                Address(street_address: value);
-                          } else {
-                            userPerson.mailing_address!.street_address = value;
-                          }
-                        }),
-                        FutureBuilder<List<District>>(
-                            future: fetchDistrictList(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Container(
-                                  margin: EdgeInsets.only(top: 10),
-                                  child: SpinKitCircle(
-                                    color: (Color.fromARGB(255, 74, 161, 70)),
-                                    size: 70,
-                                  ),
-                                );
-                              } else if (snapshot.hasError) {
-                                return const Center(
-                                  child: Text('Something went wrong...'),
-                                );
-                              } else if (!snapshot.hasData) {
-                                return const Center(
-                                  child: Text('No districts found'),
-                                );
-                              } else if (snapshot.connectionState ==
-                                      ConnectionState.done &&
-                                  snapshot.hasData) {
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  if (!isDistrictsDataLoaded) {
-                                    setState(() {
-                                      isDistrictsDataLoaded = true;
-                                      print(
-                                          "isDistrictsDataLoaded:${isDistrictsDataLoaded}");
-                                    });
-                                  }
-                                });
-                                districts = snapshot.data!;
-                                return Column(
-                                  children: [
-                                    _buildDistrictField(),
-                                    _buildCityField(),
-                                  ],
-                                );
-                              }
+          ? const Center(
+              child: SpinKitCircle(
+                color: (Color.fromARGB(255, 74, 161, 70)),
+                size: 70,
+              ),
+            )
+          : Center(
+              child: SizedBox(
+                width: 850,
+                child: Stepper(
+                  connectorColor: MaterialStateProperty.all(
+                      Color.fromARGB(255, 74, 161, 70)),
+                  type: StepperType.vertical,
+                  currentStep: _currentStep,
+                  onStepContinue: _nextStep,
+                  onStepCancel: _previousStep,
+                  steps: [
+                    Step(
+                      title: Text('Student Information'),
+                      content: SingleChildScrollView(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Center(
+                          child: SizedBox(
+                            width: 800,
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildProfileHeader(context),
+                                  const SizedBox(height: 20),
+                                  _buildSectionTitle(
+                                      context, 'Student Information'),
+                                  _buildEditableField('Preferred Name',
+                                      userPerson.preferred_name, (value) {
+                                    userPerson.preferred_name = value;
+                                  },
+                                      validator: (value) => value!.isEmpty
+                                          ? 'Preferred name is required'
+                                          : null),
+                                  _buildEditableField(
+                                      'Full Name', userPerson.full_name,
+                                      (value) {
+                                    userPerson.full_name = value;
+                                  },
+                                      validator: (value) => value!.isEmpty
+                                          ? 'Full name is required'
+                                          : null),
+                                  _buildEditableField(
+                                      'NIC Number', userPerson.nic_no, (value) {
+                                    userPerson.nic_no = value;
+                                  }, validator: _validateNIC),
+                                  _buildDateOfBirthField(context),
+                                  _buildSexField(),
+                                  const SizedBox(height: 10),
+                                  FutureBuilder<List<MainOrganization>>(
+                                      future: fetchOrganizationList(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return Container(
+                                            margin: EdgeInsets.only(top: 10),
+                                            child: SpinKitCircle(
+                                              color: (Color.fromARGB(
+                                                  255, 74, 161, 70)),
+                                              size: 70,
+                                            ),
+                                          );
+                                        } else if (snapshot.hasError) {
+                                          return const Center(
+                                            child:
+                                                Text('Something went wrong...'),
+                                          );
+                                        } else if (!snapshot.hasData) {
+                                          return const Center(
+                                            child:
+                                                Text('No organizations found'),
+                                          );
+                                        } else if (snapshot.connectionState ==
+                                                ConnectionState.done &&
+                                            snapshot.hasData &&
+                                            snapshot.data!.isNotEmpty) {
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback((_) {
+                                            if (!isOrganizationsDataLoaded) {
+                                              setState(() {
+                                                isOrganizationsDataLoaded =
+                                                    true;
+                                                print(
+                                                    "isorgdataload:${isOrganizationsDataLoaded}");
+                                              });
+                                            }
+                                          });
+                                          organizations = snapshot.data!;
+                                          return _buildOrganizationField();
+                                        } else {
+                                          return SizedBox();
+                                        }
+                                      }),
+                                  // _buildOrganizationField(),
+                                  _buildStudentClassField(), // Student Class based on organization.description
+                                  const SizedBox(height: 20),
+                                  _buildSectionTitle(
+                                      context, 'Contact Information'),
+                                  _buildEditableField(
+                                      'Personal Email', userPerson.email,
+                                      (value) {
+                                    userPerson.email = value;
+                                  }),
+                                  _buildEditableField('Phone',
+                                      userPerson.phone?.toString() ?? '',
+                                      (value) {
+                                    userPerson.phone = int.tryParse(value);
+                                  }, validator: _validatePhone),
+                                  _buildEditableField(
+                                      'Street Address',
+                                      userPerson.mailing_address
+                                              ?.street_address ??
+                                          'N/A', (value) {
+                                    if (userPerson.mailing_address == null) {
+                                      userPerson.mailing_address =
+                                          Address(street_address: value);
+                                    } else {
+                                      userPerson.mailing_address!
+                                          .street_address = value;
+                                    }
+                                  }),
+                                  FutureBuilder<List<District>>(
+                                      future: fetchDistrictList(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return Container(
+                                            margin: EdgeInsets.only(top: 10),
+                                            child: SpinKitCircle(
+                                              color: (Color.fromARGB(
+                                                  255, 74, 161, 70)),
+                                              size: 70,
+                                            ),
+                                          );
+                                        } else if (snapshot.hasError) {
+                                          return const Center(
+                                            child:
+                                                Text('Something went wrong...'),
+                                          );
+                                        } else if (!snapshot.hasData) {
+                                          return const Center(
+                                            child: Text('No districts found'),
+                                          );
+                                        } else if (snapshot.connectionState ==
+                                                ConnectionState.done &&
+                                            snapshot.hasData) {
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback((_) {
+                                            if (!isDistrictsDataLoaded) {
+                                              setState(() {
+                                                isDistrictsDataLoaded = true;
+                                                print(
+                                                    "isDistrictsDataLoaded:${isDistrictsDataLoaded}");
+                                              });
+                                            }
+                                          });
+                                          districts = snapshot.data!;
+                                          return Column(
+                                            children: [
+                                              _buildDistrictField(),
+                                              _buildCityField(),
+                                            ],
+                                          );
+                                        }
 
-                              return SizedBox();
-                            }),
-                        const SizedBox(height: 20),
-                        _buildSectionTitle(context, 'Digital Information'),
-                        _buildEditableField('Digital ID', userPerson.digital_id,
-                            (value) {
-                          userPerson.digital_id = value;
-                        }),
-                        _buildAvinyaTypeField(),
-                        const SizedBox(height: 20),
-                        _buildSectionTitle(context, 'Bank Information'),
-                        _buildEditableField('Bank Name', userPerson.bank_name,
-                            (value) {
-                          userPerson.bank_name = value;
-                        }),
-                        _buildEditableField(
-                            'Bank Branch', userPerson.bank_branch, (value) {
-                          userPerson.bank_branch = value;
-                        }),
-                        _buildEditableField(
-                            'Bank Account Name', userPerson.bank_account_name,
-                            (value) {
-                          userPerson.bank_account_name = value;
-                        }),
-                        _buildEditableField(
-                            'Account Number', userPerson.bank_account_number,
-                            (value) {
-                          userPerson.bank_account_number = value;
-                        }),
-                        const SizedBox(height: 20),
-                        _buildSectionTitle(context, 'Professional Information'),
-                        _buildEditableField(
-                            'Current Job', userPerson.current_job, (value) {
-                          userPerson.current_job = value;
-                        }),
-                        _buildEditableTextArea('Comments', userPerson.notes,
-                            (value) {
-                          userPerson.notes = value;
-                        }),
-                        const SizedBox(height: 40),
-                        _buildSaveButton(
-                            isDistrictsDataLoaded, isOrganizationsDataLoaded),
-                      ],
+                                        return SizedBox();
+                                      }),
+                                  const SizedBox(height: 20),
+                                  _buildSectionTitle(
+                                      context, 'Digital Information'),
+                                  _buildEditableField(
+                                      'Digital ID', userPerson.digital_id,
+                                      (value) {
+                                    userPerson.digital_id = value;
+                                  }),
+                                  _buildAvinyaTypeField(),
+                                  const SizedBox(height: 20),
+                                  _buildSectionTitle(
+                                      context, 'Bank Information'),
+                                  _buildEditableField(
+                                      'Bank Name', userPerson.bank_name,
+                                      (value) {
+                                    userPerson.bank_name = value;
+                                  }),
+                                  _buildEditableField(
+                                      'Bank Branch', userPerson.bank_branch,
+                                      (value) {
+                                    userPerson.bank_branch = value;
+                                  }),
+                                  _buildEditableField('Bank Account Name',
+                                      userPerson.bank_account_name, (value) {
+                                    userPerson.bank_account_name = value;
+                                  }),
+                                  _buildEditableField('Account Number',
+                                      userPerson.bank_account_number, (value) {
+                                    userPerson.bank_account_number = value;
+                                  }),
+                                  const SizedBox(height: 20),
+                                  _buildSectionTitle(
+                                      context, 'Professional Information'),
+                                  _buildEditableField(
+                                      'Current Job', userPerson.current_job,
+                                      (value) {
+                                    userPerson.current_job = value;
+                                  }),
+                                  _buildEditableTextArea(
+                                      'Comments', userPerson.notes, (value) {
+                                    userPerson.notes = value;
+                                  }),
+                                  const SizedBox(height: 40),
+                                  // _buildSaveButton(isDistrictsDataLoaded,
+                                  //     isOrganizationsDataLoaded),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      isActive: _currentStep >= 0,
                     ),
-                  ),
+                    Step(
+                      title: Text('Upload Files'),
+                      content: FutureBuilder<List<UserDocument>?>(
+                          future: fetchDocuments(userPerson.documents_id ?? 0),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Container(
+                                margin: EdgeInsets.only(top: 10),
+                                child: SpinKitCircle(
+                                  color: (Color.fromARGB(255, 74, 161, 70)),
+                                  size: 70,
+                                ),
+                              );
+                            } else if (snapshot.hasError) {
+                              return const Center(
+                                child: Text('Something went wrong...'),
+                              );
+                            } else if (!snapshot.hasData ||
+                                snapshot.data == null) {
+                              return const Center(
+                                child: Text('No user documents found'),
+                              );
+                            } else if (snapshot.connectionState ==
+                                    ConnectionState.done &&
+                                snapshot.hasData) {
+                              userDocuments = snapshot.data!;
+                              return SingleChildScrollView(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 800,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // _buildSectionTitle(context, 'File Upload'),
+                                        // GridView inside SingleChildScrollView
+                                        GridView.builder(
+                                          shrinkWrap:
+                                              true, // Avoid infinite size issue
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          gridDelegate:
+                                              SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount:
+                                                2, // 2 items per row
+                                            crossAxisSpacing: 16.0,
+                                            mainAxisSpacing: 16.0,
+                                            childAspectRatio:
+                                                1.5, // Adjust the aspect ratio to take up more space
+                                          ),
+                                          itemCount: 11,
+                                          itemBuilder: (context, index) {
+                                            List<String> documentTypesLabels = [
+                                              'NIC Front',
+                                              'NIC Back',
+                                              'Birth Certificate Front',
+                                              'Birth Certificate Back',
+                                              'O/L Certificate',
+                                              'A/L  Certificate',
+                                              'Additional Certificate 01',
+                                              'Additional Certificate 02',
+                                              'Additional Certificate 03',
+                                              'Additional Certificate 04',
+                                              'Additional Certificate 05'
+                                            ];
+
+                                            List<String> documentTypes = [
+                                              'nicFront',
+                                              'nicBack',
+                                              'birthCertificateFront',
+                                              'birthCertificateBack',
+                                              'olDocument',
+                                              'alDocument',
+                                              'additionalCertificate01',
+                                              'additionalCertificate02',
+                                              'additionalCertificate03',
+                                              'additionalCertificate04',
+                                              'additionalCertificate05'
+                                            ];
+                                            final filteredDocument =
+                                                userDocuments.firstWhere(
+                                                    (document) =>
+                                                        document
+                                                            .document_type ==
+                                                        documentTypes[index],
+                                                    orElse: () => UserDocument(
+                                                        document: null,
+                                                        document_type: null));
+                                            return FileUploadWidget(
+                                              userDocumentId:
+                                                  userPerson.documents_id ?? 0,
+                                              documentTypeLabel:
+                                                  documentTypesLabels[index],
+                                              documentType:
+                                                  documentTypes[index],
+                                              stringImage:
+                                                  filteredDocument.document,
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+
+                            return SizedBox();
+                          }),
+                      isActive: _currentStep >= 1,
+                    )
+                  ],
                 ),
               ),
             ),
     );
+  }
+
+  // Navigate to the next step
+  void _nextStep() async {
+    bool isEnabled = isDistrictsDataLoaded && isOrganizationsDataLoaded;
+    print('is enabled:${isEnabled}');
+    if (_currentStep == 0 && isEnabled) {
+      if (_formKey.currentState!.validate()) {
+        _formKey.currentState!.save();
+        updatedPerson = await updatePerson(userPerson);
+        if (updatedPerson.id != null) {
+          setState(() {
+            _currentStep += 1;
+          });
+        }
+      }
+      // } else if (_currentStep < 1 && isEnabled) {
+    } else if (_currentStep == 1) {
+      Navigator.pop(context);
+    }
+  }
+
+  void _previousStep() {
+    if (_currentStep > 0) {
+      setState(() {
+        _currentStep -= 1;
+      });
+    }
   }
 
   Widget _buildProfileHeader(BuildContext context) {

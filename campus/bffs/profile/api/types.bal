@@ -246,10 +246,12 @@ public type Organization record {
 public type Person record {
     int? permanent_address_id?;
     string? street_address?;
+    string? bank_branch?;
     string? bank_account_number?;
     string? notes?;
     int[]? parent_student?;
     string? date_of_birth?;
+    int? parent_organization_id?;
     int? avinya_type_id?;
     Address? permanent_address?;
     int? mailing_address_id?;
@@ -262,21 +264,46 @@ public type Person record {
     string? digital_id?;
     string? sex?;
     string? passport_no?;
+    string? current_job?;
+    int? created_by?;
     string? record_type?;
     Address? mailing_address?;
+    string? branch_code?;
     int[]? child_student?;
     string? bank_account_name?;
-    string? bank_branch?;
     int? avinya_phone?;
     string? full_name?;
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    int? updated_by?;
+    string? academy_org_name?;
     string? asgardeo_id?;
+    int? documents_id?;
+    UserDocument[]? document_list?;
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
     int? academy_org_id?;
+};
+
+public type UserDocument record {
+    string? birth_certificate_back_id?;
+    string? additional_certificate_01_id?;
+    string? additional_certificate_02_id?;
+    string? nic_back_id?;
+    string? document?;
+    string? additional_certificate_05_id?;
+    string? additional_certificate_04_id?;
+    string? additional_certificate_03_id?;
+    string? record_type?;
+    string? al_certificate_id?;
+    string? nic_front_id?;
+    string? ol_certificate_id?;
+    string? birth_certificate_front_id?;
+    int? id?;
+    string? folder_id?;
+    string? document_type?;
 };
 
 public type Prospect record {
@@ -391,12 +418,12 @@ public type GetPersonResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? permanent_address;
@@ -404,12 +431,12 @@ public type GetPersonResponse record {|
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                     string? name_si;
                     string? name_ta;
                 |} name;
             |} city;
-            string street_address;
+            string? street_address;
             int? phone;
             int? id;
         |}? mailing_address;
@@ -426,26 +453,26 @@ public type GetPersonResponse record {|
             |}? avinya_type;
             int? phone;
             record {|
-                string name_en;
+                string? name_en;
                 string? name_si;
                 string? name_ta;
             |} name;
             record {|
                 int? id;
                 record {|
-                    string name_en;
+                    string? name_en;
                 |} name;
                 string? description;
                 record {|
                     int? id;
                     record {|
-                        string name_en;
+                        string? name_en;
                     |} name;
                     string? description;
                     record {|
                         int? id;
                         record {|
-                            string name_en;
+                            string? name_en;
                         |} name;
                         string? description;
                         record {|
@@ -569,9 +596,10 @@ public type GetPersonResponse record {|
         string? bank_account_number;
         string? bank_account_name;
         int? academy_org_id;
+        string? current_job;
+        int? documents_id;
     |}? person_by_digital_id;
 |};
-
 public type GetOrganizationResponse record {|
     map<json?> __extensions?;
     record {|

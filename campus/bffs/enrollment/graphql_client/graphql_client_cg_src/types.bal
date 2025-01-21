@@ -313,6 +313,7 @@ public type Person record {
     string? notes?;
     int[]? parent_student?;
     string? date_of_birth?;
+    int? parent_organization_id?;
     int? avinya_type_id?;
     Address? permanent_address?;
     int? mailing_address_id?;
@@ -336,7 +337,6 @@ public type Person record {
     string? full_name?;
     string? nic_no?;
     int? phone?;
-    UserDocument[]? documentList?;
     int? organization_id?;
     int? updated_by?;
     string? academy_org_name?;
@@ -615,10 +615,7 @@ public type GetPersonByIdResponse record {|
         int? created_by;
         int? updated_by;
         string? current_job;
-        record {|
-            string? document;
-            string? document_type;
-        |}[]? document_list;
+        int? documents_id;
     |}? person_by_id;
 |};
 
@@ -862,4 +859,12 @@ public type UploadDocumentResponse record {|
         string? additional_certificate_04_id;
         string? additional_certificate_05_id;
     |}? upload_document;
+|};
+
+public type GetAllDocumentsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? document;
+        string? document_type;
+    |}[]? document_list;
 |};
