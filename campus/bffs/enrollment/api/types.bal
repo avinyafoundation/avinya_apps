@@ -296,6 +296,7 @@ public type GetPersonByIdResponse record {|
         int? documents_id;
     |}? person_by_id;
 |};
+
 public type UpdatePersonResponse record {|
     map<json?> __extensions?;
     record {|
@@ -374,6 +375,7 @@ public type UpdatePersonResponse record {|
         int? created_by;
         int? updated_by;
         string? current_job;
+        int? documents_id;
     |}? update_person;
 |};
 

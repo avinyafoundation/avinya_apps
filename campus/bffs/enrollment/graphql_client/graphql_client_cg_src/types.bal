@@ -697,6 +697,7 @@ public type UpdatePersonResponse record {|
         int? created_by;
         int? updated_by;
         string? current_job;
+        int? documents_id;
     |}? update_person;
 |};
 
