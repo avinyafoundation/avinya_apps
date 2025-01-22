@@ -20,7 +20,7 @@ class MonthlyPaymentReport extends StatefulWidget {
       required this.onYearMonthSelected})
       : super(key: key);
   final Function(DateTime, DateTime) updateDateRangeForExcel;
-  final Function(int,int) onYearMonthSelected;
+  final Function(int, int) onYearMonthSelected;
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -67,6 +67,11 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   late String formattedStartDate;
   late String formattedEndDate;
   var today = DateTime.now();
+
+  List<Organization> _batchData = [];
+  Organization? _selectedOrganizationValue;
+  List<Organization> _fetchedOrganizations = [];
+  late Future<List<Organization>> _fetchBatchData;
 
   void selectWeek(DateTime today, activityId) async {
     // Calculate the start of the week (excluding weekends) based on the selected day
@@ -121,12 +126,29 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   @override
   void initState() {
     super.initState();
+    _fetchBatchData = _loadBatchData();
     var today = DateTime.now();
     activityId = campusAppsPortalInstance.activityIds['homeroom']!;
     selectWeek(today, activityId);
     _year = _selected?.year ?? _year;
     _month = _selected?.month ?? _month;
     _fetchLeaveDates(_year, _month);
+  }
+
+  Future<List<Organization>> _loadBatchData() async {
+    _batchData = await fetchActiveOrganizationsByAvinyaType(86);
+    _selectedOrganizationValue = _batchData.isNotEmpty ? _batchData.last : null;
+
+    if (_selectedOrganizationValue != null) {
+      int orgId = _selectedOrganizationValue!.id!;
+      _fetchedOrganization = await fetchOrganization(orgId);
+      _fetchedOrganizations = _fetchedOrganization?.child_organizations ?? [];
+      setState(() {
+        _fetchedOrganizations = _fetchedOrganizations;
+      });
+    }
+    // this.updateDateRange(today, today);
+    return _batchData;
   }
 
   Future<void> _fetchLeaveDates(int year, int month) async {
@@ -209,7 +231,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
       setState(() {
         _selected = selected;
       });
-      widget.onYearMonthSelected(selected.year,selected.month);
+      widget.onYearMonthSelected(selected.year, selected.month);
     }
   }
 
@@ -349,261 +371,381 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
               style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold))
           : Wrap(
               children: <Widget>[
-                Row(
+                Column(
                   children: [
                     SizedBox(width: 20),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Row(
+                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        for (var org in campusAppsPortalInstance
-                            .getUserPerson()
-                            .organization!
-                            .child_organizations)
-                          // create a text widget with some padding
-                          Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                if (org.child_organizations.length > 0)
-                                  Container(
-                                    margin: EdgeInsets.only(
-                                        left: 20, top: 20, bottom: 10),
-                                    child: Row(children: <Widget>[
-                                      Text('Select a class:'),
-                                      SizedBox(width: 10),
-                                      DropdownButton<Organization>(
-                                        value: _selectedValue,
-                                        onChanged:
-                                            (Organization? newValue) async {
-                                          _selectedValue = newValue!;
-                                          print(newValue.id);
-                                          _fetchedOrganization =
-                                              await fetchOrganization(
-                                                  newValue.id!);
+                        // for (var org in campusAppsPortalInstance
+                        //     .getUserPerson()
+                        //     .organization!
+                        //     .child_organizations)
+                        // create a text widget with some padding
+                        SizedBox(width: 10),
+                        Text('Select a Batch:'),
+                        SizedBox(width: 10),
+                        FutureBuilder<List<Organization>>(
+                          future: _fetchBatchData,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Container(
+                                margin: EdgeInsets.only(top: 10),
+                                child: SpinKitCircle(
+                                  color: (Colors.deepPurpleAccent),
+                                  size: 70,
+                                ),
+                              );
+                            } else if (snapshot.hasError) {
+                              return const Center(
+                                child: Text('Something went wrong...'),
+                              );
+                            } else if (!snapshot.hasData) {
+                              return const Center(
+                                child: Text('No batch found'),
+                              );
+                            }
+                            final batchData = snapshot.data!;
+                            return DropdownButton<Organization>(
+                                value: _selectedOrganizationValue,
+                                items: batchData.map((Organization batch) {
+                                  return DropdownMenuItem(
+                                      value: batch,
+                                      child: Text(batch.name!.name_en ?? ''));
+                                }).toList(),
+                                onChanged: (Organization? newValue) async {
+                                  if (newValue == null) {
+                                    return;
+                                  }
 
-                                          _fetchedAttendance =
-                                              await getClassActivityAttendanceReportForPayment(
-                                                  _fetchedOrganization!.id!,
-                                                  activityId,
-                                                  DateFormat('yyyy-MM-dd')
-                                                      .format(DateFormat(
-                                                              'MMM d, yyyy')
-                                                          .parse(this
-                                                              .formattedStartDate)),
-                                                  DateFormat('yyyy-MM-dd')
-                                                      .format(DateFormat(
-                                                              'MMM d, yyyy')
-                                                          .parse(this
-                                                              .formattedEndDate)));
-                                          if (_fetchedAttendance.length > 0) {
-                                            // Add null check here
-                                            // Process attendance data here
-                                            columnNames.clear();
-                                            List<String?> names =
-                                                _fetchedAttendance
-                                                    .map((attendance) =>
-                                                        attendance.sign_in_time
-                                                            ?.split(" ")[0])
-                                                    .where((name) =>
-                                                        name !=
-                                                        null) // Filter out null values
-                                                    .toList();
-                                            columnNames.addAll(names);
-                                          } else {
-                                            columnNames.clear();
-                                          }
+                                  if (newValue.organization_metadata.isEmpty) {
+                                    return;
+                                  }
 
-                                          columnNames =
-                                              columnNames.toSet().toList();
-                                          columnNames.sort();
-                                          columnNames.insert(0, "Name");
-                                          columnNames.insert(1, "NIC");
-                                          columnNames.insert(columnNames.length,
-                                              "Present Count");
-                                          columnNames.insert(columnNames.length,
-                                              "Absent Count");
-                                          columnNames.insert(columnNames.length,
-                                              "Student Payment Rs.");
-                                          // columnNames.insert(columnNames.length,
-                                          //     "Phone Payment Rs.");
-                                          cols = columnNames
-                                              .map((label) => DataColumn(
-                                                  label: Text(label!)))
-                                              .toList();
-                                          print(cols.length);
-                                          if (_fetchedAttendance.length == 0)
-                                            _fetchedAttendance =
-                                                new List.filled(
-                                                    _fetchedOrganization!
-                                                        .people.length,
-                                                    new ActivityAttendance(
-                                                        person_id: -1));
-                                          else {
-                                            for (int i = 0;
-                                                i <
-                                                    _fetchedOrganization!
-                                                        .people.length;
-                                                i++) {
-                                              if (_fetchedAttendance.indexWhere(
-                                                      (attendance) =>
-                                                          attendance
-                                                              .person_id ==
-                                                          _fetchedOrganization!
-                                                              .people[i].id) ==
-                                                  -1) {
-                                                _fetchedAttendance.add(
-                                                    new ActivityAttendance(
-                                                        person_id: -1));
-                                              }
+                                  _fetchedOrganization =
+                                      await fetchOrganization(newValue!.id!);
+                                  _fetchedOrganizations = _fetchedOrganization
+                                          ?.child_organizations ??
+                                      [];
+
+                                  setState(() {
+                                    _fetchedOrganizations;
+                                    _selectedValue = null;
+                                    _selectedOrganizationValue = newValue;
+                                    // batchStartDate = DateFormat('MMM d, yyyy')
+                                    //     .format(DateTime.parse(
+                                    //         _selectedOrganizationValue!
+                                    //             .organization_metadata[0].value
+                                    //             .toString()));
+
+                                    // batchEndDate = DateFormat('MMM d, yyyy')
+                                    //     .format(DateTime.parse(
+                                    //         _selectedOrganizationValue!
+                                    //             .organization_metadata[1].value
+                                    //             .toString()));
+                                  });
+                                });
+                          },
+                        ),
+                        SizedBox(width: 20),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              if (_fetchedOrganizations.length > 0)
+                                Container(
+                                  margin: EdgeInsets.only(
+                                      left: 20, top: 20, bottom: 10),
+                                  child: Row(children: <Widget>[
+                                    Text('Select a class:'),
+                                    SizedBox(width: 10),
+                                    DropdownButton<Organization>(
+                                      value: _selectedValue,
+                                      onChanged:
+                                          (Organization? newValue) async {
+                                        _selectedValue = newValue!;
+                                        print(newValue.id);
+                                        _fetchedOrganization =
+                                            await fetchOrganization(
+                                                newValue.id!);
+
+                                        _fetchedAttendance =
+                                            await getClassActivityAttendanceReportForPayment(
+                                                _fetchedOrganization!.id!,
+                                                activityId,
+                                                DateFormat('yyyy-MM-dd').format(
+                                                    DateFormat('MMM d, yyyy')
+                                                        .parse(this
+                                                            .formattedStartDate)),
+                                                DateFormat('yyyy-MM-dd').format(
+                                                    DateFormat('MMM d, yyyy')
+                                                        .parse(this
+                                                            .formattedEndDate)));
+                                        if (_fetchedAttendance.length > 0) {
+                                          // Add null check here
+                                          // Process attendance data here
+                                          columnNames.clear();
+                                          List<String?> names =
+                                              _fetchedAttendance
+                                                  .map((attendance) =>
+                                                      attendance.sign_in_time
+                                                          ?.split(" ")[0])
+                                                  .where((name) =>
+                                                      name !=
+                                                      null) // Filter out null values
+                                                  .toList();
+                                          columnNames.addAll(names);
+                                        } else {
+                                          columnNames.clear();
+                                        }
+
+                                        columnNames =
+                                            columnNames.toSet().toList();
+                                        columnNames.sort();
+                                        columnNames.insert(0, "Name");
+                                        columnNames.insert(1, "NIC");
+                                        columnNames.insert(columnNames.length,
+                                            "Present Count");
+                                        columnNames.insert(
+                                            columnNames.length, "Absent Count");
+                                        columnNames.insert(columnNames.length,
+                                            "Student Payment Rs.");
+                                        // columnNames.insert(columnNames.length,
+                                        //     "Phone Payment Rs.");
+                                        cols = columnNames
+                                            .map((label) =>
+                                                DataColumn(label: Text(label!)))
+                                            .toList();
+                                        print(cols.length);
+                                        if (_fetchedAttendance.length == 0)
+                                          _fetchedAttendance = new List.filled(
+                                              _fetchedOrganization!
+                                                  .people.length,
+                                              new ActivityAttendance(
+                                                  person_id: -1));
+                                        else {
+                                          for (int i = 0;
+                                              i <
+                                                  _fetchedOrganization!
+                                                      .people.length;
+                                              i++) {
+                                            if (_fetchedAttendance.indexWhere(
+                                                    (attendance) =>
+                                                        attendance.person_id ==
+                                                        _fetchedOrganization!
+                                                            .people[i].id) ==
+                                                -1) {
+                                              _fetchedAttendance.add(
+                                                  new ActivityAttendance(
+                                                      person_id: -1));
                                             }
                                           }
-                                          setState(() {
-                                            _fetchedOrganization;
-                                            _data = MyData(
-                                                _fetchedAttendance,
-                                                columnNames,
-                                                _fetchedOrganization,
-                                                updateSelected,
-                                                DailyPayment);
-                                          });
-                                        },
-                                        items: org.child_organizations
-                                            .map((Organization value) {
-                                          return DropdownMenuItem<Organization>(
-                                            value: value,
-                                            child: Text(value.description!),
-                                          );
-                                        }).toList(),
+                                        }
+                                        setState(() {
+                                          _fetchedOrganization;
+                                          _data = MyData(
+                                              _fetchedAttendance,
+                                              columnNames,
+                                              _fetchedOrganization,
+                                              updateSelected,
+                                              DailyPayment);
+                                        });
+                                      },
+                                      items: _fetchedOrganizations
+                                          .map((Organization value) {
+                                        return DropdownMenuItem<Organization>(
+                                          value: value,
+                                          child: Text(value.description!),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ]),
+                                ),
+                            ]),
+                        SizedBox(width: 20),
+                        // Container(
+                        //   margin: const EdgeInsets.only(left: 10.0),
+                        //   child: Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     children: [
+                        //       const Text(
+                        //         'Monthly Payment Amount:',
+                        //         style: TextStyle(
+                        //           fontSize: 14,
+                        //           fontWeight: FontWeight.bold,
+                        //         ),
+                        //       ),
+                        //       const SizedBox(height: 5),
+                        //       Text(
+                        //         // 'Rs. ${MonthlyPayment}',
+                        //         'Rs.10000.00',
+                        //         style: const TextStyle(
+                        //           fontSize: 14,
+                        //           fontWeight: FontWeight.normal,
+                        //           color: Colors.green,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+                        // SizedBox(width: 20),
+                        // Container(
+                        //   margin: const EdgeInsets.only(left: 10.0),
+                        //   child: Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     children: [
+                        //       const Text(
+                        //         'Daily Payment Amount:',
+                        //         style: TextStyle(
+                        //           fontSize: 14,
+                        //           fontWeight: FontWeight.bold,
+                        //         ),
+                        //       ),
+                        //       const SizedBox(height: 5),
+                        //       Text(
+                        //         'Rs. ${DailyPayment}',
+                        //         style: const TextStyle(
+                        //           fontSize: 14,
+                        //           fontWeight: FontWeight.normal,
+                        //           color: Colors.green,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+                        SizedBox(width: 20),
+                        Expanded(
+                          child: Container(
+                            alignment: Alignment.bottomRight,
+                            margin: const EdgeInsets.only(right: 20.0),
+                            width: 25.0,
+                            height: 30.0,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LeaveDatePicker(
+                                        organizationId: organization_id ??
+                                            0, // Provide a default value if needed
+                                        year: _selected?.year ??
+                                            _year, // Ensure an `int` value is passed
+                                        month: _selected?.month ?? _month,
+                                        selectedDay:
+                                            _selectedDay ?? DateTime.now(),
                                       ),
-                                    ]),
-                                  ),
-                              ]),
-                      ],
-                    ),
-                    SizedBox(width: 20),
-                    Container(
-                      margin: const EdgeInsets.only(left: 10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Monthly Payment Amount:',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                                    ));
+                              },
+                              child: const Text('Update Monthly Leave Dates'),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0, vertical: 5.0),
+                                textStyle: const TextStyle(fontSize: 16),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            // 'Rs. ${MonthlyPayment}',
-                            'Rs.10000.00',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 20),
-                    Container(
-                      margin: const EdgeInsets.only(left: 10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Daily Payment Amount:',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            'Rs. ${DailyPayment}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 20),
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.bottomRight,
-                        margin: const EdgeInsets.only(right: 20.0),
-                        width: 25.0,
-                        height: 30.0,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LeaveDatePicker(
-                                    organizationId: organization_id ??
-                                        0, // Provide a default value if needed
-                                    year: _selected?.year ??
-                                        _year, // Ensure an `int` value is passed
-                                    month: _selected?.month ?? _month,
-                                    selectedDay: _selectedDay ?? DateTime.now(),
-                                  ),
-                                ));
-                          },
-                          child: const Text('Update Monthly Leave Dates'),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10.0, vertical: 5.0),
-                            textStyle: const TextStyle(fontSize: 16),
                           ),
                         ),
-                      ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 20, left: 20),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Select a Year & Month :',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    _onPressed(context: context, locale: 'en'),
+                                child: Icon(Icons.calendar_month),
+                              ),
+                              if (_selected == null)
+                                Container(
+                                  margin: EdgeInsets.only(left: 10.0),
+                                  child: const Text(
+                                    'No month & year selected.',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                )
+                              else
+                                Container(
+                                  child: Text(
+                                    DateFormat.yMMMM()
+                                        .format(_selected!)
+                                        .toString(),
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                      ],
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20, left: 20),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Select a Year & Month :',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          TextButton(
-                            onPressed: () =>
-                                _onPressed(context: context, locale: 'en'),
-                            child: Icon(Icons.calendar_month),
-                          ),
-                          if (_selected == null)
-                            Container(
-                              margin: EdgeInsets.only(left: 10.0),
-                              child: const Text(
-                                'No month & year selected.',
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(left: 10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Monthly Payment Amount:',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  fontWeight: FontWeight.normal,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            )
-                          else
-                            Container(
-                              child: Text(
-                                DateFormat.yMMMM()
-                                    .format(_selected!)
-                                    .toString(),
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.normal),
+                              const SizedBox(height: 5),
+                              Text(
+                                // 'Rs. ${MonthlyPayment}',
+                                'Rs.10000.00',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.green,
+                                ),
                               ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 20),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                        Container(
+                          margin:
+                              const EdgeInsets.only(left: 10.0, right: 10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Daily Payment Amount:',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                'Rs. ${DailyPayment}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.green,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
                   ],
                 ),
                 SizedBox(height: 16.0),

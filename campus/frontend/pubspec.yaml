@@ -61,6 +61,9 @@ dependencies:
   qr_code_scanner: ^1.0.1
   flutter_date_range_picker: ^0.0.14
   fl_chart: 0.60.0
+  dotted_border: ^2.0.0+1
+  image_picker: ^1.0.8
+  file_picker: ^5.2.10
 
   pdf: ^3.6.4
   month_year_picker: ^0.3.0+1

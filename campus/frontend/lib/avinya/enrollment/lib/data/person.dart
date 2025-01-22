@@ -1,11 +1,13 @@
 import 'dart:developer';
-import 'package:gallery/avinya/enrollment/lib/screens/students_screen.dart';
+import 'dart:typed_data';
 import 'package:gallery/widgets/success_message.dart';
 import 'package:gallery/widgets/error_message.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 
 class MainOrganization {
   int? id;
@@ -217,6 +219,27 @@ class Address {
       };
 }
 
+class UserDocument {
+  int? id;
+  String? document_type;
+  String? document;
+
+  UserDocument({this.id, this.document, this.document_type});
+
+  factory UserDocument.fromJson(Map<String, dynamic> json) {
+    return UserDocument(
+        id: json['id'],
+        document: json['document'],
+        document_type: json['document_type']);
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        if (document != null) 'document': document,
+        if (document_type != null) 'document_type': document_type
+      };
+}
+
 class Person {
   int? id;
   String? record_type;
@@ -234,6 +257,7 @@ class Person {
   int? phone;
   int? organization_id;
   MainOrganization? organization;
+  int? parent_organization_id;
   AvinyaType? avinya_type;
   String? asgardeo_id;
   String? jwt_sub_id;
@@ -245,6 +269,8 @@ class Person {
   String? bank_account_number;
   String? bank_name;
   String? bank_branch;
+  String? guardian_name;
+  int? guardian_contact_number;
   String? digital_id;
   String? bank_account_name;
   int? avinya_phone;
@@ -252,6 +278,7 @@ class Person {
   String? created;
   String? updated;
   String? current_job;
+  int? documents_id;
   var parent_students = <Person>[];
 
   Person(
@@ -271,6 +298,7 @@ class Person {
       this.phone,
       this.organization_id,
       this.organization,
+      this.parent_organization_id,
       this.avinya_type,
       this.asgardeo_id,
       this.jwt_sub_id,
@@ -284,59 +312,65 @@ class Person {
       this.bank_branch,
       this.digital_id,
       this.bank_account_name,
+      this.guardian_name,
+      this.guardian_contact_number,
       this.avinya_phone,
       this.academy_org_id,
       this.created,
       this.updated,
       this.parent_students = const [],
-      this.current_job});
+      this.current_job,
+      this.documents_id});
 
   factory Person.fromJson(Map<String, dynamic> json) {
     return Person(
-      id: json['id'],
-      record_type: json['record_type'],
-      preferred_name: json['preferred_name'],
-      full_name: json['full_name'],
-      notes: json['notes'],
-      date_of_birth: json['date_of_birth'],
-      sex: json['sex'],
-      avinya_type_id: json['avinya_type_id'],
-      passport_no: json['passport_no'],
-      permanent_address_id: json['permanent_address_id'],
-      mailing_address_id: json['mailing_address_id'],
-      nic_no: json['nic_no'],
-      id_no: json['id_no'],
-      phone: json['phone'],
-      organization_id: json['organization_id'],
-      asgardeo_id: json['asgardeo_id'],
-      jwt_sub_id: json['jwt_sub_id'],
-      jwt_email: json['jwt_email'],
-      email: json['email'],
-      permanent_address: Address.fromJson(
-          json['permanent_address'] != null ? json['permanent_address'] : {}),
-      mailing_address: Address.fromJson(
-          json['mailing_address'] != null ? json['mailing_address'] : {}),
-      street_address: json['street_address'],
-      bank_account_number: json['bank_account_number'],
-      bank_name: json['bank_name'],
-      bank_branch: json['bank_branch'],
-      digital_id: json['digital_id'],
-      bank_account_name: json['bank_account_name'],
-      avinya_phone: json['avinya_phone'],
-      academy_org_id: json['academy_org_id'],
-      organization: MainOrganization.fromJson(
-          json['organization'] != null ? json['organization'] : {}),
-      avinya_type: AvinyaType.fromJson(
-          json['avinya_type'] != null ? json['avinya_type'] : {}),
-      created: json['created'],
-      updated: json['updated'],
-      parent_students: json['parent_students'] != null
-          ? json['parent_students']
-              .map<Person>((eval_json) => Person.fromJson(eval_json))
-              .toList()
-          : [],
-      current_job: json['current_job'],
-    );
+        id: json['id'],
+        record_type: json['record_type'],
+        preferred_name: json['preferred_name'],
+        full_name: json['full_name'],
+        notes: json['notes'],
+        date_of_birth: json['date_of_birth'],
+        sex: json['sex'],
+        avinya_type_id: json['avinya_type_id'],
+        passport_no: json['passport_no'],
+        permanent_address_id: json['permanent_address_id'],
+        mailing_address_id: json['mailing_address_id'],
+        nic_no: json['nic_no'],
+        id_no: json['id_no'],
+        phone: json['phone'],
+        organization_id: json['organization_id'],
+        asgardeo_id: json['asgardeo_id'],
+        jwt_sub_id: json['jwt_sub_id'],
+        jwt_email: json['jwt_email'],
+        email: json['email'],
+        permanent_address: Address.fromJson(
+            json['permanent_address'] != null ? json['permanent_address'] : {}),
+        mailing_address: Address.fromJson(
+            json['mailing_address'] != null ? json['mailing_address'] : {}),
+        street_address: json['street_address'],
+        bank_account_number: json['bank_account_number'],
+        bank_name: json['bank_name'],
+        bank_branch: json['bank_branch'],
+        digital_id: json['digital_id'],
+        guardian_name: json['guardian_name'],
+        guardian_contact_number: json['guardian_contact_number'],
+        bank_account_name: json['bank_account_name'],
+        avinya_phone: json['avinya_phone'],
+        academy_org_id: json['academy_org_id'],
+        organization: MainOrganization.fromJson(
+            json['organization'] != null ? json['organization'] : {}),
+        parent_organization_id: json['parent_organization_id'],
+        avinya_type: AvinyaType.fromJson(
+            json['avinya_type'] != null ? json['avinya_type'] : {}),
+        created: json['created'],
+        updated: json['updated'],
+        parent_students: json['parent_students'] != null
+            ? json['parent_students']
+                .map<Person>((eval_json) => Person.fromJson(eval_json))
+                .toList()
+            : [],
+        current_job: json['current_job'],
+        documents_id: json['documents_id']);
   }
 
   Map<String, dynamic> toJson() => {
@@ -358,6 +392,8 @@ class Person {
         if (phone != null) 'phone': phone,
         if (organization != null) 'organization_id': organization!.id,
         if (organization_id != null) 'organization_id': organization_id,
+        if (parent_organization_id != null)
+          'parent_organization_id': parent_organization_id,
         if (asgardeo_id != null) 'asgardeo_id': asgardeo_id,
         if (jwt_sub_id != null) 'jwt_sub_id': jwt_sub_id,
         if (jwt_email != null) 'jwt_email': jwt_email,
@@ -370,6 +406,9 @@ class Person {
         if (bank_account_number != null)
           'bank_account_number': bank_account_number,
         if (bank_name != null) 'bank_name': bank_name,
+        if (guardian_name != null) 'guardian_name': guardian_name,
+        if (guardian_contact_number != null)
+          'guardian_contact_number': guardian_contact_number,
         if (bank_branch != null) 'bank_branch': bank_branch,
         if (digital_id != null) 'digital_id': digital_id,
         if (bank_account_name != null) 'bank_account_name': bank_account_name,
@@ -381,6 +420,7 @@ class Person {
         if (updated != null) 'updated': updated,
         // 'parent_students': [parent_students],
         if (current_job != null) 'current_job': current_job,
+        if (documents_id != null) 'documents_id': documents_id,
       };
 
   map(DataRow Function(dynamic evaluation) param0) {}
@@ -429,6 +469,29 @@ class Province {
       };
 }
 
+Future<List<UserDocument>?> fetchDocuments(int id) async {
+  List<UserDocument>? userDocuments;
+  final response = await http.get(
+    Uri.parse('${AppConfig.campusEnrollmentsBffApiUrl}/document_list/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    userDocuments = await resultsJson
+        .map<UserDocument>((json) => UserDocument.fromJson(json))
+        .toList();
+    return userDocuments;
+  } else if (response.statusCode >= 500) {
+    return null;
+  } else {
+    throw Exception('Failed to get user documents');
+  }
+}
+
 Future<List<Person>> fetchPersons(
     int organization_id, int avinya_type_id) async {
   final response = await http.get(
@@ -442,11 +505,11 @@ Future<List<Person>> fetchPersons(
   );
   if (response.statusCode > 199 && response.statusCode < 300) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    List<Person> activityAttendances =
+    List<Person> persons =
         await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
-    return activityAttendances;
+    return persons;
   } else {
-    throw Exception('Failed to get Daily Attendances Summary Data');
+    throw Exception('Failed to get persons Data');
   }
 }
 
@@ -481,12 +544,12 @@ Future<Person> createPerson(BuildContext context, Person person) async {
   if (response.statusCode == 201) {
     Person person = Person.fromJson(json.decode(response.body));
     showSuccessToast("Student Profile Successfully Created!");
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => StudentsScreen(),
-      ),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => StudentsScreen(),
+    //   ),
+    // );
     return person;
   } else {
     log(response.body + " Status code =" + response.statusCode.toString());
@@ -496,7 +559,7 @@ Future<Person> createPerson(BuildContext context, Person person) async {
   }
 }
 
-Future<http.Response> updatePerson(Person person) async {
+Future<Person> updatePerson(Person person) async {
   final response = await http.put(
     Uri.parse(AppConfig.campusEnrollmentsBffApiUrl + '/update_person'),
     headers: <String, String>{
@@ -506,12 +569,13 @@ Future<http.Response> updatePerson(Person person) async {
     body: jsonEncode(person.toJson()),
   );
   if (response.statusCode == 200) {
+    Person updatedPerson = Person.fromJson(json.decode(response.body));
     showSuccessToast("Student Profile Successfully Updated!");
-    return response;
+    return updatedPerson;
   } else {
     showErrorToast(
         response.body + " Status code =" + response.statusCode.toString());
-    return response;
+    return person;
     // throw Exception('Failed to update Person.');
   }
 }
@@ -571,7 +635,7 @@ Future<List<MainOrganization>> fetchClasses(int? id) async {
 
     // Extract the child_organizations_for_dashboard field
     final List<MainOrganization> classes =
-        (jsonResponse['child_organizations_for_dashboard'] as List)
+        (jsonResponse['child_organizations'] as List)
             .map((data) => MainOrganization.fromJson(data))
             .toList();
 
@@ -637,5 +701,88 @@ Future<List<City>> fetchCities(id) async {
     return activityAttendances;
   } else {
     throw Exception('Failed to get City Data');
+  }
+}
+
+// Future<http.StreamedResponse?> uploadFile(
+//     Uint8List file, Map<String, dynamic> documentDetails) async {
+//   try {
+//     // Create the multipart request
+//     final uri =
+//         Uri.parse('${AppConfig.campusEnrollmentsBffApiUrl}/upload_document');
+//     final request = http.MultipartRequest('POST', uri);
+
+//     // Set the headers
+//     request.headers.addAll({
+//       'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+//       'accept': 'application/ld+json',
+//     });
+
+//     // Add the document_details as a JSON string
+//     request.fields['document_details'] = jsonEncode(documentDetails);
+
+//     // Determine the MIME type of the file
+//     final mimeType = lookupMimeType(file.path) ?? 'application/octet-stream';
+
+//     // Attach the file to the request
+//     request.files.add(
+//       http.MultipartFile(
+//         'document', // Key for the file in form-data
+//         file.readAsBytes().asStream(),
+//         file.lengthSync(),
+//         filename: basename(file.path),
+//         contentType: MediaType.parse(mimeType),
+//       ),
+//     );
+
+//     // Send the request
+//     final response = await request.send();
+
+//     return response;
+//   } catch (e) {
+//     print('Error uploading file: $e');
+//     return null;
+//   }
+// }
+
+Future<http.StreamedResponse?> uploadFile(
+    Uint8List fileBytes, Map<String, dynamic> documentDetails) async {
+  try {
+    // Create the multipart request
+    final uri =
+        Uri.parse('${AppConfig.campusEnrollmentsBffApiUrl}/upload_document');
+    final request = http.MultipartRequest('POST', uri);
+
+    // Set the headers
+    request.headers.addAll({
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+      'accept': 'application/ld+json',
+    });
+
+    // Add the document_details as a JSON string
+    request.fields['document_details'] = jsonEncode(documentDetails);
+
+    // Determine the MIME type of the file
+    final mimeType = lookupMimeType('', headerBytes: fileBytes) ??
+        'application/octet-stream';
+
+    // Attach the file to the request
+    request.files.add(
+      http.MultipartFile(
+        'document', // Key for the file in form-data
+        Stream.fromIterable([fileBytes]), // Convert Uint8List to stream
+        fileBytes.length, // The length of the file
+        filename: 'document.png', // Adjust this as needed
+        contentType: MediaType.parse(mimeType),
+      ),
+    );
+
+    // Send the request
+    final response = await request.send();
+
+    return response;
+  } catch (e) {
+    print('Error uploading file: $e');
+    return null;
   }
 }

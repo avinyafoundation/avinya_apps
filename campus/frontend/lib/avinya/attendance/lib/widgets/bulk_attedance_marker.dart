@@ -3,6 +3,8 @@ import 'package:attendance/data.dart';
 import 'package:attendance/data/activity_attendance.dart';
 import 'package:attendance/data/evaluation.dart';
 import 'package:attendance/widgets/evaluation_list.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 
 import '../data/activity_instance.dart';
 
@@ -23,10 +25,17 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
   List<ActivityAttendance> _fetchedAttendance = [];
   List<ActivityAttendance> _fetchedAttendanceAfterSchool = [];
   List<Evaluation> _fetchedEvaluations = [];
+  late Future<List<Organization>> _fetchBatchData;
+  Organization? _selectedOrganizationValue;
+  List<Organization> _batchData = [];
+  List<Organization> _fetchedOrganizations = [];
+  String batchStartDate = "";
+  String batchEndDate = "";
 
   @override
   void initState() {
     super.initState();
+    _fetchBatchData = _loadBatchData();
     if (campusAppsPortalInstance.isTeacher ||
         campusAppsPortalInstance.isFoundation ||
         campusAppsPortalInstance.isSecurity) {
@@ -34,6 +43,25 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
       afterSchoolActivityId =
           campusAppsPortalInstance.activityIds['after-school']!;
     }
+  }
+
+  Future<List<Organization>> _loadBatchData() async {
+    _batchData = await fetchActiveOrganizationsByAvinyaType(86);
+    _selectedOrganizationValue = _batchData.isNotEmpty ? _batchData.last : null;
+    batchStartDate = DateFormat('MMM d, yyyy').format(DateTime.parse(
+        _selectedOrganizationValue!.organization_metadata[0].value.toString()));
+    batchEndDate = DateFormat('MMM d, yyyy').format(DateTime.parse(
+        _selectedOrganizationValue!.organization_metadata[1].value.toString()));
+    if (_selectedOrganizationValue != null) {
+      int orgId = _selectedOrganizationValue!.id!;
+      _fetchedOrganization = await fetchOrganization(orgId);
+      _fetchedOrganizations = _fetchedOrganization?.child_organizations ?? [];
+      setState(() {
+        _fetchedOrganizations = _fetchedOrganizations;
+      });
+    }
+    // this.updateDateRange(today, today);
+    return _batchData;
   }
 
   Future<void> toggleAttendance(
@@ -185,141 +213,210 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      for (var org in campusAppsPortalInstance
-                          .getUserPerson()
-                          .organization!
-                          .child_organizations)
-                        // create a text widget with some padding
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              if (org.child_organizations.length > 0)
-                                Row(children: <Widget>[
-                                  Text('Select a class:'),
-                                  SizedBox(width: 10),
-                                  DropdownButton<Organization>(
-                                    value: _selectedValue,
-                                    onChanged: (Organization? newValue) async {
-                                      _selectedValue = newValue!;
-                                      print(newValue.id);
-                                      _fetchedOrganization =
-                                          await fetchOrganization(newValue.id!);
+                  Row(
+                    children: [
+                      Text('Select a Batch:'),
+                      SizedBox(height: 8),
+                      FutureBuilder<List<Organization>>(
+                        future: _fetchBatchData,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Container(
+                              margin: EdgeInsets.only(top: 10),
+                              child: SpinKitCircle(
+                                color: (Colors.deepPurpleAccent),
+                                size: 70,
+                              ),
+                            );
+                          } else if (snapshot.hasError) {
+                            return const Center(
+                              child: Text('Something went wrong...'),
+                            );
+                          } else if (!snapshot.hasData) {
+                            return const Center(
+                              child: Text('No batch found'),
+                            );
+                          }
+                          final batchData = snapshot.data!;
+                          return DropdownButton<Organization>(
+                              value: _selectedOrganizationValue,
+                              items: batchData.map((Organization batch) {
+                                return DropdownMenuItem(
+                                    value: batch,
+                                    child: Text(batch.name!.name_en ?? ''));
+                              }).toList(),
+                              onChanged: (Organization? newValue) async {
+                                if (newValue == null) {
+                                  return;
+                                }
 
-                                      _fetchedAttendance =
-                                          await getClassActivityAttendanceToday(
-                                              _fetchedOrganization!.id!,
-                                              activityId);
-                                      if (_fetchedAttendance.length == 0)
-                                        _fetchedAttendance = new List.filled(
-                                            _fetchedOrganization!
-                                                    .people.length *
-                                                2, // add 2 records for eign in and out
-                                            new ActivityAttendance(
-                                                person_id: -1));
-                                      else {
-                                        for (int i = 0;
-                                            i <
-                                                _fetchedOrganization!
-                                                    .people.length;
-                                            i++) {
-                                          if (_fetchedAttendance.indexWhere(
-                                                  (attendance) =>
-                                                      attendance.person_id ==
-                                                      _fetchedOrganization!
-                                                          .people[i].id) ==
-                                              -1) {
-                                            // add 2 records for sing in and out
-                                            _fetchedAttendance.add(
-                                                new ActivityAttendance(
-                                                    person_id: -1));
-                                            _fetchedAttendance.add(
-                                                new ActivityAttendance(
-                                                    person_id: -1));
+                                if (newValue.organization_metadata.isEmpty) {
+                                  return;
+                                }
+
+                                _fetchedOrganization =
+                                    await fetchOrganization(newValue!.id!);
+                                _fetchedOrganizations =
+                                    _fetchedOrganization?.child_organizations ??
+                                        [];
+
+                                setState(() {
+                                  _fetchedOrganizations;
+                                  _selectedValue = null;
+                                  _selectedOrganizationValue = newValue;
+                                  batchStartDate = DateFormat('MMM d, yyyy')
+                                      .format(DateTime.parse(
+                                          _selectedOrganizationValue!
+                                              .organization_metadata[0].value
+                                              .toString()));
+
+                                  batchEndDate = DateFormat('MMM d, yyyy')
+                                      .format(DateTime.parse(
+                                          _selectedOrganizationValue!
+                                              .organization_metadata[1].value
+                                              .toString()));
+                                });
+                              });
+                        },
+                      ),
+                      SizedBox(width: 20),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                if (_fetchedOrganizations.length > 0)
+                                  Row(children: <Widget>[
+                                    Text('Select a class:'),
+                                    SizedBox(width: 10),
+                                    DropdownButton<Organization>(
+                                      value: _selectedValue,
+                                      onChanged:
+                                          (Organization? newValue) async {
+                                        _selectedValue = newValue!;
+                                        print(newValue.id);
+                                        _fetchedOrganization =
+                                            await fetchOrganization(
+                                                newValue.id!);
+
+                                        _fetchedAttendance =
+                                            await getClassActivityAttendanceToday(
+                                                _fetchedOrganization!.id!,
+                                                activityId);
+                                        if (_fetchedAttendance.length == 0)
+                                          _fetchedAttendance = new List.filled(
+                                              _fetchedOrganization!
+                                                      .people.length *
+                                                  2, // add 2 records for eign in and out
+                                              new ActivityAttendance(
+                                                  person_id: -1));
+                                        else {
+                                          for (int i = 0;
+                                              i <
+                                                  _fetchedOrganization!
+                                                      .people.length;
+                                              i++) {
+                                            if (_fetchedAttendance.indexWhere(
+                                                    (attendance) =>
+                                                        attendance.person_id ==
+                                                        _fetchedOrganization!
+                                                            .people[i].id) ==
+                                                -1) {
+                                              // add 2 records for sing in and out
+                                              _fetchedAttendance.add(
+                                                  new ActivityAttendance(
+                                                      person_id: -1));
+                                              _fetchedAttendance.add(
+                                                  new ActivityAttendance(
+                                                      person_id: -1));
+                                            }
                                           }
                                         }
-                                      }
-                                      // if (campusAppsPortalInstance.isTeacher) {
-                                      _fetchedAttendanceAfterSchool =
-                                          await getClassActivityAttendanceToday(
-                                              _fetchedOrganization!.id!,
-                                              afterSchoolActivityId);
-                                      if (_fetchedAttendanceAfterSchool
-                                              .length ==
-                                          0)
+                                        // if (campusAppsPortalInstance.isTeacher) {
                                         _fetchedAttendanceAfterSchool =
-                                            new List.filled(
-                                                _fetchedOrganization!
-                                                    .people.length,
-                                                new ActivityAttendance(
-                                                    person_id: -1));
-                                      else {
-                                        for (int i = 0;
-                                            i <
-                                                _fetchedOrganization!
-                                                    .people.length;
-                                            i++) {
-                                          if (_fetchedAttendanceAfterSchool
-                                                  .indexWhere((attendance) =>
-                                                      attendance.person_id ==
-                                                      _fetchedOrganization!
-                                                          .people[i].id) ==
-                                              -1) {
-                                            _fetchedAttendanceAfterSchool.add(
-                                                new ActivityAttendance(
-                                                    person_id: -1));
+                                            await getClassActivityAttendanceToday(
+                                                _fetchedOrganization!.id!,
+                                                afterSchoolActivityId);
+                                        if (_fetchedAttendanceAfterSchool
+                                                .length ==
+                                            0)
+                                          _fetchedAttendanceAfterSchool =
+                                              new List.filled(
+                                                  _fetchedOrganization!
+                                                      .people.length,
+                                                  new ActivityAttendance(
+                                                      person_id: -1));
+                                        else {
+                                          for (int i = 0;
+                                              i <
+                                                  _fetchedOrganization!
+                                                      .people.length;
+                                              i++) {
+                                            if (_fetchedAttendanceAfterSchool
+                                                    .indexWhere((attendance) =>
+                                                        attendance.person_id ==
+                                                        _fetchedOrganization!
+                                                            .people[i].id) ==
+                                                -1) {
+                                              _fetchedAttendanceAfterSchool.add(
+                                                  new ActivityAttendance(
+                                                      person_id: -1));
+                                            }
                                           }
                                         }
-                                      }
 
-                                      if (activityInstance.id == -1) {
-                                        activityInstance =
-                                            await campusAttendanceSystemInstance
-                                                .getCheckinActivityInstance(
-                                                    activityId);
-                                      }
+                                        if (activityInstance.id == -1) {
+                                          activityInstance =
+                                              await campusAttendanceSystemInstance
+                                                  .getCheckinActivityInstance(
+                                                      activityId);
+                                        }
 
-                                      _fetchedEvaluations =
-                                          await getActivityInstanceEvaluations(
-                                              activityInstance.id!);
-                                      if (_fetchedEvaluations.length == 0)
-                                        _fetchedEvaluations = new List.filled(
-                                            _fetchedOrganization!.people.length,
-                                            new Evaluation(evaluatee_id: -1));
-                                      else {
-                                        for (int i = 0;
-                                            i <
-                                                _fetchedOrganization!
-                                                    .people.length;
-                                            i++) {
-                                          if (_fetchedEvaluations.indexWhere(
-                                                  (evaluation) =>
-                                                      evaluation.evaluatee_id ==
-                                                      _fetchedOrganization!
-                                                          .people[i].id) ==
-                                              -1) {
-                                            _fetchedEvaluations.add(
-                                                new Evaluation(
-                                                    evaluatee_id: -1));
+                                        _fetchedEvaluations =
+                                            await getActivityInstanceEvaluations(
+                                                activityInstance.id!);
+                                        if (_fetchedEvaluations.length == 0)
+                                          _fetchedEvaluations = new List.filled(
+                                              _fetchedOrganization!
+                                                  .people.length,
+                                              new Evaluation(evaluatee_id: -1));
+                                        else {
+                                          for (int i = 0;
+                                              i <
+                                                  _fetchedOrganization!
+                                                      .people.length;
+                                              i++) {
+                                            if (_fetchedEvaluations.indexWhere(
+                                                    (evaluation) =>
+                                                        evaluation
+                                                            .evaluatee_id ==
+                                                        _fetchedOrganization!
+                                                            .people[i].id) ==
+                                                -1) {
+                                              _fetchedEvaluations.add(
+                                                  new Evaluation(
+                                                      evaluatee_id: -1));
+                                            }
                                           }
                                         }
-                                      }
-                                      // }
+                                        // }
 
-                                      setState(() {});
-                                    },
-                                    items: org.child_organizations
-                                        .map((Organization value) {
-                                      return DropdownMenuItem<Organization>(
-                                        value: value,
-                                        child: Text(value.description!),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ]),
-                            ]),
+                                        setState(() {});
+                                      },
+                                      items: _fetchedOrganizations
+                                          .map((Organization value) {
+                                        return DropdownMenuItem<Organization>(
+                                          value: value,
+                                          child: Text(value.description!),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ]),
+                              ]),
+                        ],
+                      ),
                     ],
                   ),
                   SizedBox(height: 16.0),
