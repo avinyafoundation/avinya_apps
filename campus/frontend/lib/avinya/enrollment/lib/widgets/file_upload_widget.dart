@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -6,9 +7,18 @@ import 'package:file_picker/file_picker.dart';
 import 'package:gallery/avinya/enrollment/lib/data/person.dart';
 
 class FileUploadWidget extends StatefulWidget {
+  final int  userDocumentId;
   final String documentType;
+  final String documentTypeLabel;
+  String?  stringImage;
 
-  const FileUploadWidget({Key? key, required this.documentType})
+  FileUploadWidget({
+    Key? key,
+    required this.userDocumentId,
+    required this.documentType,
+    required this.documentTypeLabel,
+    this.stringImage
+    })
       : super(key: key);
 
   @override
@@ -25,20 +35,21 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Please upload the required file for "${widget.documentType}".',
+          'Please upload the required file for "${widget.documentTypeLabel}".',
           style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400),
         ),
         const SizedBox(height: 20),
         _buildFileInputField(
-          label: widget.documentType,
-          imageBytes: _selectedImageBytes,
-          fieldKey: widget.documentType,
+          label: widget.documentTypeLabel,
+          imageBytes:_selectedImageBytes !=null ? _selectedImageBytes
+              : widget.stringImage == null ? null: base64Decode(widget.stringImage!),
+          fieldKey: widget.documentTypeLabel,
           onTap: () async {
             final imageBytes = await _pickFile();
             if (imageBytes != null) {
               var documentDetails = {
-                "id": 14,
-                "document_type": "additionalCertificate05"
+                "id": widget.userDocumentId,
+                "document_type": widget.documentType
               };
               await uploadFile(imageBytes, documentDetails);
               setState(() {

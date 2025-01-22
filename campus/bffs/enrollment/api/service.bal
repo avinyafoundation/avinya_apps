@@ -288,6 +288,32 @@ service / on new http:Listener(9095) {
             };
         }
     }
+
+    resource function get document_list/[int id]() returns UserDocument[]|error {
+        GetAllDocumentsResponse|graphql:ClientError getDocumentsResponse = globalDataClient->getAllDocuments(id);
+        if (getDocumentsResponse is GetAllDocumentsResponse) {
+            UserDocument[] document_datas = [];
+            foreach var document_data in getDocumentsResponse.document_list {
+                UserDocument|error document_data_record = document_data.cloneWithType(UserDocument);
+                if (document_data_record is UserDocument) {
+                    document_datas.push(document_data_record);
+                } else {
+                    log:printError("Error while processing Application record received", document_data_record);
+                    return error("Error while processing Application record received: " + document_data_record.message() +
+                        ":: Detail: " + document_data_record.detail().toString());
+                }
+            }
+
+            return document_datas;
+
+        } else {
+            log:printError("Error while getting application", getDocumentsResponse);
+            return error("Error while getting application: " + getDocumentsResponse.message() +
+                ":: Detail: " + getDocumentsResponse.detail().toString());
+        }
+    }
+
+
     // resource function post add_person(http:Request req) returns Person|error {
     //     UserDocumentList[] documents = [];
     //     Person person = {};
