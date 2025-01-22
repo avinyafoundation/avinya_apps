@@ -241,6 +241,7 @@ mutation updatePerson(
     created_by
     updated_by
     current_job
+    documents_id
   }
 }
 
