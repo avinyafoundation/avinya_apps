@@ -69,14 +69,12 @@ public type ActivitySequencePlan record {
 };
 
 public type Address record {
-    string street_address?;
-    string? name_ta?;
+    string? street_address?;
     int? phone?;
-    string? name_si?;
+    City? city?;
     int? id?;
     string? record_type?;
-    int city_id?;
-    string name_en?;
+    int? city_id?;
 };
 
 public type ApplicantConsent record {
@@ -137,6 +135,21 @@ public type AvinyaType record {
     string global_type?;
 };
 
+public type City record {
+    string? suburb_name_en?;
+    string? suburb_name_si?;
+    string? name_ta?;
+    string? suburb_name_ta?;
+    anydata? latitude?;
+    string? postcode?;
+    string? name_si?;
+    int? id?;
+    int? district_id?;
+    string? record_type?;
+    string? name_en?;
+    anydata? longitude?;
+};
+
 public type Consumable record {
     string? created?;
     int? avinya_type_id?;
@@ -144,6 +157,7 @@ public type Consumable record {
     string? description?;
     string? model?;
     string? serial_number?;
+    anydata? threshold?;
     int? id?;
     string? updated?;
     string? record_type?;
@@ -238,33 +252,57 @@ public type EvaluationMetadata record {
 };
 
 public type Inventory record {
-    int? quantity_out?;
+    string? month_name?;
     int? consumable_id?;
-    int? quantity?;
-    int? quantity_in?;
+    anydata? quantity?;
     string? created?;
-    int? organization_id?;
+    anydata? prev_quantity?;
     int? avinya_type_id?;
-    int? id?;
+    string? description?;
     int? asset_id?;
-    string? updated?;
+    int? is_below_threshold?;
     string? record_type?;
+    string? manufacturer?;
+    anydata? quantity_out?;
+    int? resource_property_id?;
+    anydata? quantity_in?;
+    int? organization_id?;
+    string? name?;
+    int? id?;
+    string? updated?;
+    string? resource_property_value?;
     int? person_id?;
 };
 
+public type MonthlyLeaveDates record {
+    string? leave_dates?;
+    int? month?;
+    int[] leave_dates_list?;
+    int? year?;
+    string? created?;
+    int? total_days_in_month?;
+    int? organization_id?;
+    int? id?;
+    anydata? daily_amount?;
+    string? updated?;
+    string? record_type?;
+};
+
 public type Organization record {
-    int[]? parent_organizations?;
     string? notes?;
     string? name_ta?;
     int[]? child_organizations?;
-    int? phone?;
     int? address_id?;
     string? name_si?;
     int? avinya_type?;
     string? description?;
-    int? id?;
+    int? active?;
+    int[]? child_organizations_for_dashboard?;
     string? record_type?;
-    string name_en?;
+    int[]? parent_organizations?;
+    int? phone?;
+    int? id?;
+    string? name_en?;
 };
 
 public type Person record {
@@ -287,6 +325,8 @@ public type Person record {
     string? digital_id?;
     string? sex?;
     string? passport_no?;
+    string? current_job?;
+    int? created_by?;
     string? record_type?;
     Address? mailing_address?;
     string? branch_code?;
@@ -297,6 +337,7 @@ public type Person record {
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    int? updated_by?;
     string? academy_org_name?;
     string? asgardeo_id?;
     string? updated?;
@@ -481,7 +522,7 @@ public type GetActivityResponse record {|
                 record {|
                     int? id;
                     record {|
-                        string name_en;
+                        string? name_en;
                     |} name;
                 |}? organization;
                 record {|
@@ -648,7 +689,7 @@ public type GetDutyParticipantsResponse record {|
             string? digital_id;
             record {|
                 record {|
-                    string name_en;
+                    string? name_en;
                 |} name;
                 string? description;
             |}? organization;
@@ -713,7 +754,7 @@ public type GetDutyParticipantsByDutyActivityIdResponse record {|
             string? digital_id;
             record {|
                 record {|
-                    string name_en;
+                    string? name_en;
                 |} name;
                 string? description;
             |}? organization;
@@ -765,7 +806,7 @@ public type GetDutyParticipantResponse record {|
             string? digital_id;
             record {|
                 record {|
-                    string name_en;
+                    string? name_en;
                 |} name;
                 string? description;
             |}? organization;
@@ -882,7 +923,7 @@ public type GetOrganizationsByAvinyaTypeResponse record {|
     record {|
         int? id;
         record {|
-            string name_en;
+            string? name_en;
         |} name;
         string? description;
         record {|
@@ -890,4 +931,71 @@ public type GetOrganizationsByAvinyaTypeResponse record {|
             string? value;
         |}[]? organization_metadata;
     |}[]? organizations_by_avinya_type;
+|};
+
+public type CreateMonthlyLeaveDatesResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? year;
+        int? month;
+        int? organization_id;
+        int[]? leave_dates_list;
+        anydata? daily_amount;
+        string? created;
+        string? updated;
+    |}? add_monthly_leave_dates;
+|};
+
+public type UpdateMonthlyLeaveDatesResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? year;
+        int? month;
+        int? organization_id;
+        int[]? leave_dates_list;
+        anydata? daily_amount;
+        string? created;
+        string? updated;
+    |}? update_monthly_leave_dates;
+|};
+
+public type GetMonthlyLeaveDatesRecordByIdResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? year;
+        int? month;
+        int? organization_id;
+        int[]? leave_dates_list;
+        anydata? daily_amount;
+        string? created;
+        string? updated;
+    |}? monthly_leave_dates_record_by_id;
+|};
+
+public type GetOrganizationsByAvinyaTypeWithActiveStatusResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string? name_en;
+        |} name;
+        string? description;
+        record {|
+            string? key_name;
+            string? value;
+        |}[]? organization_metadata;
+        int? active;
+    |}[]? organizations_by_avinya_type;
+|};
+
+public type GetCalendarMetadataByOrgIdResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? organization_id;
+        anydata? monthly_payment_amount;
+    |}? calendar_metadata_by_org_id;
 |};

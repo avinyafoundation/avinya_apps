@@ -8,13 +8,12 @@ import 'package:gallery/avinya/enrollment/lib/screens/student_create_screen.dart
 import 'package:gallery/avinya/enrollment/lib/screens/student_update_screen.dart';
 import 'person_data_excel_report.dart';
 
-enum AvinyaTypeId { Empower, IT, CS, FutureEnrollees }
+enum AvinyaTypeId { Empower, IT, CS }
 
 const avinyaTypeId = {
   AvinyaTypeId.Empower: 37,
   AvinyaTypeId.IT: 10,
   AvinyaTypeId.CS: 96,
-  AvinyaTypeId.FutureEnrollees: 103,
 };
 
 class Students extends StatefulWidget {
@@ -37,7 +36,6 @@ class _StudentsState extends State<Students> {
     AvinyaTypeId.Empower,
     AvinyaTypeId.IT,
     AvinyaTypeId.CS,
-    AvinyaTypeId.FutureEnrollees
   ];
 
   List<String?> columnNames = [];
@@ -75,19 +73,16 @@ class _StudentsState extends State<Students> {
           AvinyaTypeId.Empower,
           AvinyaTypeId.IT,
           AvinyaTypeId.CS,
-          AvinyaTypeId.FutureEnrollees
         ];
       } else {
         filteredAvinyaTypeIdValues = [
           AvinyaTypeId.Empower,
-          AvinyaTypeId.FutureEnrollees
         ];
       }
     } else {
       // Default value if newValue is null or invalid
       filteredAvinyaTypeIdValues = [
         AvinyaTypeId.Empower,
-        AvinyaTypeId.FutureEnrollees
       ];
     }
 
@@ -231,14 +226,12 @@ class _StudentsState extends State<Students> {
                                   .isBefore(DateTime.parse('2024-03-01'))) {
                                 filteredAvinyaTypeIdValues = [
                                   AvinyaTypeId.Empower,
-                                  AvinyaTypeId.FutureEnrollees
                                 ];
                               } else {
                                 filteredAvinyaTypeIdValues = [
                                   AvinyaTypeId.Empower,
                                   AvinyaTypeId.IT,
                                   AvinyaTypeId.CS,
-                                  AvinyaTypeId.FutureEnrollees
                                 ];
                               }
 
@@ -308,9 +301,7 @@ class _StudentsState extends State<Students> {
                             return DropdownMenuItem<AvinyaTypeId>(
                               value: typeId,
                               child: Text(
-                                typeId.name == 'FutureEnrollees'
-                                    ? 'FUTURE ENROLLEES'
-                                    : typeId.name.toUpperCase(),
+                                typeId.name.toUpperCase(),
                               ),
                             );
                           }).toList(),

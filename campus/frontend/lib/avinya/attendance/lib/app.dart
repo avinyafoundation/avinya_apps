@@ -4,6 +4,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:gallery/auth.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:month_year_picker/month_year_picker.dart';
+import 'package:oktoast/oktoast.dart';
 
 // import 'auth.dart';
 import 'routing.dart';
@@ -88,20 +91,27 @@ class _CampusAttendanceManagementSystemState
         notifier: _routeState,
         child: SMSAuthScope(
           notifier: _auth,
-          child: MaterialApp.router(
-            routerDelegate: _routerDelegate,
-            routeInformationParser: _routeParser,
-            // Revert back to pre-Flutter-2.5 transition behavior:
-            // https://github.com/flutter/flutter/issues/82053
-            theme: ThemeData(
-              pageTransitionsTheme: const PageTransitionsTheme(
-                builders: {
-                  TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-                  TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-                  TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
-                  TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-                  TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
-                },
+          child: OKToast(
+            child: MaterialApp.router(
+              routerDelegate: _routerDelegate,
+              routeInformationParser: _routeParser,
+              localizationsDelegates: [
+                GlobalWidgetsLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                MonthYearPickerLocalizations.delegate,
+              ],
+              // Revert back to pre-Flutter-2.5 transition behavior:
+              // https://github.com/flutter/flutter/issues/82053
+              theme: ThemeData(
+                pageTransitionsTheme: const PageTransitionsTheme(
+                  builders: {
+                    TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+                    TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+                    TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+                    TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+                    TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+                  },
+                ),
               ),
             ),
           ),

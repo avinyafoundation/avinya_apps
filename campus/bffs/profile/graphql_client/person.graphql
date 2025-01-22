@@ -1,5 +1,5 @@
-query getPerson($id:String!){
-    person_by_digital_id(id:$id) {
+query getPerson($id: String!) {
+  person_by_digital_id(id: $id) {
     id
     preferred_name
     full_name
@@ -41,47 +41,47 @@ query getPerson($id:String!){
       id
       description
       notes
-      address{
+      address {
         id
       }
-      avinya_type{
+      avinya_type {
         id
       }
       phone
-      name{
+      name {
         name_en
         name_si
         name_ta
       }
-      child_organizations{
+      child_organizations {
+        id
+        name {
+          name_en
+        }
+        description
+        child_organizations {
           id
-          name{
-              name_en
+          name {
+            name_en
           }
           description
           child_organizations {
-              id
-              name{
-                  name_en
-              }
-              description
-              child_organizations {
-                  id
-                  name{
-                      name_en
-                  }
-                  description
-                  people {
-                      id
-                      digital_id
-                  }
-              }
-          }
-      }
-      parent_organizations{
-        id
-        parent_organizations{
             id
+            name {
+              name_en
+            }
+            description
+            people {
+              id
+              digital_id
+            }
+          }
+        }
+      }
+      parent_organizations {
+        id
+        parent_organizations {
+          id
         }
       }
     }
@@ -110,17 +110,17 @@ query getPerson($id:String!){
       asgardeo_id
       jwt_sub_id
       jwt_email
-      permanent_address{
+      permanent_address {
         id
       }
-      mailing_address{
+      mailing_address {
         id
       }
       phone
-      organization{
+      organization {
         id
       }
-      avinya_type{
+      avinya_type {
         id
       }
       avinya_type_id
@@ -129,10 +129,10 @@ query getPerson($id:String!){
       passport_no
       id_no
       email
-      child_students{
+      child_students {
         id
       }
-      parent_students{
+      parent_students {
         id
       }
       street_address
@@ -152,17 +152,17 @@ query getPerson($id:String!){
       asgardeo_id
       jwt_sub_id
       jwt_email
-      permanent_address{
+      permanent_address {
         id
       }
-      mailing_address{
+      mailing_address {
         id
       }
       phone
-      organization{
+      organization {
         id
       }
-      avinya_type{
+      avinya_type {
         id
       }
       avinya_type_id
@@ -171,10 +171,10 @@ query getPerson($id:String!){
       passport_no
       id_no
       email
-      child_students{
+      child_students {
         id
       }
-      parent_students{
+      parent_students {
         id
       }
       street_address
@@ -192,6 +192,8 @@ query getPerson($id:String!){
     bank_account_number
     bank_account_name
     academy_org_id
+    current_job
+    documents_id
   }
 }
 
@@ -220,12 +222,13 @@ query getOrganization($id: Int!) {
             id
             preferred_name
             digital_id
+            nic_no
         }
     }       
 }
 
-query getStudentByParentOrg($id:Int!){
-    student_list_by_parent(id:$id) {
+query getStudentByParentOrg($id: Int!) {
+  student_list_by_parent(id: $id) {
     id
     preferred_name
     full_name
@@ -251,5 +254,12 @@ query getStudentByParentOrg($id:Int!){
     bank_account_name
     bank_branch
     academy_org_id
+    organization {
+      id
+      name {
+        name_en
+      }
+      description
+    }
   }
 }
