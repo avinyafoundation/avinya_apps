@@ -381,6 +381,17 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "parent_organization_id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "branch_code",
                             "args": [],
                             "type": {
@@ -431,25 +442,6 @@
                                 "kind": "SCALAR",
                                 "name": "Int",
                                 "ofType": null
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
-                            "name": "document_list",
-                            "args": [],
-                            "type": {
-                                "kind": "LIST",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "NON_NULL",
-                                    "name": null,
-                                    "ofType": {
-                                        "kind": "OBJECT",
-                                        "name": "DocumentsData",
-                                        "ofType": null
-                                    }
-                                }
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
@@ -3082,6 +3074,39 @@
                                 "kind": "OBJECT",
                                 "name": "PersonData",
                                 "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "document_list",
+                            "args": [
+                                {
+                                    "name": "id",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "DocumentsData",
+                                        "ofType": null
+                                    }
+                                }
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
@@ -9478,6 +9503,15 @@
                             "defaultValue": null
                         },
                         {
+                            "name": "parent_organization_id",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
                             "name": "avinya_type_id",
                             "type": {
                                 "kind": "SCALAR",
@@ -9706,23 +9740,6 @@
                                 "kind": "SCALAR",
                                 "name": "Int",
                                 "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "documentList",
-                            "type": {
-                                "kind": "LIST",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "NON_NULL",
-                                    "name": null,
-                                    "ofType": {
-                                        "kind": "INPUT_OBJECT",
-                                        "name": "UserDocument",
-                                        "ofType": null
-                                    }
-                                }
                             },
                             "defaultValue": null
                         },

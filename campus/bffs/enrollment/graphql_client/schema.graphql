@@ -780,6 +780,7 @@ input Person {
   mailing_address_id: Int
   phone: Int
   organization_id: Int
+  parent_organization_id: Int
   avinya_type_id: Int
   notes: String
   nic_no: String
@@ -804,7 +805,6 @@ input Person {
   branch_code: String
   current_job: String
   documents_id: Int
-  documentList: [UserDocument!]
   created_by: Int
   updated_by: Int
 }
@@ -842,12 +842,12 @@ type PersonData {
   bank_account_name: String
   academy_org_id: Int
   organization_id: Int
+  parent_organization_id: Int
   branch_code: String
   current_job: String
   created_by: Int
   updated_by: Int
   documents_id: Int
-  document_list: [DocumentsData!]
 }
 
 type PlaceData {
@@ -987,6 +987,7 @@ type Query {
   consumable_yearly_report(organization_id: Int, consumable_id: Int, year: Int): [InventoryData!]
   persons(organization_id: Int, avinya_type_id: Int): [PersonData!]
   person_by_id(id: Int): PersonData
+  document_list(id: Int!): [DocumentsData!]
   districts: [DistrictData!]
   cities(district_id: Int): [CityData!]
   all_organizations: [OrganizationData!]

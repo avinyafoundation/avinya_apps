@@ -34,7 +34,7 @@ public isolated client class GraphqlClient {
         return <GetPersonsResponse> check performDataBinding(graphqlResponse, GetPersonsResponse);
     }
     remote isolated function getPersonById(int id) returns GetPersonByIdResponse|graphql:ClientError {
-        string query = string `query getPersonById($id:Int!) {person_by_id(id:$id) {id preferred_name full_name date_of_birth sex asgardeo_id jwt_sub_id created updated jwt_email mailing_address {city {id name {name_en name_si name_ta} district {id name {name_en}}} street_address phone id} phone organization {id description notes address {id} avinya_type {id name} name {name_en} parent_organizations {id name {name_en}}} avinya_type_id notes nic_no passport_no id_no email street_address digital_id avinya_phone bank_name bank_account_number bank_account_name academy_org_id bank_branch created_by updated_by current_job document_list {document document_type}}}`;
+        string query = string `query getPersonById($id:Int!) {person_by_id(id:$id) {id preferred_name full_name date_of_birth sex asgardeo_id jwt_sub_id created updated jwt_email mailing_address {city {id name {name_en name_si name_ta} district {id name {name_en}}} street_address phone id} phone organization {id description notes address {id} avinya_type {id name} name {name_en} parent_organizations {id name {name_en}}} avinya_type_id notes nic_no passport_no id_no email street_address digital_id avinya_phone bank_name bank_account_number bank_account_name academy_org_id bank_branch created_by updated_by current_job documents_id}}`;
         map<anydata> variables = {"id": id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetPersonByIdResponse> check performDataBinding(graphqlResponse, GetPersonByIdResponse);
@@ -80,5 +80,11 @@ public isolated client class GraphqlClient {
         map<anydata> variables = {"user_document": user_document};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <UploadDocumentResponse> check performDataBinding(graphqlResponse, UploadDocumentResponse);
+    }
+    remote isolated function getAllDocuments(int id) returns GetAllDocumentsResponse|graphql:ClientError {
+        string query = string `query getAllDocuments($id:Int!) {document_list(id:$id) {document document_type}}`;
+        map<anydata> variables = {"id": id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetAllDocumentsResponse> check performDataBinding(graphqlResponse, GetAllDocumentsResponse);
     }
 }
