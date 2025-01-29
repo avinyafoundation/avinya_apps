@@ -316,33 +316,33 @@ log:printInfo("Formatted Response: " + formattedJson);
     }
    
     remote isolated function createMonthlyLeaveDates(MonthlyLeaveDates monthlyLeaveDates) returns CreateMonthlyLeaveDatesResponse|graphql:ClientError {
-        string query = string `mutation createMonthlyLeaveDates($monthlyLeaveDates:MonthlyLeaveDates!) {add_monthly_leave_dates(monthly_leave_dates:$monthlyLeaveDates) {id year month organization_id leave_dates_list daily_amount created updated}}`;
+        string query = string `mutation createMonthlyLeaveDates($monthlyLeaveDates:MonthlyLeaveDates!) {add_monthly_leave_dates(monthly_leave_dates:$monthlyLeaveDates) {id year month organization_id batch_id leave_dates_list daily_amount created updated}}`;
         map<anydata> variables = {"monthlyLeaveDates": monthlyLeaveDates};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <CreateMonthlyLeaveDatesResponse> check performDataBinding(graphqlResponse, CreateMonthlyLeaveDatesResponse);
     }
     remote isolated function updateMonthlyLeaveDates(MonthlyLeaveDates monthlyLeaveDates) returns UpdateMonthlyLeaveDatesResponse|graphql:ClientError {
-        string query = string `mutation updateMonthlyLeaveDates($monthlyLeaveDates:MonthlyLeaveDates!) {update_monthly_leave_dates(monthly_leave_dates:$monthlyLeaveDates) {id year month organization_id leave_dates_list daily_amount created updated}}`;
+        string query = string `mutation updateMonthlyLeaveDates($monthlyLeaveDates:MonthlyLeaveDates!) {update_monthly_leave_dates(monthly_leave_dates:$monthlyLeaveDates) {id year month organization_id batch_id leave_dates_list daily_amount created updated}}`;
         map<anydata> variables = {"monthlyLeaveDates": monthlyLeaveDates};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <UpdateMonthlyLeaveDatesResponse> check performDataBinding(graphqlResponse, UpdateMonthlyLeaveDatesResponse);
     }
-    remote isolated function getMonthlyLeaveDatesRecordById(int month, int year, int organization_id) returns GetMonthlyLeaveDatesRecordByIdResponse|graphql:ClientError {
-        string query = string `query getMonthlyLeaveDatesRecordById($organization_id:Int!,$year:Int!,$month:Int!) {monthly_leave_dates_record_by_id(organization_id:$organization_id,year:$year,month:$month) {id year month organization_id leave_dates_list daily_amount created updated}}`;
-        map<anydata> variables = {"month": month, "year": year, "organization_id": organization_id};
+    remote isolated function getMonthlyLeaveDatesRecordById(int month, int batch_id, int year, int organization_id) returns GetMonthlyLeaveDatesRecordByIdResponse|graphql:ClientError {
+        string query = string `query getMonthlyLeaveDatesRecordById($organization_id:Int!,$batch_id:Int!,$year:Int!,$month:Int!) {monthly_leave_dates_record_by_id(organization_id:$organization_id,batch_id:$batch_id,year:$year,month:$month) {id year month organization_id batch_id leave_dates_list daily_amount created updated}}`;
+        map<anydata> variables = {"month": month, "batch_id": batch_id, "year": year, "organization_id": organization_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetMonthlyLeaveDatesRecordByIdResponse> check performDataBinding(graphqlResponse, GetMonthlyLeaveDatesRecordByIdResponse);
     }
-
     remote isolated function getOrganizationsByAvinyaTypeWithActiveStatus(int avinya_type, int active) returns GetOrganizationsByAvinyaTypeWithActiveStatusResponse|graphql:ClientError {
         string query = string `query getOrganizationsByAvinyaTypeWithActiveStatus($avinya_type:Int!,$active:Int!) {organizations_by_avinya_type(avinya_type:$avinya_type,active:$active) {id name {name_en} description organization_metadata {key_name value} active}}`;
         map<anydata> variables = {"avinya_type": avinya_type, "active": active};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetOrganizationsByAvinyaTypeWithActiveStatusResponse> check performDataBinding(graphqlResponse, GetOrganizationsByAvinyaTypeWithActiveStatusResponse);
     }
-    remote isolated function getCalendarMetadataByOrgId(int organization_id) returns GetCalendarMetadataByOrgIdResponse|graphql:ClientError {
-        string query = string `query getCalendarMetadataByOrgId($organization_id:Int!) {calendar_metadata_by_org_id(organization_id:$organization_id) {id organization_id monthly_payment_amount}}`;
-        map<anydata> variables = {"organization_id": organization_id};
+    
+    remote isolated function getCalendarMetadataByOrgId(int batch_id, int organization_id) returns GetCalendarMetadataByOrgIdResponse|graphql:ClientError {
+        string query = string `query getCalendarMetadataByOrgId($organization_id:Int!,$batch_id:Int!) {calendar_metadata_by_org_id(organization_id:$organization_id,batch_id:$batch_id) {id organization_id batch_id monthly_payment_amount}}`;
+        map<anydata> variables = {"batch_id": batch_id, "organization_id": organization_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetCalendarMetadataByOrgIdResponse> check performDataBinding(graphqlResponse, GetCalendarMetadataByOrgIdResponse);
     }

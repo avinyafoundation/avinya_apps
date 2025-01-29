@@ -279,6 +279,7 @@ public type MonthlyLeaveDates record {
     int? month?;
     int[] leave_dates_list?;
     int? year?;
+    int? batch_id?;
     string? created?;
     int? total_days_in_month?;
     int? organization_id?;
@@ -313,6 +314,7 @@ public type Person record {
     string? notes?;
     int[]? parent_student?;
     string? date_of_birth?;
+    int? parent_organization_id?;
     int? avinya_type_id?;
     Address? permanent_address?;
     int? mailing_address_id?;
@@ -340,6 +342,7 @@ public type Person record {
     int? updated_by?;
     string? academy_org_name?;
     string? asgardeo_id?;
+    int? documents_id?;
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
@@ -419,6 +422,25 @@ public type Supply record {
     string? updated?;
     string? record_type?;
     int? person_id?;
+};
+
+public type UserDocument record {
+    string? birth_certificate_back_id?;
+    string? additional_certificate_01_id?;
+    string? additional_certificate_02_id?;
+    string? nic_back_id?;
+    string? document?;
+    string? additional_certificate_05_id?;
+    string? additional_certificate_04_id?;
+    string? additional_certificate_03_id?;
+    string? record_type?;
+    string? al_certificate_id?;
+    string? nic_front_id?;
+    string? ol_certificate_id?;
+    string? birth_certificate_front_id?;
+    int? id?;
+    string? folder_id?;
+    string? document_type?;
 };
 
 public type Vacancy record {
@@ -940,6 +962,7 @@ public type CreateMonthlyLeaveDatesResponse record {|
         int? year;
         int? month;
         int? organization_id;
+        int? batch_id;
         int[]? leave_dates_list;
         anydata? daily_amount;
         string? created;
@@ -954,6 +977,7 @@ public type UpdateMonthlyLeaveDatesResponse record {|
         int? year;
         int? month;
         int? organization_id;
+        int? batch_id;
         int[]? leave_dates_list;
         anydata? daily_amount;
         string? created;
@@ -968,6 +992,7 @@ public type GetMonthlyLeaveDatesRecordByIdResponse record {|
         int? year;
         int? month;
         int? organization_id;
+        int? batch_id;
         int[]? leave_dates_list;
         anydata? daily_amount;
         string? created;
@@ -996,6 +1021,7 @@ public type GetCalendarMetadataByOrgIdResponse record {|
     record {|
         int? id;
         int? organization_id;
+        int? batch_id;
         anydata? monthly_payment_amount;
     |}? calendar_metadata_by_org_id;
 |};

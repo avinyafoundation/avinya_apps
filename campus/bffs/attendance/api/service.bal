@@ -917,8 +917,8 @@ service / on new http:Listener(9091) {
         }
     }
     
-    resource function get monthly_leave_dates_record_by_id/[int organization_id]/[int year]/[int month]() returns MonthlyLeaveDates|error {
-        GetMonthlyLeaveDatesRecordByIdResponse|graphql:ClientError getMonthlyLeaveDatesRecordByIdResponse = globalDataClient->getMonthlyLeaveDatesRecordById(month,year,organization_id);
+    resource function get monthly_leave_dates_record_by_id/[int organization_id]/[int batch_id]/[int year]/[int month]() returns MonthlyLeaveDates|error {
+        GetMonthlyLeaveDatesRecordByIdResponse|graphql:ClientError getMonthlyLeaveDatesRecordByIdResponse = globalDataClient->getMonthlyLeaveDatesRecordById(month,batch_id,year,organization_id);
         if (getMonthlyLeaveDatesRecordByIdResponse is GetMonthlyLeaveDatesRecordByIdResponse) {
             MonthlyLeaveDates|error monthly_leave_dates_record_by_id_record = getMonthlyLeaveDatesRecordByIdResponse.monthly_leave_dates_record_by_id.cloneWithType(MonthlyLeaveDates);
             if (monthly_leave_dates_record_by_id_record is MonthlyLeaveDates) {
@@ -959,8 +959,8 @@ service / on new http:Listener(9091) {
         }
     }
 
-    resource function get calendar_metadata_by_org_id/[int organization_id]() returns CalendarMetadata|error {
-        GetCalendarMetadataByOrgIdResponse|graphql:ClientError getCalendarMetadataByOrgIdResponse = globalDataClient->getCalendarMetadataByOrgId(organization_id);
+    resource function get calendar_metadata_by_org_id/[int organization_id]/[int batch_id]() returns CalendarMetadata|error {
+        GetCalendarMetadataByOrgIdResponse|graphql:ClientError getCalendarMetadataByOrgIdResponse = globalDataClient->getCalendarMetadataByOrgId(batch_id,organization_id);
         if (getCalendarMetadataByOrgIdResponse is GetCalendarMetadataByOrgIdResponse) {
             CalendarMetadata|error calendar_metadata_record = getCalendarMetadataByOrgIdResponse.calendar_metadata_by_org_id.cloneWithType(CalendarMetadata);
             if (calendar_metadata_record is CalendarMetadata) {
