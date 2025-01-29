@@ -156,6 +156,54 @@ Future<ActivityAttendance> createActivityAttendance(
   }
 }
 
+class CalendarMetadata {
+  int? id;
+  int? organization_id;
+  int? batch_id;
+  double? monthly_payment_amount;
+
+  CalendarMetadata(
+      {required this.id,
+      required this.organization_id,
+      required this.batch_id,
+      required this.monthly_payment_amount});
+
+  factory CalendarMetadata.fromJson(Map<String, dynamic> json) {
+    return CalendarMetadata(
+        id: json['id'],
+        organization_id: json['organization_id'],
+        batch_id: json['batch_id'],
+        monthly_payment_amount: json['monthly_payment_amount']);
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (id != null) 'id': id,
+        if (organization_id != null) 'organization_id': organization_id,
+        if (batch_id != null) 'batch_id': batch_id,
+        if (monthly_payment_amount != null)
+          'monthly_payment_amount': monthly_payment_amount,
+      };
+}
+Future<CalendarMetadata?> fetchCalendarMetaDataByOrgId(
+    int organizationId, int batch_id) async {
+  final response = await http.get(
+    Uri.parse(AppConfig.campusAttendanceBffApiUrl +
+        '/calendar_metadata_by_org_id/$organizationId/$batch_id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    CalendarMetadata calendarMetadata =
+        CalendarMetadata.fromJson(json.decode(response.body));
+    return calendarMetadata;
+  } else {
+    return null;
+  }
+}
 class LeaveDate {
   final int id;
   final DateTime date;
@@ -163,6 +211,7 @@ class LeaveDate {
   final DateTime created;
   final DateTime updated;
   final int organizationId;
+  final int batch_id;
 
   LeaveDate({
     required this.id,
@@ -171,6 +220,7 @@ class LeaveDate {
     required this.created,
     required this.updated,
     required this.organizationId,
+    required this.batch_id
   });
 }
 
@@ -178,6 +228,7 @@ Future<void> createMonthlyLeaveDates({
   required int year,
   required int month,
   required int organizationId,
+  required int batchId,
   required int totalDaysInMonth,
   required List<int> leaveDatesList,
 }) async {
@@ -186,6 +237,7 @@ Future<void> createMonthlyLeaveDates({
     "year": year,
     "month": month,
     "organization_id": organizationId,
+    "batch_id":batchId,
     "total_days_in_month": totalDaysInMonth,
     "leave_dates_list": leaveDatesList,
   };
@@ -220,6 +272,7 @@ Future<void> updateMonthlyLeaveDates({
   required int year,
   required int month,
   required int organizationId,
+  required int batchId,
   required int totalDaysInMonth,
   required List<int> leaveDatesList,
 }) async {
@@ -229,6 +282,7 @@ Future<void> updateMonthlyLeaveDates({
     "year": year,
     "month": month,
     "organization_id": organizationId,
+    "batch_id": batchId,
     "total_days_in_month": totalDaysInMonth,
     "leave_dates_list": leaveDatesList,
   };
@@ -259,10 +313,10 @@ Future<void> updateMonthlyLeaveDates({
 }
 
 Future<List<LeaveDate>> getLeaveDatesForMonth(
-    int year, int month, int? organizationId) async {
+    int year, int month, int? organizationId, int batch_id) async {
   final response = await http.get(
     Uri.parse(
-        '${AppConfig.campusAttendanceBffApiUrl}/monthly_leave_dates_record_by_id/$organizationId/$year/$month'),
+        '${AppConfig.campusAttendanceBffApiUrl}/monthly_leave_dates_record_by_id/$organizationId/$batch_id/$year/$month'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Accept': 'application/json',
@@ -283,6 +337,7 @@ Future<List<LeaveDate>> getLeaveDatesForMonth(
                 created: DateTime.parse(resultsJson['created']),
                 updated: DateTime.parse(resultsJson['updated']),
                 organizationId: resultsJson['organization_id'] ?? 0,
+                batch_id: resultsJson['batch_id'] ?? 0
               ))
           .toList();
 

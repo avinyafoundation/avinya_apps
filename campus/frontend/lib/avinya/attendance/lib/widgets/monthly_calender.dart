@@ -4,12 +4,14 @@ import 'package:table_calendar/table_calendar.dart';
 
 class LeaveDatePicker extends StatefulWidget {
   final int? organizationId;
+  final int? batchId;
   final int year;
   final int month;
   final DateTime selectedDay;
 
   LeaveDatePicker({
     this.organizationId,
+    this.batchId,
     required this.year,
     required this.month,
     required this.selectedDay,
@@ -41,6 +43,7 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
         year,
         month,
         widget.organizationId,
+        widget.batchId!
       );
 
       setState(() {
@@ -67,6 +70,7 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
             created: DateTime.now(),
             updated: DateTime.now(),
             organizationId: 0, // Set a proper organization ID if needed
+            batch_id: 0,
           ),
         );
       }
@@ -92,6 +96,7 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
           year: _year,
           month: _month,
           organizationId: widget.organizationId ?? 2,
+          batchId: widget.batchId!,
           totalDaysInMonth: totalDaysInMonth,
           leaveDatesList: leaveDatesList,
         );
@@ -101,6 +106,7 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
           year: _year,
           month: _month,
           organizationId: widget.organizationId ?? 2,
+          batchId: widget.batchId!,
           totalDaysInMonth: totalDaysInMonth,
           leaveDatesList: leaveDatesList,
         );
