@@ -40,11 +40,7 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
   Future<void> _fetchLeaveDates(int year, int month) async {
     try {
       List<LeaveDate> fetchedDates = await getLeaveDatesForMonth(
-        year,
-        month,
-        widget.organizationId,
-        widget.batchId!
-      );
+          year, month, widget.organizationId, widget.batchId!);
 
       setState(() {
         _selectedDates = fetchedDates;
@@ -176,7 +172,8 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: _saveOrUpdateLeaveDates,
-            child: Text(_isUpdate ? "Update Leave Dates" : "Save Leave Dates"),
+            child:
+                Text(_isUpdate ? "Update Leave Dates" : "Save Leave Dates"),
           ),
         ],
       ),

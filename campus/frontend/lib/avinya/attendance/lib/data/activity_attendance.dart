@@ -329,7 +329,7 @@ Future<List<LeaveDate>> getLeaveDatesForMonth(
 
     if (resultsJson is Map<String, dynamic> &&
         resultsJson['leave_dates_list'] is List) {
-      List<LeaveDate> leaveDates = (resultsJson['leave_dates_list'] as List)
+      List<LeaveDate> leaveDates = (resultsJson['leave_dates_list'] !=null ? resultsJson['leave_dates_list'] as List:[])
           .map((day) => LeaveDate(
                 id: resultsJson['id'] ?? 0,
                 date: DateTime(year, month, day as int),
@@ -512,6 +512,32 @@ Future<List<ActivityAttendance>> getClassActivityAttendanceReportByParentOrg(
   final response = await http.get(
     Uri.parse(
         '${AppConfig.campusAttendanceBffApiUrl}/class_attendance_report_by_parent_org/$parent_organization_id/$activity_id/$from_date/$to_date'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception(
+        'Failed to get Activity Participant Attendance report for activity $activity_id');
+  }
+}
+
+Future<List<ActivityAttendance>> getActivityAttendanceReportByBatch(
+    int batch_id,
+    int activity_id,
+    String from_date,
+    String to_date) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/attendance_report_by_batch/$batch_id/$activity_id/$from_date/$to_date'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',

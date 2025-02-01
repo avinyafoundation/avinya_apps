@@ -1737,6 +1737,15 @@
                             "name": "class_attendance_report",
                             "args": [
                                 {
+                                    "name": "batch_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
                                     "name": "organization_id",
                                     "type": {
                                         "kind": "SCALAR",

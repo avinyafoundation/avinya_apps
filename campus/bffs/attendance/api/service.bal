@@ -292,7 +292,31 @@ service / on new http:Listener(9091) {
         }
     }
 
-          resource function get late_attendance_report_date/[int organization_id]/[int activity_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendance[]|error {
+    resource function get attendance_report_by_batch/[int batch_id]/[int activity_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendance[]|error {
+        GetClassAttendanceReportResponse|graphql:ClientError getAttendanceReportByBatchResponse = globalDataClient->getAttendanceReportByBatch(batch_id, activity_id, from_date, to_date);
+        if(getAttendanceReportByBatchResponse is GetClassAttendanceReportResponse) {
+            ActivityParticipantAttendance[] activityParticipantAttendances = [];
+            foreach var attendace_record in getAttendanceReportByBatchResponse.class_attendance_report {
+                ActivityParticipantAttendance|error activityParticipantAttendance = attendace_record.cloneWithType(ActivityParticipantAttendance);
+                if(activityParticipantAttendance is ActivityParticipantAttendance) {
+                    activityParticipantAttendances.push(activityParticipantAttendance);
+                } else {
+                    log:printError("Error while processing Application record received", activityParticipantAttendance);
+                    return error("Error while processing Application record received: " + activityParticipantAttendance.message() + 
+                        ":: Detail: " + activityParticipantAttendance.detail().toString());
+                }
+            }
+
+            return activityParticipantAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getAttendanceReportByBatchResponse);
+            return error("Error while creating application: " + getAttendanceReportByBatchResponse.message() + 
+                ":: Detail: " + getAttendanceReportByBatchResponse.detail().toString());
+        }
+    }
+
+    resource function get late_attendance_report_date/[int organization_id]/[int activity_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendance[]|error {
         GetLateAttendanceReportResponse|graphql:ClientError getLateAttendanceReportResponse = globalDataClient->getLateAttendanceReportByDate(organization_id, activity_id, from_date, to_date);
         if(getLateAttendanceReportResponse is GetLateAttendanceReportResponse) {
             ActivityParticipantAttendance[] activityParticipantAttendances = [];
