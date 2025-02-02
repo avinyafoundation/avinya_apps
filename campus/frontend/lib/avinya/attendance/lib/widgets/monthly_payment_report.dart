@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:attendance/widgets/week_picker.dart';
-import 'package:attendance/widgets/excel_export.dart';
 import 'package:gallery/avinya/attendance/lib/widgets/monthly_calender.dart';
 import 'package:gallery/avinya/attendance/lib/widgets/monthly_payment_report_excel_export.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
@@ -13,14 +12,13 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 
 class MonthlyPaymentReport extends StatefulWidget {
-  const MonthlyPaymentReport(
-      {Key? key,
-      required this.title,
-      required this.updateDateRangeForExcel,
-      required this.onYearMonthSelected})
-      : super(key: key);
-  final Function(DateTime, DateTime) updateDateRangeForExcel;
-  final Function(int, int) onYearMonthSelected;
+  const MonthlyPaymentReport({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
+  //final Function(DateTime, DateTime) updateDateRangeForExcel;
+  // final Function(int, int) onYearMonthSelected;
+  //final List<String?> classes;
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -40,20 +38,18 @@ class MonthlyPaymentReport extends StatefulWidget {
 class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   List<ActivityAttendance> _fetchedAttendance = [];
   List<ActivityAttendance> _fetchedExcelReportData = [];
-  List<ActivityAttendance> _fetchedAttendanceAfterSchool = [];
   List<Person> _fetchedStudentList = [];
   Organization? _fetchedOrganization;
   bool _isFetching = true;
-  int? organization_id = null;
+  int organization_id = 0;
   double? MonthlyPayment = 0.00;
-  double? DailyPayment = 0.00;
+  // double? DailyPayment = 0.00;
 
   //calendar specific variables
-  DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  DateTime? _rangeStart;
-  DateTime? _rangeEnd;
   DateTime? _selected = DateTime.now();
+  late DateTime firstDateOfMonth;
+  late DateTime lastDateOfMonth;
 
   int _year = DateTime.now().year;
   int _month = DateTime.now().month;
@@ -70,69 +66,37 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
 
   List<Organization> _batchData = [];
   Organization? _selectedOrganizationValue;
+  CalendarMetadata? _calendarMetadata;
   List<Organization> _fetchedOrganizations = [];
   late Future<List<Organization>> _fetchBatchData;
 
-  void selectWeek(DateTime today, activityId) async {
-    // Calculate the start of the week (excluding weekends) based on the selected day
-    DateTime startOfWeek = today.subtract(Duration(days: today.weekday - 1));
-    while (startOfWeek.weekday > DateTime.friday) {
-      startOfWeek = startOfWeek.subtract(Duration(days: 1));
-    }
+  late int _totalDaysInMonth;
+  late int _totalSchoolDaysInMonth = 0;
+  late String _monthFullName = "";
+  late double _dailyAmount = 0.0;
 
-    // Calculate the end of the week (excluding weekends) based on the start of the week
-    DateTime endOfWeek = startOfWeek.add(Duration(days: 4));
+  List<String?> classes = [];
 
-    // Update the variables to select the week
-    final formatter = DateFormat('MMM d, yyyy');
-    formattedStartDate = formatter.format(startOfWeek);
-    formattedEndDate = formatter.format(endOfWeek);
-
-    int? parentOrgId =
-        campusAppsPortalInstance.getUserPerson().organization!.id;
-
-    if (parentOrgId != null) {
-      setState(() {
-        _isFetching = true; // Set _isFetching to true before starting the fetch
-        organization_id = parentOrgId;
-      });
-
-      try {
-        final fetchedExcelReportData =
-            await getClassActivityAttendanceReportByParentOrg(
-          parentOrgId,
-          activityId,
-          DateFormat('yyyy-MM-dd').format(startOfWeek),
-          DateFormat('yyyy-MM-dd').format(endOfWeek),
-        );
-        final fetchedStudentList = await fetchStudentList(parentOrgId);
-
-        setState(() {
-          _fetchedExcelReportData = fetchedExcelReportData;
-          _fetchedStudentList = fetchedStudentList;
-          _isFetching =
-              false; // Set _isFetching to false after the fetch completes
-        });
-      } catch (error) {
-        // Handle any errors that occur during the fetch
-        setState(() {
-          _isFetching = false; // Set _isFetching to false in case of error
-        });
-        // Perform error handling, e.g., show an error message
-      }
-    }
+  void selectedYearAndMonth(int year, int month) async {
+    setState(() {
+      _year = year;
+      _month = month;
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    _fetchBatchData = _loadBatchData();
-    var today = DateTime.now();
-    activityId = campusAppsPortalInstance.activityIds['homeroom']!;
-    selectWeek(today, activityId);
     _year = _selected?.year ?? _year;
     _month = _selected?.month ?? _month;
-    _fetchLeaveDates(_year, _month);
+    firstDateOfMonth = DateTime(today.year, today.month, 1);
+    lastDateOfMonth =
+        DateTime(today.year, today.month + 1, 1).subtract(Duration(days: 1));
+    _fetchBatchData = _loadBatchData();
+    activityId = campusAppsPortalInstance.activityIds['homeroom']!;
+    // selectedYearAndMonth(_year, _month);
+    organization_id =
+        campusAppsPortalInstance.getUserPerson().organization!.id!;
   }
 
   Future<List<Organization>> _loadBatchData() async {
@@ -142,12 +106,27 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
     if (_selectedOrganizationValue != null) {
       int orgId = _selectedOrganizationValue!.id!;
       _fetchedOrganization = await fetchOrganization(orgId);
+      _calendarMetadata =
+          await fetchCalendarMetaDataByOrgId(organization_id, orgId);
+      MonthlyPayment = _calendarMetadata!.monthly_payment_amount ?? 0.0;
       _fetchedOrganizations = _fetchedOrganization?.child_organizations ?? [];
+      classes = _fetchedOrganizations.map((org) => org.description).toList();
+      _fetchLeaveDates(_year, _month);
+      _fetchedExcelReportData = await getActivityAttendanceReportByBatch(
+          _selectedOrganizationValue!.id!,
+          activityId,
+          DateFormat('yyyy-MM-dd').format(firstDateOfMonth),
+          DateFormat('yyyy-MM-dd').format(lastDateOfMonth));
+      _fetchedStudentList =
+          await fetchStudentListByBatchId(_selectedOrganizationValue!.id!);
       setState(() {
+        _selectedOrganizationValue;
         _fetchedOrganizations = _fetchedOrganizations;
+        this._fetchedExcelReportData = _fetchedExcelReportData;
+        this._fetchedStudentList = _fetchedStudentList;
+        this._isFetching = false;
       });
     }
-    // this.updateDateRange(today, today);
     return _batchData;
   }
 
@@ -155,18 +134,18 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
     try {
       // Fetch leave dates and payment details for the month
       List<LeaveDate> fetchedDates = await getLeaveDatesForMonth(
-        year,
-        month,
-        organization_id,
-      );
+          year, month, organization_id, _selectedOrganizationValue!.id!);
+
+      _totalDaysInMonth = DateTime(_year, _month + 1, 0).day;
+      _totalSchoolDaysInMonth = _totalDaysInMonth - fetchedDates.length;
+      _monthFullName = DateFormat.MMMM().format(DateTime(0, _month));
 
       setState(() {
         if (fetchedDates.isNotEmpty) {
-          DailyPayment = fetchedDates.first.dailyAmount;
+          _dailyAmount = fetchedDates.first.dailyAmount;
           // MonthlyPayment = DailyPayment * fetchedDates.length;
         } else {
-          DailyPayment = 0.00;
-          MonthlyPayment = 0.00;
+          _dailyAmount = 0.00;
         }
       });
     } catch (e) {
@@ -174,27 +153,11 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
     }
   }
 
-  // void updateExcelState() {
-  //   MonthlyPaymentReportExcelExport(
-  //     fetchedAttendance: _fetchedExcelReportData,
-  //     columnNames: columnNames,
-  //     fetchedStudentList: _fetchedStudentList,
-  //     updateExcelState: updateExcelState,
-  //     isFetching: _isFetching,
-  //     totalSchoolDaysInMonth: [1, 2, 3, 4, 5],
-  //     dailyAmount: 333.47,
-  //     numberOfDaysInMonth: 30,
-  //     year: 2024,
-  //     month: "January",
-  //   );
-  // }
-
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
     _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
-        updateSelected, DailyPayment);
-    WeekPicker(updateDateRange, formattedStartDate);
+        updateSelected, _dailyAmount);
   }
 
   void updateSelected(int index, bool value, List<bool> selected) {
@@ -231,34 +194,41 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
       setState(() {
         _selected = selected;
       });
-      widget.onYearMonthSelected(selected.year, selected.month);
+      //widget.onYearMonthSelected(selected.year, selected.month);
+      selectedYearAndMonth(selected.year, selected.month);
     }
   }
 
   void updateDateRange(_rangeStart, _rangeEnd) async {
-    widget.updateDateRangeForExcel(_rangeStart, _rangeEnd);
-    int? parentOrgId =
-        campusAppsPortalInstance.getUserPerson().organization!.id;
-    await _fetchLeaveDates(_rangeStart.year, _rangeStart.month);
-    if (_fetchedOrganization != null) {
-      _fetchedAttendance = await getClassActivityAttendanceReportForPayment(
-          this._fetchedOrganization!.id!,
-          activityId,
-          DateFormat('yyyy-MM-dd').format(_rangeStart),
-          DateFormat('yyyy-MM-dd').format(_rangeEnd));
-    }
-    if (parentOrgId != null) {
+    //widget.updateDateRangeForExcel(_rangeStart, _rangeEnd);
+    // int? parentOrgId =
+    //     campusAppsPortalInstance.getUserPerson().organization!.id;
+    _fetchLeaveDates(_rangeStart.year, _rangeStart.month);
+
+    // if (_fetchedOrganization != null) {
+    //   _fetchedAttendance = await getClassActivityAttendanceReportForPayment(
+    //       this._fetchedOrganization!.id!,
+    //       activityId,
+    //       DateFormat('yyyy-MM-dd').format(_rangeStart),
+    //       DateFormat('yyyy-MM-dd').format(_rangeEnd));
+    // }
+    if (_selectedOrganizationValue != null) {
       setState(() {
         _isFetching = true; // Set _isFetching to true before starting the fetch
       });
       try {
-        _fetchedExcelReportData =
-            await getClassActivityAttendanceReportByParentOrg(
-                parentOrgId,
-                activityId,
-                DateFormat('yyyy-MM-dd').format(_rangeStart),
-                DateFormat('yyyy-MM-dd').format(_rangeEnd));
-        final fetchedStudentList = await fetchStudentList(parentOrgId);
+        _calendarMetadata = await fetchCalendarMetaDataByOrgId(
+            organization_id, _selectedOrganizationValue!.id!);
+
+        MonthlyPayment = _calendarMetadata!.monthly_payment_amount ?? 0.0;
+
+        _fetchedExcelReportData = await getActivityAttendanceReportByBatch(
+            _selectedOrganizationValue!.id!,
+            activityId,
+            DateFormat('yyyy-MM-dd').format(_rangeStart),
+            DateFormat('yyyy-MM-dd').format(_rangeEnd));
+        final fetchedStudentList =
+            await fetchStudentListByBatchId(_selectedOrganizationValue!.id!);
         setState(() {
           final startDate = _rangeStart ?? _selectedDay;
           final endDate = _rangeEnd ?? _selectedDay;
@@ -269,6 +239,9 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
           this.formattedEndDate = formattedEndDate;
           this._fetchedStudentList = fetchedStudentList;
           this._fetchedExcelReportData = _fetchedExcelReportData;
+          _fetchedAttendance;
+          MonthlyPayment;
+          _calendarMetadata;
           _isFetching = false;
           if (this._selectedValue != null) {
             refreshState(this._selectedValue);
@@ -341,7 +314,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
       _fetchedOrganization;
       this._isFetching = false;
       _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
-          updateSelected, DailyPayment);
+          updateSelected, _dailyAmount);
     });
   }
 
@@ -349,19 +322,6 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   Widget build(BuildContext context) {
     var cols =
         columnNames.map((label) => DataColumn(label: Text(label!))).toList();
-
-    // MonthlyPaymentReportExcelExport(
-    //   fetchedAttendance: _fetchedExcelReportData,
-    //   columnNames: columnNames,
-    //   fetchedStudentList: _fetchedStudentList,
-    //   updateExcelState: updateExcelState,
-    //   isFetching: _isFetching,
-    //   totalSchoolDaysInMonth: [1, 2, 3, 4, 5],
-    //   dailyAmount: 333.47,
-    //   numberOfDaysInMonth: 30,
-    //   year: 2024,
-    //   month: "January",
-    // );
 
     return SingleChildScrollView(
       child: campusAppsPortalPersonMetaDataInstance
@@ -382,9 +342,9 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                         //     .organization!
                         //     .child_organizations)
                         // create a text widget with some padding
-                        SizedBox(width: 10),
+                        SizedBox(width: 5),
                         Text('Select a Batch:'),
-                        SizedBox(width: 10),
+                        SizedBox(width: 5),
                         FutureBuilder<List<Organization>>(
                           future: _fetchBatchData,
                           builder: (context, snapshot) {
@@ -423,48 +383,80 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                     return;
                                   }
 
+                                  setState(() {
+                                    _isFetching = true;
+                                  });
+                                  _selectedOrganizationValue = newValue;
                                   _fetchedOrganization =
                                       await fetchOrganization(newValue!.id!);
                                   _fetchedOrganizations = _fetchedOrganization
                                           ?.child_organizations ??
                                       [];
 
+                                  // Calculate the start and end dates of the selected month
+                                  final _rangeStart = DateTime(_year, _month,
+                                      1); // First day of the month
+                                  final _rangeEnd = DateTime(_year, _month + 1,
+                                      0); // Last day of the month
+
+                                  classes = _fetchedOrganizations
+                                      .map((org) => org.description)
+                                      .toList();
+
+                                  _calendarMetadata =
+                                      await fetchCalendarMetaDataByOrgId(
+                                          organization_id, newValue.id!);
+                                  MonthlyPayment = _calendarMetadata!
+                                          .monthly_payment_amount ??
+                                      0.0;
+                                  _fetchLeaveDates(_year, _month);
+                                  _fetchedExcelReportData =
+                                      await getActivityAttendanceReportByBatch(
+                                          _selectedOrganizationValue!.id!,
+                                          activityId,
+                                          DateFormat('yyyy-MM-dd')
+                                              .format(_rangeStart),
+                                          DateFormat('yyyy-MM-dd')
+                                              .format(_rangeEnd));
+                                  final fetchedStudentList =
+                                      await fetchStudentListByBatchId(
+                                          _selectedOrganizationValue!.id!);
                                   setState(() {
                                     _fetchedOrganizations;
                                     _selectedValue = null;
+                                    _selectedValue;
                                     _selectedOrganizationValue = newValue;
-                                    // batchStartDate = DateFormat('MMM d, yyyy')
-                                    //     .format(DateTime.parse(
-                                    //         _selectedOrganizationValue!
-                                    //             .organization_metadata[0].value
-                                    //             .toString()));
-
-                                    // batchEndDate = DateFormat('MMM d, yyyy')
-                                    //     .format(DateTime.parse(
-                                    //         _selectedOrganizationValue!
-                                    //             .organization_metadata[1].value
-                                    //             .toString()));
+                                    MonthlyPayment;
+                                    _calendarMetadata;
+                                    this._fetchedStudentList =
+                                        fetchedStudentList;
+                                    this._fetchedExcelReportData =
+                                        _fetchedExcelReportData;
+                                    _isFetching = false;
                                   });
                                 });
                           },
                         ),
-                        SizedBox(width: 20),
+                        SizedBox(width: 10),
                         Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               if (_fetchedOrganizations.length > 0)
                                 Container(
                                   margin: EdgeInsets.only(
-                                      left: 20, top: 20, bottom: 10),
+                                      left: 10, top: 20, bottom: 10),
                                   child: Row(children: <Widget>[
                                     Text('Select a class:'),
-                                    SizedBox(width: 10),
+                                    SizedBox(width: 5),
                                     DropdownButton<Organization>(
                                       value: _selectedValue,
                                       onChanged:
                                           (Organization? newValue) async {
                                         _selectedValue = newValue!;
                                         print(newValue.id);
+                                        setState(() {
+                                          _isFetching = true;
+                                        });
                                         _fetchedOrganization =
                                             await fetchOrganization(
                                                 newValue.id!);
@@ -542,13 +534,14 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                           }
                                         }
                                         setState(() {
+                                          _isFetching = false;
                                           _fetchedOrganization;
                                           _data = MyData(
                                               _fetchedAttendance,
                                               columnNames,
                                               _fetchedOrganization,
                                               updateSelected,
-                                              DailyPayment);
+                                              _dailyAmount);
                                         });
                                       },
                                       items: _fetchedOrganizations
@@ -562,79 +555,37 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                   ]),
                                 ),
                             ]),
-                        SizedBox(width: 20),
-                        // Container(
-                        //   margin: const EdgeInsets.only(left: 10.0),
-                        //   child: Column(
-                        //     crossAxisAlignment: CrossAxisAlignment.start,
-                        //     children: [
-                        //       const Text(
-                        //         'Monthly Payment Amount:',
-                        //         style: TextStyle(
-                        //           fontSize: 14,
-                        //           fontWeight: FontWeight.bold,
-                        //         ),
-                        //       ),
-                        //       const SizedBox(height: 5),
-                        //       Text(
-                        //         // 'Rs. ${MonthlyPayment}',
-                        //         'Rs.10000.00',
-                        //         style: const TextStyle(
-                        //           fontSize: 14,
-                        //           fontWeight: FontWeight.normal,
-                        //           color: Colors.green,
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
-                        // SizedBox(width: 20),
-                        // Container(
-                        //   margin: const EdgeInsets.only(left: 10.0),
-                        //   child: Column(
-                        //     crossAxisAlignment: CrossAxisAlignment.start,
-                        //     children: [
-                        //       const Text(
-                        //         'Daily Payment Amount:',
-                        //         style: TextStyle(
-                        //           fontSize: 14,
-                        //           fontWeight: FontWeight.bold,
-                        //         ),
-                        //       ),
-                        //       const SizedBox(height: 5),
-                        //       Text(
-                        //         'Rs. ${DailyPayment}',
-                        //         style: const TextStyle(
-                        //           fontSize: 14,
-                        //           fontWeight: FontWeight.normal,
-                        //           color: Colors.green,
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
-                        SizedBox(width: 20),
-                        Expanded(
+                        SizedBox(width: 10),
+                        FittedBox(
                           child: Container(
-                            alignment: Alignment.bottomRight,
                             margin: const EdgeInsets.only(right: 20.0),
-                            width: 25.0,
-                            height: 30.0,
                             child: ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => LeaveDatePicker(
                                         organizationId: organization_id ??
                                             0, // Provide a default value if needed
+                                        batchId:
+                                            _selectedOrganizationValue?.id ?? 0,
                                         year: _selected?.year ??
                                             _year, // Ensure an `int` value is passed
                                         month: _selected?.month ?? _month,
                                         selectedDay:
                                             _selectedDay ?? DateTime.now(),
                                       ),
-                                    ));
+                                    )).then((value) {
+                                  setState(() {
+                                    _isFetching = true;
+                                  });
+
+                                  _fetchLeaveDates(_year, _month);
+
+                                  setState(() {
+                                    _isFetching = false;
+                                  });
+                                });
                               },
                               child: const Text('Update Monthly Leave Dates'),
                               style: ElevatedButton.styleFrom(
@@ -645,49 +596,68 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 20, left: 20),
-                          child: Row(
-                            children: [
-                              Text(
-                                'Select a Year & Month :',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              TextButton(
-                                onPressed: () =>
-                                    _onPressed(context: context, locale: 'en'),
-                                child: Icon(Icons.calendar_month),
-                              ),
-                              if (_selected == null)
-                                Container(
-                                  margin: EdgeInsets.only(left: 10.0),
-                                  child: const Text(
-                                    'No month & year selected.',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                  ),
-                                )
-                              else
-                                Container(
-                                  child: Text(
-                                    DateFormat.yMMMM()
-                                        .format(_selected!)
-                                        .toString(),
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.normal),
+                        Row(
+                          children: [
+                            Text(
+                              'Select a Year & Month :',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  _onPressed(context: context, locale: 'en'),
+                              child: Icon(Icons.calendar_month),
+                            ),
+                            if (_selected == null)
+                              Container(
+                                margin: EdgeInsets.only(left: 10.0),
+                                child: const Text(
+                                  'No month & year selected.',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.normal,
                                   ),
                                 ),
-                            ],
-                          ),
+                              )
+                            else
+                              Container(
+                                child: Text(
+                                  DateFormat.yMMMM()
+                                      .format(_selected!)
+                                      .toString(),
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.normal),
+                                ),
+                              ),
+                          ],
                         ),
                         SizedBox(width: 20),
+                        this._isFetching
+                            ? Container(
+                                margin: EdgeInsets.only(top: 10),
+                                child: SpinKitCircle(
+                                  color: (Colors
+                                      .deepPurpleAccent), // Customize the color of the indicator
+                                  size:
+                                      50, // Customize the size of the indicator
+                                ))
+                            : MonthlyPaymentReportExcelExport(
+                                classes: classes,
+                                fetchedAttendance: _fetchedExcelReportData,
+                                columnNames: columnNames,
+                                fetchedStudentList: _fetchedStudentList,
+                                isFetching: _isFetching,
+                                totalSchoolDaysInMonth: _totalSchoolDaysInMonth,
+                                dailyAmount: _dailyAmount,
+                                year: _year,
+                                month: _monthFullName,
+                                batch:
+                                    _selectedOrganizationValue!.name!.name_en!,
+                              )
                       ],
                     ),
                     Row(
@@ -707,8 +677,8 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                               ),
                               const SizedBox(height: 5),
                               Text(
-                                // 'Rs. ${MonthlyPayment}',
-                                'Rs.10000.00',
+                                'Rs. ${MonthlyPayment}',
+                                // 'Rs.10000.00',
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.normal,
@@ -734,7 +704,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                               ),
                               const SizedBox(height: 5),
                               Text(
-                                'Rs. ${DailyPayment}',
+                                'Rs. ${_dailyAmount}',
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.normal,

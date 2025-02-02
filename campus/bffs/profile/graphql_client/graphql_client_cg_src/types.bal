@@ -279,6 +279,7 @@ public type MonthlyLeaveDates record {
     int? month?;
     int[] leave_dates_list?;
     int? year?;
+    int? batch_id?;
     string? created?;
     int? total_days_in_month?;
     int? organization_id?;
@@ -342,7 +343,6 @@ public type Person record {
     string? academy_org_name?;
     string? asgardeo_id?;
     int? documents_id?;
-    UserDocument[]? document_list?;
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
