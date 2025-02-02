@@ -79,11 +79,11 @@ class SMSScaffoldBody extends StatelessWidget {
             key: ValueKey('late_attendance_report'),
             child: LateAttendanceReportScreen(),
           )
-        else if (currentRoute.pathTemplate.startsWith('/weekly_payment_report'))
-          const FadeTransitionPage<void>(
-            key: ValueKey('weekly_payment_report'),
-            child: WeeklyPaymentReportScreen(),
-          )
+        // else if (currentRoute.pathTemplate.startsWith('/weekly_payment_report'))
+        //   const FadeTransitionPage<void>(
+        //     key: ValueKey('weekly_payment_report'),
+        //     child: WeeklyPaymentReportScreen(),
+        //   )
         else if (currentRoute.pathTemplate
             .startsWith('/monthly_payment_report'))
           const FadeTransitionPage<void>(
