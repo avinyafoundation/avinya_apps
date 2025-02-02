@@ -560,6 +560,7 @@ Future<Person> createPerson(BuildContext context, Person person) async {
 }
 
 Future<Person> updatePerson(Person person) async {
+  print("update person: ${jsonEncode(person.toJson())}");
   final response = await http.put(
     Uri.parse(AppConfig.campusEnrollmentsBffApiUrl + '/update_person'),
     headers: <String, String>{

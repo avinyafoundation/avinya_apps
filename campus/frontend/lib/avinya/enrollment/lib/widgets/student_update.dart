@@ -110,6 +110,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
         userPerson = user;
         selectedSex = userPerson.sex;
         userPerson.avinya_type_id = user.avinya_type_id;
+        userPerson.documents_id = user.documents_id ?? 0;
 
         // Safely assign district, city, and organization IDs with fallbacks
         selectedDistrictId = user.mailing_address?.city?.district?.id;
@@ -552,8 +553,8 @@ class _StudentUpdateState extends State<StudentUpdate> {
     if (_currentStep == 0 && isEnabled) {
       if (_formKey.currentState!.validate()) {
         _formKey.currentState!.save();
-        updatedPerson = await updatePerson(userPerson);
-        if (updatedPerson.id != null) {
+        userPerson = await updatePerson(userPerson);
+        if (userPerson.id != null) {
           setState(() {
             _currentStep += 1;
           });
@@ -883,6 +884,8 @@ class _StudentUpdateState extends State<StudentUpdate> {
             (org.avinya_type?.id == 105 || org.avinya_type?.id == 86))
         ? parentOrganizationId
         : null;
+    
+    userPerson.parent_organization_id = validParentOrganizationId;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -913,8 +916,10 @@ class _StudentUpdateState extends State<StudentUpdate> {
                 classes = await fetchClasses(newValue);
                 setState(() {
                   classes = classes;
-                  userPerson.organization_id =
-                      newValue; // Update the organization ID
+                  // userPerson.organization_id =
+                  //     newValue; // Update the organization ID
+                  userPerson.parent_organization_id = newValue;
+
                 });
               },
               decoration: InputDecoration(

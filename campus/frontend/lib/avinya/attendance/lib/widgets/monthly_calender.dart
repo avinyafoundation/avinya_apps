@@ -4,12 +4,14 @@ import 'package:table_calendar/table_calendar.dart';
 
 class LeaveDatePicker extends StatefulWidget {
   final int? organizationId;
+  final int? batchId;
   final int year;
   final int month;
   final DateTime selectedDay;
 
   LeaveDatePicker({
     this.organizationId,
+    this.batchId,
     required this.year,
     required this.month,
     required this.selectedDay,
@@ -38,10 +40,7 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
   Future<void> _fetchLeaveDates(int year, int month) async {
     try {
       List<LeaveDate> fetchedDates = await getLeaveDatesForMonth(
-        year,
-        month,
-        widget.organizationId,
-      );
+          year, month, widget.organizationId, widget.batchId!);
 
       setState(() {
         _selectedDates = fetchedDates;
@@ -67,6 +66,7 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
             created: DateTime.now(),
             updated: DateTime.now(),
             organizationId: 0, // Set a proper organization ID if needed
+            batch_id: 0,
           ),
         );
       }
@@ -92,6 +92,7 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
           year: _year,
           month: _month,
           organizationId: widget.organizationId ?? 2,
+          batchId: widget.batchId!,
           totalDaysInMonth: totalDaysInMonth,
           leaveDatesList: leaveDatesList,
         );
@@ -101,6 +102,7 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
           year: _year,
           month: _month,
           organizationId: widget.organizationId ?? 2,
+          batchId: widget.batchId!,
           totalDaysInMonth: totalDaysInMonth,
           leaveDatesList: leaveDatesList,
         );
@@ -170,7 +172,8 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: _saveOrUpdateLeaveDates,
-            child: Text(_isUpdate ? "Update Leave Dates" : "Save Leave Dates"),
+            child:
+                Text(_isUpdate ? "Update Leave Dates" : "Save Leave Dates"),
           ),
         ],
       ),

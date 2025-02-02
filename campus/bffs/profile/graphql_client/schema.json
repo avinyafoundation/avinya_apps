@@ -445,25 +445,6 @@
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
-                        },
-                        {
-                            "name": "document_list",
-                            "args": [],
-                            "type": {
-                                "kind": "LIST",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "NON_NULL",
-                                    "name": null,
-                                    "ofType": {
-                                        "kind": "OBJECT",
-                                        "name": "DocumentsData",
-                                        "ofType": null
-                                    }
-                                }
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
                         }
                     ],
                     "inputFields": null,
@@ -785,7 +766,16 @@
                             "name": "student_list_by_parent",
                             "args": [
                                 {
-                                    "name": "id",
+                                    "name": "parent_organization_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "batch_id",
                                     "type": {
                                         "kind": "SCALAR",
                                         "name": "Int",
@@ -1755,6 +1745,15 @@
                         {
                             "name": "class_attendance_report",
                             "args": [
+                                {
+                                    "name": "batch_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
                                 {
                                     "name": "organization_id",
                                     "type": {
@@ -3098,6 +3097,39 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "document_list",
+                            "args": [
+                                {
+                                    "name": "id",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "DocumentsData",
+                                        "ofType": null
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "districts",
                             "args": [],
                             "type": {
@@ -3181,6 +3213,19 @@
                                     "defaultValue": null
                                 },
                                 {
+                                    "name": "batch_id",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
                                     "name": "year",
                                     "type": {
                                         "kind": "NON_NULL",
@@ -3220,6 +3265,19 @@
                             "args": [
                                 {
                                     "name": "organization_id",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "batch_id",
                                     "type": {
                                         "kind": "NON_NULL",
                                         "name": null,
@@ -7166,6 +7224,17 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "batch_id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "leave_dates_list",
                             "args": [],
                             "type": {
@@ -9262,6 +9331,15 @@
                             "defaultValue": null
                         },
                         {
+                            "name": "batch_id",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
                             "name": "leave_dates_list",
                             "type": {
                                 "kind": "NON_NULL",
@@ -9726,23 +9804,6 @@
                                 "kind": "SCALAR",
                                 "name": "Int",
                                 "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "document_list",
-                            "type": {
-                                "kind": "LIST",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "NON_NULL",
-                                    "name": null,
-                                    "ofType": {
-                                        "kind": "INPUT_OBJECT",
-                                        "name": "UserDocument",
-                                        "ofType": null
-                                    }
-                                }
                             },
                             "defaultValue": null
                         },
@@ -11332,6 +11393,17 @@
                         },
                         {
                             "name": "organization_id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "batch_id",
                             "args": [],
                             "type": {
                                 "kind": "SCALAR",

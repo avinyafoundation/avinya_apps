@@ -8,21 +8,21 @@ class MonthlyPaymentReportExcelExport extends StatefulWidget {
   final List<ActivityAttendance> fetchedAttendance;
   final List<String?> columnNames;
   final List<Person> fetchedStudentList;
-  final Function() updateExcelState;
   final bool isFetching;
   final int totalSchoolDaysInMonth;
   final double dailyAmount;
   final int year;
   final String month;
   final List<String?> classes;
+  final String batch;
 
   const MonthlyPaymentReportExcelExport({
     Key? key,
+    required this.batch,
     required this.classes,
     required this.fetchedAttendance,
     required this.columnNames,
     required this.fetchedStudentList,
-    required this.updateExcelState,
     required this.isFetching,
     required this.totalSchoolDaysInMonth,
     required this.dailyAmount,
@@ -41,7 +41,7 @@ class _ExcelExportState extends State<MonthlyPaymentReportExcelExport> {
   List<String?> columnNamesWithoutDates = [];
 
   void exportToExcel() async {
-    await widget.updateExcelState();
+    //await widget.updateExcelState();
     // _fetchedAttendance = widget.fetchedAttendance;
     // _fetchedStudentList = widget.fetchedStudentList;
     // columnNames = widget.columnNames;
@@ -122,7 +122,7 @@ class _ExcelExportState extends State<MonthlyPaymentReportExcelExport> {
     sheet.setColWidth(4, 25);
 
     sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0)).value =
-        "Avinya Foundation Student Payment Report For Year ${widget.year} For Month ${widget.month}";
+        "Avinya Foundation Student Payment Report For Year:${widget.year} For Month:${widget.month} For Batch:${widget.batch}";
     sheet
         .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0))
         .cellStyle = organizationHeaderStyle;
@@ -172,7 +172,6 @@ class _ExcelExportState extends State<MonthlyPaymentReportExcelExport> {
           next_class_start_index = 3;
           i++;
         } else {
-
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 0, rowIndex: next_class_start_index))
@@ -239,7 +238,9 @@ class _ExcelExportState extends State<MonthlyPaymentReportExcelExport> {
       }
     }
 
-    excel.save(fileName: "StudentPayment_For_${widget.month}.xlsx");
+    excel.save(
+        fileName:
+            "StudentPayment_For_${widget.month} For Batch ${widget.batch}.xlsx");
   }
 
   @override

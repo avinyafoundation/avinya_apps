@@ -389,11 +389,37 @@ Future<Person> fetchPerson(String digital_id) async {
   }
 }
 
-Future<List<Person>> fetchStudentList(int id) async {
+Future<List<Person>> fetchStudentListByParentOrg(int parent_organization_id) async {
   final uri = Uri.parse(
           AppConfig.campusProfileBffApiUrl + '/student_list_by_parent_org_id')
       .replace(queryParameters: {
-    'id': [id.toString()]
+    'parent_organization_id': [parent_organization_id.toString()]
+  });
+
+  final response = await http.get(
+    uri,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<Person> studentList =
+        await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
+    return studentList;
+  } else {
+    throw Exception('Failed to load Person');
+  }
+}
+
+Future<List<Person>> fetchStudentListByBatchId(int batch_id) async {
+  final uri = Uri.parse(
+          AppConfig.campusProfileBffApiUrl + '/student_list_by_batch_id')
+      .replace(queryParameters: {
+    'batch_id': [batch_id.toString()]
   });
 
   final response = await http.get(
