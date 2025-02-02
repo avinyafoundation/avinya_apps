@@ -286,6 +286,7 @@ public type MonthlyLeaveDates record {
     int? month?;
     int[] leave_dates_list?;
     int? year?;
+    int? batch_id?;
     string? created?;
     int? total_days_in_month?;
     int? organization_id?;
@@ -294,7 +295,6 @@ public type MonthlyLeaveDates record {
     string? updated?;
     string? record_type?;
 };
-
 public type CalendarMetadata record {
     string? record_type?;
     int? id?;
@@ -838,6 +838,7 @@ public type CreateMonthlyLeaveDatesResponse record {|
         int? year;
         int? month;
         int? organization_id;
+        int? batch_id;
         int[]? leave_dates_list;
         anydata? daily_amount;
         string? created;
@@ -852,6 +853,7 @@ public type UpdateMonthlyLeaveDatesResponse record {|
         int? year;
         int? month;
         int? organization_id;
+        int? batch_id;
         int[]? leave_dates_list;
         anydata? daily_amount;
         string? created;
@@ -866,13 +868,13 @@ public type GetMonthlyLeaveDatesRecordByIdResponse record {|
         int? year;
         int? month;
         int? organization_id;
+        int? batch_id;
         int[]? leave_dates_list;
         anydata? daily_amount;
         string? created;
         string? updated;
     |}? monthly_leave_dates_record_by_id;
 |};
-
 public type GetOrganizationsByAvinyaTypeWithActiveStatusResponse record {|
     map<json?> __extensions?;
     record {|
@@ -894,6 +896,8 @@ public type GetCalendarMetadataByOrgIdResponse record {|
     record {|
         int? id;
         int? organization_id;
+        int? batch_id;
         anydata? monthly_payment_amount;
     |}? calendar_metadata_by_org_id;
 |};
+

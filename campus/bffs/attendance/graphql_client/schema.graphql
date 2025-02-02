@@ -313,6 +313,7 @@ type AvinyaTypeData {
 type CalendarMetaData {
   id: Int
   organization_id: Int
+  batch_id: Int
   monthly_payment_amount: Decimal
 }
 
@@ -388,6 +389,24 @@ type DistrictData {
   id: Int
   province: ProvinceData!
   cities: [CityData!]!
+}
+
+type DocumentsData {
+  id: Int
+  folder_id: String
+  nic_front_id: String
+  nic_back_id: String
+  birth_certificate_front_id: String
+  birth_certificate_back_id: String
+  ol_certificate_id: String
+  al_certificate_id: String
+  additional_certificate_01_id: String
+  additional_certificate_02_id: String
+  additional_certificate_03_id: String
+  additional_certificate_04_id: String
+  additional_certificate_05_id: String
+  document_type: String
+  document: String
 }
 
 input DutyParticipant {
@@ -620,6 +639,7 @@ input MonthlyLeaveDates {
   month: Int
   total_days_in_month: Int
   organization_id: Int
+  batch_id: Int
   leave_dates_list: [Int!]!
   leave_dates: String
   daily_amount: Decimal
@@ -632,6 +652,7 @@ type MonthlyLeaveDatesData {
   year: Int
   month: Int
   organization_id: Int
+  batch_id: Int
   leave_dates_list: [Int!]
   daily_amount: Decimal
   created: String
@@ -698,6 +719,7 @@ type Mutation {
   update_consumable_depletion(inventories: [Inventory!]!): [InventoryData!]
   update_person(person: Person!, permanent_address: Address, permanent_address_city: City, mailing_address: Address, mailing_address_city: City): PersonData
   insert_person(person: Person!, mailing_address: Address, mailing_address_city: City): PersonData
+  upload_document(user_document: UserDocument!): DocumentsData
   add_monthly_leave_dates(monthly_leave_dates: MonthlyLeaveDates!): MonthlyLeaveDatesData
   update_monthly_leave_dates(monthly_leave_dates: MonthlyLeaveDates!): MonthlyLeaveDatesData
 }
@@ -761,6 +783,7 @@ input Person {
   mailing_address_id: Int
   phone: Int
   organization_id: Int
+  parent_organization_id: Int
   avinya_type_id: Int
   notes: String
   nic_no: String
@@ -784,6 +807,7 @@ input Person {
   academy_org_name: String
   branch_code: String
   current_job: String
+  documents_id: Int
   created_by: Int
   updated_by: Int
 }
@@ -821,10 +845,12 @@ type PersonData {
   bank_account_name: String
   academy_org_id: Int
   organization_id: Int
+  parent_organization_id: Int
   branch_code: String
   current_job: String
   created_by: Int
   updated_by: Int
+  documents_id: Int
 }
 
 type PlaceData {
@@ -926,7 +952,7 @@ type Query {
   class_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_today(person_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int = 0): [ActivityParticipantAttendanceData!]
-  class_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
+  class_attendance_report(batch_id: Int, organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
   late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceDataForLateAttendance!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
@@ -964,11 +990,12 @@ type Query {
   consumable_yearly_report(organization_id: Int, consumable_id: Int, year: Int): [InventoryData!]
   persons(organization_id: Int, avinya_type_id: Int): [PersonData!]
   person_by_id(id: Int): PersonData
+  document_list(id: Int!): [DocumentsData!]
   districts: [DistrictData!]
   cities(district_id: Int): [CityData!]
   all_organizations: [OrganizationData!]
-  monthly_leave_dates_record_by_id(organization_id: Int!, year: Int!, month: Int!): MonthlyLeaveDatesData
-  calendar_metadata_by_org_id(organization_id: Int!): CalendarMetaData
+  monthly_leave_dates_record_by_id(organization_id: Int!, batch_id: Int!, year: Int!, month: Int!): MonthlyLeaveDatesData
+  calendar_metadata_by_org_id(organization_id: Int!, batch_id: Int!): CalendarMetaData
 }
 
 input ResourceAllocation {
@@ -1078,6 +1105,25 @@ type SupplyData {
 type TotalActivityParticipantAttendanceCountByDateData {
   attendance_date: String
   daily_total: Int
+}
+
+input UserDocument {
+  record_type: String = "user_document"
+  id: Int
+  folder_id: String
+  nic_front_id: String
+  nic_back_id: String
+  birth_certificate_front_id: String
+  birth_certificate_back_id: String
+  ol_certificate_id: String
+  al_certificate_id: String
+  additional_certificate_01_id: String
+  additional_certificate_02_id: String
+  additional_certificate_03_id: String
+  additional_certificate_04_id: String
+  additional_certificate_05_id: String
+  document_type: String
+  document: String
 }
 
 input Vacancy {

@@ -292,7 +292,31 @@ service / on new http:Listener(9091) {
         }
     }
 
-          resource function get late_attendance_report_date/[int organization_id]/[int activity_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendance[]|error {
+    resource function get attendance_report_by_batch/[int batch_id]/[int activity_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendance[]|error {
+        GetClassAttendanceReportResponse|graphql:ClientError getAttendanceReportByBatchResponse = globalDataClient->getAttendanceReportByBatch(batch_id, activity_id, from_date, to_date);
+        if(getAttendanceReportByBatchResponse is GetClassAttendanceReportResponse) {
+            ActivityParticipantAttendance[] activityParticipantAttendances = [];
+            foreach var attendace_record in getAttendanceReportByBatchResponse.class_attendance_report {
+                ActivityParticipantAttendance|error activityParticipantAttendance = attendace_record.cloneWithType(ActivityParticipantAttendance);
+                if(activityParticipantAttendance is ActivityParticipantAttendance) {
+                    activityParticipantAttendances.push(activityParticipantAttendance);
+                } else {
+                    log:printError("Error while processing Application record received", activityParticipantAttendance);
+                    return error("Error while processing Application record received: " + activityParticipantAttendance.message() + 
+                        ":: Detail: " + activityParticipantAttendance.detail().toString());
+                }
+            }
+
+            return activityParticipantAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getAttendanceReportByBatchResponse);
+            return error("Error while creating application: " + getAttendanceReportByBatchResponse.message() + 
+                ":: Detail: " + getAttendanceReportByBatchResponse.detail().toString());
+        }
+    }
+
+    resource function get late_attendance_report_date/[int organization_id]/[int activity_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendance[]|error {
         GetLateAttendanceReportResponse|graphql:ClientError getLateAttendanceReportResponse = globalDataClient->getLateAttendanceReportByDate(organization_id, activity_id, from_date, to_date);
         if(getLateAttendanceReportResponse is GetLateAttendanceReportResponse) {
             ActivityParticipantAttendance[] activityParticipantAttendances = [];
@@ -917,8 +941,8 @@ service / on new http:Listener(9091) {
         }
     }
     
-    resource function get monthly_leave_dates_record_by_id/[int organization_id]/[int year]/[int month]() returns MonthlyLeaveDates|error {
-        GetMonthlyLeaveDatesRecordByIdResponse|graphql:ClientError getMonthlyLeaveDatesRecordByIdResponse = globalDataClient->getMonthlyLeaveDatesRecordById(month,year,organization_id);
+    resource function get monthly_leave_dates_record_by_id/[int organization_id]/[int batch_id]/[int year]/[int month]() returns MonthlyLeaveDates|error {
+        GetMonthlyLeaveDatesRecordByIdResponse|graphql:ClientError getMonthlyLeaveDatesRecordByIdResponse = globalDataClient->getMonthlyLeaveDatesRecordById(month,batch_id,year,organization_id);
         if (getMonthlyLeaveDatesRecordByIdResponse is GetMonthlyLeaveDatesRecordByIdResponse) {
             MonthlyLeaveDates|error monthly_leave_dates_record_by_id_record = getMonthlyLeaveDatesRecordByIdResponse.monthly_leave_dates_record_by_id.cloneWithType(MonthlyLeaveDates);
             if (monthly_leave_dates_record_by_id_record is MonthlyLeaveDates) {
@@ -959,8 +983,8 @@ service / on new http:Listener(9091) {
         }
     }
 
-    resource function get calendar_metadata_by_org_id/[int organization_id]() returns CalendarMetadata|error {
-        GetCalendarMetadataByOrgIdResponse|graphql:ClientError getCalendarMetadataByOrgIdResponse = globalDataClient->getCalendarMetadataByOrgId(organization_id);
+    resource function get calendar_metadata_by_org_id/[int organization_id]/[int batch_id]() returns CalendarMetadata|error {
+        GetCalendarMetadataByOrgIdResponse|graphql:ClientError getCalendarMetadataByOrgIdResponse = globalDataClient->getCalendarMetadataByOrgId(batch_id,organization_id);
         if (getCalendarMetadataByOrgIdResponse is GetCalendarMetadataByOrgIdResponse) {
             CalendarMetadata|error calendar_metadata_record = getCalendarMetadataByOrgIdResponse.calendar_metadata_by_org_id.cloneWithType(CalendarMetadata);
             if (calendar_metadata_record is CalendarMetadata) {

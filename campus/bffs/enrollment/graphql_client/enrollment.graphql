@@ -148,10 +148,7 @@ query getPersonById($id: Int!) {
     created_by
     updated_by
     current_job
-    document_list {
-      document
-      document_type
-    }
+    documents_id
   }
 }
 
@@ -244,6 +241,7 @@ mutation updatePerson(
     created_by
     updated_by
     current_job
+    documents_id
   }
 }
 
@@ -407,5 +405,12 @@ mutation uploadDocument($user_document: UserDocument!) {
     additional_certificate_03_id
     additional_certificate_04_id
     additional_certificate_05_id
+  }
+}
+
+query getAllDocuments($id: Int!) {
+  document_list(id: $id) {
+    document
+    document_type
   }
 }

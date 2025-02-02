@@ -21,6 +21,7 @@ class _StudentCreateState extends State<StudentCreate> {
   int _currentStep = 0; // Track the current step
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   List<City> cityList = [];
+  late Person createdPerson = Person();
 
   String? selectedSex;
   int? selectedCityId;
@@ -108,6 +109,8 @@ class _StudentCreateState extends State<StudentCreate> {
       child: SizedBox(
         width: 850,
         child: Stepper(
+            connectorColor:
+                MaterialStateProperty.all(Color.fromARGB(255, 74, 161, 70)),
             type: StepperType.vertical,
             currentStep: _currentStep,
             onStepContinue: _nextStep,
@@ -429,21 +432,41 @@ class _StudentCreateState extends State<StudentCreate> {
                               childAspectRatio:
                                   1.5, // Adjust the aspect ratio to take up more space
                             ),
-                            itemCount: 8,
+                            itemCount: 11,
                             itemBuilder: (context, index) {
-                              List<String> documentTypes = [
+                              List<String> documentTypesLabels = [
                                 'NIC Front',
                                 'NIC Back',
                                 'Birth Certificate Front',
                                 'Birth Certificate Back',
                                 'O/L Certificate',
                                 'A/L  Certificate',
-                                'Additional Certificate',
-                                'Another Document'
+                                'Additional Certificate 01',
+                                'Additional Certificate 02',
+                                'Additional Certificate 03',
+                                'Additional Certificate 04',
+                                'Additional Certificate 05',
+                              ];
+
+                              List<String> documentTypes = [
+                                'nicFront',
+                                'nicBack',
+                                'birthCertificateFront',
+                                'birthCertificateBack',
+                                'olDocument',
+                                'alDocument',
+                                'additionalCertificate01',
+                                'additionalCertificate02',
+                                'additionalCertificate03',
+                                'additionalCertificate04',
+                                'additionalCertificate05'
                               ];
 
                               return FileUploadWidget(
+                                userDocumentId: createdPerson.documents_id ?? 0,
+                                documentTypeLabel: documentTypesLabels[index],
                                 documentType: documentTypes[index],
+                                stringImage: null,
                               );
                             },
                           ),
@@ -460,7 +483,7 @@ class _StudentCreateState extends State<StudentCreate> {
   }
 
   // Navigate to the next step
-  void _nextStep() {
+  void _nextStep() async {
     bool isEnabled = isDistrictsDataLoaded &&
         isOrganizationsDataLoaded &&
         isAvinyaTypesDataLoaded;
@@ -468,16 +491,21 @@ class _StudentCreateState extends State<StudentCreate> {
     if (_currentStep == 0 && isEnabled) {
       if (_formKey.currentState!.validate()) {
         _formKey.currentState!.save();
-        createPerson(context, userPerson);
-        setState(() {
-          _currentStep += 1;
-        });
+        createdPerson = await createPerson(context, userPerson);
+        if (createdPerson.id != null) {
+          setState(() {
+            _currentStep += 1;
+          });
+        }
       }
-    } else if (_currentStep < 1 && isEnabled) {
-      setState(() {
-        _currentStep += 1;
-      });
+    } else if (_currentStep == 1) {
+      Navigator.pop(context);
     }
+    // } else if (_currentStep < 1 && isEnabled) {
+    //   setState(() {
+    //     _currentStep += 1;
+    //   });
+    // }
   }
 
   //   Widget _buildSaveButton(bool isDistrictsDataLoaded,
@@ -768,6 +796,7 @@ class _StudentCreateState extends State<StudentCreate> {
                 setState(() {
                   selectedOrgId = newValue;
                   userPerson.organization?.id = newValue;
+                  userPerson.parent_organization_id = newValue;
                 });
               },
               decoration: InputDecoration(
