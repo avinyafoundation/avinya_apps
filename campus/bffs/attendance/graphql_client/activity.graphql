@@ -415,37 +415,40 @@ query getOrganizationsByAvinyaType($avinya_type: Int!) {
 }
 
 mutation createMonthlyLeaveDates($monthlyLeaveDates: MonthlyLeaveDates!) {
-    add_monthly_leave_dates(monthly_leave_dates: $monthlyLeaveDates) {
-        id
-        year
-        month
-        organization_id
-        leave_dates_list
-        daily_amount
-        created
-        updated
-   }
+  add_monthly_leave_dates(monthly_leave_dates: $monthlyLeaveDates) {
+    id
+    year
+    month
+    organization_id
+    batch_id
+    leave_dates_list
+    daily_amount
+    created
+    updated
+  }
 }
 
 mutation updateMonthlyLeaveDates($monthlyLeaveDates: MonthlyLeaveDates!) {
-    update_monthly_leave_dates(monthly_leave_dates: $monthlyLeaveDates) {
-        id
-        year
-        month
-        organization_id
-        leave_dates_list
-        daily_amount
-        created
-        updated
-    }
+  update_monthly_leave_dates(monthly_leave_dates: $monthlyLeaveDates) {
+    id
+    year
+    month
+    organization_id
+    batch_id
+    leave_dates_list
+    daily_amount
+    created
+    updated
+  }
 }
 
-query getMonthlyLeaveDatesRecordById($organization_id:Int!,$year:Int!,$month:Int!) {
-    monthly_leave_dates_record_by_id(organization_id: $organization_id,year:$year,month:$month) {
+query getMonthlyLeaveDatesRecordById($organization_id:Int!,$batch_id:Int!,$year:Int!,$month:Int!) {
+    monthly_leave_dates_record_by_id(organization_id: $organization_id,batch_id:$batch_id,year:$year,month:$month) {
         id
         year
         month
         organization_id
+        batch_id
         leave_dates_list
         daily_amount
         created
@@ -468,10 +471,11 @@ query getOrganizationsByAvinyaTypeWithActiveStatus($avinya_type:Int!,$active:Int
     }
 }
 
-query getCalendarMetadataByOrgId($organization_id: Int!) {
-    calendar_metadata_by_org_id(organization_id: $organization_id) {
+query getCalendarMetadataByOrgId($organization_id:Int!,$batch_id:Int!) {
+    calendar_metadata_by_org_id(organization_id:$organization_id,batch_id:$batch_id) {
         id
         organization_id
+        batch_id
         monthly_payment_amount
-    }
+    }      
 }

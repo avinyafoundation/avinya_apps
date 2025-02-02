@@ -1,6 +1,9 @@
 import ballerina/graphql;
 import ballerina/http;
+import ballerina/io;
+import ballerina/lang.array;
 import ballerina/log;
+import ballerina/mime;
 
 public function initClientConfig() returns ConnectionConfig {
     ConnectionConfig _clientConig = {};
@@ -155,11 +158,11 @@ service / on new http:Listener(9095) {
         City? permanent_address_city = permanent_address?.city;
         City? mailing_address_city = mailing_address?.city;
 
-        if(permanent_address is Address){
+        if (permanent_address is Address) {
             permanent_address.city = ();
         }
 
-        if(mailing_address is Address){
+        if (mailing_address is Address) {
             mailing_address.city = ();
         }
 
@@ -183,7 +186,7 @@ service / on new http:Listener(9095) {
         }
     }
 
-    resource function post add_person(@http:Payload Person person) returns Person|error {
+    resource function post add_person(@http:Payload Person person) returns Person|ErrorDetail|error {
 
         Address? mailing_address = person?.mailing_address;
         City? mailing_address_city = mailing_address?.city;
@@ -201,13 +204,190 @@ service / on new http:Listener(9095) {
                 return person_record;
             } else {
                 log:printError("Error while processing Application record received", person_record);
-                return error("Error while processing Application record received: " + person_record.message() +
-                    ":: Detail: " + person_record.detail().toString());
+                return {
+                    "message": person_record.message().toString(),
+                    "errorCode": "500"
+                };
             }
         } else {
             log:printError("Error while creating application", addPersonResponse);
-            return error("Error while creating application: " + addPersonResponse.message() +
-                ":: Detail: " + addPersonResponse.detail().toString());
+            return {
+                "message": addPersonResponse.message().toString(),
+                "errorCode": "500"
+            };
         }
     }
+    resource function post upload_document(http:Request req) returns UserDocument|ErrorDetail|error {
+
+        UserDocument document = {};
+        UserDocument document_details = {};
+        int document_row_id = 0;
+        string document_type = "";
+
+        if (req.getContentType().startsWith("multipart/form-data")) {
+
+            mime:Entity[] bodyParts = check req.getBodyParts();
+            string base64EncodedStringDocument = "";
+
+            foreach var part in bodyParts {
+                mime:ContentDisposition contentDisposition = part.getContentDisposition();
+
+                if (contentDisposition.name == "document_details") {
+
+                    json document_details_in_json = check part.getJson();
+                    document_details = check document_details_in_json.cloneWithType(UserDocument);
+                    document_row_id = document_details?.id ?: 0;
+                    document_type = document_details?.document_type ?: "";
+
+                } else if (contentDisposition.name == "document") {
+
+                    stream<byte[], io:Error?>|mime:ParserError str = part.getByteStream();
+
+                    if str is stream<byte[], io:Error?> {
+
+                        byte[] allBytes = []; // Initialize an empty byte array
+
+                        // Iterate through the stream and collect all chunks
+                        error? e = str.forEach(function(byte[] chunk) {
+                            array:push(allBytes, ...chunk); // Efficiently append all bytes from chunk
+                        });
+
+                        byte[] base64EncodedDocument = <byte[]>(check mime:base64Encode(allBytes));
+                        base64EncodedStringDocument = check string:fromBytes(base64EncodedDocument);
+
+                    }
+                }
+
+            }
+
+            document = {
+                id: document_row_id,
+                document_type: document_type,
+                document: base64EncodedStringDocument
+            };
+
+        }
+
+        UploadDocumentResponse|graphql:ClientError uploadDocumentResponse = globalDataClient->uploadDocument(document);
+        if (uploadDocumentResponse is UploadDocumentResponse) {
+            UserDocument|error document_record = uploadDocumentResponse.upload_document.cloneWithType(UserDocument);
+            if (document_record is UserDocument) {
+                return document_record;
+            } else {
+                log:printError("Error while processing Application record received", document_record);
+                return {
+                    "message": document_record.message().toString(),
+                    "errorCode": "500"
+                };
+            }
+        } else {
+            log:printError("Error while creating application", uploadDocumentResponse);
+            return {
+                "message": uploadDocumentResponse.message().toString(),
+                "errorCode": "500"
+            };
+        }
+    }
+
+    resource function get document_list/[int id]() returns UserDocument[]|error {
+        GetAllDocumentsResponse|graphql:ClientError getDocumentsResponse = globalDataClient->getAllDocuments(id);
+        if (getDocumentsResponse is GetAllDocumentsResponse) {
+            UserDocument[] document_datas = [];
+            foreach var document_data in getDocumentsResponse.document_list {
+                UserDocument|error document_data_record = document_data.cloneWithType(UserDocument);
+                if (document_data_record is UserDocument) {
+                    document_datas.push(document_data_record);
+                } else {
+                    log:printError("Error while processing Application record received", document_data_record);
+                    return error("Error while processing Application record received: " + document_data_record.message() +
+                        ":: Detail: " + document_data_record.detail().toString());
+                }
+            }
+
+            return document_datas;
+
+        } else {
+            log:printError("Error while getting application", getDocumentsResponse);
+            return error("Error while getting application: " + getDocumentsResponse.message() +
+                ":: Detail: " + getDocumentsResponse.detail().toString());
+        }
+    }
+
+
+    // resource function post add_person(http:Request req) returns Person|error {
+    //     UserDocumentList[] documents = [];
+    //     Person person = {};
+    //     Address? mailing_address = {};
+    //     City? mailing_address_city = {};
+
+    //     if (req.getContentType().startsWith("multipart/form-data")) {
+    //         mime:Entity[] bodyParts = check req.getBodyParts();
+
+    //         foreach var part in bodyParts {
+    //             mime:ContentDisposition contentDisposition = part.getContentDisposition();
+
+    //             if (contentDisposition.name == "person") {
+    //                 // Extract JSON string and convert to Person record
+    //                 json personJson = check part.getJson();
+    //                 person = check personJson.cloneWithType(Person);
+    //                 mailing_address = person?.mailing_address;
+    //                 mailing_address_city = mailing_address?.city;
+
+    //                 if (mailing_address is Address) {
+    //                     mailing_address.city = ();
+    //                 }
+
+    //                 person.mailing_address = ();
+
+    //             } else if (contentDisposition.name == "documents") {
+
+    //                 // Get the filename from Content-Disposition
+    //                 string? documentName = contentDisposition.fileName;
+
+    //                 stream<byte[], io:Error?>|mime:ParserError str = part.getByteStream();
+
+    //                 //Extract file name without extension
+    //                 string:RegExp r = re `\.`;
+    //                 string[] split_document_name = r.split(documentName ?: "");
+
+    //                 if str is stream<byte[], io:Error?> {
+
+    //                     byte[] allBytes = []; // Initialize an empty byte array
+
+    //                     // Iterate through the stream and collect all chunks
+    //                     error? e = str.forEach(function(byte[] chunk) {
+    //                          array:push(allBytes, ...chunk); // Efficiently append all bytes from chunk
+    //                     });
+
+    //                     byte[] base64EncodedDocument = <byte[]>(check mime:base64Encode(allBytes));
+    //                     string base64EncodedStringDocument = check string:fromBytes(base64EncodedDocument);
+
+    //                     UserDocumentList document = {
+    //                         document_name: split_document_name[0],
+    //                         document: base64EncodedStringDocument
+
+    //                     };
+    //                     //io:println(document);
+    //                     documents.push(document);
+    //                 }
+    //             }
+
+    //         }
+    //     }
+    //     InsertPersonResponse|graphql:ClientError addPersonResponse = globalDataClient->insertPerson(documents, person, mailing_address, mailing_address_city);
+    //     if (addPersonResponse is InsertPersonResponse) {
+    //         Person|error person_record = addPersonResponse.insert_person.cloneWithType(Person);
+    //         if (person_record is Person) {
+    //             return person_record;
+    //         } else {
+    //             log:printError("Error while processing Application record received", person_record);
+    //             return error("Error while processing Application record received: " + person_record.message() +
+    //                 ":: Detail: " + person_record.detail().toString());
+    //         }
+    //     } else {
+    //         log:printError("Error while creating application", addPersonResponse);
+    //         return error("Error while creating application: " + addPersonResponse.message() +
+    //             ":: Detail: " + addPersonResponse.detail().toString());
+    //     }
+    // }
 }

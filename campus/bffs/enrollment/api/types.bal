@@ -82,6 +82,7 @@ public type Person record {
     string? notes?;
     int[]? parent_student?;
     string? date_of_birth?;
+    int? parent_organization_id?;
     int? avinya_type_id?;
     Address? permanent_address?;
     int? mailing_address_id?;
@@ -109,10 +110,35 @@ public type Person record {
     int? updated_by?;
     string? academy_org_name?;
     string? asgardeo_id?;
+    int? documents_id?;
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
     int? academy_org_id?;
+};
+
+public type UserDocument record {
+    string? birth_certificate_back_id?;
+    string? additional_certificate_01_id?;
+    string? additional_certificate_02_id?;
+    string? nic_back_id?;
+    string? document?;
+    string? additional_certificate_05_id?;
+    string? additional_certificate_04_id?;
+    string? additional_certificate_03_id?;
+    string? record_type?;
+    string? al_certificate_id?;
+    string? nic_front_id?;
+    string? ol_certificate_id?;
+    string? birth_certificate_front_id?;
+    int? id?;
+    string? folder_id?;
+    string? document_type?;
+};
+
+public type ErrorDetail record {
+    string message;
+    int errorCode;
 };
 
 public type GetPersonsResponse record {|
@@ -267,6 +293,7 @@ public type GetPersonByIdResponse record {|
         int? created_by;
         int? updated_by;
         string? current_job;
+        int? documents_id;
     |}? person_by_id;
 |};
 
@@ -348,6 +375,7 @@ public type UpdatePersonResponse record {|
         int? created_by;
         int? updated_by;
         string? current_job;
+        int? documents_id;
     |}? update_person;
 |};
 
@@ -488,5 +516,32 @@ public type InsertPersonResponse record {|
         int? created_by;
         int? updated_by;
         string? current_job;
+        int? documents_id;
     |}? insert_person;
+|};
+public type UploadDocumentResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? folder_id;
+        string? nic_front_id;
+        string? nic_back_id;
+        string? birth_certificate_front_id;
+        string? birth_certificate_back_id;
+        string? ol_certificate_id;
+        string? al_certificate_id;
+        string? additional_certificate_01_id;
+        string? additional_certificate_02_id;
+        string? additional_certificate_03_id;
+        string? additional_certificate_04_id;
+        string? additional_certificate_05_id;
+    |}? upload_document;
+|};
+
+public type GetAllDocumentsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? document;
+        string? document_type;
+    |}[] document_list;
 |};

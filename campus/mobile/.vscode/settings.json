@@ -1,5 +1,6 @@
 {
-    "githubPullRequests.ignoredPullRequestBranches": [
-        "main"
-    ]
+  "githubPullRequests.ignoredPullRequestBranches": [
+    "main"
+  ],
+  "dart.flutterSdkPath": ".fvm/versions/3.13.1"
 }
