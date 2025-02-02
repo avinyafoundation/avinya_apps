@@ -36,6 +36,9 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
         '/resource_allocation_report',
         '/resource_allocations/:id',
         '/asset_dashboard',
+        '/asset_registration',
+        '/asset_acquisition',
+        '/asset_assignment',
         '/consumable_dashboard',
         '/stock_replenishment',
         '/stock_depletion',
@@ -124,6 +127,13 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
     final assetDashboardReportRoute =
         ParsedRoute('/asset_dashboard', '/asset_dashboard', {}, {});
 
+    final assetRegistrationRoute =
+        ParsedRoute('/asset_registration', '/asset_registration', {}, {});
+    final assetAcquisitionRoute =
+        ParsedRoute('/asset_acquisition', '/asset_acquisition', {}, {});
+    final assetAssignmentRoute =
+        ParsedRoute('/asset_assignment', '/asset_assignment', {}, {});
+
     final consumableDashboardReportRoute =
         ParsedRoute('/consumable_dashboard', '/consumable_dashboard', {}, {});
 
@@ -138,13 +148,13 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
 
     final consumableWeeklyReportRoute = ParsedRoute(
         '/consumable_weekly_report', '/consumable_weekly_report', {}, {});
-    
+
     final vehicleFuelConsumptionRoute = ParsedRoute(
         '/vehicle_fuel_consumption', '/vehicle_fuel_consumption', {}, {});
-    
-    final vehicleFuelConsumptionMonthlyReportRoute = ParsedRoute(
-        '/vehicle_fuel_consumption_monthly_report', '/vehicle_fuel_consumption_monthly_report', {}, {});
 
+    final vehicleFuelConsumptionMonthlyReportRoute = ParsedRoute(
+        '/vehicle_fuel_consumption_monthly_report',
+        '/vehicle_fuel_consumption_monthly_report', {}, {});
 
     // // Go to /apply if the user is not signed in
     log("_guard signed in $signedIn");
@@ -155,6 +165,12 @@ class _AssetAdminSystemState extends State<AssetAdminSystem> {
       return resourceAllocationReportRoute;
     } else if (signedIn && from == assetDashboardReportRoute) {
       return assetDashboardReportRoute;
+    } else if (signedIn && from == assetRegistrationRoute) {
+      return assetRegistrationRoute;
+    } else if (signedIn && from == assetAcquisitionRoute) {
+      return assetAcquisitionRoute;
+    } else if (signedIn && from == assetAssignmentRoute) {
+      return assetAssignmentRoute;
     } else if (signedIn && from == consumableDashboardReportRoute) {
       return consumableDashboardReportRoute;
     } else if (signedIn && from == stockReplenishmentRoute) {

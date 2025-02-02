@@ -10,7 +10,7 @@ distribution-version = "2201.8.7"
 [[package]]
 org = "avinyafoundation"
 name = "asset_bff"
-version = "1.1.0"
+version = "2.1.0"
 dependencies = [
 	{org = "ballerina", name = "graphql"},
 	{org = "ballerina", name = "http"},
@@ -108,7 +108,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "http"
-version = "2.10.16"
+version = "2.10.19"
 dependencies = [
 	{org = "ballerina", name = "auth"},
 	{org = "ballerina", name = "cache"},
@@ -140,7 +140,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "io"
-version = "1.6.1"
+version = "1.6.3"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.value"}
@@ -330,7 +330,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "time"
-version = "2.4.0"
+version = "2.5.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]
@@ -357,7 +357,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "websocket"
-version = "2.10.2"
+version = "2.10.3"
 dependencies = [
 	{org = "ballerina", name = "auth"},
 	{org = "ballerina", name = "constraint"},

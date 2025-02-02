@@ -21,6 +21,9 @@ class _SMSScaffoldState extends State<SMSScaffold> {
   bool isConsumableSectionHovered = false;
   bool isConsumableReportSectionHovered = false;
   bool isStockReplenishmentSectionHovered = false;
+  bool isAssetAssignmentSectionHovered = false;
+  bool isAssetAcquisitionSectionHovered = false;
+  bool isAssetRegistrationSectionHovered = false;
   bool isStockDepletionSectionHovered = false;
   bool isVehicleFuelConsumptionSectionHovered = false;
 
@@ -202,6 +205,129 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                     ),
                     //childrenPadding: EdgeInsets.only(left: 25.0),
                     children: [
+                      MouseRegion(
+                        onEnter: (_) {
+                          setState(() {
+                            isAssetRegistrationSectionHovered = true;
+                          });
+                        },
+                        onExit: (_) {
+                          setState(() {
+                            isAssetRegistrationSectionHovered = false;
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isAssetRegistrationSectionHovered
+                                ? Colors.white.withOpacity(0.3)
+                                : null,
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          margin: EdgeInsets.all(8.0),
+                          child: ListTile(
+                            leading: Icon(Icons.app_registration,
+                                color: Colors.white, size: 20.0),
+                            title: Container(
+                              margin: EdgeInsets.only(left: 12.0),
+                              transform:
+                                  Matrix4.translationValues(-25, 0.0, 0.0),
+                              child: Text(
+                                "Asset Registration",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.pop(context); // Close the drawer
+                              routeState.go('/asset_registration');
+                            },
+                          ),
+                        ),
+                      ),
+                      MouseRegion(
+                        onEnter: (_) {
+                          setState(() {
+                            isAssetAssignmentSectionHovered = true;
+                          });
+                        },
+                        onExit: (_) {
+                          setState(() {
+                            isAssetAssignmentSectionHovered = false;
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isAssetAssignmentSectionHovered
+                                ? Colors.white.withOpacity(0.3)
+                                : null,
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          margin: EdgeInsets.all(8.0),
+                          child: ListTile(
+                            leading: Icon(Icons.assessment,
+                                color: Colors.white, size: 20.0),
+                            title: Container(
+                              margin: EdgeInsets.only(left: 12.0),
+                              transform:
+                                  Matrix4.translationValues(-25, 0.0, 0.0),
+                              child: Text(
+                                "Asset Assignment",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.pop(context); // Close the drawer
+                              routeState.go('/asset_assignment');
+                            },
+                          ),
+                        ),
+                      ),
+                      MouseRegion(
+                        onEnter: (_) {
+                          setState(() {
+                            isAssetAcquisitionSectionHovered = true;
+                          });
+                        },
+                        onExit: (_) {
+                          setState(() {
+                            isAssetAcquisitionSectionHovered = false;
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isAssetAcquisitionSectionHovered
+                                ? Colors.white.withOpacity(0.3)
+                                : null,
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          margin: EdgeInsets.all(8.0),
+                          child: ListTile(
+                            leading: Icon(Icons.shopping_cart,
+                                color: Colors.white, size: 20.0),
+                            title: Container(
+                              margin: EdgeInsets.only(left: 12.0),
+                              transform:
+                                  Matrix4.translationValues(-25, 0.0, 0.0),
+                              child: Text(
+                                "Asset Acquisition",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.pop(context); // Close the drawer
+                              routeState.go('/asset_acquisition');
+                            },
+                          ),
+                        ),
+                      ),
                       SideNavigationSection(
                         initialSectionHoveredValue: isAssetReportSectionHovered,
                         sectionName: "Reports",
