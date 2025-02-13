@@ -6,6 +6,8 @@ import 'dart:developer';
 import 'package:dual_screen/dual_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery/avinya/academic_scheduler/lib/app.dart';
+import 'package:gallery/avinya/academic_scheduler/lib/app.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:gallery/deferred_widget.dart';
 import 'package:gallery/main.dart';
@@ -29,6 +31,10 @@ import 'package:consumable/app.dart' deferred as consumable;
 import 'package:consumable/routes.dart' as consumable_routes;
 import 'package:enrollment/app.dart' deferred as enrollment;
 import 'package:enrollment/routes.dart' as enrollment_routes;
+import 'package:academic_scheduler/app.dart' deferred as academic_scheduler;
+import 'package:academic_scheduler/routes.dart' as academic_scheduler_routes;
+import 'package:alumni/app.dart' deferred as alumni;
+import 'package:alumni/routes.dart' as alumni_routes;
 
 typedef PathWidgetBuilder = Widget Function(BuildContext, String?);
 
@@ -146,6 +152,26 @@ class RouteConfiguration {
             consumable.loadLibrary,
             () => consumable
                 .ConsumableSystem()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),
+    Path(
+      r'^' + academic_scheduler_routes.academicSchedulerRoute,
+      (context, match) => StudyWrapper(
+        study: DeferredWidget(
+            academic_scheduler.loadLibrary,
+            () => academic_scheduler
+                .AcademicSchedulerSystem()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),
+    Path(
+      r'^' + alumni_routes.alumniRoute,
+      (context, match) => StudyWrapper(
+        study: DeferredWidget(
+            alumni.loadLibrary,
+            () => alumni
+                .AlumniSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),

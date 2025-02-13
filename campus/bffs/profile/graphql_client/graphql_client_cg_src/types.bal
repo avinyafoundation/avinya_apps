@@ -77,6 +77,20 @@ public type Address record {
     int? city_id?;
 };
 
+public type Alumni record {
+    string? created?;
+    string? company_name?;
+    string? updated_by?;
+    string? linkedin_id?;
+    int? id?;
+    string? job_title?;
+    string? updated?;
+    string? record_type?;
+    string? status?;
+    string? facebook_id?;
+    string? instagram_id?;
+};
+
 public type ApplicantConsent record {
     string? date_of_birth?;
     string? al_stream?;
@@ -317,10 +331,12 @@ public type Person record {
     int? parent_organization_id?;
     int? avinya_type_id?;
     Address? permanent_address?;
+    boolean? is_graduated?;
     int? mailing_address_id?;
     string? id_no?;
     string? jwt_email?;
     string? bank_name?;
+    int? alumni_id?;
     int? id?;
     string? email?;
     string? created?;
@@ -661,6 +677,8 @@ public type GetPersonResponse record {|
         int? academy_org_id;
         string? current_job;
         int? documents_id;
+        int? alumni_id;
+        boolean? is_graduated;
     |}? person_by_digital_id;
 |};
 

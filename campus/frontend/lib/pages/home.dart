@@ -23,6 +23,8 @@ import 'package:pcti_notes/routes.dart' as campus_pcti_routes;
 import 'package:pcti_notes_admin/routes.dart' as campus_pcti_admin;
 import 'package:pcti_feedback/routes.dart' as feedback_routes;
 import 'package:consumable/routes.dart' as consumable_routes;
+import 'package:academic_scheduler/routes.dart' as academic_scheduler_routes;
+import 'package:alumni/routes.dart' as alumni_routes;
 import 'package:enrollment/routes.dart' as enrollment_routes;
 
 const _horizontalPadding = 32.0;
@@ -161,26 +163,71 @@ class HomePage extends StatelessWidget {
             studyRoute: asset_admin_routes.assetadminRoute,
           ),
         ),
+
       //2023-04-19 commented for prod and stag branches
-      // Padding(
-      //   padding: const EdgeInsets.all(10.0),
-      //   child: _CarouselCard(
-      //     demo: studyDemos['consumableApp'],
-      //     asset: const AssetImage(
-      //       'assets/images/consumable.png',
-      //       // package: 'flutter_gallery_assets',
-      //     ),
-      //     assetColor: const Color(0xFFFFFFFF),
-      //     // assetDark: const AssetImage(
-      //     //   'assets/studies/shrine_card_dark.png',
-      //     //   package: 'flutter_gallery_assets',
-      //     // ),
-      //     // assetDarkColor: const Color(0xFF543B3C),
-      //     //textColor: shrineBrown900,
-      //     textColor: Colors.black,
-      //     studyRoute: consumable_routes.consumableRoute,
-      //   ),
-      // ),
+      if (campusAppsPortalInstance.isFoundation ||
+          campusAppsPortalInstance.isTeacher)
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: _CarouselCard(
+            demo: studyDemos['consumableApp'],
+            asset: const AssetImage(
+              'assets/images/consumable.png',
+              // package: 'flutter_gallery_assets',
+            ),
+            assetColor: const Color(0xFFFFFFFF),
+            // assetDark: const AssetImage(
+            //   'assets/studies/shrine_card_dark.png',
+            //   package: 'flutter_gallery_assets',
+            // ),
+            // assetDarkColor: const Color(0xFF543B3C),
+            //textColor: shrineBrown900,
+            textColor: Colors.black,
+            studyRoute: consumable_routes.consumableRoute,
+          ),
+        ),
+      if (campusAppsPortalInstance.isFoundation ||
+          campusAppsPortalInstance.isTeacher)
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: _CarouselCard(
+            demo: studyDemos['smartAcademicScheduler'],
+            asset: const AssetImage(
+              'assets/images/academic_planner.jpg',
+              // package: 'flutter_gallery_assets',
+            ),
+            assetColor: const Color(0xFFFFFFFF),
+            // assetDark: const AssetImage(
+            //   'assets/studies/shrine_card_dark.png',
+            //   package: 'flutter_gallery_assets',
+            // ),
+            // assetDarkColor: const Color(0xFF543B3C),
+            //textColor: shrineBrown900,
+            textColor: Colors.white,
+            studyRoute: academic_scheduler_routes.academicSchedulerRoute,
+          ),
+        ),
+      if (campusAppsPortalInstance.isFoundation ||
+          campusAppsPortalInstance.isTeacher)
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: _CarouselCard(
+            demo: studyDemos['alumni'],
+            asset: const AssetImage(
+              'assets/images/alumni.jpg',
+              // package: 'flutter_gallery_assets',
+            ),
+            assetColor: const Color(0xFFFFFFFF),
+            // assetDark: const AssetImage(
+            //   'assets/studies/shrine_card_dark.png',
+            //   package: 'flutter_gallery_assets',
+            // ),
+            // assetDarkColor: const Color(0xFF543B3C),
+            //textColor: shrineBrown900,
+            textColor: Colors.white,
+            studyRoute: alumni_routes.alumniRoute,
+          ),
+        ),
     ];
 
     if (isDesktop) {
@@ -949,16 +996,17 @@ class _CarouselCard extends StatelessWidget {
             children: [
               if (asset != null)
                 Positioned(
-                  left: 50,
-                  top: 40,
-                  bottom: 60,
-                  right: 50,
+                  left: 5,
+                  top: 5,
+                  bottom: 5,
+                  right: 5,
                   child: FadeInImagePlaceholder(
                     image: asset,
                     placeholder: Container(
                       color: assetColor,
                     ),
                     child: Ink.image(
+                      fit: BoxFit.cover,
                       width: MediaQuery.of(context).size.width * 0.5,
                       height: MediaQuery.of(context).size.height * 0.3,
                       image: asset,
