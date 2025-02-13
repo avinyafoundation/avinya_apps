@@ -254,10 +254,12 @@ public type Person record {
     int? parent_organization_id?;
     int? avinya_type_id?;
     Address? permanent_address?;
+    boolean? is_graduated?;
     int? mailing_address_id?;
     string? id_no?;
     string? jwt_email?;
     string? bank_name?;
+    int? alumni_id?;
     int? id?;
     string? email?;
     string? created?;
@@ -280,7 +282,6 @@ public type Person record {
     string? academy_org_name?;
     string? asgardeo_id?;
     int? documents_id?;
-    UserDocument[]? document_list?;
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
@@ -598,6 +599,8 @@ public type GetPersonResponse record {|
         int? academy_org_id;
         string? current_job;
         int? documents_id;
+        int? alumni_id;
+        boolean? is_graduated;
     |}? person_by_digital_id;
 |};
 public type GetOrganizationResponse record {|
