@@ -176,6 +176,20 @@ type AddressData {
   id: Int
 }
 
+input Alumni {
+  record_type: String = "alumni"
+  id: Int
+  status: String
+  company_name: String
+  job_title: String
+  linkedin_id: String
+  facebook_id: String
+  instagram_id: String
+  updated_by: String
+  created: String
+  updated: String
+}
+
 input ApplicantConsent {
   record_type: String = "applicant_consent"
   id: Int
@@ -722,6 +736,7 @@ type Mutation {
   upload_document(user_document: UserDocument!): DocumentsData
   add_monthly_leave_dates(monthly_leave_dates: MonthlyLeaveDates!): MonthlyLeaveDatesData
   update_monthly_leave_dates(monthly_leave_dates: MonthlyLeaveDates!): MonthlyLeaveDatesData
+  create_alumni(person: Person!, mailing_address: Address, mailing_address_city: City, alumni: Alumni!): PersonData
 }
 
 input Organization {
@@ -808,8 +823,10 @@ input Person {
   branch_code: String
   current_job: String
   documents_id: Int
+  alumni_id: Int
   created_by: Int
   updated_by: Int
+  is_graduated: Boolean
 }
 
 type PersonData {
@@ -851,6 +868,8 @@ type PersonData {
   created_by: Int
   updated_by: Int
   documents_id: Int
+  alumni_id: Int
+  is_graduated: Boolean
 }
 
 type PlaceData {
