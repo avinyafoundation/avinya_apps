@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/layout/adaptive.dart';
 import 'package:mobile/pages/profile_info_view.dart';
+import 'package:mobile/pages/alumni_info_view.dart';
 import 'package:mobile/pages/splash.dart';
+import 'package:attendance/data.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final int? id;
   final String? recordType;
   final String? preferredName;
@@ -64,6 +66,17 @@ class ProfileScreen extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    campusAppsPortalInstance.getUserPerson().avinya_type_id!;
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (isDisplayDesktop(context)) {
       return Scaffold(
@@ -82,7 +95,7 @@ class ProfileScreen extends StatelessWidget {
               top: Radius.circular(40),
             ),
             child: Container(
-              child: MyProfileScreen(),
+              child: MyAlumniScreen(),
             ),
           ),
         ),

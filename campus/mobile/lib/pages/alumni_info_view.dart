@@ -5,17 +5,25 @@ import 'package:mobile/data/person.dart';
 import 'package:sizer/sizer.dart';
 import 'package:intl/intl.dart';
 
-class MyProfileScreen extends StatefulWidget {
-  const MyProfileScreen({Key? key}) : super(key: key);
+class MyAlumniScreen extends StatefulWidget {
+  const MyAlumniScreen({Key? key}) : super(key: key);
 
   @override
-  _MyProfileScreenState createState() => _MyProfileScreenState();
+  _MyAlumniScreenState createState() => _MyAlumniScreenState();
 }
 
-class _MyProfileScreenState extends State<MyProfileScreen> {
+class _MyAlumniScreenState extends State<MyAlumniScreen> {
   late Person userPerson = Person()
     ..full_name = 'John'
     ..nic_no = '12';
+
+  String? selectedStatus;
+  final List<String> statusOptions = [
+    'Working',
+    'Not Working',
+    'Working and Studying',
+    'Studying'
+  ];
 
   @override
   void initState() {
@@ -118,10 +126,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ProfileDetailRow(
-                      title: 'Reg. Number',
-                      value:
-                          '${userPerson.id == null ? 'N/A' : userPerson.id}'),
-                  ProfileDetailRow(
                       title: 'Academic Year',
                       value:
                           '${userPerson.updated == null ? 'N/A' : '${DateFormat('yyyy').format(DateTime.parse(userPerson.updated!))} - ${DateFormat('yyyy').format(DateTime.parse(userPerson.updated!).add(Duration(days: 365)))} '}'),
@@ -138,24 +142,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                   ProfileDetailRow(title: 'Class', value: 'TBD'),
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ProfileDetailRow(
-                      title: 'Admission Date',
-                      value:
-                          '${userPerson.created == null ? 'N/A' : DateFormat('d MMM, yyyy').format(DateTime.parse(userPerson.created!))}'),
-                  // ProfileDetailRow(
-                  //     title: 'Age',
-                  //     value:
-                  //         '${calculateAge(userPerson.date_of_birth!)} years old'),
-                ],
-              ),
               sizedBox,
               sizedBox,
               sizedBox,
               Text(
-                'Student Information',
+                'Contact Information',
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       color: kTextBlackColor,
                       fontWeight: FontWeight.bold,
@@ -169,148 +160,46 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     ),
               ),
               sizedBox,
-              ProfileDetailColumn(
-                title: 'Full Name',
-                value:
-                    '${userPerson.full_name == null ? 'N/A' : userPerson.full_name}',
-              ),
-              ProfileDetailColumn(
-                title: 'Preferred Name',
-                value:
-                    '${userPerson.preferred_name == null ? 'N/A' : userPerson.preferred_name}',
-              ),
-              ProfileDetailColumn(
-                title: 'Date of Birth',
-                value:
-                    '${userPerson.date_of_birth == null ? 'N/A' : DateFormat('d MMM, yyyy').format(DateTime.parse(userPerson.date_of_birth!))}',
-              ),
-              ProfileDetailColumn(
-                title: 'Gender',
-                value: '${userPerson.sex == null ? 'N/A' : userPerson.sex}',
-              ),
-              ProfileDetailColumn(
-                title: 'NIC Number',
-                value:
-                    '${userPerson.nic_no == null ? 'N/A' : userPerson.nic_no}',
-              ),
-              ProfileDetailColumn(
-                title: 'Passport Number',
-                value:
-                    '${userPerson.passport_no == null ? 'N/A' : userPerson.passport_no}',
-              ),
-              sizedBox,
-              sizedBox,
-              sizedBox,
-              Text(
-                'Student Contact Information',
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      color: kTextBlackColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: SizerUtil.deviceType == DeviceType.mobile
-                          ? 15.sp
-                          : SizerUtil.deviceType == DeviceType.tablet
-                              ? 14.sp
-                              : SizerUtil.deviceType == DeviceType.web
-                                  ? 6.sp
-                                  : 11.sp,
-                    ),
-              ),
               sizedBox,
               ProfileDetailColumn(
-                title: 'Personal Phone Number',
+                title: 'Phone Number',
                 value: '${userPerson.phone == null ? 'N/A' : userPerson.phone}',
               ),
-              ProfileDetailColumn(
-                title: 'Avinya Phone Number',
-                value:
-                    '${userPerson.avinya_phone == null ? 'N/A' : userPerson.avinya_phone}',
-              ),
+              sizedBox,
               ProfileDetailColumn(
                 title: 'Email',
                 value: '${userPerson.email == null ? 'N/A' : userPerson.email}',
               ),
+              sizedBox,
               ProfileDetailColumn(
-                title: 'Home Address',
-                value:
-                    '${userPerson.permanent_address == null ? 'N/A' : userPerson.permanent_address!.street_address == null ? 'N/A' : userPerson.permanent_address!.street_address}',
-              ),
-              ProfileDetailColumn(
-                title: 'Mailing Address',
+                title: 'Address',
                 value:
                     '${userPerson.mailing_address == null ? 'N/A' : userPerson.mailing_address!.street_address == null ? 'N/A' : userPerson.mailing_address!.street_address}',
               ),
               sizedBox,
-              sizedBox,
-              sizedBox,
-              Text(
-                'Student Bank Information',
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      color: kTextBlackColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: SizerUtil.deviceType == DeviceType.mobile
-                          ? 15.sp
-                          : SizerUtil.deviceType == DeviceType.tablet
-                              ? 14.sp
-                              : SizerUtil.deviceType == DeviceType.web
-                                  ? 6.sp
-                                  : 11.sp,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: DropdownButtonFormField<String>(
+                  value: selectedStatus,
+                  decoration: InputDecoration(
+                    labelText: "Employment Status",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
+                  ),
+                  items: statusOptions.map((String status) {
+                    return DropdownMenuItem<String>(
+                      value: status,
+                      child: Text(status),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedStatus = newValue;
+                    });
+                  },
+                ),
               ),
-              sizedBox,
-              ProfileDetailColumn(
-                title: 'Bank Name',
-                value:
-                    '${userPerson.bank_name == null ? 'N/A' : userPerson.bank_name}',
-              ),
-              ProfileDetailColumn(
-                title: 'Bank Account Name',
-                value:
-                    '${userPerson.bank_account_name == null ? 'N/A' : userPerson.bank_account_name}',
-              ),
-              ProfileDetailColumn(
-                title: 'Bank Account Number',
-                value:
-                    '${userPerson.bank_account_number == null ? 'N/A' : userPerson.bank_account_number}',
-              ),
-              sizedBox,
-              sizedBox,
-              sizedBox,
-              Text(
-                'Parent/Guardian Information',
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      color: kTextBlackColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: SizerUtil.deviceType == DeviceType.mobile
-                          ? 15.sp
-                          : SizerUtil.deviceType == DeviceType.tablet
-                              ? 14.sp
-                              : SizerUtil.deviceType == DeviceType.web
-                                  ? 6.sp
-                                  : 11.sp,
-                    ),
-              ),
-              sizedBox,
-              ProfileDetailColumn(
-                title: 'Father Name',
-                value:
-                    '${userPerson.parent_students != null && userPerson.parent_students.isNotEmpty && userPerson.parent_students[0].preferred_name != null ? userPerson.parent_students[0].preferred_name : 'N/A'}',
-              ),
-              ProfileDetailColumn(
-                title: 'Mother Name',
-                value:
-                    '${userPerson.parent_students != null && userPerson.parent_students.isNotEmpty && userPerson.parent_students[1].preferred_name != null ? userPerson.parent_students[1].preferred_name : 'N/A'}',
-              ),
-              ProfileDetailColumn(
-                title: 'Father Phone Number',
-                value:
-                    '${userPerson.parent_students != null && userPerson.parent_students.isNotEmpty && userPerson.parent_students[0].phone != null ? userPerson.parent_students[0].phone : 'N/A'}',
-              ),
-              ProfileDetailColumn(
-                title: 'Mother Phone Number',
-                value:
-                    '${userPerson.parent_students != null && userPerson.parent_students.isNotEmpty && userPerson.parent_students[1].phone != null ? userPerson.parent_students[1].phone : 'N/A'}',
-              ),
-              sizedBox,
               sizedBox,
               sizedBox,
             ],

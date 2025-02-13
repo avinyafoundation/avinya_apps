@@ -9,11 +9,11 @@ class AppConfig {
   static String campusBffApiKey = '';
   static String refreshToken = '';
   static String choreoSTSEndpoint = "";
-  // static String choreoSTSClientID = "x23_1tY7kAUtLUH9il9I3YwyrJca";
-  static String choreoSTSClientID = "Krjx9Wr0F5eKDYAJQOSVX5rz2aoa";
+  static String choreoSTSClientID = "x23_1tY7kAUtLUH9il9I3YwyrJca";
+  // static String choreoSTSClientID = "Krjx9Wr0F5eKDYAJQOSVX5rz2aoa";
   static String asgardeoTokenEndpoint = "";
-  // static String asgardeoClientId = "pJ2gM2o6yXN4f60FypEYWWERrAoa";
-  static String asgardeoClientId = "6diD3fVU6KfYeokr3BZGoGPioCUa";
+  static String asgardeoClientId = "pJ2gM2o6yXN4f60FypEYWWERrAoa";
+  // static String asgardeoClientId = "6diD3fVU6KfYeokr3BZGoGPioCUa";
   static var apiTokens = null;
   static String applicationName = 'Avinya Campus Apps';
   static String applicationVersion = '1.0.0';
