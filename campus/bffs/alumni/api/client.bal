@@ -28,60 +28,80 @@ public isolated client class GraphqlClient {
         self.graphqlClient = clientEp;
     }
 
-    remote isolated function getPersons(int organization_id, int avinya_type_id) returns GetPersonsResponse|graphql:ClientError {
-        string query = string `query getPersons($organization_id:Int!,$avinya_type_id:Int!) {persons(organization_id:$organization_id,avinya_type_id:$avinya_type_id) {id preferred_name full_name date_of_birth sex asgardeo_id jwt_sub_id created updated jwt_email permanent_address {city {id name {name_en name_si name_ta}} street_address phone id} mailing_address {city {id name {name_en name_si name_ta}} street_address phone id} phone organization {id description notes address {id} avinya_type {id name} name {name_en} parent_organizations {id name {name_en}}} avinya_type_id notes nic_no passport_no id_no email street_address digital_id avinya_phone bank_name bank_account_number bank_account_name academy_org_id bank_branch created_by updated_by current_job}}`;
-        map<anydata> variables = {"organization_id": organization_id, "avinya_type_id": avinya_type_id};
+    remote isolated function createAlumni(Alumni alumni, Person person, Address? mailing_address = (), City? mailing_address_city = ()) returns CreateAlumniResponse|graphql:ClientError {
+        string query = string `mutation createAlumni($person:Person!,$mailing_address:Address,$mailing_address_city:City,$alumni:Alumni!) {create_alumni(person:$person,mailing_address:$mailing_address,mailing_address_city:$mailing_address_city,alumni:$alumni) {id preferred_name full_name mailing_address {city {id name {name_en name_si name_ta}} street_address phone id} phone email documents_id alumni_id}}`;
+        map<anydata> variables = {"mailing_address": mailing_address, "alumni": alumni, "person": person, "mailing_address_city": mailing_address_city};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <GetPersonsResponse>check performDataBinding(graphqlResponse, GetPersonsResponse);
+        return <CreateAlumniResponse>check performDataBinding(graphqlResponse, CreateAlumniResponse);
+    }
+    remote isolated function updateAlumni(Alumni alumni, Person person, Address? mailing_address = (), City? mailing_address_city = ()) returns UpdateAlumniResponse|graphql:ClientError {
+        string query = string `mutation updateAlumni($person:Person!,$mailing_address:Address,$mailing_address_city:City,$alumni:Alumni!) {update_alumni(person:$person,mailing_address:$mailing_address,mailing_address_city:$mailing_address_city,alumni:$alumni) {id preferred_name full_name mailing_address {city {id name {name_en name_si name_ta}} street_address phone id} phone email documents_id alumni_id}}`;
+        map<anydata> variables = {"mailing_address": mailing_address, "alumni": alumni, "person": person, "mailing_address_city": mailing_address_city};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <UpdateAlumniResponse>check performDataBinding(graphqlResponse, UpdateAlumniResponse);
     }
 
-    remote isolated function getPersonById(int id) returns GetPersonByIdResponse|graphql:ClientError {
-        string query = string `query getPersonById($id:Int!) {person_by_id(id:$id) {id preferred_name full_name date_of_birth sex asgardeo_id jwt_sub_id created updated jwt_email mailing_address {city {id name {name_en name_si name_ta} district {id name {name_en}}} street_address phone id} phone organization {id description notes address {id} avinya_type {id name} name {name_en} parent_organizations {id name {name_en}}} avinya_type_id notes nic_no passport_no id_no email street_address digital_id avinya_phone bank_name bank_account_number bank_account_name academy_org_id bank_branch created_by updated_by current_job documents_id}}`;
-        map<anydata> variables = {"id": id};
+    remote isolated function createAlumniEducationQualification(AlumniEducationQualification alumni_education_qualification) returns CreateAlumniEducationQualificationResponse|graphql:ClientError {
+        string query = string `mutation createAlumniEducationQualification($alumni_education_qualification:AlumniEducationQualification!) {create_alumni_education_qualification(alumni_education_qualification:$alumni_education_qualification) {id person_id university_name course_name is_currently_studying start_date end_date created updated}}`;
+        map<anydata> variables = {"alumni_education_qualification": alumni_education_qualification};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <GetPersonByIdResponse>check performDataBinding(graphqlResponse, GetPersonByIdResponse);
+        return <CreateAlumniEducationQualificationResponse>check performDataBinding(graphqlResponse, CreateAlumniEducationQualificationResponse);
     }
-    remote isolated function updatePerson(Person person, City? permanent_address_city = (), Address? mailing_address = (), Address? permanent_address = (), City? mailing_address_city = ()) returns UpdatePersonResponse|graphql:ClientError {
-        string query = string `mutation updatePerson($person:Person!,$permanent_address:Address,$permanent_address_city:City,$mailing_address:Address,$mailing_address_city:City) {update_person(person:$person,permanent_address:$permanent_address,permanent_address_city:$permanent_address_city,mailing_address:$mailing_address,mailing_address_city:$mailing_address_city) {id preferred_name full_name date_of_birth sex asgardeo_id jwt_sub_id created updated jwt_email permanent_address {city {id name {name_en name_si name_ta}} street_address phone id} mailing_address {city {id name {name_en name_si name_ta}} street_address phone id} phone organization {id description notes address {id} avinya_type {id name} name {name_en} parent_organizations {id name {name_en}}} avinya_type_id notes nic_no passport_no id_no email street_address digital_id avinya_phone bank_name bank_account_number bank_account_name academy_org_id bank_branch created_by updated_by current_job documents_id}}`;
-        map<anydata> variables = {"permanent_address_city": permanent_address_city, "mailing_address": mailing_address, "person": person, "permanent_address": permanent_address, "mailing_address_city": mailing_address_city};
+    remote isolated function createAlumniWorkExperience(AlumniWorkExperience alumni_work_experience) returns CreateAlumniWorkExperienceResponse|graphql:ClientError {
+        string query = string `mutation createAlumniWorkExperience($alumni_work_experience:AlumniWorkExperience!) {create_alumni_work_experience(alumni_work_experience:$alumni_work_experience) {id person_id company_name job_title currently_working start_date end_date created updated}}`;
+        map<anydata> variables = {"alumni_work_experience": alumni_work_experience};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <UpdatePersonResponse>check performDataBinding(graphqlResponse, UpdatePersonResponse);
+        return <CreateAlumniWorkExperienceResponse>check performDataBinding(graphqlResponse, CreateAlumniWorkExperienceResponse);
     }
-    remote isolated function getDistricts() returns GetDistrictsResponse|graphql:ClientError {
-        string query = string `query getDistricts {districts {id province {id name {name_en}} name {name_en}}}`;
-        map<anydata> variables = {};
+    remote isolated function updateAlumniEducationQualification(AlumniEducationQualification alumni_education_qualification) returns UpdateAlumniEducationQualificationResponse|graphql:ClientError {
+        string query = string `mutation updateAlumniEducationQualification($alumni_education_qualification:AlumniEducationQualification!) {update_alumni_education_qualification(alumni_education_qualification:$alumni_education_qualification) {id person_id university_name course_name is_currently_studying start_date end_date created updated}}`;
+        map<anydata> variables = {"alumni_education_qualification": alumni_education_qualification};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <GetDistrictsResponse>check performDataBinding(graphqlResponse, GetDistrictsResponse);
+        return <UpdateAlumniEducationQualificationResponse>check performDataBinding(graphqlResponse, UpdateAlumniEducationQualificationResponse);
     }
-    remote isolated function getCities(int district_id) returns GetCitiesResponse|graphql:ClientError {
-        string query = string `query getCities($district_id:Int!) {cities(district_id:$district_id) {id name {name_en}}}`;
-        map<anydata> variables = {"district_id": district_id};
+    remote isolated function updateAlumniWorkExperience(AlumniWorkExperience alumni_work_experience) returns UpdateAlumniWorkExperienceResponse|graphql:ClientError {
+        string query = string `mutation updateAlumniWorkExperience($alumni_work_experience:AlumniWorkExperience!) {update_alumni_work_experience(alumni_work_experience:$alumni_work_experience) {id person_id company_name job_title currently_working start_date end_date created updated}}`;
+        map<anydata> variables = {"alumni_work_experience": alumni_work_experience};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <GetCitiesResponse>check performDataBinding(graphqlResponse, GetCitiesResponse);
-    }
-    remote isolated function getAllOrganizations() returns GetAllOrganizationsResponse|graphql:ClientError {
-        string query = string `query getAllOrganizations {all_organizations {id name {name_en} address {id street_address} avinya_type {id name} description phone notes}}`;
-        map<anydata> variables = {};
-        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <GetAllOrganizationsResponse>check performDataBinding(graphqlResponse, GetAllOrganizationsResponse);
-    }
-    remote isolated function insertPerson(Person person, Address? mailing_address = (), City? mailing_address_city = ()) returns InsertPersonResponse|graphql:ClientError {
-        string query = string `mutation insertPerson($person:Person!,$mailing_address:Address,$mailing_address_city:City) {insert_person(person:$person,mailing_address:$mailing_address,mailing_address_city:$mailing_address_city) {id preferred_name full_name date_of_birth sex asgardeo_id jwt_sub_id created updated jwt_email permanent_address {city {id name {name_en name_si name_ta}} street_address phone id} mailing_address {city {id name {name_en name_si name_ta}} street_address phone id} phone organization {id description notes address {id} avinya_type {id name} name {name_en} parent_organizations {id name {name_en}}} avinya_type_id notes nic_no passport_no id_no email street_address digital_id avinya_phone bank_name bank_account_number bank_account_name academy_org_id bank_branch created_by updated_by current_job documents_id}}`;
-        map<anydata> variables = {"mailing_address": mailing_address, "person": person, "mailing_address_city": mailing_address_city};
-        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <InsertPersonResponse>check performDataBinding(graphqlResponse, InsertPersonResponse);
-    }
-    remote isolated function uploadDocument(UserDocument user_document) returns UploadDocumentResponse|graphql:ClientError {
-        string query = string `mutation uploadDocument($user_document:UserDocument!) {upload_document(user_document:$user_document) {id folder_id nic_front_id nic_back_id birth_certificate_front_id birth_certificate_back_id ol_certificate_id al_certificate_id additional_certificate_01_id additional_certificate_02_id additional_certificate_03_id additional_certificate_04_id additional_certificate_05_id}}`;
-        map<anydata> variables = {"user_document": user_document};
-        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <UploadDocumentResponse>check performDataBinding(graphqlResponse, UploadDocumentResponse);
+        return <UpdateAlumniWorkExperienceResponse>check performDataBinding(graphqlResponse, UpdateAlumniWorkExperienceResponse);
     }
 
-    remote isolated function getAllDocuments(int id) returns GetAllDocumentsResponse|graphql:ClientError {
-        string query = string `query getAllDocuments($id:Int!) {document_list(id:$id) {document document_type}}`;
+    remote isolated function deleteAlumniEducationQualificationById(int id) returns json|error {
+        string query = string `mutation deleteAlumniEducationQualificationById($id: Int!) {delete_alumni_education_qualification_by_id(id:$id)}`;
         map<anydata> variables = {"id": id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <GetAllDocumentsResponse>check performDataBinding(graphqlResponse, GetAllDocumentsResponse);
+        map<json> responseMap = <map<json>>graphqlResponse;
+        json responseData = responseMap.get("data");
+        json|error row_count = check responseData.delete_duty_for_participant;
+        return row_count;
+    }
+
+    remote isolated function deleteAlumniWorkExperienceById(int id) returns json|error {
+        string query = string `mutation deleteAlumniWorkExperienceById($id: Int!){delete_alumni_work_experience_by_id(id:$id)}`;
+        map<anydata> variables = {"id": id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        map<json> responseMap = <map<json>>graphqlResponse;
+        json responseData = responseMap.get("data");
+        json|error row_count = check responseData.delete_duty_for_participant;
+        return row_count;
+    }
+
+    remote isolated function getAlumniEducationQualificationById(int id) returns GetAlumniEducationQualificationByIdResponse|graphql:ClientError {
+        string query = string `query getAlumniEducationQualificationById($id:Int!) {alumni_education_qualification_by_id(id:$id) {id person_id university_name course_name is_currently_studying start_date end_date}}`;
+        map<anydata> variables = {"id": id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetAlumniEducationQualificationByIdResponse>check performDataBinding(graphqlResponse, GetAlumniEducationQualificationByIdResponse);
+    }
+    remote isolated function getAlumniWorkExperienceById(int id) returns GetAlumniWorkExperienceByIdResponse|graphql:ClientError {
+        string query = string `query getAlumniWorkExperienceById($id:Int!) {alumni_work_experience_by_id(id:$id) {id person_id company_name job_title currently_working start_date end_date}}`;
+        map<anydata> variables = {"id": id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetAlumniWorkExperienceByIdResponse>check performDataBinding(graphqlResponse, GetAlumniWorkExperienceByIdResponse);
+    }
+    remote isolated function getAlumniPersonById(int id) returns GetAlumniPersonByIdResponse|graphql:ClientError {
+        string query = string `query getAlumniPersonById($id:Int!) {person_by_id(id:$id) {id preferred_name full_name date_of_birth mailing_address {city {id name {name_en name_si name_ta} district {id name {name_en}}} street_address phone id} phone organization {id description notes address {id} avinya_type {id name} name {name_en} parent_organizations {id name {name_en}}} nic_no id_no email alumni {id status company_name job_title linkedin_id facebook_id instagram_id} alumni_education_qualifications {id person_id university_name course_name is_currently_studying start_date end_date} alumni_work_experience {id person_id company_name job_title currently_working start_date end_date}}}`;
+        map<anydata> variables = {"id": id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetAlumniPersonByIdResponse>check performDataBinding(graphqlResponse, GetAlumniPersonByIdResponse);
     }
 }

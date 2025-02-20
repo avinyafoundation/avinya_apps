@@ -1,9 +1,7 @@
 import ballerina/graphql;
 import ballerina/http;
-import ballerina/io;
-import ballerina/lang.array;
 import ballerina/log;
-import ballerina/mime;
+
 
 public function initClientConfig() returns ConnectionConfig {
     ConnectionConfig _clientConig = {};
@@ -37,157 +35,11 @@ final GraphqlClient globalDataClient = check new (GLOBAL_DATA_API_URL,
 }
 service / on new http:Listener(9096) {
 
-    resource function get persons/[int organization_id]/[int avinya_type_id]() returns Person[]|error {
-        GetPersonsResponse|graphql:ClientError getPersonsResponse = globalDataClient->getPersons(organization_id, avinya_type_id);
-        if (getPersonsResponse is GetPersonsResponse) {
-            Person[] person_datas = [];
-            foreach var person_data in getPersonsResponse.persons {
-                Person|error person_data_record = person_data.cloneWithType(Person);
-                if (person_data_record is Person) {
-                    person_datas.push(person_data_record);
-                } else {
-                    log:printError("Error while processing Application record received", person_data_record);
-                    return error("Error while processing Application record received: " + person_data_record.message() +
-                        ":: Detail: " + person_data_record.detail().toString());
-                }
-            }
+   
 
-            return person_datas;
+    resource function put update_alumni(@http:Payload Person person) returns Person|error {
 
-        } else {
-            log:printError("Error while getting application", getPersonsResponse);
-            return error("Error while getting application: " + getPersonsResponse.message() +
-                ":: Detail: " + getPersonsResponse.detail().toString());
-        }
-    }
-
-    resource function get person_by_id/[int id]() returns Person|error {
-        GetPersonByIdResponse|graphql:ClientError getPersonByIdResponse = globalDataClient->getPersonById(id);
-        if (getPersonByIdResponse is GetPersonByIdResponse) {
-            Person|error person_by_id_record = getPersonByIdResponse.person_by_id.cloneWithType(Person);
-            if (person_by_id_record is Person) {
-                return person_by_id_record;
-            } else {
-                log:printError("Error while processing Application record received", person_by_id_record);
-                return error("Error while processing Application record received: " + person_by_id_record.message() +
-                    ":: Detail: " + person_by_id_record.detail().toString());
-            }
-        } else {
-            log:printError("Error while creating application", getPersonByIdResponse);
-            return error("Error while creating application: " + getPersonByIdResponse.message() +
-                ":: Detail: " + getPersonByIdResponse.detail().toString());
-        }
-    }
-
-    resource function get districts() returns District[]|error {
-        GetDistrictsResponse|graphql:ClientError getDistrictsResponse = globalDataClient->getDistricts();
-        if (getDistrictsResponse is GetDistrictsResponse) {
-            District[] districtsData = [];
-            foreach var district in getDistrictsResponse.districts {
-                District|error districtData = district.cloneWithType(District);
-                if (districtData is District) {
-                    districtsData.push(districtData);
-                } else {
-                    log:printError("Error while processing Application record received", districtData);
-                    return error("Error while processing Application record received: " + districtData.message() +
-                        ":: Detail: " + districtData.detail().toString());
-                }
-            }
-
-            return districtsData;
-
-        } else {
-            log:printError("Error while getting application", getDistrictsResponse);
-            return error("Error while getting application: " + getDistrictsResponse.message() +
-                ":: Detail: " + getDistrictsResponse.detail().toString());
-        }
-    }
-
-    resource function get cities/[int district_id]() returns City[]|error {
-        GetCitiesResponse|graphql:ClientError getCitiesResponse = globalDataClient->getCities(district_id);
-        if (getCitiesResponse is GetCitiesResponse) {
-            City[] citiesData = [];
-            foreach var city in getCitiesResponse.cities {
-                City|error cityData = city.cloneWithType(City);
-                if (cityData is City) {
-                    citiesData.push(cityData);
-                } else {
-                    log:printError("Error while processing Application record received", cityData);
-                    return error("Error while processing Application record received: " + cityData.message() +
-                        ":: Detail: " + cityData.detail().toString());
-                }
-            }
-
-            return citiesData;
-
-        } else {
-            log:printError("Error while getting application", getCitiesResponse);
-            return error("Error while getting application: " + getCitiesResponse.message() +
-                ":: Detail: " + getCitiesResponse.detail().toString());
-        }
-    }
-
-    resource function get all_organizations() returns Organization[]|error {
-        GetAllOrganizationsResponse|graphql:ClientError getAllOrganizationsResponse = globalDataClient->getAllOrganizations();
-        if (getAllOrganizationsResponse is GetAllOrganizationsResponse) {
-            Organization[] organizationsData = [];
-            foreach var organization in getAllOrganizationsResponse.all_organizations {
-                Organization|error organizationData = organization.cloneWithType(Organization);
-                if (organizationData is Organization) {
-                    organizationsData.push(organizationData);
-                } else {
-                    log:printError("Error while processing Application record received", organizationData);
-                    return error("Error while processing Application record received: " + organizationData.message() +
-                        ":: Detail: " + organizationData.detail().toString());
-                }
-            }
-
-            return organizationsData;
-
-        } else {
-            log:printError("Error while getting application", getAllOrganizationsResponse);
-            return error("Error while getting application: " + getAllOrganizationsResponse.message() +
-                ":: Detail: " + getAllOrganizationsResponse.detail().toString());
-        }
-    }
-
-    resource function put update_person(@http:Payload Person person) returns Person|error {
-
-        Address? permanent_address = person?.permanent_address;
-        Address? mailing_address = person?.mailing_address;
-        City? permanent_address_city = permanent_address?.city;
-        City? mailing_address_city = mailing_address?.city;
-
-        if (permanent_address is Address) {
-            permanent_address.city = ();
-        }
-
-        if (mailing_address is Address) {
-            mailing_address.city = ();
-        }
-
-        person.permanent_address = ();
-        person.mailing_address = ();
-
-        UpdatePersonResponse|graphql:ClientError updatePersonResponse = globalDataClient->updatePerson(person, permanent_address_city, mailing_address, permanent_address, mailing_address_city);
-        if (updatePersonResponse is UpdatePersonResponse) {
-            Person|error person_record = updatePersonResponse.update_person.cloneWithType(Person);
-            if (person_record is Person) {
-                return person_record;
-            }
-            else {
-                return error("Error while processing Application record received: " + person_record.message() +
-                    ":: Detail: " + person_record.detail().toString());
-            }
-        } else {
-            log:printError("Error while updating record", updatePersonResponse);
-            return error("Error while updating record: " + updatePersonResponse.message() +
-                ":: Detail: " + updatePersonResponse.detail().toString());
-        }
-    }
-
-    resource function post add_person(@http:Payload Person person) returns Person|ErrorDetail|error {
-
+        Alumni  alumni  = person?.alumni ?: {};
         Address? mailing_address = person?.mailing_address;
         City? mailing_address_city = mailing_address?.city;
 
@@ -196,198 +48,193 @@ service / on new http:Listener(9096) {
         }
 
         person.mailing_address = ();
+        person.alumni = ();
 
-        InsertPersonResponse|graphql:ClientError addPersonResponse = globalDataClient->insertPerson(person,mailing_address,mailing_address_city);
-        if (addPersonResponse is InsertPersonResponse) {
-            Person|error person_record = addPersonResponse.insert_person.cloneWithType(Person);
-            if (person_record is Person) {
-                return person_record;
-            } else {
-                log:printError("Error while processing Application record received", person_record);
-                return {
-                    "message": person_record.message().toString(),
-                    "errorCode": "500"
-                };
+        UpdateAlumniResponse|graphql:ClientError updateAlumniResponse = globalDataClient->updateAlumni(alumni,person,mailing_address,mailing_address_city);
+        if (updateAlumniResponse is UpdateAlumniResponse) {
+            Person|error alumni_record = updateAlumniResponse.update_alumni.cloneWithType(Person);
+            if (alumni_record is Person) {
+                return alumni_record;
+            }
+            else {
+                return error("Error while processing Application record received: " + alumni_record.message() +
+                    ":: Detail: " + alumni_record.detail().toString());
             }
         } else {
-            log:printError("Error while creating application", addPersonResponse);
-            return {
-                "message": addPersonResponse.message().toString(),
-                "errorCode": "500"
-            };
+            log:printError("Error while updating record", updateAlumniResponse);
+            return error("Error while updating record: " + updateAlumniResponse.message() +
+                ":: Detail: " + updateAlumniResponse.detail().toString());
         }
     }
-    resource function post upload_document(http:Request req) returns UserDocument|ErrorDetail|error {
 
-        UserDocument document = {};
-        UserDocument document_details = {};
-        int document_row_id = 0;
-        string document_type = "";
+    resource function post create_alumni(@http:Payload Person person) returns Person|ErrorDetail|error {
+        
+        Alumni  alumni  = person?.alumni ?: {};
+        Address? mailing_address = person?.mailing_address;
+        City? mailing_address_city = mailing_address?.city;
 
-        if (req.getContentType().startsWith("multipart/form-data")) {
-
-            mime:Entity[] bodyParts = check req.getBodyParts();
-            string base64EncodedStringDocument = "";
-
-            foreach var part in bodyParts {
-                mime:ContentDisposition contentDisposition = part.getContentDisposition();
-
-                if (contentDisposition.name == "document_details") {
-
-                    json document_details_in_json = check part.getJson();
-                    document_details = check document_details_in_json.cloneWithType(UserDocument);
-                    document_row_id = document_details?.id ?: 0;
-                    document_type = document_details?.document_type ?: "";
-
-                } else if (contentDisposition.name == "document") {
-
-                    stream<byte[], io:Error?>|mime:ParserError str = part.getByteStream();
-
-                    if str is stream<byte[], io:Error?> {
-
-                        byte[] allBytes = []; // Initialize an empty byte array
-
-                        // Iterate through the stream and collect all chunks
-                        error? e = str.forEach(function(byte[] chunk) {
-                            array:push(allBytes, ...chunk); // Efficiently append all bytes from chunk
-                        });
-
-                        byte[] base64EncodedDocument = <byte[]>(check mime:base64Encode(allBytes));
-                        base64EncodedStringDocument = check string:fromBytes(base64EncodedDocument);
-
-                    }
-                }
-
-            }
-
-            document = {
-                id: document_row_id,
-                document_type: document_type,
-                document: base64EncodedStringDocument
-            };
-
+        if(mailing_address is Address){
+            mailing_address.city = ();
         }
 
-        UploadDocumentResponse|graphql:ClientError uploadDocumentResponse = globalDataClient->uploadDocument(document);
-        if (uploadDocumentResponse is UploadDocumentResponse) {
-            UserDocument|error document_record = uploadDocumentResponse.upload_document.cloneWithType(UserDocument);
-            if (document_record is UserDocument) {
-                return document_record;
+        person.mailing_address = ();
+        person.alumni = ();
+
+        CreateAlumniResponse|graphql:ClientError createAlumniResponse = globalDataClient->createAlumni(alumni,person,mailing_address,mailing_address_city);
+        if (createAlumniResponse is CreateAlumniResponse) {
+            Person|error alumni_record = createAlumniResponse.create_alumni.cloneWithType(Person);
+            if (alumni_record is Person) {
+                return alumni_record;
             } else {
-                log:printError("Error while processing Application record received", document_record);
+                log:printError("Error while processing Application record received", alumni_record);
                 return {
-                    "message": document_record.message().toString(),
+                    "message": alumni_record.message().toString(),
                     "errorCode": "500"
                 };
             }
         } else {
-            log:printError("Error while creating application", uploadDocumentResponse);
+            log:printError("Error while creating application", createAlumniResponse);
             return {
-                "message": uploadDocumentResponse.message().toString(),
+                "message": createAlumniResponse.message().toString(),
                 "errorCode": "500"
             };
         }
     }
 
-    resource function get document_list/[int id]() returns UserDocument[]|error {
-        GetAllDocumentsResponse|graphql:ClientError getDocumentsResponse = globalDataClient->getAllDocuments(id);
-        if (getDocumentsResponse is GetAllDocumentsResponse) {
-            UserDocument[] document_datas = [];
-            foreach var document_data in getDocumentsResponse.document_list {
-                UserDocument|error document_data_record = document_data.cloneWithType(UserDocument);
-                if (document_data_record is UserDocument) {
-                    document_datas.push(document_data_record);
-                } else {
-                    log:printError("Error while processing Application record received", document_data_record);
-                    return error("Error while processing Application record received: " + document_data_record.message() +
-                        ":: Detail: " + document_data_record.detail().toString());
-                }
+    resource function post create_alumni_education_qualification(@http:Payload AlumniEducationQualification alumniEducationQualification) returns AlumniEducationQualification|error {
+        CreateAlumniEducationQualificationResponse|graphql:ClientError createAlumniEducationQualificationResponse = globalDataClient->createAlumniEducationQualification(alumniEducationQualification);
+        if(createAlumniEducationQualificationResponse is CreateAlumniEducationQualificationResponse) {
+            AlumniEducationQualification|error alumni_education_qualification_record = createAlumniEducationQualificationResponse.create_alumni_education_qualification.cloneWithType(AlumniEducationQualification);
+            if(alumni_education_qualification_record is AlumniEducationQualification) {
+                return alumni_education_qualification_record;
+            } else {
+                log:printError("Error while processing Application record received", alumni_education_qualification_record);
+                return error("Error while processing Application record received: " + alumni_education_qualification_record.message() + 
+                    ":: Detail: " + alumni_education_qualification_record.detail().toString());
             }
-
-            return document_datas;
-
         } else {
-            log:printError("Error while getting application", getDocumentsResponse);
-            return error("Error while getting application: " + getDocumentsResponse.message() +
-                ":: Detail: " + getDocumentsResponse.detail().toString());
+            log:printError("Error while creating application", createAlumniEducationQualificationResponse);
+            return error("Error while creating application: " + createAlumniEducationQualificationResponse.message() + 
+                ":: Detail: " + createAlumniEducationQualificationResponse.detail().toString());
         }
     }
 
+    resource function post create_alumni_work_experience(@http:Payload AlumniWorkExperience alumniWorkExperience) returns AlumniWorkExperience|error {
+        CreateAlumniWorkExperienceResponse|graphql:ClientError createAlumniWorkExperienceResponse = globalDataClient->createAlumniWorkExperience(alumniWorkExperience);
+        if(createAlumniWorkExperienceResponse is CreateAlumniWorkExperienceResponse) {
+            AlumniWorkExperience|error alumni_work_experience_record = createAlumniWorkExperienceResponse.create_alumni_work_experience.cloneWithType(AlumniWorkExperience);
+            if(alumni_work_experience_record is AlumniWorkExperience) {
+                return alumni_work_experience_record;
+            } else {
+                log:printError("Error while processing Application record received", alumni_work_experience_record);
+                return error("Error while processing Application record received: " + alumni_work_experience_record.message() + 
+                    ":: Detail: " + alumni_work_experience_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", createAlumniWorkExperienceResponse);
+            return error("Error while creating application: " + createAlumniWorkExperienceResponse.message() + 
+                ":: Detail: " + createAlumniWorkExperienceResponse.detail().toString());
+        }
+    }
 
-    // resource function post add_person(http:Request req) returns Person|error {
-    //     UserDocumentList[] documents = [];
-    //     Person person = {};
-    //     Address? mailing_address = {};
-    //     City? mailing_address_city = {};
+    resource function put update_alumni_education_qualification(@http:Payload AlumniEducationQualification alumniEducationQualification) returns AlumniEducationQualification|error {
+        UpdateAlumniEducationQualificationResponse|graphql:ClientError updateAlumniEducationQualificationResponse = globalDataClient->updateAlumniEducationQualification(alumniEducationQualification);
+        if(updateAlumniEducationQualificationResponse is  UpdateAlumniEducationQualificationResponse) {
+            AlumniEducationQualification|error alumni_education_qualification_data_record = updateAlumniEducationQualificationResponse.update_alumni_education_qualification.cloneWithType(AlumniEducationQualification);
+            if(alumni_education_qualification_data_record is  AlumniEducationQualification) {
+                return alumni_education_qualification_data_record;
+            } else {
+                log:printError("Error while processing Application record received", alumni_education_qualification_data_record);
+                return error("Error while processing Application record received: " + alumni_education_qualification_data_record.message() + 
+                    ":: Detail: " + alumni_education_qualification_data_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while updating application", updateAlumniEducationQualificationResponse);
+            return error("Error while updating application: " + updateAlumniEducationQualificationResponse.message() + 
+                ":: Detail: " + updateAlumniEducationQualificationResponse.detail().toString());
+        }
+    }
 
-    //     if (req.getContentType().startsWith("multipart/form-data")) {
-    //         mime:Entity[] bodyParts = check req.getBodyParts();
+    resource function put update_alumni_work_experience(@http:Payload AlumniWorkExperience alumniWorkExperience) returns AlumniWorkExperience|error {
+        UpdateAlumniWorkExperienceResponse|graphql:ClientError updateAlumniWorkExperienceResponse = globalDataClient->updateAlumniWorkExperience(alumniWorkExperience);
+        if(updateAlumniWorkExperienceResponse is  UpdateAlumniWorkExperienceResponse) {
+            AlumniWorkExperience|error alumni_work_experience_data_record = updateAlumniWorkExperienceResponse.update_alumni_work_experience.cloneWithType(AlumniWorkExperience);
+            if(alumni_work_experience_data_record is  AlumniWorkExperience) {
+                return alumni_work_experience_data_record;
+            } else {
+                log:printError("Error while processing Application record received", alumni_work_experience_data_record);
+                return error("Error while processing Application record received: " + alumni_work_experience_data_record.message() + 
+                    ":: Detail: " + alumni_work_experience_data_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while updating application", updateAlumniWorkExperienceResponse);
+            return error("Error while updating application: " + updateAlumniWorkExperienceResponse.message() + 
+                ":: Detail: " + updateAlumniWorkExperienceResponse.detail().toString());
+        }
+    }
 
-    //         foreach var part in bodyParts {
-    //             mime:ContentDisposition contentDisposition = part.getContentDisposition();
+    resource function delete alumni_education_qualification_by_id/[int id]() returns json|error {
+        json|error delete_count = globalDataClient->deleteAlumniEducationQualificationById(id);
+        return  delete_count;
+    }
 
-    //             if (contentDisposition.name == "person") {
-    //                 // Extract JSON string and convert to Person record
-    //                 json personJson = check part.getJson();
-    //                 person = check personJson.cloneWithType(Person);
-    //                 mailing_address = person?.mailing_address;
-    //                 mailing_address_city = mailing_address?.city;
+    resource function delete alumni_work_experience_by_id/[int id]() returns json|error {
+        json|error delete_count = globalDataClient->deleteAlumniWorkExperienceById(id);
+        return  delete_count;
+    }
 
-    //                 if (mailing_address is Address) {
-    //                     mailing_address.city = ();
-    //                 }
+    resource function get alumni_education_qualification_by_id/[int id]() returns AlumniEducationQualification|error {
+        GetAlumniEducationQualificationByIdResponse|graphql:ClientError getAlumniEducationQualificationByIdResponse = globalDataClient->getAlumniEducationQualificationById(id);
+        if (getAlumniEducationQualificationByIdResponse is GetAlumniEducationQualificationByIdResponse) {
+            AlumniEducationQualification|error alumni_education_qualification_by_id_record = getAlumniEducationQualificationByIdResponse.alumni_education_qualification_by_id.cloneWithType(AlumniEducationQualification);
+            if (alumni_education_qualification_by_id_record is AlumniEducationQualification) {
+                return alumni_education_qualification_by_id_record;
+            } else {
+                log:printError("Error while processing Application record received", alumni_education_qualification_by_id_record);
+                return error("Error while processing Application record received: " + alumni_education_qualification_by_id_record.message() +
+                    ":: Detail: " + alumni_education_qualification_by_id_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", getAlumniEducationQualificationByIdResponse);
+            return error("Error while creating application: " + getAlumniEducationQualificationByIdResponse.message() +
+                ":: Detail: " + getAlumniEducationQualificationByIdResponse.detail().toString());
+        }
+    }
 
-    //                 person.mailing_address = ();
+    resource function get alumni_work_experience_by_id/[int id]() returns AlumniWorkExperience|error {
+        GetAlumniWorkExperienceByIdResponse|graphql:ClientError getAlumniWorkExperienceByIdResponse = globalDataClient->getAlumniWorkExperienceById(id);
+        if (getAlumniWorkExperienceByIdResponse is GetAlumniWorkExperienceByIdResponse) {
+            AlumniWorkExperience|error alumni_work_experience_by_id_record = getAlumniWorkExperienceByIdResponse.alumni_work_experience_by_id.cloneWithType(AlumniWorkExperience);
+            if (alumni_work_experience_by_id_record is AlumniWorkExperience) {
+                return alumni_work_experience_by_id_record;
+            } else {
+                log:printError("Error while processing Application record received", alumni_work_experience_by_id_record);
+                return error("Error while processing Application record received: " + alumni_work_experience_by_id_record.message() +
+                    ":: Detail: " + alumni_work_experience_by_id_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", getAlumniWorkExperienceByIdResponse);
+            return error("Error while creating application: " + getAlumniWorkExperienceByIdResponse.message() +
+                ":: Detail: " + getAlumniWorkExperienceByIdResponse.detail().toString());
+        }
+    }
 
-    //             } else if (contentDisposition.name == "documents") {
+    resource function get alumni_person_by_id/[int id]() returns Person|error {
+        GetAlumniPersonByIdResponse|graphql:ClientError getAlumniPersonByIdResponse = globalDataClient->getAlumniPersonById(id);
+        if (getAlumniPersonByIdResponse is GetAlumniPersonByIdResponse) {
+            Person|error person_by_id_record = getAlumniPersonByIdResponse.person_by_id.cloneWithType(Person);
+            if (person_by_id_record is Person) {
+                return person_by_id_record;
+            } else {
+                log:printError("Error while processing Application record received", person_by_id_record);
+                return error("Error while processing Application record received: " + person_by_id_record.message() +
+                    ":: Detail: " + person_by_id_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", getAlumniPersonByIdResponse);
+            return error("Error while creating application: " + getAlumniPersonByIdResponse.message() +
+                ":: Detail: " + getAlumniPersonByIdResponse.detail().toString());
+        }
+    }
 
-    //                 // Get the filename from Content-Disposition
-    //                 string? documentName = contentDisposition.fileName;
-
-    //                 stream<byte[], io:Error?>|mime:ParserError str = part.getByteStream();
-
-    //                 //Extract file name without extension
-    //                 string:RegExp r = re `\.`;
-    //                 string[] split_document_name = r.split(documentName ?: "");
-
-    //                 if str is stream<byte[], io:Error?> {
-
-    //                     byte[] allBytes = []; // Initialize an empty byte array
-
-    //                     // Iterate through the stream and collect all chunks
-    //                     error? e = str.forEach(function(byte[] chunk) {
-    //                          array:push(allBytes, ...chunk); // Efficiently append all bytes from chunk
-    //                     });
-
-    //                     byte[] base64EncodedDocument = <byte[]>(check mime:base64Encode(allBytes));
-    //                     string base64EncodedStringDocument = check string:fromBytes(base64EncodedDocument);
-
-    //                     UserDocumentList document = {
-    //                         document_name: split_document_name[0],
-    //                         document: base64EncodedStringDocument
-
-    //                     };
-    //                     //io:println(document);
-    //                     documents.push(document);
-    //                 }
-    //             }
-
-    //         }
-    //     }
-    //     InsertPersonResponse|graphql:ClientError addPersonResponse = globalDataClient->insertPerson(documents, person, mailing_address, mailing_address_city);
-    //     if (addPersonResponse is InsertPersonResponse) {
-    //         Person|error person_record = addPersonResponse.insert_person.cloneWithType(Person);
-    //         if (person_record is Person) {
-    //             return person_record;
-    //         } else {
-    //             log:printError("Error while processing Application record received", person_record);
-    //             return error("Error while processing Application record received: " + person_record.message() +
-    //                 ":: Detail: " + person_record.detail().toString());
-    //         }
-    //     } else {
-    //         log:printError("Error while creating application", addPersonResponse);
-    //         return error("Error while creating application: " + addPersonResponse.message() +
-    //             ":: Detail: " + addPersonResponse.detail().toString());
-    //     }
-    // }
 }
