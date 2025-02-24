@@ -2,6 +2,7 @@ import 'package:mobile/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/data/campus_apps_portal.dart';
 import 'package:mobile/data/person.dart';
+import 'package:mobile/widgets/time_line_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:intl/intl.dart';
 
@@ -13,7 +14,7 @@ class MyAlumniScreen extends StatefulWidget {
 }
 
 class _MyAlumniScreenState extends State<MyAlumniScreen> {
-  late Person userPerson = Person()
+  late Person userPerson = Person(is_graduated: false)
     ..full_name = 'John'
     ..nic_no = '12';
 
@@ -50,6 +51,25 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
     return age;
   }
 
+  final TextEditingController companyController = TextEditingController();
+  final TextEditingController jobTitleController = TextEditingController();
+  final TextEditingController workStartDateController = TextEditingController();
+  String? workStatus;
+
+  final TextEditingController universityController = TextEditingController();
+  final TextEditingController degreeController = TextEditingController();
+  // final TextEditingController studyStartDateController =
+  //     TextEditingController();
+  // final TextEditingController studyEndDateController = TextEditingController();
+  String? studyStatus;
+  final TextEditingController startDateController = TextEditingController();
+  final TextEditingController endDateController = TextEditingController();
+
+  final TextEditingController linkedInController = TextEditingController();
+  final TextEditingController facebookController = TextEditingController();
+  final TextEditingController instagramController = TextEditingController();
+  bool isCurrent = false;
+  String selectedCategory = "Work";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,6 +197,8 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                     '${userPerson.mailing_address == null ? 'N/A' : userPerson.mailing_address!.street_address == null ? 'N/A' : userPerson.mailing_address!.street_address}',
               ),
               sizedBox,
+              _buildSocialMediaSection(),
+              sizedBox,
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: DropdownButtonFormField<String>(
@@ -201,13 +223,194 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                 ),
               ),
               sizedBox,
-              sizedBox,
+              SizedBox(height: 20),
+              _buildWorkSection(),
+              SizedBox(height: 20),
+              // _buildStudySection(),
+              TimelineWidget(),
+              SizedBox(height: 80),
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget _buildSocialMediaSection() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Social Media Profiles',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          SizedBox(height: 10),
+          _buildTextField(linkedInController, 'LinkedIn Profile Link'),
+          _buildTextField(facebookController, 'Facebook Profile Link'),
+          _buildTextField(instagramController, 'Instagram Profile Link'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWorkSection() {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Text(
+                "Add Work & Study",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            SizedBox(height: 10),
+            DropdownButtonFormField<String>(
+              value: selectedCategory,
+              items: ["Work", "Study"].map((String category) {
+                return DropdownMenuItem<String>(
+                  value: category,
+                  child: Text(category),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedCategory = value!;
+                });
+              },
+              decoration: InputDecoration(labelText: "Select Category"),
+            ),
+            SizedBox(height: 10),
+            if (selectedCategory == "Work") ...[
+              TextFormField(
+                controller: companyController,
+                decoration: InputDecoration(labelText: "Company Name"),
+              ),
+              TextFormField(
+                controller: jobTitleController,
+                decoration: InputDecoration(labelText: "Job Title"),
+              ),
+              SwitchListTile(
+                title: Text("Currently Working Here?"),
+                value: isCurrent,
+                onChanged: (bool value) {
+                  setState(() {
+                    isCurrent = value;
+                  });
+                },
+              ),
+              TextFormField(
+                controller: startDateController,
+                decoration: InputDecoration(labelText: "Start Date"),
+              ),
+              if (!isCurrent)
+                TextFormField(
+                  controller: endDateController,
+                  decoration: InputDecoration(labelText: "End Date"),
+                ),
+            ] else ...[
+              TextFormField(
+                controller: universityController,
+                decoration: InputDecoration(labelText: "University/School"),
+              ),
+              TextFormField(
+                controller: degreeController,
+                decoration: InputDecoration(labelText: "Degree/Course"),
+              ),
+              SwitchListTile(
+                title: Text("Currently Studying Here?"),
+                value: isCurrent,
+                onChanged: (bool value) {
+                  setState(() {
+                    isCurrent = value;
+                  });
+                },
+              ),
+              TextFormField(
+                controller: startDateController,
+                decoration: InputDecoration(labelText: "Start Date"),
+              ),
+              if (!isCurrent)
+                TextFormField(
+                  controller: endDateController,
+                  decoration: InputDecoration(labelText: "End Date"),
+                ),
+            ],
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                // Handle submission
+              },
+              child: Text("Add"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Widget _buildStudySection() {
+//   return Card(
+//     elevation: 4,
+//     child: Padding(
+//       padding: const EdgeInsets.all(16.0),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Text('Education',
+//               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+//           SizedBox(height: 10),
+//           _buildTextField(universityController, 'University/School Name'),
+//           _buildTextField(degreeController, 'Degree/Course'),
+//           _buildDropdown(
+//               ['Yes, I am studying', 'No, I have completed my studies'],
+//               (value) => studyStatus = value),
+//           _buildTextField(
+//               studyStartDateController, 'Start Date (e.g., 2016 Jan)'),
+//           _buildTextField(
+//               studyEndDateController, 'End Date (e.g., 2017 May)'),
+//           SizedBox(height: 10),
+//           ElevatedButton(onPressed: () {}, child: Text('Add')),
+//         ],
+//       ),
+//     ),
+//   );
+// }
+
+Widget _buildDropdown(List<String> options, Function(String?) onChanged) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 10.0),
+    child: DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+      ),
+      hint: Text('Select an option'),
+      items: options.map((String option) {
+        return DropdownMenuItem<String>(
+          value: option,
+          child: Text(option),
+        );
+      }).toList(),
+      onChanged: onChanged,
+    ),
+  );
+}
+
+Widget _buildTextField(TextEditingController controller, String label) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 10.0),
+    child: TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(),
+      ),
+    ),
+  );
 }
 
 class ProfileDetailRow extends StatelessWidget {
@@ -340,3 +543,162 @@ class ProfileDetailColumn extends StatelessWidget {
     );
   }
 }
+
+
+// import 'package:flutter/material.dart';
+
+// class MyAlumniScreen extends StatefulWidget {
+//   @override
+//   _MyAlumniScreenState createState() => _MyAlumniScreenState();
+// }
+
+// class _MyAlumniScreenState extends State<MyAlumniScreen> {
+//   final TextEditingController companyController = TextEditingController();
+//   final TextEditingController jobTitleController = TextEditingController();
+//   final TextEditingController workStartDateController = TextEditingController();
+//   String? workStatus;
+
+//   final TextEditingController universityController = TextEditingController();
+//   final TextEditingController degreeController = TextEditingController();
+//   final TextEditingController studyStartDateController =
+//       TextEditingController();
+//   final TextEditingController studyEndDateController = TextEditingController();
+//   String? studyStatus;
+
+//   final TextEditingController linkedInController = TextEditingController();
+//   final TextEditingController facebookController = TextEditingController();
+//   final TextEditingController instagramController = TextEditingController();
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text('My Alumni Profile')),
+//       body: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: SingleChildScrollView(
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               Center(
+//                   child: Text('Add Work & Study',
+//                       style: TextStyle(
+//                           fontSize: 18, fontWeight: FontWeight.bold))),
+//               SizedBox(height: 20),
+//               _buildWorkSection(),
+//               SizedBox(height: 20),
+//               _buildStudySection(),
+//               SizedBox(height: 30),
+//               _buildSocialMediaSection(),
+//               SizedBox(height: 20),
+//               ElevatedButton(
+//                 onPressed: () {},
+//                 child: Text('Save Changes'),
+//                 style: ElevatedButton.styleFrom(
+//                     minimumSize: Size(double.infinity, 50)),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildWorkSection() {
+//     return Card(
+//       elevation: 4,
+//       child: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Text('Work Experience',
+//                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+//             SizedBox(height: 10),
+//             _buildTextField(companyController, 'Company Name'),
+//             _buildTextField(jobTitleController, 'Job Title'),
+//             _buildDropdown(['Yes, I am working', 'No, I am not working'],
+//                 (value) => workStatus = value),
+//             _buildTextField(
+//                 workStartDateController, 'Start Date (e.g., 2020 - Present)'),
+//             SizedBox(height: 10),
+//             ElevatedButton(onPressed: () {}, child: Text('Add')),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildStudySection() {
+//     return Card(
+//       elevation: 4,
+//       child: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Text('Education',
+//                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+//             SizedBox(height: 10),
+//             _buildTextField(universityController, 'University/School Name'),
+//             _buildTextField(degreeController, 'Degree/Course'),
+//             _buildDropdown(
+//                 ['Yes, I am studying', 'No, I have completed my studies'],
+//                 (value) => studyStatus = value),
+//             _buildTextField(
+//                 studyStartDateController, 'Start Date (e.g., 2016 Jan)'),
+//             _buildTextField(
+//                 studyEndDateController, 'End Date (e.g., 2017 May)'),
+//             SizedBox(height: 10),
+//             ElevatedButton(onPressed: () {}, child: Text('Add')),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildSocialMediaSection() {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Text('Social Media Profiles',
+//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+//         SizedBox(height: 10),
+//         _buildTextField(linkedInController, 'LinkedIn Profile Link'),
+//         _buildTextField(facebookController, 'Facebook Profile Link'),
+//         _buildTextField(instagramController, 'Instagram Profile Link'),
+//       ],
+//     );
+//   }
+
+//   Widget _buildTextField(TextEditingController controller, String label) {
+//     return Padding(
+//       padding: const EdgeInsets.only(bottom: 10.0),
+//       child: TextFormField(
+//         controller: controller,
+//         decoration: InputDecoration(
+//           labelText: label,
+//           border: OutlineInputBorder(),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildDropdown(List<String> options, Function(String?) onChanged) {
+//     return Padding(
+//       padding: const EdgeInsets.only(bottom: 10.0),
+//       child: DropdownButtonFormField<String>(
+//         decoration: InputDecoration(
+//           border: OutlineInputBorder(),
+//         ),
+//         hint: Text('Select an option'),
+//         items: options.map((String option) {
+//           return DropdownMenuItem<String>(
+//             value: option,
+//             child: Text(option),
+//           );
+//         }).toList(),
+//         onChanged: onChanged,
+//       ),
+//     );
+//   }
+// }

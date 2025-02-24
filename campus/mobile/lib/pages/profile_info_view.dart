@@ -13,7 +13,7 @@ class MyProfileScreen extends StatefulWidget {
 }
 
 class _MyProfileScreenState extends State<MyProfileScreen> {
-  late Person userPerson = Person()
+  late Person userPerson = Person(is_graduated: false)
     ..full_name = 'John'
     ..nic_no = '12';
 

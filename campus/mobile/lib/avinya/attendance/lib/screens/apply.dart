@@ -476,6 +476,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
             mailing_address_id: studentAddress.id,
             jwt_sub_id: campusAppsPortalInstance.getJWTSub(),
             jwt_email: campusAppsPortalInstance.getJWTEmail(),
+            is_graduated: false,
           );
 
           ScaffoldMessenger.of(context).showSnackBar(

@@ -143,6 +143,9 @@ class Person {
   int? academy_org_id;
   String? created;
   String? updated;
+  int? alumni_id;
+  bool is_graduated;
+  int? document_id;
   var parent_students = <Person>[];
 
   Person({
@@ -179,6 +182,9 @@ class Person {
     this.academy_org_id,
     this.created,
     this.updated,
+    this.alumni_id,
+    required this.is_graduated,
+    this.document_id,
     this.parent_students = const [],
   });
 
@@ -221,6 +227,9 @@ class Person {
           json['avinya_type'] != null ? json['avinya_type'] : {}),
       created: json['created'],
       updated: json['updated'],
+      alumni_id: json['alumni_id'],
+      is_graduated: json['is_graduated'],
+      document_id: json['document_id'],
       parent_students: json['parent_students'] != null
           ? json['parent_students']
               .map<Person>((eval_json) => Person.fromJson(eval_json))
@@ -267,6 +276,9 @@ class Person {
         if (organization != null) 'organization': organization!.toJson(),
         if (avinya_type != null) 'avinya_type': avinya_type!.toJson(),
         if (created != null) 'created': created,
+        if (alumni_id != null) 'alumni_id': alumni_id,
+        if (is_graduated) 'is_graduated': is_graduated,
+        if (document_id != null) 'document_id': document_id,
         if (updated != null) 'updated': updated,
         'parent_students': [parent_students],
       };

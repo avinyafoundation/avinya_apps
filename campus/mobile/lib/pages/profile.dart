@@ -70,19 +70,43 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  late Person userPerson = Person(is_graduated: false)
+    ..full_name = 'John'
+    ..nic_no = '12';
+
   @override
   void initState() {
     super.initState();
-    campusAppsPortalInstance.getUserPerson().avinya_type_id!;
+    getUserPerson();
   }
+
+  void getUserPerson() {
+    // Retrieve user data from local instance
+    Person user = campusAppsPortalInstance.getUserPerson();
+    setState(() {
+      userPerson = user;
+    });
+  }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   campusAppsPortalInstance.getUserPerson().avinya_type_id!;
+  // }
 
   @override
   Widget build(BuildContext context) {
-    if (isDisplayDesktop(context)) {
+    if (!userPerson.is_graduated) {
       return Scaffold(
-        body: Container(
-          child: SplashPage(
-            child: MyProfileScreen(),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 50),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(40),
+            ),
+            child: Container(
+              child: MyProfileScreen(),
+            ),
           ),
         ),
       );
