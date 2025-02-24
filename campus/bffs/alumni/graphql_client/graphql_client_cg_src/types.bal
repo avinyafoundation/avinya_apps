@@ -77,6 +77,46 @@ public type Address record {
     int? city_id?;
 };
 
+public type Alumni record {
+    string? created?;
+    string? company_name?;
+    string? updated_by?;
+    string? linkedin_id?;
+    int? id?;
+    string? job_title?;
+    string? updated?;
+    string? record_type?;
+    string? status?;
+    string? facebook_id?;
+    string? instagram_id?;
+};
+
+public type AlumniEducationQualification record {
+    string? end_date?;
+    string? course_name?;
+    string? created?;
+    int? is_currently_studying?;
+    int? id?;
+    string? university_name?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+    string? start_date?;
+};
+
+public type AlumniWorkExperience record {
+    string? end_date?;
+    string? created?;
+    string? company_name?;
+    int? id?;
+    string? job_title?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+    int? currently_working?;
+    string? start_date?;
+};
+
 public type ApplicantConsent record {
     string? date_of_birth?;
     string? al_stream?;
@@ -279,6 +319,7 @@ public type MonthlyLeaveDates record {
     int? month?;
     int[] leave_dates_list?;
     int? year?;
+    int? batch_id?;
     string? created?;
     int? total_days_in_month?;
     int? organization_id?;
@@ -316,10 +357,13 @@ public type Person record {
     int? parent_organization_id?;
     int? avinya_type_id?;
     Address? permanent_address?;
+    boolean? is_graduated?;
     int? mailing_address_id?;
+    Alumni? alumni?;
     string? id_no?;
     string? jwt_email?;
     string? bank_name?;
+    int? alumni_id?;
     int? id?;
     string? email?;
     string? created?;
@@ -346,6 +390,15 @@ public type Person record {
     string? preferred_name?;
     string? jwt_sub_id?;
     int? academy_org_id?;
+};
+
+public type PersonProfilePicture record {
+    int? organization_id?;
+    int? id?;
+    string? picture_id?;
+    string? record_type?;
+    string? picture?;
+    int? person_id?;
 };
 
 public type Prospect record {
@@ -463,32 +516,12 @@ public type WorkExperience record {
     string? start_date?;
 };
 
-public type GetPersonsResponse record {|
+public type CreateAlumniResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
         string? preferred_name;
         string? full_name;
-        string? date_of_birth;
-        string? sex;
-        string? asgardeo_id;
-        string? jwt_sub_id;
-        string? created;
-        string? updated;
-        string? jwt_email;
-        record {|
-            record {|
-                int? id;
-                record {|
-                    string? name_en;
-                    string? name_si;
-                    string? name_ta;
-                |} name;
-            |} city;
-            string? street_address;
-            int? phone;
-            int? id;
-        |}? permanent_address;
         record {|
             record {|
                 int? id;
@@ -503,60 +536,131 @@ public type GetPersonsResponse record {|
             int? id;
         |}? mailing_address;
         int? phone;
+        string? email;
+        int? documents_id;
+        int? alumni_id;
+    |}? create_alumni;
+|};
+
+public type UpdateAlumniResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? preferred_name;
+        string? full_name;
         record {|
-            int? id;
-            string? description;
-            string? notes;
-            record {|
-                int? id;
-            |}? address;
-            record {|
-                int? id;
-                string? name;
-            |}? avinya_type;
-            record {|
-                string? name_en;
-            |} name;
             record {|
                 int? id;
                 record {|
                     string? name_en;
+                    string? name_si;
+                    string? name_ta;
                 |} name;
-            |}[]? parent_organizations;
-        |}? organization;
-        int? avinya_type_id;
-        string? notes;
-        string? nic_no;
-        string? passport_no;
-        string? id_no;
+            |} city;
+            string? street_address;
+            int? phone;
+            int? id;
+        |}? mailing_address;
+        int? phone;
         string? email;
-        string? street_address;
-        string? digital_id;
-        int? avinya_phone;
-        string? bank_name;
-        string? bank_account_number;
-        string? bank_account_name;
-        int? academy_org_id;
-        string? bank_branch;
-        int? created_by;
-        int? updated_by;
-        string? current_job;
-    |}[]? persons;
+        int? documents_id;
+        int? alumni_id;
+    |}? update_alumni;
 |};
 
-public type GetPersonByIdResponse record {|
+public type CreateAlumniEducationQualificationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        string? university_name;
+        string? course_name;
+        int? is_currently_studying;
+        string? start_date;
+        string? end_date;
+        string? created;
+        string? updated;
+    |}? create_alumni_education_qualification;
+|};
+
+public type CreateAlumniWorkExperienceResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        string? company_name;
+        string? job_title;
+        int? currently_working;
+        string? start_date;
+        string? end_date;
+        string? created;
+        string? updated;
+    |}? create_alumni_work_experience;
+|};
+
+public type UpdateAlumniEducationQualificationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        string? university_name;
+        string? course_name;
+        int? is_currently_studying;
+        string? start_date;
+        string? end_date;
+        string? created;
+        string? updated;
+    |}? update_alumni_education_qualification;
+|};
+
+public type UpdateAlumniWorkExperienceResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        string? company_name;
+        string? job_title;
+        int? currently_working;
+        string? start_date;
+        string? end_date;
+        string? created;
+        string? updated;
+    |}? update_alumni_work_experience;
+|};
+
+public type GetAlumniEducationQualificationByIdResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        string? university_name;
+        string? course_name;
+        int? is_currently_studying;
+        string? start_date;
+        string? end_date;
+    |}? alumni_education_qualification_by_id;
+|};
+
+public type GetAlumniWorkExperienceByIdResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        string? company_name;
+        string? job_title;
+        int? currently_working;
+        string? start_date;
+        string? end_date;
+    |}? alumni_work_experience_by_id;
+|};
+
+public type GetAlumniPersonByIdResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
         string? preferred_name;
         string? full_name;
         string? date_of_birth;
-        string? sex;
-        string? asgardeo_id;
-        string? jwt_sub_id;
-        string? created;
-        string? updated;
-        string? jwt_email;
         record {|
             record {|
                 int? id;
@@ -598,274 +702,35 @@ public type GetPersonByIdResponse record {|
                 |} name;
             |}[]? parent_organizations;
         |}? organization;
-        int? avinya_type_id;
-        string? notes;
         string? nic_no;
-        string? passport_no;
         string? id_no;
         string? email;
-        string? street_address;
-        string? digital_id;
-        int? avinya_phone;
-        string? bank_name;
-        string? bank_account_number;
-        string? bank_account_name;
-        int? academy_org_id;
-        string? bank_branch;
-        int? created_by;
-        int? updated_by;
-        string? current_job;
-        int? documents_id;
+        record {|
+            int? id;
+            string? status;
+            string? company_name;
+            string? job_title;
+            string? linkedin_id;
+            string? facebook_id;
+            string? instagram_id;
+        |}? alumni;
+        record {|
+            int? id;
+            int? person_id;
+            string? university_name;
+            string? course_name;
+            int? is_currently_studying;
+            string? start_date;
+            string? end_date;
+        |}[]? alumni_education_qualifications;
+        record {|
+            int? id;
+            int? person_id;
+            string? company_name;
+            string? job_title;
+            int? currently_working;
+            string? start_date;
+            string? end_date;
+        |}[]? alumni_work_experience;
     |}? person_by_id;
-|};
-
-public type UpdatePersonResponse record {|
-    map<json?> __extensions?;
-    record {|
-        int? id;
-        string? preferred_name;
-        string? full_name;
-        string? date_of_birth;
-        string? sex;
-        string? asgardeo_id;
-        string? jwt_sub_id;
-        string? created;
-        string? updated;
-        string? jwt_email;
-        record {|
-            record {|
-                int? id;
-                record {|
-                    string? name_en;
-                    string? name_si;
-                    string? name_ta;
-                |} name;
-            |} city;
-            string? street_address;
-            int? phone;
-            int? id;
-        |}? permanent_address;
-        record {|
-            record {|
-                int? id;
-                record {|
-                    string? name_en;
-                    string? name_si;
-                    string? name_ta;
-                |} name;
-            |} city;
-            string? street_address;
-            int? phone;
-            int? id;
-        |}? mailing_address;
-        int? phone;
-        record {|
-            int? id;
-            string? description;
-            string? notes;
-            record {|
-                int? id;
-            |}? address;
-            record {|
-                int? id;
-                string? name;
-            |}? avinya_type;
-            record {|
-                string? name_en;
-            |} name;
-            record {|
-                int? id;
-                record {|
-                    string? name_en;
-                |} name;
-            |}[]? parent_organizations;
-        |}? organization;
-        int? avinya_type_id;
-        string? notes;
-        string? nic_no;
-        string? passport_no;
-        string? id_no;
-        string? email;
-        string? street_address;
-        string? digital_id;
-        int? avinya_phone;
-        string? bank_name;
-        string? bank_account_number;
-        string? bank_account_name;
-        int? academy_org_id;
-        string? bank_branch;
-        int? created_by;
-        int? updated_by;
-        string? current_job;
-        int? documents_id;
-    |}? update_person;
-|};
-
-public type GetDistrictsResponse record {|
-    map<json?> __extensions?;
-    record {|
-        int? id;
-        record {|
-            int? id;
-            record {|
-                string? name_en;
-            |} name;
-        |} province;
-        record {|
-            string? name_en;
-        |} name;
-    |}[]? districts;
-|};
-
-public type GetCitiesResponse record {|
-    map<json?> __extensions?;
-    record {|
-        int? id;
-        record {|
-            string? name_en;
-        |} name;
-    |}[]? cities;
-|};
-
-public type GetAvinyaTypesResponse record {|
-    map<json?> __extensions?;
-    record {|
-        int? id;
-        boolean active;
-        string? name;
-        string global_type;
-        string? foundation_type;
-        string? focus;
-        int? level;
-    |}[] avinya_types;
-|};
-
-public type GetAllOrganizationsResponse record {|
-    map<json?> __extensions?;
-    record {|
-        int? id;
-        record {|
-            string? name_en;
-        |} name;
-        record {|
-            int? id;
-            string? street_address;
-        |}? address;
-        record {|
-            int? id;
-            string? name;
-        |}? avinya_type;
-        string? description;
-        int? phone;
-        string? notes;
-    |}[]? all_organizations;
-|};
-
-public type InsertPersonResponse record {|
-    map<json?> __extensions?;
-    record {|
-        int? id;
-        string? preferred_name;
-        string? full_name;
-        string? date_of_birth;
-        string? sex;
-        string? asgardeo_id;
-        string? jwt_sub_id;
-        string? created;
-        string? updated;
-        string? jwt_email;
-        record {|
-            record {|
-                int? id;
-                record {|
-                    string? name_en;
-                    string? name_si;
-                    string? name_ta;
-                |} name;
-            |} city;
-            string? street_address;
-            int? phone;
-            int? id;
-        |}? permanent_address;
-        record {|
-            record {|
-                int? id;
-                record {|
-                    string? name_en;
-                    string? name_si;
-                    string? name_ta;
-                |} name;
-            |} city;
-            string? street_address;
-            int? phone;
-            int? id;
-        |}? mailing_address;
-        int? phone;
-        record {|
-            int? id;
-            string? description;
-            string? notes;
-            record {|
-                int? id;
-            |}? address;
-            record {|
-                int? id;
-                string? name;
-            |}? avinya_type;
-            record {|
-                string? name_en;
-            |} name;
-            record {|
-                int? id;
-                record {|
-                    string? name_en;
-                |} name;
-            |}[]? parent_organizations;
-        |}? organization;
-        int? avinya_type_id;
-        string? notes;
-        string? nic_no;
-        string? passport_no;
-        string? id_no;
-        string? email;
-        string? street_address;
-        string? digital_id;
-        int? avinya_phone;
-        string? bank_name;
-        string? bank_account_number;
-        string? bank_account_name;
-        int? academy_org_id;
-        string? bank_branch;
-        int? created_by;
-        int? updated_by;
-        string? current_job;
-        int? documents_id;
-    |}? insert_person;
-|};
-
-public type UploadDocumentResponse record {|
-    map<json?> __extensions?;
-    record {|
-        int? id;
-        string? folder_id;
-        string? nic_front_id;
-        string? nic_back_id;
-        string? birth_certificate_front_id;
-        string? birth_certificate_back_id;
-        string? ol_certificate_id;
-        string? al_certificate_id;
-        string? additional_certificate_01_id;
-        string? additional_certificate_02_id;
-        string? additional_certificate_03_id;
-        string? additional_certificate_04_id;
-        string? additional_certificate_05_id;
-    |}? upload_document;
-|};
-
-public type GetAllDocumentsResponse record {|
-    map<json?> __extensions?;
-    record {|
-        string? document;
-        string? document_type;
-    |}[]? document_list;
 |};
