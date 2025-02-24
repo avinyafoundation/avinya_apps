@@ -72,7 +72,7 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         map<json> responseMap = <map<json>>graphqlResponse;
         json responseData = responseMap.get("data");
-        json|error row_count = check responseData.delete_duty_for_participant;
+        json|error row_count = check responseData.delete_alumni_education_qualification_by_id;
         return row_count;
     }
 
@@ -82,7 +82,7 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         map<json> responseMap = <map<json>>graphqlResponse;
         json responseData = responseMap.get("data");
-        json|error row_count = check responseData.delete_duty_for_participant;
+        json|error row_count = check responseData.delete_alumni_work_experience_by_id;
         return row_count;
     }
 
