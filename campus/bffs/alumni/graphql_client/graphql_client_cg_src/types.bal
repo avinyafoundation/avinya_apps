@@ -24,9 +24,21 @@ public type ActivityInstance record {
     int? organization_id?;
     int? activity_id?;
     string? name?;
+    string? location?;
     int? id?;
     string? updated?;
     int? place_id?;
+};
+
+public type ActivityInstanceEvaluation record {
+    string? feedback?;
+    int? activity_instance_id?;
+    string? created?;
+    int? evaluator_id?;
+    int? rating?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
 };
 
 public type ActivityParticipant record {
@@ -36,6 +48,7 @@ public type ActivityParticipant record {
     string? notes?;
     string? created?;
     int? organization_id?;
+    int? is_attending?;
     int? id?;
     string? updated?;
     string? record_type?;
@@ -733,4 +746,86 @@ public type GetAlumniPersonByIdResponse record {|
             string? end_date;
         |}[]? alumni_work_experience;
     |}? person_by_id;
+|};
+
+public type CreateActivityParticipantResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_instance_id;
+        int? person_id;
+        int? organization_id;
+        int? is_attending;
+        string? created;
+        string? updated;
+    |}? create_activity_participant;
+|};
+
+public type UpdateActivityParticipantResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_instance_id;
+        int? person_id;
+        int? organization_id;
+        int? is_attending;
+        string? created;
+        string? updated;
+    |}? create_activity_participant;
+|};
+
+public type CreateActivityInstanceEvaluationResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_instance_id;
+        int? evaluator_id;
+        string? feedback;
+        int? rating;
+        string? created;
+        string? updated;
+    |}? create_activity_instance_evaluation;
+|};
+
+public type GetUpcomingEventsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_id;
+        string? name;
+        string? location;
+        string? description;
+        string? start_time;
+        string? end_time;
+        record {|
+            int? activity_instance_id;
+            anydata? gift_amount;
+            int? no_of_gifts;
+            string? notes;
+            string? description;
+        |}? event_gift;
+        record {|
+            int? activity_instance_id;
+            int? is_attending;
+        |}? activity_participant;
+    |}[]? upcoming_events;
+|};
+
+public type GetCompletedEventsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_id;
+        string? name;
+        string? location;
+        string? description;
+        string? start_time;
+        string? end_time;
+        record {|
+            int? activity_instance_id;
+            int? evaluator_id;
+            string? feedback;
+            int? rating;
+        |}? activity_evaluation;
+    |}[]? completed_events;
 |};

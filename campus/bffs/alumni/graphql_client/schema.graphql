@@ -29,6 +29,7 @@ input ActivityInstance {
   activity_id: Int
   name: String
   place_id: Int
+  location: String
   organization_id: Int
   daily_sequence: Int
   weekly_sequence: Int
@@ -44,6 +45,7 @@ input ActivityInstance {
 type ActivityInstanceData {
   id: Int
   name: String
+  location: String
   description: String
   activity_id: Int
   notes: String
@@ -57,8 +59,32 @@ type ActivityInstanceData {
   place: PlaceData
   organization: OrganizationData
   activity_participants: [ActivityParticipantData!]
+  activity_participant: ActivityParticipantData
   activity_participant_attendances: [ActivityParticipantAttendanceData!]
   evaluations: [EvaluationData!]
+  event_gift: EventGiftData
+  activity_evaluation: ActivityInstanceEvaluationData
+}
+
+input ActivityInstanceEvaluation {
+  record_type: String = "activity_instance_evaluation"
+  id: Int
+  activity_instance_id: Int
+  evaluator_id: Int
+  feedback: String
+  rating: Int
+  created: String
+  updated: String
+}
+
+type ActivityInstanceEvaluationData {
+  id: Int
+  activity_instance_id: Int
+  evaluator_id: Int
+  feedback: String
+  rating: Int
+  created: String
+  updated: String
 }
 
 input ActivityParticipant {
@@ -71,6 +97,7 @@ input ActivityParticipant {
   end_date: String
   role: String
   notes: String
+  is_attending: Int
   created: String
   updated: String
 }
@@ -127,12 +154,15 @@ type ActivityParticipantAttendanceMissedBySecurityData {
 type ActivityParticipantData {
   id: Int
   activity_instance_id: Int
+  person_id: Int
+  organization_id: Int
   person: PersonData
   organization: OrganizationData
   start_date: String
   end_date: String
   role: String
   notes: String
+  is_attending: Int
   created: String
   updated: String
 }
@@ -650,6 +680,15 @@ type EvaluationMetadataData {
   metadata: String
 }
 
+type EventGiftData {
+  id: Int
+  activity_instance_id: Int
+  gift_amount: Decimal
+  no_of_gifts: Int
+  notes: String
+  description: String
+}
+
 type GeoData {
   province(name: String!): ProvinceData!
   district(name: String!): DistrictData!
@@ -809,6 +848,8 @@ type Mutation {
   delete_alumni_work_experience_by_id(id: Int): Int
   upload_alumni_picture(person_profile_picture: PersonProfilePicture!): PersonProfilePictureData
   delete_alumni_picture_by_id(person_profile_picture: PersonProfilePicture!): Int
+  create_activity_participant(activity_participant: ActivityParticipant!): ActivityParticipantData
+  create_activity_instance_evaluation(activity_instance_evaluation: ActivityInstanceEvaluation!): ActivityInstanceEvaluationData
 }
 
 input Organization {
@@ -1109,6 +1150,8 @@ type Query {
   alumni_education_qualification_by_id(id: Int): AlumniEducationQualificationData
   alumni_work_experience_by_id(id: Int): AlumniWorkExperienceData
   alumni_profile_pictures(person_id: Int!, page: Int!): [PersonProfilePictureData!]
+  upcoming_events(person_id: Int): [ActivityInstanceData!]
+  completed_events(person_id: Int): [ActivityInstanceData!]
 }
 
 input ResourceAllocation {
