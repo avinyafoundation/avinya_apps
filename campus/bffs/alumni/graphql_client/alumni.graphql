@@ -243,3 +243,88 @@ query getAlumniPersonById($id: Int!) {
     }
   }
 }
+
+mutation createActivityParticipant(
+  $activity_participant: ActivityParticipant!
+) {
+  create_activity_participant(activity_participant: $activity_participant) {
+    id
+    activity_instance_id
+    person_id
+    organization_id
+    is_attending
+    created
+    updated
+  }
+}
+
+mutation updateActivityParticipant(
+  $activity_participant: ActivityParticipant!
+) {
+  create_activity_participant(activity_participant: $activity_participant) {
+    id
+    activity_instance_id
+    person_id
+    organization_id
+    is_attending
+    created
+    updated
+  }
+}
+
+mutation createActivityInstanceEvaluation(
+  $activity_instance_evaluation: ActivityInstanceEvaluation!
+) {
+  create_activity_instance_evaluation(
+    activity_instance_evaluation: $activity_instance_evaluation
+  ) {
+    id
+    activity_instance_id
+    evaluator_id
+    feedback
+    rating
+    created
+    updated
+  }
+}
+
+query getUpcomingEvents($person_id: Int!) {
+  upcoming_events(person_id: $person_id) {
+    id
+    activity_id
+    name
+    location
+    description
+    start_time
+    end_time
+    event_gift {
+      activity_instance_id
+      gift_amount
+      no_of_gifts
+      notes
+      description
+    }
+    activity_participant {
+      activity_instance_id
+      is_attending
+    }
+  }
+}
+
+query getCompletedEvents($person_id: Int!) {
+  completed_events(person_id: $person_id) {
+    id
+    activity_id
+    name
+    location
+    description
+    start_time
+    end_time
+    activity_evaluation {
+      activity_instance_id
+      evaluator_id
+      feedback
+      rating
+    }
+  }
+}

@@ -237,4 +237,89 @@ service / on new http:Listener(9096) {
         }
     }
 
+    resource function post create_activity_participant(@http:Payload ActivityParticipant activityParticipant) returns ActivityParticipant|error {
+        CreateActivityParticipantResponse|graphql:ClientError createActivityParticipantResponse = globalDataClient->createActivityParticipant(activityParticipant);
+        if(createActivityParticipantResponse is CreateActivityParticipantResponse) {
+            ActivityParticipant|error activity_participant_record = createActivityParticipantResponse.create_activity_participant.cloneWithType(ActivityParticipant);
+            if(activity_participant_record is ActivityParticipant) {
+                return activity_participant_record;
+            } else {
+                log:printError("Error while processing Application record received", activity_participant_record);
+                return error("Error while processing Application record received: " + activity_participant_record.message() + 
+                    ":: Detail: " + activity_participant_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", createActivityParticipantResponse);
+            return error("Error while creating application: " + createActivityParticipantResponse.message() + 
+                ":: Detail: " + createActivityParticipantResponse.detail().toString());
+        }
+    }
+
+    resource function post create_activity_instance_evaluation(@http:Payload ActivityInstanceEvaluation activityInstanceEvaluation) returns ActivityInstanceEvaluation|error {
+        CreateActivityInstanceEvaluationResponse|graphql:ClientError createActivityInstanceEvaluationResponse = globalDataClient->createActivityInstanceEvaluation(activityInstanceEvaluation);
+        if(createActivityInstanceEvaluationResponse is CreateActivityInstanceEvaluationResponse) {
+            ActivityInstanceEvaluation|error activity_instance_evaluation_record = createActivityInstanceEvaluationResponse.create_activity_instance_evaluation.cloneWithType(ActivityInstanceEvaluation);
+            if(activity_instance_evaluation_record is ActivityInstanceEvaluation) {
+                return activity_instance_evaluation_record;
+            } else {
+                log:printError("Error while processing Application record received", activity_instance_evaluation_record);
+                return error("Error while processing Application record received: " + activity_instance_evaluation_record.message() + 
+                    ":: Detail: " + activity_instance_evaluation_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", createActivityInstanceEvaluationResponse);
+            return error("Error while creating application: " + createActivityInstanceEvaluationResponse.message() + 
+                ":: Detail: " + createActivityInstanceEvaluationResponse.detail().toString());
+        }
+    }
+
+    resource function get upcoming_events/[int person_id]() returns ActivityInstance[]|error {
+        GetUpcomingEventsResponse|graphql:ClientError getUpcomingEventsResponse = globalDataClient->getUpcomingEvents(person_id);
+        if(getUpcomingEventsResponse is GetUpcomingEventsResponse) {
+            ActivityInstance[]  upcomingEvents = [];
+            foreach var upcoming_event_record in getUpcomingEventsResponse.upcoming_events {
+                ActivityInstance|error upcoming_event = upcoming_event_record.cloneWithType(ActivityInstance);
+                if(upcoming_event is ActivityInstance) {
+                    upcomingEvents.push(upcoming_event);
+                } else {
+                    log:printError("Error while processing Application record received", upcoming_event);
+                    return error("Error while processing Application record received: " + upcoming_event.message() + 
+                        ":: Detail: " + upcoming_event.detail().toString());
+                }
+            }
+
+            return upcomingEvents;
+            
+        } else {
+            log:printError("Error while creating application", getUpcomingEventsResponse);
+            return error("Error while creating application: " + getUpcomingEventsResponse.message() + 
+                ":: Detail: " + getUpcomingEventsResponse.detail().toString());
+        }
+    }
+
+    resource function get completed_events/[int person_id]() returns ActivityInstance[]|error {
+        GetCompletedEventsResponse|graphql:ClientError getCompletedEventsResponse = globalDataClient->getCompletedEvents(person_id);
+        if(getCompletedEventsResponse is GetCompletedEventsResponse) {
+            ActivityInstance[]  completedEvents = [];
+            foreach var completed_event_record in getCompletedEventsResponse.completed_events {
+                ActivityInstance|error completed_event = completed_event_record.cloneWithType(ActivityInstance);
+                if(completed_event is ActivityInstance) {
+                    completedEvents.push(completed_event);
+                } else {
+                    log:printError("Error while processing Application record received", completed_event);
+                    return error("Error while processing Application record received: " + completed_event.message() + 
+                        ":: Detail: " + completed_event.detail().toString());
+                }
+            }
+
+            return completedEvents;
+            
+        } else {
+            log:printError("Error while creating application", getCompletedEventsResponse);
+            return error("Error while creating application: " + getCompletedEventsResponse.message() + 
+                ":: Detail: " + getCompletedEventsResponse.detail().toString());
+        }
+    }
+
+    
 }

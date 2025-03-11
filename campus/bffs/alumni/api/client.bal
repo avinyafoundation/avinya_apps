@@ -104,4 +104,34 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetAlumniPersonByIdResponse>check performDataBinding(graphqlResponse, GetAlumniPersonByIdResponse);
     }
+    remote isolated function createActivityParticipant(ActivityParticipant activity_participant) returns CreateActivityParticipantResponse|graphql:ClientError {
+        string query = string `mutation createActivityParticipant($activity_participant:ActivityParticipant!) {create_activity_participant(activity_participant:$activity_participant) {id activity_instance_id person_id organization_id is_attending created updated}}`;
+        map<anydata> variables = {"activity_participant": activity_participant};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <CreateActivityParticipantResponse>check performDataBinding(graphqlResponse, CreateActivityParticipantResponse);
+    }
+    remote isolated function updateActivityParticipant(ActivityParticipant activity_participant) returns UpdateActivityParticipantResponse|graphql:ClientError {
+        string query = string `mutation updateActivityParticipant($activity_participant:ActivityParticipant!) {create_activity_participant(activity_participant:$activity_participant) {id activity_instance_id person_id organization_id is_attending created updated}}`;
+        map<anydata> variables = {"activity_participant": activity_participant};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <UpdateActivityParticipantResponse>check performDataBinding(graphqlResponse, UpdateActivityParticipantResponse);
+    }
+    remote isolated function createActivityInstanceEvaluation(ActivityInstanceEvaluation activity_instance_evaluation) returns CreateActivityInstanceEvaluationResponse|graphql:ClientError {
+        string query = string `mutation createActivityInstanceEvaluation($activity_instance_evaluation:ActivityInstanceEvaluation!) {create_activity_instance_evaluation(activity_instance_evaluation:$activity_instance_evaluation) {id activity_instance_id evaluator_id feedback rating created updated}}`;
+        map<anydata> variables = {"activity_instance_evaluation": activity_instance_evaluation};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <CreateActivityInstanceEvaluationResponse>check performDataBinding(graphqlResponse, CreateActivityInstanceEvaluationResponse);
+    }
+    remote isolated function getUpcomingEvents(int person_id) returns GetUpcomingEventsResponse|graphql:ClientError {
+        string query = string `query getUpcomingEvents($person_id:Int!) {upcoming_events(person_id:$person_id) {id activity_id name location description start_time end_time event_gift {activity_instance_id gift_amount no_of_gifts notes description} activity_participant {activity_instance_id is_attending}}}`;
+        map<anydata> variables = {"person_id": person_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetUpcomingEventsResponse>check performDataBinding(graphqlResponse, GetUpcomingEventsResponse);
+    }
+    remote isolated function getCompletedEvents(int person_id) returns GetCompletedEventsResponse|graphql:ClientError {
+        string query = string `query getCompletedEvents($person_id:Int!) {completed_events(person_id:$person_id) {id activity_id name location description start_time end_time activity_evaluation {activity_instance_id evaluator_id feedback rating}}}`;
+        map<anydata> variables = {"person_id": person_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetCompletedEventsResponse>check performDataBinding(graphqlResponse, GetCompletedEventsResponse);
+    }
 }
