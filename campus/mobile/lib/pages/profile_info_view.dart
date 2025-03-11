@@ -47,7 +47,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          color: kOtherColor,
+          margin: EdgeInsets.only(top: 25.0),
+          decoration: BoxDecoration(
+            color: kOtherColor,
+            borderRadius:
+                BorderRadius.circular(15.0), // Adjust the radius as needed
+          ),
           child: Column(
             children: [
               sizedBox,

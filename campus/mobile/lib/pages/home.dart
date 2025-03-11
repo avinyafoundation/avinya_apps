@@ -56,7 +56,8 @@ class HomePage extends StatelessWidget {
     final isTab = isDisplayTab(context);
     final studyDemos = studies();
     final carouselCards = <Widget>[
-      if (!campusAppsPortalInstance.getUserPerson().is_graduated)
+      if (campusAppsPortalInstance.getUserPerson().is_graduated != null &&
+          !campusAppsPortalInstance.getUserPerson().is_graduated!)
         Padding(
           padding: const EdgeInsets.all(10.0),
           child: _CarouselCard(
@@ -211,26 +212,30 @@ class HomePage extends StatelessWidget {
       return Scaffold(
         body: Padding(
           padding: EdgeInsets.symmetric(vertical: 70.0, horizontal: 70.0),
-          child: !campusAppsPortalInstance.getUserPerson().is_graduated
-              ? GridView.count(
-                  crossAxisCount: 3,
-                  childAspectRatio: 1.8,
-                  children: carouselCards,
-                )
-              : MyAlumniDashboardScreen(),
+          child:
+              campusAppsPortalInstance.getUserPerson().is_graduated != null &&
+                      !campusAppsPortalInstance.getUserPerson().is_graduated!
+                  ? GridView.count(
+                      crossAxisCount: 3,
+                      childAspectRatio: 1.8,
+                      children: carouselCards,
+                    )
+                  : MyAlumniDashboardScreen(),
         ),
       );
     } else if (isTab) {
       return Scaffold(
         body: Padding(
           padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
-          child: !campusAppsPortalInstance.getUserPerson().is_graduated
-              ? GridView.count(
-                  crossAxisCount: 2,
-                  childAspectRatio: 1.5,
-                  children: carouselCards,
-                )
-              : MyAlumniDashboardScreen(),
+          child:
+              campusAppsPortalInstance.getUserPerson().is_graduated != null &&
+                      !campusAppsPortalInstance.getUserPerson().is_graduated!
+                  ? GridView.count(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.5,
+                      children: carouselCards,
+                    )
+                  : MyAlumniDashboardScreen(),
         ),
       );
     } else {
@@ -246,13 +251,15 @@ class HomePage extends StatelessWidget {
       return Scaffold(
         body: Padding(
           padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
-          child: !campusAppsPortalInstance.getUserPerson().is_graduated
-              ? GridView.count(
-                  crossAxisCount: 1,
-                  childAspectRatio: 1.5,
-                  children: carouselCards,
-                )
-              : NavigationMenu(),
+          child:
+              campusAppsPortalInstance.getUserPerson().is_graduated != null &&
+                      !campusAppsPortalInstance.getUserPerson().is_graduated!
+                  ? GridView.count(
+                      crossAxisCount: 1,
+                      childAspectRatio: 1.5,
+                      children: carouselCards,
+                    )
+                  : NavigationMenu(),
         ),
       );
     }

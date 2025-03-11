@@ -6,6 +6,8 @@ class AppConfig {
   static String apiUrl = '';
   static String campusAttendanceBffApiUrl = '';
   static String campusProfileBffApiUrl = '';
+  static String campusEnrollmentsBffApiUrl = '';
+  static String campusAlumniBffApiUrl = '';
   static String campusBffApiKey = '';
   static String refreshToken = '';
   static String choreoSTSEndpoint = "";
@@ -43,6 +45,8 @@ class AppConfig {
     final json = jsonDecode(contents);
     campusAttendanceBffApiUrl = json['campusAttendanceBffApiUrl'];
     campusProfileBffApiUrl = json['campusProfileBffApiUrl'];
+    campusEnrollmentsBffApiUrl = json['campusEnrollmentsBffApiUrl'];
+    campusAlumniBffApiUrl = json['campusAlumniBffApiUrl'];
     campusPctiNotesBffApiUrl = json['campusPctiNotesBffApiUrl'];
     campusPctiNotesBffApiUrl = json['campusPctiNotesBffApiUrl'];
     campusPctiFeedbackBffApiUrl = json['campusPctiFeedbackBffApiUrl'];

@@ -19,6 +19,36 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
   String? selectedRsvp;
   String feedback = '';
   int? selectedRating;
+  late Person userPerson = Person(is_graduated: false)
+    ..full_name = 'John'
+    ..nic_no = '12';
+
+  late AlumniPerson alumniPerson = AlumniPerson(is_graduated: null)
+    ..full_name = 'John'
+    ..nic_no = '12';
+
+  @override
+  void initState() {
+    super.initState();
+    getUserPerson();
+  }
+
+  void getUserPerson() {
+    // Retrieve user data from local instance
+    Person user = campusAppsPortalInstance.getUserPerson();
+    _fetchAlumniPersonData(user.id);
+    setState(() {
+      userPerson = user;
+    });
+  }
+
+  Future<AlumniPerson> _fetchAlumniPersonData(id) async {
+    alumniPerson = await fetchAlumniPerson(id);
+    setState(() {
+      alumniPerson = alumniPerson;
+    });
+    return alumniPerson;
+  }
 
   void handleRsvp(String? value) {
     setState(() {
@@ -72,12 +102,14 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Welcome, John Doe',
+                          Text('Welcome, ${alumniPerson.full_name}',
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold)),
-                          Text('Email: johndoe@example.com'),
-                          Text('Phone: +94 77 123 4567'),
-                          Text('Current Status: Working at ABC Corp'),
+                          Text('Email: ${alumniPerson.email}'),
+                          Text('Phone: ${alumniPerson.phone}'),
+                          Text(
+                            'Current Status: ${alumniPerson.alumni_work_experience != null && alumniPerson.alumni_work_experience!.isNotEmpty ? alumniPerson.alumni_work_experience![0].companyName : "No work experience available"}',
+                          ),
                           Text('LinkedIn: linkedin.com/in/johndoe'),
                         ],
                       ),

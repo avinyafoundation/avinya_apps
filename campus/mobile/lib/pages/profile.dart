@@ -96,7 +96,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!userPerson.is_graduated) {
+    if (campusAppsPortalInstance.getUserPerson().is_graduated != null &&
+        !userPerson.is_graduated!) {
       return Scaffold(
         body: Padding(
           padding: const EdgeInsets.only(top: 50),

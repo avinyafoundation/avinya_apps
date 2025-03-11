@@ -1,47 +1,14 @@
 import 'package:flutter/material.dart';
 
 class TimelineWidget extends StatelessWidget {
-  final List<Map<String, String>> workTimeline = [
-    {
-      "title": "Software Engineer",
-      "company": "Google",
-      "duration": "2020 - Present"
-    },
-    {
-      "title": "Data Analyst",
-      "company": "Microsoft",
-      "duration": "2018 - 2020"
-    },
-    {"title": "Intern", "company": "IBM", "duration": "2016 - 2018"},
-    {
-      "title": "Project Manager",
-      "company": "Amazon",
-      "duration": "2015 - 2016"
-    },
-    {
-      "title": "Research Assistant",
-      "company": "MIT",
-      "duration": "2013 - 2015"
-    },
-  ];
+  final List<Map<String, String>> workTimeline;
+  final List<Map<String, String>> educationTimeline;
 
-  final List<Map<String, String>> educationTimeline = [
-    {
-      "title": "MSc in Data Science",
-      "institution": "Stanford University",
-      "duration": "2019 - Present"
-    },
-    {
-      "title": "BSc in Computer Science",
-      "institution": "MIT",
-      "duration": "2012 - 2016"
-    },
-    {
-      "title": "High School Diploma",
-      "institution": "XYZ High School",
-      "duration": "2008 - 2012"
-    },
-  ];
+  const TimelineWidget({
+    Key? key,
+    required this.workTimeline,
+    required this.educationTimeline,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +16,10 @@ class TimelineWidget extends StatelessWidget {
       scrollDirection: Axis.vertical,
       child: Column(
         children: [
-          Text("Your Work & Study Timeline",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text(
+            "Your Work & Study Timeline",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
           SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -64,8 +33,8 @@ class TimelineWidget extends StatelessWidget {
               _buildTimelineArrow(),
               Column(
                 children: educationTimeline
-                    .map((item) => _buildTimelineItem(item['title']!,
-                        item['institution']!, item['duration']!, false))
+                    .map((item) => _buildTimelineItem(item['university']!,
+                        item['course']!, item['duration']!, false))
                     .toList(),
               ),
             ],

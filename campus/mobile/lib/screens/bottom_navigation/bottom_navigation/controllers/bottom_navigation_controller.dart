@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mobile/constants.dart';
+import 'package:mobile/pages/alumni_info_view.dart';
 import 'package:mobile/screens/bottom_navigation/home/screens/my_alumni_dashboard.dart';
 
 class BottomNavigationController extends GetxController {
@@ -15,8 +17,6 @@ class BottomNavigationController extends GetxController {
     Container(
       color: Colors.red,
     ),
-    Container(
-      color: Colors.yellow,
-    )
+    Container(color: kOtherColor, child: MyAlumniScreen())
   ];
 }
