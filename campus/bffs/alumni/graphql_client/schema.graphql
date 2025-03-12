@@ -1152,6 +1152,7 @@ type Query {
   alumni_profile_pictures(person_id: Int!, page: Int!): [PersonProfilePictureData!]
   upcoming_events(person_id: Int): [ActivityInstanceData!]
   completed_events(person_id: Int): [ActivityInstanceData!]
+  alumni_persons(parent_organization_id: Int): [PersonData!]
 }
 
 input ResourceAllocation {

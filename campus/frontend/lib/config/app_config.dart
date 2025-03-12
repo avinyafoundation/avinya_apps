@@ -8,6 +8,7 @@ class AppConfig {
   static String campusProfileBffApiUrl = '';
   static String campusAssetsBffApiUrl = '';
   static String campusEnrollmentsBffApiUrl = '';
+  static String campusAlumniBffApiUrl = '';
   static String campusBffApiKey = '';
   static String refreshToken = '';
   static String choreoSTSEndpoint = "";
@@ -46,6 +47,7 @@ class AppConfig {
     campusPctiFeedbackBffApiUrl = json['campusPctiFeedbackBffApiUrl'];
     campusAssetsBffApiUrl = json['campusAssetsBffApiUrl'];
     campusEnrollmentsBffApiUrl = json['campusEnrollmentsBffApiUrl'];
+    campusAlumniBffApiUrl = json['campusAlumniBffApiUrl'];
     choreoSTSEndpoint = json['choreo_sts_endpoint'];
     asgardeoTokenEndpoint = json['asgardeo_token_endpoint'];
     asgardeoLogoutUrl = json['logout_url'];

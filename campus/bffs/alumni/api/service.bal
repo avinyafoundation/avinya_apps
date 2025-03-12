@@ -89,14 +89,14 @@ service / on new http:Listener(9096) {
                 log:printError("Error while processing Application record received", alumni_record);
                 return {
                     "message": alumni_record.message().toString(),
-                    "errorCode": "500"
+                    "statusCode": "500"
                 };
             }
         } else {
             log:printError("Error while creating application", createAlumniResponse);
             return {
                 "message": createAlumniResponse.message().toString(),
-                "errorCode": "500"
+                "statusCode": "500"
             };
         }
     }
@@ -320,6 +320,28 @@ service / on new http:Listener(9096) {
                 ":: Detail: " + getCompletedEventsResponse.detail().toString());
         }
     }
-
     
+    resource function get alumni_persons/[int parent_organization_id]() returns Person[]|error {
+        GetAlumniPersonsResponse|graphql:ClientError getAlumniPersonsResponse = globalDataClient->getAlumniPersons(parent_organization_id);
+        if (getAlumniPersonsResponse is GetAlumniPersonsResponse) {
+            Person[] alumni_persons_data = [];
+            foreach var alumni_person_data in getAlumniPersonsResponse.alumni_persons {
+                Person|error alumni_person_data_record = alumni_person_data.cloneWithType(Person);
+                if (alumni_person_data_record is Person) {
+                    alumni_persons_data.push(alumni_person_data_record);
+                } else {
+                    log:printError("Error while processing Application record received", alumni_person_data_record);
+                    return error("Error while processing Application record received: " + alumni_person_data_record.message() +
+                        ":: Detail: " + alumni_person_data_record.detail().toString());
+                }
+            }
+
+            return alumni_persons_data;
+
+        } else {
+            log:printError("Error while getting application", getAlumniPersonsResponse);
+            return error("Error while getting application: " + getAlumniPersonsResponse.message() +
+                ":: Detail: " + getAlumniPersonsResponse.detail().toString());
+        }
+    }
 }

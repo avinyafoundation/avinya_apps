@@ -328,3 +328,19 @@ query getCompletedEvents($person_id: Int!) {
     }
   }
 }
+
+query getAlumniPersons($parent_organization_id: Int!) {
+  alumni_persons(parent_organization_id: $parent_organization_id) {
+    id
+    preferred_name
+    full_name
+    email
+    phone
+    alumni {
+      id
+      status
+      company_name
+      job_title
+    }
+  }
+}
