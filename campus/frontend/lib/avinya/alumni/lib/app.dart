@@ -27,9 +27,7 @@ class _AlumniSystemState extends State<AlumniSystem> {
   void initState() {
     /// Configure the parser with all of the app's allowed path templates.
     _routeParser = TemplateRouteParser(
-      allowedPaths: [
-        AppRoutes.alumniDashboard
-      ],
+      allowedPaths: [AppRoutes.alumniDashboard, AppRoutes.alumniAdmin],
       guard: _guard,
       // initialRoute: '/signin',
       initialRoute: AppRoutes.alumniDashboard,
@@ -80,8 +78,7 @@ class _AlumniSystemState extends State<AlumniSystem> {
                   backgroundColor: Colors.blueGrey[700],
                   //width: 270.0,
                 ),
-                appBarTheme:
-                    AppBarTheme(backgroundColor: Colors.blueGrey[400]),
+                appBarTheme: AppBarTheme(backgroundColor: Colors.blueGrey[400]),
                 floatingActionButtonTheme: FloatingActionButtonThemeData(
                   backgroundColor: Colors.blueGrey[400],
                 ),
@@ -94,14 +91,17 @@ class _AlumniSystemState extends State<AlumniSystem> {
   Future<ParsedRoute> _guard(ParsedRoute from) async {
     final signedIn = await _auth.getSignedIn();
 
-    final alumniDashboardReportRoute =
-        ParsedRoute(AppRoutes.alumniDashboard, AppRoutes.alumniDashboard, {}, {});
+    final alumniDashboardReportRoute = ParsedRoute(
+        AppRoutes.alumniDashboard, AppRoutes.alumniDashboard, {}, {});
+
+    final alumniAdminRoute =
+        ParsedRoute(AppRoutes.alumniAdmin, AppRoutes.alumniAdmin, {}, {});
 
     if (signedIn && from == alumniDashboardReportRoute) {
       return alumniDashboardReportRoute;
+    } else if (signedIn && from == alumniAdminRoute) {
+      return alumniAdminRoute;
     }
-    // else if (signedIn && from == studentsRoute) {
-    //   return studentsRoute;
     // } else if (signedIn && from == signInRoute) {
     //   ParsedRoute('/enrollment_dashboard', '/enrollment_dashboard', {}, {});
     // }

@@ -2,6 +2,7 @@
 // import 'package:ShoolManagementSystem/src/screens/resource_allocations.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery/avinya/alumni/lib/app_routes/app_routes.dart';
+import 'package:gallery/avinya/alumni/lib/screens/alumni_admin_screen.dart';
 import 'package:gallery/avinya/alumni/lib/screens/alumni_dashboard_screen.dart';
 
 import '../routing.dart';
@@ -31,11 +32,11 @@ class SMSScaffoldBody extends StatelessWidget {
             key: ValueKey('alumni_dashboard_Screen'),
             child: AlumniDashboardScreen(),
           )
-        // else if (currentRoute.pathTemplate.startsWith('/students'))
-        //   const FadeTransitionPage<void>(
-        //     key: ValueKey('students'),
-        //     child: StudentsScreen(),
-        //   )
+        else if (currentRoute.pathTemplate.startsWith(AppRoutes.alumniAdmin))
+          const FadeTransitionPage<void>(
+            key: ValueKey('alumni_admin'),
+            child: AlumniAdminScreen(),
+          )
         // Avoid building a Navigator with an empty `pages` list when the
         // RouteState is set to an unexpected path, such as /signin.
         //

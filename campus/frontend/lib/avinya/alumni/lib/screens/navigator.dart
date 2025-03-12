@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:gallery/auth.dart';
 import 'package:gallery/avinya/alumni/lib/app_routes/app_routes.dart';
 import 'package:gallery/avinya/enrollment/lib/screens/sign_in.dart';
-import '../data.dart';
 import '../routing.dart';
 import '../widgets/fade_transition_page.dart';
 import 'scaffold.dart';
@@ -42,11 +41,8 @@ class _SMSNavigatorState extends State<SMSNavigator> {
         return route.didPop(result);
       },
       pages: [
-        if (routeState.route.pathTemplate == AppRoutes.alumniDashboard)
-          FadeTransitionPage<void>(
-            key: _scaffoldKey,
-            child: SMSScaffold()
-          ),
+        // if (routeState.route.pathTemplate == AppRoutes.alumniDashboard)
+        FadeTransitionPage<void>(key: _scaffoldKey, child: SMSScaffold()),
       ],
     );
   }

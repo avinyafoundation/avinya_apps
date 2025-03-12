@@ -829,3 +829,20 @@ public type GetCompletedEventsResponse record {|
         |}? activity_evaluation;
     |}[]? completed_events;
 |};
+
+public type GetAlumniPersonsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? preferred_name;
+        string? full_name;
+        string? email;
+        int? phone;
+        record {|
+            int? id;
+            string? status;
+            string? company_name;
+            string? job_title;
+        |}? alumni;
+    |}[]? alumni_persons;
+|};
