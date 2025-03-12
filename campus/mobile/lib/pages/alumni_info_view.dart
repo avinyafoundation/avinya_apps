@@ -26,7 +26,6 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
     ..full_name = 'John'
     ..nic_no = '12';
 
-  String? selectedStatus;
   final List<String> statusOptions = [
     'Working',
     'Not Working',
@@ -108,10 +107,9 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
   final TextEditingController phoneNumberController = TextEditingController();
   bool isCurrentWork = false;
   bool isCurrentStudy = false;
-  String selectedCategory = "Work";
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContexcosdantext) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -311,12 +309,23 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                     return SizedBox();
                   }),
               sizedBox,
+              ProfileDetailColumn(
+                title: 'LinkedIn Profile Link',
+                value: '${AlumniUserPerson.alumni?.linkedin_id ?? 'N/A'}',
+                // controller: TextEditingController(
+                //     text: AlumniUserPerson.phone?.toString()),
+                onChanged: (newValue) {
+                  setState(() {
+                    AlumniUserPerson.alumni?.linkedin_id = newValue;
+                  });
+                },
+              ),
               _buildSocialMediaSection(),
               sizedBox,
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: DropdownButtonFormField<String>(
-                  value: selectedStatus,
+                  value: AlumniUserPerson.alumni?.status,
                   decoration: InputDecoration(
                     labelText: "Employment Status",
                     border: OutlineInputBorder(
@@ -331,7 +340,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                   }).toList(),
                   onChanged: (newValue) {
                     setState(() {
-                      selectedStatus = newValue;
+                      AlumniUserPerson.alumni?.status = newValue;
                     });
                   },
                 ),

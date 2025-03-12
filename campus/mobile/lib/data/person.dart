@@ -436,6 +436,7 @@ class AlumniPerson {
         if (academy_org_id != null) 'academy_org_id': academy_org_id,
         if (organization != null) 'organization': organization!.toJson(),
         if (avinya_type != null) 'avinya_type': avinya_type!.toJson(),
+        if (alumni != null) 'alumni': alumni!.toJson(),
         if (created != null) 'created': created,
         if (alumni_id != null) 'alumni_id': alumni_id,
         // if (alumni_work_experience != null)
@@ -902,6 +903,7 @@ Future<AlumniPerson> fetchAlumniPerson(int id) async {
 }
 
 Future<AlumniPerson> createAlumniPerson(AlumniPerson person) async {
+  print("Sending data: ${jsonEncode(person.toJson())}");
   final response = await http.post(
     Uri.parse(AppConfig.campusAlumniBffApiUrl + '/create_alumni'),
     headers: <String, String>{
