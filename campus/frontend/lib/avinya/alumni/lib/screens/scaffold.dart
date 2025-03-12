@@ -14,6 +14,7 @@ class SMSScaffold extends StatefulWidget {
 
 class _SMSScaffoldState extends State<SMSScaffold> {
   bool isAlumniDashboardSectionHovered = false;
+  bool isAlumniAdminSectionHovered = false;
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +117,52 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                         onTap: () {
                           Navigator.pop(context); // Close the drawer
                           routeState.go(AppRoutes.alumniDashboard);
+                        },
+                      ),
+                    ),
+                  ),
+                  // ),
+                ),
+              ),
+              MouseRegion(
+                onEnter: (_) {
+                  setState(() {
+                    isAlumniAdminSectionHovered = true;
+                  });
+                },
+                onExit: (_) {
+                  setState(() {
+                    isAlumniAdminSectionHovered = false;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isAlumniAdminSectionHovered
+                        ? Colors.white.withOpacity(0.3)
+                        : null,
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  margin: EdgeInsets.all(8.0),
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Container(
+                      child: ListTile(
+                        leading:
+                            Icon(Icons.people, color: Colors.white, size: 20.0),
+                        title: Container(
+                          margin: EdgeInsets.only(left: 12.0),
+                          transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                          child: Text(
+                            "Alumni Admin",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context); // Close the drawer
+                          routeState.go(AppRoutes.alumniAdmin);
                         },
                       ),
                     ),

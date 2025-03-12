@@ -28,6 +28,7 @@ dependencies:
   oktoast: ^3.4.0
   flutter_localized_locales: ^2.0.3
   get: ^4.6.6
+  flutter_spinkit: ^5.0.0
   window_size:
     git:
       url: https://github.com/google/flutter-desktop-embedding.git

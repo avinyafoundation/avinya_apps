@@ -11,8 +11,6 @@ class AlumniDashboardScreen extends StatefulWidget {
 class _AlumniDashboardScreenState extends State<AlumniDashboardScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: AlumniDashboard(),
-    );
+    return AlumniDashboard();
   }
 }

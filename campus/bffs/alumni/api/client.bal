@@ -134,4 +134,11 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetCompletedEventsResponse>check performDataBinding(graphqlResponse, GetCompletedEventsResponse);
     }
+
+    remote isolated function getAlumniPersons(int parent_organization_id) returns GetAlumniPersonsResponse|graphql:ClientError {
+        string query = string `query getAlumniPersons($parent_organization_id:Int!) {alumni_persons(parent_organization_id:$parent_organization_id) {id preferred_name full_name email phone alumni {id status company_name job_title}}}`;
+        map<anydata> variables = {"parent_organization_id": parent_organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetAlumniPersonsResponse>check performDataBinding(graphqlResponse, GetAlumniPersonsResponse);
+    }
 }
