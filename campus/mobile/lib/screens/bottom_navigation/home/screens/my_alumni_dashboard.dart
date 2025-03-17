@@ -33,22 +33,31 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
     getUserPerson();
   }
 
+  // void getUserPerson() {
+  //   // Retrieve user data from local instance
+  //   Person user = campusAppsPortalInstance.getUserPerson();
+  //   _fetchAlumniPersonData(user.id);
+  //   setState(() {
+  //     userPerson = user;
+  //   });
+  // }
   void getUserPerson() {
     // Retrieve user data from local instance
+    AlumniPerson AlumniUser = campusAppsPortalInstance.getAlumniUserPerson();
     Person user = campusAppsPortalInstance.getUserPerson();
-    _fetchAlumniPersonData(user.id);
     setState(() {
+      alumniPerson = AlumniUser;
       userPerson = user;
     });
   }
 
-  Future<AlumniPerson> _fetchAlumniPersonData(id) async {
-    alumniPerson = await fetchAlumniPerson(id);
-    setState(() {
-      alumniPerson = alumniPerson;
-    });
-    return alumniPerson;
-  }
+  // Future<AlumniPerson> _fetchAlumniPersonData(id) async {
+  //   alumniPerson = await fetchAlumniPerson(id);
+  //   setState(() {
+  //     alumniPerson = alumniPerson;
+  //   });
+  //   return alumniPerson;
+  // }
 
   void handleRsvp(String? value) {
     setState(() {

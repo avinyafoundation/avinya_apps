@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class TimelineWidget extends StatelessWidget {
   final List<Map<String, String>> workTimeline;
   final List<Map<String, String>> educationTimeline;
+  final Function(Map<String, String> item, String type) onItemTap;
 
   const TimelineWidget({
     Key? key,
     required this.workTimeline,
     required this.educationTimeline,
+    required this.onItemTap,
   }) : super(key: key);
 
   @override
@@ -26,15 +28,13 @@ class TimelineWidget extends StatelessWidget {
             children: [
               Column(
                 children: workTimeline
-                    .map((item) => _buildTimelineItem(item['title']!,
-                        item['company']!, item['duration']!, true))
+                    .map((item) => _buildTimelineItem(item, true))
                     .toList(),
               ),
               _buildTimelineArrow(),
               Column(
                 children: educationTimeline
-                    .map((item) => _buildTimelineItem(item['university']!,
-                        item['course']!, item['duration']!, false))
+                    .map((item) => _buildTimelineItem(item, false))
                     .toList(),
               ),
             ],
@@ -44,32 +44,40 @@ class TimelineWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTimelineItem(
-      String title, String subtitle, String duration, bool isTop) {
-    return Column(
-      children: [
-        if (isTop) _buildConnector(),
-        Container(
-          width: 150,
-          padding: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [BoxShadow(color: Colors.grey.shade300, blurRadius: 5)],
+  Widget _buildTimelineItem(Map<String, String> item, bool isTop) {
+    return GestureDetector(
+      onTap: () => onItemTap(item, isTop ? 'work' : 'education'),
+      child: Column(
+        children: [
+          if (isTop) _buildConnector(),
+          Container(
+            width: 150,
+            margin: EdgeInsets.symmetric(vertical: 10),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(color: Colors.grey.shade300, blurRadius: 5)
+              ],
+            ),
+            child: Column(
+              children: [
+                Text(item['title'] ?? 'No Title',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(item['subtitle'] ?? 'No Subtitle',
+                    style:
+                        TextStyle(color: Colors.grey.shade700, fontSize: 12)),
+                Text(item['duration'] ?? 'No Duration',
+                    style:
+                        TextStyle(color: Colors.grey.shade500, fontSize: 10)),
+              ],
+            ),
           ),
-          child: Column(
-            children: [
-              Text(title,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-              Text(subtitle,
-                  style: TextStyle(color: Colors.grey.shade700, fontSize: 12)),
-              Text(duration,
-                  style: TextStyle(color: Colors.grey.shade500, fontSize: 10)),
-            ],
-          ),
-        ),
-        if (!isTop) _buildConnector(),
-      ],
+          if (!isTop) _buildConnector(),
+        ],
+      ),
     );
   }
 

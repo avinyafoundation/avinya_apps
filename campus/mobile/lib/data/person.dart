@@ -902,7 +902,8 @@ Future<AlumniPerson> fetchAlumniPerson(int id) async {
   }
 }
 
-Future<AlumniPerson> createAlumniPerson(AlumniPerson person) async {
+Future<AlumniPerson> createAlumniPerson(
+    AlumniPerson person, selectedDistrictId) async {
   print("Sending data: ${jsonEncode(person.toJson())}");
   final response = await http.post(
     Uri.parse(AppConfig.campusAlumniBffApiUrl + '/create_alumni'),
@@ -914,15 +915,51 @@ Future<AlumniPerson> createAlumniPerson(AlumniPerson person) async {
   );
   if (response.statusCode == 200 || response.statusCode == 201) {
     // var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    AlumniPerson person = AlumniPerson.fromJson(json.decode(response.body));
-    return person;
+    AlumniPerson AlumniUserPerson =
+        AlumniPerson.fromJson(json.decode(response.body));
+    AlumniPerson person2 = AlumniPerson(
+      id: null,
+      full_name: AlumniUserPerson.full_name,
+      email: AlumniUserPerson.email,
+      phone: AlumniUserPerson.phone,
+      mailing_address: Address(
+        id: AlumniUserPerson.mailing_address?.id,
+        name_en: AlumniUserPerson.mailing_address?.name_en,
+        street_address: AlumniUserPerson.mailing_address?.street_address,
+        phone: AlumniUserPerson.mailing_address?.phone,
+        city: City(
+          id: AlumniUserPerson.mailing_address?.city?.id,
+          name: Name(
+            name_en: AlumniUserPerson.mailing_address?.city?.name?.name_en,
+          ),
+          district:
+              District(id: selectedDistrictId, name: Name(name_en: "Kalutara")),
+          latitude: AlumniUserPerson.mailing_address?.city?.latitude ?? 0.0,
+          longitude: AlumniUserPerson.mailing_address?.city?.longitude ?? 0.0,
+        ),
+      ),
+      alumni: Alumni(
+        id: AlumniUserPerson.alumni?.id,
+        status: AlumniUserPerson.alumni?.status,
+        company_name: AlumniUserPerson.alumni?.company_name,
+        job_title: AlumniUserPerson.alumni?.job_title,
+        linkedin_id: AlumniUserPerson.alumni?.linkedin_id,
+        facebook_id: AlumniUserPerson.alumni?.facebook_id,
+        instagram_id: AlumniUserPerson.alumni?.instagram_id,
+        updated_by: AlumniUserPerson.digital_id,
+      ),
+      is_graduated: null,
+    );
+    return person2;
   } else {
     log(response.body + " Status code =" + response.statusCode.toString());
     throw Exception('Failed to create Person.');
   }
 }
 
-Future<http.Response> updateAlumniPerson(AlumniPerson person) async {
+Future<AlumniPerson> updateAlumniPerson(
+    AlumniPerson person, id, selectedDistrictId) async {
+  print("Sending data: ${jsonEncode(person.toJson())}");
   final response = await http.put(
     Uri.parse(AppConfig.campusAlumniBffApiUrl + '/update_alumni'),
     headers: <String, String>{
@@ -932,7 +969,42 @@ Future<http.Response> updateAlumniPerson(AlumniPerson person) async {
     body: jsonEncode(person.toJson()),
   );
   if (response.statusCode == 200) {
-    return response;
+    AlumniPerson AlumniUserPerson =
+        AlumniPerson.fromJson(json.decode(response.body));
+    AlumniPerson person2 = AlumniPerson(
+      id: id,
+      full_name: AlumniUserPerson.full_name,
+      email: AlumniUserPerson.email,
+      phone: AlumniUserPerson.phone,
+      mailing_address: Address(
+        id: AlumniUserPerson.mailing_address?.id,
+        name_en: AlumniUserPerson.mailing_address?.name_en,
+        street_address: AlumniUserPerson.mailing_address?.street_address,
+        phone: AlumniUserPerson.mailing_address?.phone,
+        city: City(
+          id: AlumniUserPerson.mailing_address?.city?.id,
+          name: Name(
+            name_en: AlumniUserPerson.mailing_address?.city?.name?.name_en,
+          ),
+          district:
+              District(id: selectedDistrictId, name: Name(name_en: "Kalutara")),
+          latitude: AlumniUserPerson.mailing_address?.city?.latitude ?? 0.0,
+          longitude: AlumniUserPerson.mailing_address?.city?.longitude ?? 0.0,
+        ),
+      ),
+      alumni: Alumni(
+        id: AlumniUserPerson.alumni?.id,
+        status: AlumniUserPerson.alumni?.status,
+        company_name: AlumniUserPerson.alumni?.company_name,
+        job_title: AlumniUserPerson.alumni?.job_title,
+        linkedin_id: AlumniUserPerson.alumni?.linkedin_id,
+        facebook_id: AlumniUserPerson.alumni?.facebook_id,
+        instagram_id: AlumniUserPerson.alumni?.instagram_id,
+        updated_by: AlumniUserPerson.digital_id,
+      ),
+      is_graduated: null,
+    );
+    return person2;
   } else {
     throw Exception('Failed to update Person.');
   }
@@ -975,6 +1047,40 @@ Future<http.Response> updateAlumniEduQualification(
     return response;
   } else {
     throw Exception('Failed to update Person.');
+  }
+}
+
+Future<http.Response> deleteAlumniEduQualification(int id) async {
+  final http.Response response = await http.delete(
+    Uri.parse(AppConfig.campusAlumniBffApiUrl +
+        '/alumni_education_qualification_by_id/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    return response;
+  } else {
+    throw Exception('Failed to delete.');
+  }
+}
+
+Future<http.Response> deleteAlumniWorkQualification(int id) async {
+  final http.Response response = await http.delete(
+    Uri.parse(
+        AppConfig.campusAlumniBffApiUrl + '/alumni_work_experience_by_id/$id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    return response;
+  } else {
+    throw Exception('Failed to delete.');
   }
 }
 

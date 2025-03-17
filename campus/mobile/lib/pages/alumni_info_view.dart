@@ -43,6 +43,9 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
   void initState() {
     super.initState();
     getUserPerson();
+    if (AlumniUserPerson.mailing_address != null &&
+        AlumniUserPerson.mailing_address!.city!.district != null)
+      _loadCities(AlumniUserPerson.mailing_address!.city!.district!.id);
   }
 
   void getUserPerson() {
@@ -293,8 +296,13 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                         }
                       });
                       districts = snapshot.data!;
-                      int? districtId =
-                          getDistrictIdByCityId(selectedCityId, districts);
+                      int? districtId = null;
+                      if (AlumniUserPerson.mailing_address!.city!.district !=
+                          null) {
+                        districtId = AlumniUserPerson
+                            .mailing_address!.city!.district!.id;
+                      }
+
                       selectedDistrictId = districtId ?? selectedDistrictId;
                       return Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -309,6 +317,9 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                     return SizedBox();
                   }),
               sizedBox,
+              Text('Social Media Profiles',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              SizedBox(height: 10),
               ProfileDetailColumn(
                 title: 'LinkedIn Profile Link',
                 value: '${AlumniUserPerson.alumni?.linkedin_id ?? 'N/A'}',
@@ -320,7 +331,31 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                   });
                 },
               ),
-              _buildSocialMediaSection(),
+              sizedBox,
+              ProfileDetailColumn(
+                title: 'Facebook Profile Link',
+                value: '${AlumniUserPerson.alumni?.facebook_id ?? 'N/A'}',
+                // controller: TextEditingController(
+                //     text: AlumniUserPerson.phone?.toString()),
+                onChanged: (newValue) {
+                  setState(() {
+                    AlumniUserPerson.alumni?.facebook_id = newValue;
+                  });
+                },
+              ),
+              sizedBox,
+              ProfileDetailColumn(
+                title: 'Instagram Profile Link',
+                value: '${AlumniUserPerson.alumni?.instagram_id ?? 'N/A'}',
+                // controller: TextEditingController(
+                //     text: AlumniUserPerson.phone?.toString()),
+                onChanged: (newValue) {
+                  setState(() {
+                    AlumniUserPerson.alumni?.instagram_id = newValue;
+                  });
+                },
+              ),
+              // _buildSocialMediaSection(),
               sizedBox,
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -348,7 +383,8 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
               sizedBox,
               ElevatedButton(
                 onPressed: () {
-                  _submitAlumniData(AlumniUserPerson, UserPerson.id);
+                  _submitAlumniData(
+                      AlumniUserPerson, UserPerson.id, selectedDistrictId);
                 },
                 child: Text("Save Changes"),
               ),
@@ -387,12 +423,124 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                         };
                       }).toList()
                     : [],
+                onItemTap: (item, type) {
+                  _showEditModal(context, item, type);
+                },
               ),
               SizedBox(height: 80),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _showEditModal(
+      BuildContext context, Map<String, String> item, String type) {
+    TextEditingController companyController =
+        TextEditingController(text: item['company']);
+    TextEditingController jobTitleController =
+        TextEditingController(text: item['title']);
+    TextEditingController startDateController =
+        TextEditingController(text: item['startDate']);
+    TextEditingController endDateController =
+        TextEditingController(text: item['endDate']);
+    bool isCurrent = item['duration']?.contains('Present') ?? false;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return SingleChildScrollView(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  type == 'work'
+                      ? 'Edit Work Experience'
+                      : 'Edit Study Experience',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 16),
+                if (type == 'work') ...[
+                  TextFormField(
+                    controller: companyController,
+                    decoration: InputDecoration(labelText: "Company Name"),
+                  ),
+                  TextFormField(
+                    controller: jobTitleController,
+                    decoration: InputDecoration(labelText: "Job Title"),
+                  ),
+                ] else ...[
+                  TextFormField(
+                    controller: companyController,
+                    decoration: InputDecoration(labelText: "University/School"),
+                  ),
+                  TextFormField(
+                    controller: jobTitleController,
+                    decoration: InputDecoration(labelText: "Degree/Course"),
+                  ),
+                ],
+                SwitchListTile(
+                  title: Text(type == 'work'
+                      ? "Currently Working Here?"
+                      : "Currently Studying Here?"),
+                  value: isCurrent,
+                  onChanged: (bool value) {
+                    isCurrent = value;
+                  },
+                ),
+                TextFormField(
+                  controller: startDateController,
+                  decoration: InputDecoration(labelText: "Start Date"),
+                ),
+                if (!isCurrent)
+                  TextFormField(
+                    controller: endDateController,
+                    decoration: InputDecoration(labelText: "End Date"),
+                  ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        // Delete functionality
+                        _deleteExperience(item, type);
+                        Navigator.pop(context);
+                      },
+                      style:
+                          ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      child: Text("Delete"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Update functionality
+                        _updateExperience(
+                          item,
+                          type,
+                          companyController.text,
+                          jobTitleController.text,
+                          startDateController.text,
+                          endDateController.text,
+                          isCurrent,
+                        );
+                        Navigator.pop(context);
+                      },
+                      child: Text("Update"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -427,7 +575,10 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                 await _loadCities(value);
                 setState(() {
                   selectedDistrictId = value;
-                  AlumniUserPerson.mailing_address?.district_id = value;
+                  AlumniUserPerson.mailing_address!.city!.district = District(
+                    id: value, // Use named parameter for city_id
+                  );
+                  AlumniUserPerson.mailing_address?.city!.district!.id = value;
                 });
               },
               decoration: const InputDecoration(
@@ -443,10 +594,14 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
 
   Widget _buildCityField() {
     // Ensure selectedCityId is valid or set to null if not found in the current city's list
-    if (cityList.isNotEmpty && selectedCityId != null) {
-      bool cityExists = cityList.any((city) => city.id == selectedCityId);
+    if (cityList.isNotEmpty &&
+        AlumniUserPerson.mailing_address!.city!.id != null) {
+      bool cityExists = cityList
+          .any((city) => city.id == AlumniUserPerson.mailing_address!.city!.id);
       if (!cityExists) {
         selectedCityId = null;
+      } else {
+        selectedCityId = AlumniUserPerson.mailing_address!.city!.id;
       }
     }
 
@@ -473,11 +628,11 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                     AlumniUserPerson.mailing_address = Address(
                         city_id: value, // Use named parameter for city_id
                         id: null);
-                    UserPerson.mailing_address!.city = City(
+                    AlumniUserPerson.mailing_address!.city = City(
                       id: value, // Use named parameter for city_id
                     );
                   } else {
-                    UserPerson.mailing_address!.city = City(
+                    AlumniUserPerson.mailing_address!.city = City(
                       id: value, // Use named parameter for city_id
                     );
                   }
@@ -648,6 +803,68 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
     }
   }
 
+  void _updateExperience(
+    Map<String, String> item,
+    String type,
+    String company,
+    String title,
+    String startDate,
+    String endDate,
+    bool isCurrent,
+  ) async {
+    try {
+      if (type == 'work') {
+        // Update work experience
+        WorkExperience updatedWork = WorkExperience(
+          id: int.tryParse(item['id'] ?? ''),
+          companyName: company,
+          jobTitle: title,
+          startDate: startDate,
+          endDate: isCurrent ? null : endDate,
+          currentlyWorking: isCurrent,
+        );
+        await updateAlumniWorkQualification(updatedWork);
+      } else {
+        // Update study experience
+        EducationQualifications updatedStudy = EducationQualifications(
+          id: int.tryParse(item['id'] ?? ''),
+          universityName: company,
+          courseName: title,
+          startDate: startDate,
+          endDate: isCurrent ? null : endDate,
+          isCurrentlyStudying: isCurrent,
+        );
+        await updateAlumniEduQualification(updatedStudy);
+      }
+      setState(() {}); // Refresh the UI
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$type updated successfully!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update $type: $e')),
+      );
+    }
+  }
+
+  void _deleteExperience(Map<String, String> item, String type) async {
+    try {
+      if (type == 'work') {
+        await deleteAlumniWorkQualification(int.tryParse(item['id'] ?? '')!);
+      } else {
+        await deleteAlumniEduQualification(int.tryParse(item['id'] ?? '')!);
+      }
+      setState(() {}); // Refresh the UI
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$type deleted successfully!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete $type: $e')),
+      );
+    }
+  }
+
   // void _submitAlumniData(AlumniUserPerson, id) async {
   //   AlumniPerson person = AlumniPerson(
   //       id: id,
@@ -675,7 +892,8 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
   //   }
   // }
 
-  void _submitAlumniData(AlumniPerson AlumniUserPerson, int? id) async {
+  void _submitAlumniData(
+      AlumniPerson AlumniUserPerson, int? id, selectedDistrictId) async {
     AlumniPerson person2 = AlumniPerson(
       id: id,
       full_name: AlumniUserPerson.full_name,
@@ -691,27 +909,30 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
           name: Name(
             name_en: AlumniUserPerson.mailing_address?.city?.name?.name_en,
           ),
+          district:
+              District(id: selectedDistrictId, name: Name(name_en: "Kalutara")),
           latitude: AlumniUserPerson.mailing_address?.city?.latitude ?? 0.0,
           longitude: AlumniUserPerson.mailing_address?.city?.longitude ?? 0.0,
         ),
       ),
       alumni: Alumni(
+        id: AlumniUserPerson.alumni?.id,
         status: AlumniUserPerson.alumni?.status,
         company_name: AlumniUserPerson.alumni?.company_name,
         job_title: AlumniUserPerson.alumni?.job_title,
         linkedin_id: AlumniUserPerson.alumni?.linkedin_id,
         facebook_id: AlumniUserPerson.alumni?.facebook_id,
         instagram_id: AlumniUserPerson.alumni?.instagram_id,
-        updated_by: AlumniUserPerson.alumni?.updated_by,
+        updated_by: AlumniUserPerson.digital_id,
       ),
       is_graduated: null,
     );
 
     try {
       if (AlumniUserPerson.alumni?.id != null) {
-        await updateAlumniPerson(person2);
+        await updateAlumniPerson(person2, id, selectedDistrictId);
       } else {
-        await createAlumniPerson(person2);
+        await createAlumniPerson(person2, selectedDistrictId);
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
