@@ -344,4 +344,29 @@ service / on new http:Listener(9096) {
                 ":: Detail: " + getAlumniPersonsResponse.detail().toString());
         }
     }
+
+    resource function get alumni_summary/[int alumni_batch_id]() returns Alumni[]|error {
+        GetAlumniSummaryResponse|graphql:ClientError getAlumniSummaryResponse = globalDataClient->getAlumniSummary(alumni_batch_id);
+        if (getAlumniSummaryResponse is GetAlumniSummaryResponse) {
+            Alumni[] alumni_summary_data = [];
+            foreach var alumni_summary_data_record in getAlumniSummaryResponse.alumni_summary {
+                Alumni|error summary_data_record = alumni_summary_data_record.cloneWithType(Alumni);
+                if (summary_data_record is Alumni) {
+                    alumni_summary_data.push(summary_data_record);
+                } else {
+                    log:printError("Error while processing Application record received", summary_data_record);
+                    return error("Error while processing Application record received: " + summary_data_record.message() +
+                        ":: Detail: " + summary_data_record.detail().toString());
+                }
+            }
+
+            return alumni_summary_data;
+
+        } else {
+            log:printError("Error while getting application", getAlumniSummaryResponse);
+            return error("Error while getting application: " + getAlumniSummaryResponse.message() +
+                ":: Detail: " + getAlumniSummaryResponse.detail().toString());
+        }
+    }
+
 }

@@ -216,6 +216,7 @@ input Alumni {
   facebook_id: String
   instagram_id: String
   updated_by: String
+  person_count: Int
   created: String
   updated: String
 }
@@ -231,6 +232,7 @@ type AlumniData {
   updated_by: String
   created: String
   updated: String
+  person_count: Int
 }
 
 input AlumniEducationQualification {
@@ -1153,6 +1155,7 @@ type Query {
   upcoming_events(person_id: Int): [ActivityInstanceData!]
   completed_events(person_id: Int): [ActivityInstanceData!]
   alumni_persons(parent_organization_id: Int): [PersonData!]
+  alumni_summary(alumni_batch_id: Int): [AlumniData!]
 }
 
 input ResourceAllocation {

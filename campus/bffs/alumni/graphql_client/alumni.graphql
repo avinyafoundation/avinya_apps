@@ -21,6 +21,12 @@ mutation createAlumni(
           name_si
           name_ta
         }
+        district{
+          id
+          name {
+            name_en
+          }
+        }
       }
       street_address
       phone
@@ -55,6 +61,12 @@ mutation updateAlumni(
           name_en
           name_si
           name_ta
+        }
+        district{
+          id
+          name {
+            name_en
+          }
         }
       }
       street_address
@@ -341,6 +353,16 @@ query getAlumniPersons($parent_organization_id: Int!) {
       status
       company_name
       job_title
+      updated_by
+      updated
     }
   }
 }
+
+query getAlumniSummary($alumni_batch_id: Int!) {
+  alumni_summary(alumni_batch_id: $alumni_batch_id) {
+    status
+    person_count
+  }
+}
+

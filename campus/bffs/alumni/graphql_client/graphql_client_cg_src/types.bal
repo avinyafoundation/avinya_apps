@@ -97,6 +97,7 @@ public type Alumni record {
     string? linkedin_id?;
     int? id?;
     string? job_title?;
+    int? person_count?;
     string? updated?;
     string? record_type?;
     string? status?;
@@ -543,6 +544,12 @@ public type CreateAlumniResponse record {|
                     string? name_si;
                     string? name_ta;
                 |} name;
+                record {|
+                    int? id;
+                    record {|
+                        string? name_en;
+                    |} name;
+                |} district;
             |} city;
             string? street_address;
             int? phone;
@@ -569,6 +576,12 @@ public type UpdateAlumniResponse record {|
                     string? name_si;
                     string? name_ta;
                 |} name;
+                record {|
+                    int? id;
+                    record {|
+                        string? name_en;
+                    |} name;
+                |} district;
             |} city;
             string? street_address;
             int? phone;
@@ -843,6 +856,16 @@ public type GetAlumniPersonsResponse record {|
             string? status;
             string? company_name;
             string? job_title;
+            string? updated_by;
+            string? updated;
         |}? alumni;
     |}[]? alumni_persons;
+|};
+
+public type GetAlumniSummaryResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? status;
+        int? person_count;
+    |}[]? alumni_summary;
 |};
