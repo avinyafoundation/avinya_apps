@@ -22,8 +22,11 @@ final campusAttendanceSystemInstance = CampusAttendanceSystem()
       authorName: 'Ursula K. Le Guin',
       isPopular: false,
       isNew: false)
-  ..setUserPerson(
-      Person(id: 2, jwt_sub_id: 'jwt-sub-id123', preferred_name: 'Nimal'))
+  ..setUserPerson(Person(
+      id: 2,
+      jwt_sub_id: 'jwt-sub-id123',
+      preferred_name: 'Nimal',
+      is_graduated: false))
   ..setCheckinActivityInstance(ActivityInstance(
     id: 1,
   ))
@@ -42,7 +45,7 @@ class CampusAttendanceSystem {
   bool applicationSubmitted = false;
   final String schoolName = 'Bandaragama';
   int vacancyId = 1; // todo - this needs to be fetched and set from the server
-  Person userPerson = Person();
+  Person userPerson = Person(is_graduated: false);
   Application application = Application();
   String? user_jwt_sub;
   String? user_jwt_email;
