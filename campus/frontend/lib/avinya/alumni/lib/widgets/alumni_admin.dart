@@ -57,7 +57,7 @@ class _AlumniAdminState extends State<AlumniAdmin> {
     ));
     ColumnNames.add(DataColumn(
       label: SizedBox(
-        width: 200,
+        width: 300,
         child: Center(
             child: Text('Email',
                 style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
@@ -66,7 +66,7 @@ class _AlumniAdminState extends State<AlumniAdmin> {
     ));
     ColumnNames.add(DataColumn(
       label: SizedBox(
-        width: 200,
+        width: 170,
         child: Center(
             child: Text('Phone',
                 style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
@@ -75,7 +75,7 @@ class _AlumniAdminState extends State<AlumniAdmin> {
     ));
     ColumnNames.add(DataColumn(
       label: SizedBox(
-        width: 200,
+        width: 90,
         child: Center(
             child: Text('Status',
                 style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
@@ -84,7 +84,25 @@ class _AlumniAdminState extends State<AlumniAdmin> {
     ));
     ColumnNames.add(DataColumn(
       label: SizedBox(
-        width: 200,
+        width: 150,
+        child: Center(
+            child: Text('Updated by',
+                style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center)),
+      ),
+    ));
+    ColumnNames.add(DataColumn(
+      label: SizedBox(
+        width: 150,
+        child: Center(
+            child: Text('Last Updated',
+                style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center)),
+      ),
+    ));
+    ColumnNames.add(DataColumn(
+      label: SizedBox(
+        width: 150,
         child: Center(
             child: Text('Actions',
                 style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
@@ -216,37 +234,6 @@ class _AlumniAdminState extends State<AlumniAdmin> {
                     SizedBox(
                       width: 10,
                     ),
-                    // FittedBox(
-                    //   alignment: Alignment.topLeft,
-                    //   fit: BoxFit.contain,
-                    //   child: Container(
-                    //     alignment: Alignment.bottomRight,
-                    //     margin: const EdgeInsets.only(right: 20.0),
-                    //     width: 100.0,
-                    //     height: 30.0,
-                    //     child: ElevatedButton(
-                    //       onPressed: () {
-                    //         Navigator.push(
-                    //           context,
-                    //           MaterialPageRoute(
-                    //             builder: (context) => StudentCreateScreen(
-                    //               id: null, // Since it's for creating a new student, no ID is passed
-                    //             ),
-                    //           ),
-                    //         );
-                    //       },
-                    //       child: const Text(
-                    //         'Create New',
-                    //         style: TextStyle(fontSize: 12),
-                    //       ),
-                    //       style: ElevatedButton.styleFrom(
-                    //         padding: const EdgeInsets.symmetric(
-                    //             horizontal: 10.0, vertical: 5.0),
-                    //         textStyle: const TextStyle(fontSize: 16),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
@@ -276,7 +263,7 @@ class _AlumniAdminState extends State<AlumniAdmin> {
                       columns: _buildDataColumns(),
                       // header: const Center(child: Text('Daily Attendance')),
                       columnSpacing:
-                          40, // Reduce spacing to match header & row widths
+                          30, // Reduce spacing to match header & row widths
                       horizontalMargin:
                           20, // Reduce margin to keep things aligned
                       rowsPerPage: 20,
@@ -306,7 +293,7 @@ class MyData extends DataTableSource {
   @override
   DataRow? getRow(int index) {
     if (index == 0) {
-      List<DataCell> cells = List<DataCell>.filled(5, DataCell.empty);
+      List<DataCell> cells = List<DataCell>.filled(7, DataCell.empty);
       return DataRow(
         cells: cells,
       );
@@ -314,7 +301,7 @@ class MyData extends DataTableSource {
 
     if (_fetchedAlumniListData.length > 0 &&
         index <= _fetchedAlumniListData.length) {
-      List<DataCell> cells = List<DataCell>.filled(5, DataCell.empty);
+      List<DataCell> cells = List<DataCell>.filled(7, DataCell.empty);
 
       cells[0] = DataCell(SizedBox(
         width: 200,
@@ -324,28 +311,45 @@ class MyData extends DataTableSource {
       ));
 
       cells[1] = DataCell(SizedBox(
-        width: 200,
+        width: 300,
         child: Center(
             child: Text(
                 _fetchedAlumniListData[index - 1].email?.toString() ?? "N/A")),
       ));
 
       cells[2] = DataCell(SizedBox(
-        width: 200,
+        width: 170,
         child: Center(
             child: Text(
                 _fetchedAlumniListData[index - 1].phone?.toString() ?? "N/A")),
       ));
 
       cells[3] = DataCell(SizedBox(
-        width: 200,
+        width: 90,
         child: Center(
             child: Text(
                 _fetchedAlumniListData[index - 1].alumni?.status ?? "N/A")),
       ));
 
       cells[4] = DataCell(SizedBox(
-        width: 200,
+        width: 150,
+        child: Center(
+            child: Text(
+                _fetchedAlumniListData[index - 1].alumni?.updated_by ?? "N/A")),
+      ));
+
+      cells[5] = DataCell(SizedBox(
+        width: 150,
+        child: Center(
+            child: Text(_fetchedAlumniListData[index - 1]
+                    .alumni
+                    ?.updated
+                    ?.substring(0, 11) ??
+                "N/A")),
+      ));
+
+      cells[6] = DataCell(SizedBox(
+        width: 150,
         child: Center(
           child: FittedBox(
             alignment: Alignment.center,

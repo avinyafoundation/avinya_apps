@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gallery/avinya/alumni/lib/data/alumni.dart';
 import 'package:gallery/avinya/alumni/lib/data/organization.dart';
 
 class AlumniDashboard extends StatefulWidget {
@@ -11,6 +12,7 @@ class AlumniDashboard extends StatefulWidget {
 
 class _AlumniDashboardState extends State<AlumniDashboard> {
   late Future<List<Organization>> _fetchBatchData;
+  List<Alumni> _fetchAlumniSummaryData = [];
   bool _isFetching = false;
   Organization? _selectedValue;
 
@@ -22,31 +24,31 @@ class _AlumniDashboardState extends State<AlumniDashboard> {
   }
 
   Future<List<Organization>> _loadBatchData() async {
-    return await fetchOrganizationsByAvinyaType(86);
+    return await fetchInActiveOrganizationsByAvinyaType(86);
   }
 
-  final Map<String, int> alumniCounts = {
-    "Studying": 45,
-    "Working": 30,
-    "Not Working": 10,
-    "Abroad": 15,
-    "Inactive": 5,
-  };
+  final List<String> labels = [
+    "Working",
+    "Studying",
+    "WorkAndStudy",
+    "NotWorking",
+    "Abroad",
+  ];
 
   final Map<String, IconData> icons = {
-    "Studying": Icons.school,
     "Working": Icons.work,
-    "Not Working": Icons.do_not_disturb,
-    "Abroad": Icons.flight_takeoff,
-    "Inactive": Icons.pause_circle_filled,
+    "Studying": Icons.school,
+    "WorkAndStudy": Icons.business_center,
+    "NotWorking": Icons.do_not_disturb,
+    "Abroad": Icons.flight_takeoff
   };
 
   final Map<String, Color> colors = {
-    "Studying": Colors.blueAccent,
     "Working": Colors.green,
-    "Not Working": Colors.orange,
-    "Abroad": Colors.purple,
-    "Inactive": Colors.redAccent,
+    "Studying": Colors.blueAccent,
+    "WorkAndStudy": Colors.teal,
+    "NotWorking": Colors.orange,
+    "Abroad": Colors.purple
   };
 
   @override
@@ -117,8 +119,11 @@ class _AlumniDashboardState extends State<AlumniDashboard> {
                         if (newValue.organization_metadata.isEmpty) {
                           return;
                         }
+                        _fetchAlumniSummaryData =
+                            await fetchAlumniSummaryList(newValue.id!);
 
                         setState(() {
+                          _fetchAlumniSummaryData;
                           _selectedValue = newValue;
                           this._isFetching = true;
                         });
@@ -147,58 +152,56 @@ class _AlumniDashboardState extends State<AlumniDashboard> {
             height: 20,
           ),
           SizedBox(
-            width: screenWidth,
             height: screenHeight * 0.7,
-            child: Expanded(
-              child: GridView.count(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 5,
-                crossAxisSpacing: 5.0,
-                children: alumniCounts.keys.map((status) {
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    elevation: 4.0,
-                    color: colors[status],
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              icons[status],
-                              size: 80,
+            child: GridView.count(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              crossAxisCount: 5,
+              crossAxisSpacing: 5.0,
+              children: labels.map((status) {
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  elevation: 4.0,
+                  color: colors[status],
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            icons[status],
+                            size: 80,
+                            color: Colors.white,
+                          ),
+                          SizedBox(height: 5.0),
+                          //if (_fetchAlumniSummaryData.length > 0)
+                          Text(
+                            "${_fetchAlumniSummaryData.firstWhere((summaryData) => summaryData.status == status, orElse: () => Alumni(person_count: 0, status: "", id: 0)).person_count}",
+                            style: TextStyle(
+                                fontSize: 30,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            height: 5.0,
+                          ),
+                          Text(
+                            status,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
-                            SizedBox(height: 5.0),
-                            Text(
-                              "${alumniCounts[status]}",
-                              style: TextStyle(
-                                  fontSize: 30,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              height: 5.0,
-                            ),
-                            Text(
-                              status,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white60,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
+                  ),
+                );
+              }).toList(),
             ),
           )
         ]),
