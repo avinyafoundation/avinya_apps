@@ -317,6 +317,7 @@ query getUpcomingEvents($person_id: Int!) {
       description
     }
     activity_participant {
+      id
       activity_instance_id
       is_attending
     }

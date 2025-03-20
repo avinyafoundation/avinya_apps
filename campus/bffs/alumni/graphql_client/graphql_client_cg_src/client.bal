@@ -100,7 +100,7 @@ public isolated client class GraphqlClient {
         return <CreateActivityInstanceEvaluationResponse> check performDataBinding(graphqlResponse, CreateActivityInstanceEvaluationResponse);
     }
     remote isolated function getUpcomingEvents(int person_id) returns GetUpcomingEventsResponse|graphql:ClientError {
-        string query = string `query getUpcomingEvents($person_id:Int!) {upcoming_events(person_id:$person_id) {id activity_id name location description start_time end_time event_gift {activity_instance_id gift_amount no_of_gifts notes description} activity_participant {activity_instance_id is_attending}}}`;
+        string query = string `query getUpcomingEvents($person_id:Int!) {upcoming_events(person_id:$person_id) {id activity_id name location description start_time end_time event_gift {activity_instance_id gift_amount no_of_gifts notes description} activity_participant {id activity_instance_id is_attending}}}`;
         map<anydata> variables = {"person_id": person_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetUpcomingEventsResponse> check performDataBinding(graphqlResponse, GetUpcomingEventsResponse);
