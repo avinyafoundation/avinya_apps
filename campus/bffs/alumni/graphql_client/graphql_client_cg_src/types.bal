@@ -818,6 +818,7 @@ public type GetUpcomingEventsResponse record {|
             string? description;
         |}? event_gift;
         record {|
+            int? id;
             int? activity_instance_id;
             int? is_attending;
         |}? activity_participant;
