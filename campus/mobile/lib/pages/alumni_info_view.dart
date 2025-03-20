@@ -21,6 +21,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
 
   late List<EducationQualifications> alumni_education_qualifications;
   late List<WorkExperience> alumni_work_experience;
+  final _formKey = GlobalKey<FormState>();
 
   late Person UserPerson = Person(is_graduated: false)
     ..full_name = 'John'
@@ -203,7 +204,10 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                     title: 'Programme',
                     value: '${UserPerson.avinya_type?.focus ?? 'N/A'}',
                   ),
-                  ProfileDetailRow(title: 'Class', value: 'TBD'),
+                  ProfileDetailRow(
+                      title: 'Class',
+                      value:
+                          '${UserPerson.organization!.description ?? 'N/A'}'),
                 ],
               ),
               sizedBox,
@@ -235,6 +239,13 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                     AlumniUserPerson.phone = int.tryParse(newValue);
                   });
                 },
+                maxLines: 1,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Phone Number is required'; // Error message if field is empty
+                  }
+                  return null; // No error
+                },
               ),
               // Padding(
               //   padding: const EdgeInsets.all(16.0),
@@ -250,6 +261,13 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                     AlumniUserPerson.email = newValue;
                   });
                 },
+                maxLines: 1,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Email is required'; // Error message if field is empty
+                  }
+                  return null; // No error
+                },
               ),
               sizedBox,
               ProfileDetailColumn(
@@ -262,6 +280,13 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                   setState(() {
                     AlumniUserPerson.mailing_address?.street_address = newValue;
                   });
+                },
+                maxLines: 3,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Address is required'; // Error message if field is empty
+                  }
+                  return null; // No error
                 },
               ),
               FutureBuilder<List<District>>(
@@ -330,6 +355,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                     AlumniUserPerson.alumni?.linkedin_id = newValue;
                   });
                 },
+                maxLines: 1,
               ),
               sizedBox,
               ProfileDetailColumn(
@@ -342,6 +368,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                     AlumniUserPerson.alumni?.facebook_id = newValue;
                   });
                 },
+                maxLines: 1,
               ),
               sizedBox,
               ProfileDetailColumn(
@@ -354,6 +381,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                     AlumniUserPerson.alumni?.instagram_id = newValue;
                   });
                 },
+                maxLines: 1,
               ),
               // _buildSocialMediaSection(),
               sizedBox,
@@ -383,8 +411,14 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
               sizedBox,
               ElevatedButton(
                 onPressed: () {
-                  _submitAlumniData(
-                      AlumniUserPerson, UserPerson.id, selectedDistrictId);
+                  if (_formKey.currentState?.validate() ?? false) {
+                    // Proceed with submission if the form is valid
+                    _submitAlumniData(
+                        AlumniUserPerson, UserPerson.id, selectedDistrictId);
+                  } else {
+                    // Show an error message or highlight fields
+                    print("Please fill in all required fields");
+                  }
                 },
                 child: Text("Save Changes"),
               ),
@@ -401,6 +435,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                         .map((workExperience) {
                         return {
                           "title": workExperience.jobTitle ?? '',
+                          "id": workExperience.id ?? '',
                           "company": workExperience.companyName ?? '',
                           "duration": workExperience.currentlyWorking == true
                               ? "${workExperience.startDate} - Present"
@@ -415,6 +450,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                         .map((EduQualifications) {
                         return {
                           "university": EduQualifications.universityName ?? '',
+                          "id": EduQualifications.id ?? '',
                           "course": EduQualifications.courseName ?? '',
                           "duration": EduQualifications.isCurrentlyStudying ==
                                   true
@@ -437,108 +473,15 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
 
   void _showEditModal(
       BuildContext context, Map<String, String> item, String type) {
-    TextEditingController companyController =
-        TextEditingController(text: item['company']);
-    TextEditingController jobTitleController =
-        TextEditingController(text: item['title']);
-    TextEditingController startDateController =
-        TextEditingController(text: item['startDate']);
-    TextEditingController endDateController =
-        TextEditingController(text: item['endDate']);
-    bool isCurrent = item['duration']?.contains('Present') ?? false;
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        return SingleChildScrollView(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Container(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  type == 'work'
-                      ? 'Edit Work Experience'
-                      : 'Edit Study Experience',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 16),
-                if (type == 'work') ...[
-                  TextFormField(
-                    controller: companyController,
-                    decoration: InputDecoration(labelText: "Company Name"),
-                  ),
-                  TextFormField(
-                    controller: jobTitleController,
-                    decoration: InputDecoration(labelText: "Job Title"),
-                  ),
-                ] else ...[
-                  TextFormField(
-                    controller: companyController,
-                    decoration: InputDecoration(labelText: "University/School"),
-                  ),
-                  TextFormField(
-                    controller: jobTitleController,
-                    decoration: InputDecoration(labelText: "Degree/Course"),
-                  ),
-                ],
-                SwitchListTile(
-                  title: Text(type == 'work'
-                      ? "Currently Working Here?"
-                      : "Currently Studying Here?"),
-                  value: isCurrent,
-                  onChanged: (bool value) {
-                    isCurrent = value;
-                  },
-                ),
-                TextFormField(
-                  controller: startDateController,
-                  decoration: InputDecoration(labelText: "Start Date"),
-                ),
-                if (!isCurrent)
-                  TextFormField(
-                    controller: endDateController,
-                    decoration: InputDecoration(labelText: "End Date"),
-                  ),
-                SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        // Delete functionality
-                        _deleteExperience(item, type);
-                        Navigator.pop(context);
-                      },
-                      style:
-                          ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                      child: Text("Delete"),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Update functionality
-                        _updateExperience(
-                          item,
-                          type,
-                          companyController.text,
-                          jobTitleController.text,
-                          startDateController.text,
-                          endDateController.text,
-                          isCurrent,
-                        );
-                        Navigator.pop(context);
-                      },
-                      child: Text("Update"),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+        return EditModal(
+          item: item,
+          type: type,
+          onDelete: _deleteExperience,
+          onUpdate: _updateExperience,
         );
       },
     );
@@ -808,6 +751,8 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
     String type,
     String company,
     String title,
+    String university,
+    String course,
     String startDate,
     String endDate,
     bool isCurrent,
@@ -824,17 +769,35 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
           currentlyWorking: isCurrent,
         );
         await updateAlumniWorkQualification(updatedWork);
+        setState(() {
+          AlumniPerson alumniUser =
+              campusAppsPortalInstance.getAlumniUserPerson();
+          int index = alumniUser.alumni_work_experience!
+              .indexWhere((work) => work.id == updatedWork.id);
+          if (index != -1) {
+            alumniUser.alumni_work_experience![index] = updatedWork;
+          }
+        });
       } else {
         // Update study experience
         EducationQualifications updatedStudy = EducationQualifications(
           id: int.tryParse(item['id'] ?? ''),
-          universityName: company,
-          courseName: title,
+          universityName: university,
+          courseName: course,
           startDate: startDate,
           endDate: isCurrent ? null : endDate,
           isCurrentlyStudying: isCurrent,
         );
         await updateAlumniEduQualification(updatedStudy);
+        setState(() {
+          AlumniPerson alumniUser =
+              campusAppsPortalInstance.getAlumniUserPerson();
+          int index = alumniUser.alumni_education_qualifications!
+              .indexWhere((work) => work.id == updatedStudy.id);
+          if (index != -1) {
+            alumniUser.alumni_education_qualifications![index] = updatedStudy;
+          }
+        });
       }
       setState(() {}); // Refresh the UI
       ScaffoldMessenger.of(context).showSnackBar(
@@ -849,48 +812,40 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
 
   void _deleteExperience(Map<String, String> item, String type) async {
     try {
+      int id = int.tryParse(item['id'] ?? '')!;
+
       if (type == 'work') {
-        await deleteAlumniWorkQualification(int.tryParse(item['id'] ?? '')!);
+        await deleteAlumniWorkQualification(id);
+
+        // Remove the item from the alumni_work_experience list
+        AlumniPerson alumniUser =
+            campusAppsPortalInstance.getAlumniUserPerson()!;
+        alumniUser.alumni_work_experience!.removeWhere((work) => work.id == id);
       } else {
-        await deleteAlumniEduQualification(int.tryParse(item['id'] ?? '')!);
+        // Call API to delete education qualification
+        await deleteAlumniEduQualification(id);
+
+        // Remove the item from the alumni_education_qualifications list
+        AlumniPerson alumniUser =
+            campusAppsPortalInstance.getAlumniUserPerson()!;
+        alumniUser.alumni_education_qualifications!
+            .removeWhere((edu) => edu.id == id);
       }
-      setState(() {}); // Refresh the UI
+
+      // Refresh the UI after removing the item
+      setState(() {});
+
+      // Show a success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('$type deleted successfully!')),
       );
     } catch (e) {
+      // Show an error message if something goes wrong
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to delete $type: $e')),
       );
     }
   }
-
-  // void _submitAlumniData(AlumniUserPerson, id) async {
-  //   AlumniPerson person = AlumniPerson(
-  //       id: id,
-  //       phone: AlumniUserPerson.phone,
-  //       is_graduated: true
-  //       // street_address: jobTitleController.text,
-  //       // startDate: workStartDateController.text,
-  //       // endDate: isCurrentWork ? null : endDateController.text,
-  //       // currentlyWorking: isCurrentWork,
-  //       );
-
-  //   try {
-  //     // AlumniPerson createdWork =
-  //     await createAlumniPerson(person);
-  //     // setState(() {
-  //     //   AlumniUserPerson.alumni_work_experience?.add(createdWork);
-  //     // });
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Work experience added successfully!')),
-  //     );
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Failed to add work experience: $e')),
-  //     );
-  //   }
-  // }
 
   void _submitAlumniData(
       AlumniPerson AlumniUserPerson, int? id, selectedDistrictId) async {
@@ -1068,49 +1023,267 @@ class ProfileDetailRow extends StatelessWidget {
   }
 }
 
-class ProfileDetailColumn extends StatelessWidget {
+class ProfileDetailColumn extends StatefulWidget {
   final String title;
   final String? value;
-  final TextEditingController controller;
   final Function(String) onChanged;
+  final int? maxLines;
+  final String? Function(String?)? validator;
 
   ProfileDetailColumn({
     required this.title,
     required this.value,
     required this.onChanged,
-  }) : controller = TextEditingController(text: value ?? '');
+    required this.maxLines,
+    this.validator,
+  });
 
-  // ProfileDetailColumn({
-  //   required this.title,
-  //   required this.value,
-  //   required this.controller,
-  //   required this.onChanged,
-  // }) : controller = TextEditingController(text: value ?? '');
+  @override
+  _ProfileDetailColumnState createState() => _ProfileDetailColumnState();
+}
+
+class _ProfileDetailColumnState extends State<ProfileDetailColumn> {
+  late TextEditingController controller;
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    controller = TextEditingController(text: widget.value ?? '');
+  }
+
+  @override
+  void didUpdateWidget(ProfileDetailColumn oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value) {
+      controller.text = widget.value ?? '';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    controller.text = value ?? ''; // Prepopulate the value
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title,
+            widget.title,
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.black54,
                 ),
           ),
-          TextFormField(
-            controller: controller,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
+          Form(
+            key: _formKey,
+            child: TextFormField(
+              controller: controller,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+              ),
+              onChanged: widget.onChanged,
+              maxLines: widget.maxLines,
+              validator: widget.validator,
             ),
-            onChanged: onChanged,
           ),
         ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  bool validateForm() {
+    return _formKey.currentState?.validate() ?? false;
+  }
+}
+
+class EditModal extends StatefulWidget {
+  final Map<String, String> item;
+  final String type;
+  final Function(Map<String, String>, String) onDelete;
+  final Function(Map<String, String>, String, String, String, String, String,
+      String, String, bool) onUpdate;
+
+  EditModal({
+    required this.item,
+    required this.type,
+    required this.onDelete,
+    required this.onUpdate,
+  });
+
+  @override
+  _EditModalState createState() => _EditModalState();
+}
+
+class _EditModalState extends State<EditModal> {
+  late TextEditingController companyController;
+  late TextEditingController idController;
+  late TextEditingController jobTitleController;
+  late TextEditingController universityController;
+  late TextEditingController courseController;
+  late TextEditingController startDateController;
+  late TextEditingController endDateController;
+  late bool isCurrent;
+
+  @override
+  void initState() {
+    super.initState();
+
+    companyController = TextEditingController(text: widget.item['company']);
+    idController = TextEditingController(text: widget.item['id']);
+    jobTitleController = TextEditingController(text: widget.item['title']);
+    universityController =
+        TextEditingController(text: widget.item['university']);
+    courseController = TextEditingController(text: widget.item['course']);
+
+    // Extract start and end dates
+    String? duration = widget.item['duration'];
+    List<String> dates = duration?.split(' - ') ?? [];
+
+    String startDate = dates.isNotEmpty ? dates[0] : '';
+    String endDate =
+        (dates.length > 1 && dates[1] != "Present") ? dates[1] : '';
+
+    startDateController = TextEditingController(text: startDate);
+    endDateController = TextEditingController(text: endDate);
+
+    isCurrent = duration?.contains('Present') ?? false;
+  }
+
+// Function to show date picker and update text field
+  Future<void> _selectDate(
+      BuildContext context, TextEditingController controller) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        controller.text =
+            "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.type == 'work'
+                  ? 'Edit Work Experience'
+                  : 'Edit Study Experience',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            if (widget.type == 'work') ...[
+              TextFormField(
+                controller: companyController,
+                decoration: InputDecoration(labelText: "Company Name"),
+              ),
+              TextFormField(
+                controller: jobTitleController,
+                decoration: InputDecoration(labelText: "Job Title"),
+              ),
+            ] else ...[
+              TextFormField(
+                controller: universityController,
+                decoration: InputDecoration(labelText: "University/School"),
+              ),
+              TextFormField(
+                controller: courseController,
+                decoration: InputDecoration(labelText: "Degree/Course"),
+              ),
+            ],
+            SwitchListTile(
+              title: Text(widget.type == 'work'
+                  ? "Currently Working Here?"
+                  : "Currently Studying Here?"),
+              value: isCurrent,
+              onChanged: (bool value) {
+                setState(() {
+                  isCurrent = value;
+                  if (isCurrent) {
+                    endDateController.text = "Present";
+                  } else {
+                    endDateController.clear();
+                  }
+                });
+              },
+            ),
+            GestureDetector(
+              onTap: () => _selectDate(context, startDateController),
+              child: AbsorbPointer(
+                child: TextFormField(
+                  controller: startDateController,
+                  decoration: InputDecoration(
+                    labelText: "Start Date",
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                ),
+              ),
+            ),
+            if (!isCurrent)
+              GestureDetector(
+                onTap: () => _selectDate(context, endDateController),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: endDateController,
+                    decoration: InputDecoration(
+                      labelText: "End Date",
+                      suffixIcon: Icon(Icons.calendar_today),
+                    ),
+                  ),
+                ),
+              ),
+            SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    widget.onDelete(widget.item, widget.type);
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  child: Text("Delete"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    widget.onUpdate(
+                      widget.item,
+                      widget.type,
+                      companyController.text,
+                      jobTitleController.text,
+                      universityController.text,
+                      courseController.text,
+                      startDateController.text,
+                      endDateController.text,
+                      isCurrent,
+                    );
+                    Navigator.pop(context);
+                  },
+                  child: Text("Update"),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
