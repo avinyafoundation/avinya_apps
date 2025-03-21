@@ -687,6 +687,7 @@ public type GetAlumniPersonByIdResponse record {|
         string? preferred_name;
         string? full_name;
         string? date_of_birth;
+        string? sex;
         record {|
             record {|
                 int? id;
