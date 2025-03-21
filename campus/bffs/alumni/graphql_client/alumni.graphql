@@ -182,6 +182,7 @@ query getAlumniPersonById($id: Int!) {
     preferred_name
     full_name
     date_of_birth
+    sex
     mailing_address {
       city {
         id
