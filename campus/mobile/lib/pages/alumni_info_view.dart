@@ -21,7 +21,6 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
 
   late List<EducationQualifications> alumni_education_qualifications;
   late List<WorkExperience> alumni_work_experience;
-  final _formKey = GlobalKey<FormState>();
 
   late Person UserPerson = Person(is_graduated: false)
     ..full_name = 'John'
@@ -29,9 +28,10 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
 
   final List<String> statusOptions = [
     'Working',
-    'Not Working',
-    'Working and Studying',
-    'Studying'
+    'Studying',
+    'WorkAndStudy',
+    'NotWorking',
+    'Abroad'
   ];
 
   bool isDistrictsDataLoaded = false;
@@ -114,6 +114,9 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
 
   @override
   Widget build(BuildContexcosdantext) {
+    String imagePath = AlumniUserPerson.sex == 'Male'
+        ? 'assets/images/student_profile_male.jpg' // Replace with the male profile image path
+        : 'assets/images/student_profile.jpeg'; // Default or female profile image
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -140,8 +143,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                           ? 12.w
                           : 13.w,
                       backgroundColor: kSecondaryColor,
-                      backgroundImage:
-                          AssetImage('assets/images/student_profile.jpeg'),
+                      backgroundImage: AssetImage(imagePath),
                     ),
                     kWidthSizedBox,
                     Column(
@@ -232,62 +234,35 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
               ProfileDetailColumn(
                 title: 'Phone Number',
                 value: '${AlumniUserPerson.phone ?? 'N/A'}',
-                // controller: TextEditingController(
-                //     text: AlumniUserPerson.phone?.toString()),
                 onChanged: (newValue) {
                   setState(() {
                     AlumniUserPerson.phone = int.tryParse(newValue);
                   });
                 },
                 maxLines: 1,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Phone Number is required'; // Error message if field is empty
-                  }
-                  return null; // No error
-                },
               ),
-              // Padding(
-              //   padding: const EdgeInsets.all(16.0),
-              //   child: _buildTextField(phoneNumberController, 'Phone Number'),
-              // ),
-              sizedBox,
+              SizedBox(height: 10),
               ProfileDetailColumn(
                 title: 'Email',
                 value: '${AlumniUserPerson.email ?? 'N/A'}',
-                // controller: TextEditingController(text: AlumniUserPerson.email),
                 onChanged: (newValue) {
                   setState(() {
                     AlumniUserPerson.email = newValue;
                   });
                 },
                 maxLines: 1,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Email is required'; // Error message if field is empty
-                  }
-                  return null; // No error
-                },
               ),
-              sizedBox,
+              SizedBox(height: 10),
               ProfileDetailColumn(
                 title: 'Address',
                 value:
                     '${AlumniUserPerson.mailing_address?.street_address ?? 'N/A'}',
-                // controller: TextEditingController(
-                //     text: AlumniUserPerson.mailing_address?.street_address),
                 onChanged: (newValue) {
                   setState(() {
                     AlumniUserPerson.mailing_address?.street_address = newValue;
                   });
                 },
                 maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Address is required'; // Error message if field is empty
-                  }
-                  return null; // No error
-                },
               ),
               FutureBuilder<List<District>>(
                   future: fetchDistrictList(),
@@ -341,15 +316,13 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                     }
                     return SizedBox();
                   }),
-              sizedBox,
+              SizedBox(height: 10),
               Text('Social Media Profiles',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               SizedBox(height: 10),
               ProfileDetailColumn(
                 title: 'LinkedIn Profile Link',
                 value: '${AlumniUserPerson.alumni?.linkedin_id ?? 'N/A'}',
-                // controller: TextEditingController(
-                //     text: AlumniUserPerson.phone?.toString()),
                 onChanged: (newValue) {
                   setState(() {
                     AlumniUserPerson.alumni?.linkedin_id = newValue;
@@ -357,12 +330,10 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                 },
                 maxLines: 1,
               ),
-              sizedBox,
+              SizedBox(height: 10),
               ProfileDetailColumn(
                 title: 'Facebook Profile Link',
                 value: '${AlumniUserPerson.alumni?.facebook_id ?? 'N/A'}',
-                // controller: TextEditingController(
-                //     text: AlumniUserPerson.phone?.toString()),
                 onChanged: (newValue) {
                   setState(() {
                     AlumniUserPerson.alumni?.facebook_id = newValue;
@@ -370,12 +341,10 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                 },
                 maxLines: 1,
               ),
-              sizedBox,
+              SizedBox(height: 10),
               ProfileDetailColumn(
                 title: 'Instagram Profile Link',
                 value: '${AlumniUserPerson.alumni?.instagram_id ?? 'N/A'}',
-                // controller: TextEditingController(
-                //     text: AlumniUserPerson.phone?.toString()),
                 onChanged: (newValue) {
                   setState(() {
                     AlumniUserPerson.alumni?.instagram_id = newValue;
@@ -383,8 +352,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                 },
                 maxLines: 1,
               ),
-              // _buildSocialMediaSection(),
-              sizedBox,
+              SizedBox(height: 10),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: DropdownButtonFormField<String>(
@@ -408,17 +376,11 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                   },
                 ),
               ),
-              sizedBox,
+              SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    // Proceed with submission if the form is valid
-                    _submitAlumniData(
-                        AlumniUserPerson, UserPerson.id, selectedDistrictId);
-                  } else {
-                    // Show an error message or highlight fields
-                    print("Please fill in all required fields");
-                  }
+                  _submitAlumniData(
+                      AlumniUserPerson, UserPerson.id, selectedDistrictId);
                 },
                 child: Text("Save Changes"),
               ),
@@ -427,7 +389,6 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
               SizedBox(height: 20),
               _buildStudySection(UserPerson.id),
               SizedBox(height: 10),
-
               SizedBox(height: 10),
               TimelineWidget(
                 workTimeline: AlumniUserPerson.alumni_work_experience != null
@@ -1028,14 +989,12 @@ class ProfileDetailColumn extends StatefulWidget {
   final String? value;
   final Function(String) onChanged;
   final int? maxLines;
-  final String? Function(String?)? validator;
 
   ProfileDetailColumn({
     required this.title,
     required this.value,
     required this.onChanged,
     required this.maxLines,
-    this.validator,
   });
 
   @override
@@ -1044,7 +1003,6 @@ class ProfileDetailColumn extends StatefulWidget {
 
 class _ProfileDetailColumnState extends State<ProfileDetailColumn> {
   late TextEditingController controller;
-  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -1074,17 +1032,13 @@ class _ProfileDetailColumnState extends State<ProfileDetailColumn> {
                   color: Colors.black54,
                 ),
           ),
-          Form(
-            key: _formKey,
-            child: TextFormField(
-              controller: controller,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-              ),
-              onChanged: widget.onChanged,
-              maxLines: widget.maxLines,
-              validator: widget.validator,
+          TextFormField(
+            controller: controller,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
             ),
+            onChanged: widget.onChanged,
+            maxLines: widget.maxLines,
           ),
         ],
       ),
@@ -1095,10 +1049,6 @@ class _ProfileDetailColumnState extends State<ProfileDetailColumn> {
   void dispose() {
     controller.dispose();
     super.dispose();
-  }
-
-  bool validateForm() {
-    return _formKey.currentState?.validate() ?? false;
   }
 }
 

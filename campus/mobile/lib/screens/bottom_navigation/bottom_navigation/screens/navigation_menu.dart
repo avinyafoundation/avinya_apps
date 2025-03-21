@@ -20,7 +20,7 @@ class NavigationMenu extends StatelessWidget {
             items: [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.card_travel), label: 'My Works'),
+                  icon: Icon(Icons.card_travel), label: 'My Cert'),
               BottomNavigationBarItem(
                   icon: Icon(Icons.notifications), label: 'Notifications'),
               BottomNavigationBarItem(
