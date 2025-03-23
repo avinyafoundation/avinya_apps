@@ -14,18 +14,30 @@ class Asset {
   String? description;
   // int? avinya_type_id;
   AvinyaType? avinya_type_id;
+  String? assetType;
+  String? purchaseDate;
+  double? purchasePrice;
+  String? vendor;
+  String? warranty;
+  String? documentPath;
 
-  Asset({
-    this.id,
-    this.name,
-    this.manufacturer,
-    this.model,
-    this.serialNumber,
-    this.registrationNumber,
-    this.description,
-    this.avinya_type_id,
-    // this.avinyaTypeId,
-  });
+  Asset(
+      {this.id,
+      this.name,
+      this.manufacturer,
+      this.model,
+      this.serialNumber,
+      this.registrationNumber,
+      this.description,
+      this.avinya_type_id,
+      this.assetType,
+      this.purchaseDate,
+      this.purchasePrice,
+      this.vendor,
+      this.warranty,
+      this.documentPath
+      // this.avinyaTypeId,
+      });
 
   factory Asset.fromJson(Map<String, dynamic> json) {
     return Asset(
@@ -36,6 +48,13 @@ class Asset {
       serialNumber: json['serial_number'],
       registrationNumber: json['registration_number'],
       description: json['description'],
+
+      assetType: json['assetType'],
+      purchaseDate: json['purchaseDate'],
+      purchasePrice: json['purchasePrice'],
+      vendor: json['vendor'],
+      warranty: json['warranty'],
+
       // avinya_type_id: json['avinya_type_id'],
       avinya_type_id: json['avinya_type_id'] != null
           ? AvinyaType.fromJson(json['id'])

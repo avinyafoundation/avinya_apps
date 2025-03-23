@@ -163,6 +163,53 @@ class _AssetRegistrationFormState extends State<AssetRegistrationForm> {
     );
   }
 
+  Future<void> _submitForm() async {
+    // Validate form fields
+    if (selectedAssetType == null ||
+        assetNameController.text.isEmpty ||
+        serialNumberController.text.isEmpty ||
+        purchaseDateController.text.isEmpty ||
+        purchasePriceController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all required fields')),
+      );
+      return;
+    }
+
+    // Create Asset object
+    final asset = Asset(
+      assetType: selectedAssetType!,
+      name: assetNameController.text,
+      serialNumber: serialNumberController.text,
+      purchaseDate: purchaseDateController.text,
+      purchasePrice: double.parse(purchasePriceController.text),
+      vendor: vendorController.text,
+      warranty: warrantyController.text,
+      documentPath: uploadedFile?.path,
+    );
+
+    // TODO: Send asset data to backend service or API
+    // Example:
+    // final response = await http.post(
+    //   Uri.parse('https://your-api-endpoint.com/assets'),
+    //   body: asset.toJson(),
+    // );
+
+    // Handle response
+    // if (response.statusCode == 200) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text('Asset registered successfully')),
+    //   );
+    // } else {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text('Failed to register asset')),
+    //   );
+    // }
+
+    // For now, just print the asset data
+    print(asset.toJson());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -237,9 +284,7 @@ class _AssetRegistrationFormState extends State<AssetRegistrationForm> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    // Handle form submission
-                  },
+                  onPressed: _submitForm,
                   icon: const Icon(Icons.save),
                   label: const Text("Register Asset"),
                   style: ElevatedButton.styleFrom(
