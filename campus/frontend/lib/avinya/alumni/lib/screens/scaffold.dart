@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery/auth.dart';
 import 'package:gallery/avinya/alumni/lib/app_routes/app_routes.dart';
+import 'package:gallery/avinya/consumable/lib/data.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:gallery/config/app_config.dart';
 import '../routing.dart';
@@ -78,98 +79,102 @@ class _SMSScaffoldState extends State<SMSScaffold> {
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
-              MouseRegion(
-                onEnter: (_) {
-                  setState(() {
-                    isAlumniDashboardSectionHovered = true;
-                  });
-                },
-                onExit: (_) {
-                  setState(() {
-                    isAlumniDashboardSectionHovered = false;
-                  });
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isAlumniDashboardSectionHovered
-                        ? Colors.white.withOpacity(0.3)
-                        : null,
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  margin: EdgeInsets.all(8.0),
-                  child: Material(
-                    type: MaterialType.transparency,
-                    child: Container(
-                      child: ListTile(
-                        leading: Icon(Icons.dashboard,
-                            color: Colors.white, size: 20.0),
-                        title: Container(
-                          margin: EdgeInsets.only(left: 12.0),
-                          transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                          child: Text(
-                            "Alumni Dashboard",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
+              if (campusAppsPortalInstance.isFoundation ||
+                  campusAppsPortalInstance.isTeacher)
+                MouseRegion(
+                  onEnter: (_) {
+                    setState(() {
+                      isAlumniDashboardSectionHovered = true;
+                    });
+                  },
+                  onExit: (_) {
+                    setState(() {
+                      isAlumniDashboardSectionHovered = false;
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isAlumniDashboardSectionHovered
+                          ? Colors.white.withOpacity(0.3)
+                          : null,
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    margin: EdgeInsets.all(8.0),
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: Container(
+                        child: ListTile(
+                          leading: Icon(Icons.dashboard,
+                              color: Colors.white, size: 20.0),
+                          title: Container(
+                            margin: EdgeInsets.only(left: 12.0),
+                            transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                            child: Text(
+                              "Alumni Dashboard",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
+                          onTap: () {
+                            Navigator.pop(context); // Close the drawer
+                            routeState.go(AppRoutes.alumniDashboard);
+                          },
                         ),
-                        onTap: () {
-                          Navigator.pop(context); // Close the drawer
-                          routeState.go(AppRoutes.alumniDashboard);
-                        },
                       ),
                     ),
+                    // ),
                   ),
-                  // ),
                 ),
-              ),
-              MouseRegion(
-                onEnter: (_) {
-                  setState(() {
-                    isAlumniAdminSectionHovered = true;
-                  });
-                },
-                onExit: (_) {
-                  setState(() {
-                    isAlumniAdminSectionHovered = false;
-                  });
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isAlumniAdminSectionHovered
-                        ? Colors.white.withOpacity(0.3)
-                        : null,
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  margin: EdgeInsets.all(8.0),
-                  child: Material(
-                    type: MaterialType.transparency,
-                    child: Container(
-                      child: ListTile(
-                        leading:
-                            Icon(Icons.people, color: Colors.white, size: 20.0),
-                        title: Container(
-                          margin: EdgeInsets.only(left: 12.0),
-                          transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                          child: Text(
-                            "Alumni Admin",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
+              if (campusAppsPortalInstance.isFoundation ||
+                  campusAppsPortalInstance.isTeacher)
+                MouseRegion(
+                  onEnter: (_) {
+                    setState(() {
+                      isAlumniAdminSectionHovered = true;
+                    });
+                  },
+                  onExit: (_) {
+                    setState(() {
+                      isAlumniAdminSectionHovered = false;
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isAlumniAdminSectionHovered
+                          ? Colors.white.withOpacity(0.3)
+                          : null,
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    margin: EdgeInsets.all(8.0),
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: Container(
+                        child: ListTile(
+                          leading: Icon(Icons.people,
+                              color: Colors.white, size: 20.0),
+                          title: Container(
+                            margin: EdgeInsets.only(left: 12.0),
+                            transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                            child: Text(
+                              "Alumni Admin",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
+                          onTap: () {
+                            Navigator.pop(context); // Close the drawer
+                            routeState.go(AppRoutes.alumniAdmin);
+                          },
                         ),
-                        onTap: () {
-                          Navigator.pop(context); // Close the drawer
-                          routeState.go(AppRoutes.alumniAdmin);
-                        },
                       ),
                     ),
+                    // ),
                   ),
-                  // ),
                 ),
-              ),
             ],
           ),
         )),
