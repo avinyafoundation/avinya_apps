@@ -8,7 +8,8 @@ import 'package:sizer/sizer.dart';
 import 'package:intl/intl.dart';
 
 class MyAlumniScreen extends StatefulWidget {
-  const MyAlumniScreen({Key? key}) : super(key: key);
+  final int? id;
+  const MyAlumniScreen({Key? key,this.id}) : super(key: key);
 
   @override
   _MyAlumniScreenState createState() => _MyAlumniScreenState();
@@ -49,7 +50,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
       _loadCities(AlumniUserPerson.mailing_address!.city!.district!.id);
   }
 
-  void getUserPerson() {
+  void getUserPerson() async{
     // Retrieve user data from local instance
     AlumniPerson AlumniUser = campusAppsPortalInstance.getAlumniUserPerson();
     Person user = campusAppsPortalInstance.getUserPerson();

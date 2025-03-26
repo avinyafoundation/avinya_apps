@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gallery/avinya/alumni/lib/screens/alumni_info_view.dart';
 // import 'package:gallery/avinya/alumni/lib/data/organization.dart';
 import 'package:gallery/data/person.dart';
 import 'package:gallery/avinya/enrollment/lib/screens/student_create_screen.dart';
@@ -364,8 +365,9 @@ class MyData extends DataTableSource {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => StudentCreateScreen(
-                        id: null, // Since it's for creating a new student, no ID is passed
+                      builder: (context) => MyAlumniScreen(
+                        id: _fetchedAlumniListData[index - 1]
+                            .id!,  // Pass the ID
                       ),
                     ),
                   );
@@ -387,22 +389,6 @@ class MyData extends DataTableSource {
       ));
 
       return DataRow(cells: cells);
-      // return DataRow(
-      //   cells: cells,
-      //   onSelectChanged: (selected) {
-      //     if (selected != null && selected) {
-      //       // Navigate to the new screen with the id
-      //       Navigator.push(
-      //         context,
-      //         MaterialPageRoute(
-      //           builder: (context) => StudentUpdateScreen(
-      //             id: _fetchedPersonData[index - 1].id!, // Pass the ID
-      //           ),
-      //         ),
-      //       );
-      //     }
-      //   },
-      // );
     }
 
     return null; // Return null for invalid index values
