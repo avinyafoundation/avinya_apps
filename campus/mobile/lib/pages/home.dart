@@ -235,7 +235,7 @@ class HomePage extends StatelessWidget {
                       childAspectRatio: 1.5,
                       children: carouselCards,
                     )
-                  : MyAlumniDashboardScreen(),
+                  : NavigationMenu(),
         ),
       );
     } else {

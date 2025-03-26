@@ -416,24 +416,24 @@ class _AddPersonPageState extends State<AddPersonPage> {
     try {
       if (_formKey.currentState!.validate()) {
         final Person person = Person(
-          record_type: _record_type_Controller.text,
-          preferred_name: _preferred_name_Controller.text,
-          full_name: _full_name_Controller.text,
-          notes: _notes_Controller.text,
-          date_of_birth: _date_of_birth_Controller.text,
-          sex: _sex_Controller.text,
-          avinya_type_id: int.parse(_avinya_type_id_Controller.text),
-          passport_no: _passport_no_Controller.text,
-          permanent_address_id:
-              int.parse(_permanent_address_id_Controller.text),
-          mailing_address_id: int.parse(_mailing_address_id_Controller.text),
-          nic_no: _nic_no_Controller.text,
-          id_no: _id_no_Controller.text,
-          phone: int.parse(_phone_Controller.text),
-          organization_id: int.parse(_organization_id_Controller.text),
-          asgardeo_id: _asgardeo_id_Controller.text,
-          email: _email_Controller.text,
-        );
+            record_type: _record_type_Controller.text,
+            preferred_name: _preferred_name_Controller.text,
+            full_name: _full_name_Controller.text,
+            notes: _notes_Controller.text,
+            date_of_birth: _date_of_birth_Controller.text,
+            sex: _sex_Controller.text,
+            avinya_type_id: int.parse(_avinya_type_id_Controller.text),
+            passport_no: _passport_no_Controller.text,
+            permanent_address_id:
+                int.parse(_permanent_address_id_Controller.text),
+            mailing_address_id: int.parse(_mailing_address_id_Controller.text),
+            nic_no: _nic_no_Controller.text,
+            id_no: _id_no_Controller.text,
+            phone: int.parse(_phone_Controller.text),
+            organization_id: int.parse(_organization_id_Controller.text),
+            asgardeo_id: _asgardeo_id_Controller.text,
+            email: _email_Controller.text,
+            is_graduated: false);
         await createStudentApplicant(person);
         Navigator.of(context).pop(true);
       }
@@ -744,25 +744,25 @@ class _EditPersonPageState extends State<EditPersonPage> {
     try {
       if (_formKey.currentState!.validate()) {
         final Person person = Person(
-          id: widget.person.id,
-          record_type: _record_type_Controller.text,
-          preferred_name: _preferred_name_Controller.text,
-          full_name: _full_name_Controller.text,
-          notes: _notes_Controller.text,
-          date_of_birth: _date_of_birth_Controller.text,
-          sex: _sex_Controller.text,
-          avinya_type_id: int.parse(_avinya_type_id_Controller.text),
-          passport_no: _passport_no_Controller.text,
-          permanent_address_id:
-              int.parse(_permanent_address_id_Controller.text),
-          mailing_address_id: int.parse(_mailing_address_id_Controller.text),
-          nic_no: _nic_no_Controller.text,
-          id_no: _id_no_Controller.text,
-          phone: int.parse(_phone_Controller.text),
-          organization_id: int.parse(_organization_id_Controller.text),
-          asgardeo_id: _asgardeo_id_Controller.text,
-          email: _email_Controller.text,
-        );
+            id: widget.person.id,
+            record_type: _record_type_Controller.text,
+            preferred_name: _preferred_name_Controller.text,
+            full_name: _full_name_Controller.text,
+            notes: _notes_Controller.text,
+            date_of_birth: _date_of_birth_Controller.text,
+            sex: _sex_Controller.text,
+            avinya_type_id: int.parse(_avinya_type_id_Controller.text),
+            passport_no: _passport_no_Controller.text,
+            permanent_address_id:
+                int.parse(_permanent_address_id_Controller.text),
+            mailing_address_id: int.parse(_mailing_address_id_Controller.text),
+            nic_no: _nic_no_Controller.text,
+            id_no: _id_no_Controller.text,
+            phone: int.parse(_phone_Controller.text),
+            organization_id: int.parse(_organization_id_Controller.text),
+            asgardeo_id: _asgardeo_id_Controller.text,
+            email: _email_Controller.text,
+            is_graduated: false);
         await updateStudentApplicant(person);
         Navigator.of(context).pop(true);
       }

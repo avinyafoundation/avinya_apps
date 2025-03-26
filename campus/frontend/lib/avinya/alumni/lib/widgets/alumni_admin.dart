@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:gallery/avinya/alumni/lib/data/organization.dart';
-import 'package:gallery/avinya/alumni/lib/data/person.dart';
+// import 'package:gallery/avinya/alumni/lib/data/organization.dart';
+import 'package:gallery/data/person.dart';
 import 'package:gallery/avinya/enrollment/lib/screens/student_create_screen.dart';
 
 class AlumniAdmin extends StatefulWidget {

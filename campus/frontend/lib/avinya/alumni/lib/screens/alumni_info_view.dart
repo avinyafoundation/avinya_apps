@@ -1,9 +1,9 @@
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:mobile/constants.dart';
+import 'package:gallery/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/data/campus_apps_portal.dart';
-import 'package:mobile/data/person.dart';
-import 'package:mobile/widgets/time_line_widget.dart';
+import 'package:gallery/data/campus_apps_portal.dart';
+import 'package:gallery/data/person.dart';
+import 'package:gallery/avinya/alumni/lib/widgets/time_line_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:intl/intl.dart';
 

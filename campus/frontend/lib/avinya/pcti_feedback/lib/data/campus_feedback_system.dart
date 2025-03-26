@@ -23,8 +23,11 @@ final campusFeedbackSystemInstance = CampusFeedbackSystem()
       isNew: false)
   ..setJWTSub('jwt-sub-id123')
   ..setDigitalId('digital-id123')
-  ..setUserPerson(
-      Person(id: 2, jwt_sub_id: 'jwt-sub-id123', preferred_name: 'Nimal'));
+  ..setUserPerson(Person(
+      id: 2,
+      jwt_sub_id: 'jwt-sub-id123',
+      preferred_name: 'Nimal',
+      is_graduated: false));
 
 class CampusFeedbackSystem {
   final List<Book> allBooks = [];
@@ -38,7 +41,7 @@ class CampusFeedbackSystem {
   bool applicationSubmitted = false;
   final String schoolName = 'Bandaragama';
   int vacancyId = 1; // todo - this needs to be fetched and set from the server
-  Person studentPerson = Person();
+  Person studentPerson = Person(is_graduated: false);
   Application application = Application();
   String? user_digital_id;
   String? user_jwt_sub;
