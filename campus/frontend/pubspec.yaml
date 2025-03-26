@@ -140,7 +140,6 @@ flutter:
         # Only one library from the loading unit is necessary.
         - package:attendance/avinya/lib/src/app.dart
 
-
   assets:
     - packages/flutter_gallery_assets/assets/studies/shrine_card_dark.png
     - packages/flutter_gallery_assets/assets/studies/starter_card.png
@@ -306,4 +305,3 @@ flutter:
     - family: GalleryIcons
       fonts:
         - asset: packages/flutter_gallery_assets/fonts/GalleryIcons.ttf
-          

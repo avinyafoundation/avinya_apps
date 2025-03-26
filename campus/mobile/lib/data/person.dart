@@ -1107,8 +1107,8 @@ Future<WorkExperience> createAlumniWorkQualification(
 
 Future<http.Response> updateAlumniWorkQualification(WorkExperience work) async {
   final response = await http.put(
-    Uri.parse(AppConfig.campusAlumniBffApiUrl +
-        '/update_alumni_education_qualification'),
+    Uri.parse(
+        AppConfig.campusAlumniBffApiUrl + '/update_alumni_work_experience'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,

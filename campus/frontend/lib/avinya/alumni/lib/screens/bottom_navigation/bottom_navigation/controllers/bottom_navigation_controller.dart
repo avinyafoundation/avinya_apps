@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mobile/constants.dart';
-import 'package:mobile/pages/alumni_info_view.dart';
-import 'package:mobile/screens/bottom_navigation/home/screens/my_alumni_dashboard.dart';
-import 'package:mobile/screens/bottom_navigation/home/screens/under_development.dart';
+import 'package:gallery/constants.dart';
+import 'package:gallery/avinya/alumni/lib/screens/alumni_info_view.dart';
+import 'package:gallery/avinya/alumni/lib/screens/bottom_navigation/home/screens/my_alumni_dashboard.dart';
+import 'package:gallery/avinya/alumni/lib/screens/bottom_navigation/home/screens/under_development.dart';
 
 class BottomNavigationController extends GetxController {
   static BottomNavigationController get find => Get.find();

@@ -8,6 +8,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_gen/gen_l10n/gallery_localizations.dart';
+import 'package:gallery/avinya/alumni/lib/screens/bottom_navigation/bottom_navigation/screens/navigation_menu.dart';
 import 'package:gallery/constants.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:gallery/data/demos.dart';
@@ -46,24 +47,26 @@ class HomePage extends StatelessWidget {
     final localizations = GalleryLocalizations.of(context)!;
     final studyDemos = Demos.studies(localizations);
     final carouselCards = <Widget>[
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: _CarouselCard(
-          demo: studyDemos['attendanceApp'],
-          asset: const AssetImage(
-            'assets/images/attendance_.png',
-            //package: 'flutter_gallery_assets',
+      if (campusAppsPortalInstance.getUserPerson().is_graduated != null &&
+          !campusAppsPortalInstance.getUserPerson().is_graduated!)
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: _CarouselCard(
+            demo: studyDemos['attendanceApp'],
+            asset: const AssetImage(
+              'assets/images/attendance_.png',
+              //package: 'flutter_gallery_assets',
+            ),
+            assetColor: const Color(0xFFFFFFFF),
+            // assetDark: const AssetImage(
+            //   'assets/studies/shrine_card_dark.png',
+            //   package: 'flutter_gallery_assets',
+            // ),
+            //assetDarkColor: const Color(0xFF543B3C),
+            textColor: Colors.black,
+            studyRoute: attendance_routes.attendanceRoute,
           ),
-          assetColor: const Color(0xFFFFFFFF),
-          // assetDark: const AssetImage(
-          //   'assets/studies/shrine_card_dark.png',
-          //   package: 'flutter_gallery_assets',
-          // ),
-          //assetDarkColor: const Color(0xFF543B3C),
-          textColor: Colors.black,
-          studyRoute: attendance_routes.attendanceRoute,
         ),
-      ),
 
       if (campusAppsPortalInstance.isTeacher ||
           campusAppsPortalInstance.isFoundation)
@@ -245,25 +248,32 @@ class HomePage extends StatelessWidget {
       //   ),
       // );
       return Scaffold(
-        body: Container(
-          padding: EdgeInsets.symmetric(vertical: 70.0, horizontal: 70.0),
-          child: GridView.count(
-            crossAxisCount: 3,
-            childAspectRatio: 1.8,
-            children: carouselCards,
-          ),
+        body: Padding(
+          padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
+          child:
+              campusAppsPortalInstance.getUserPerson().is_graduated != null &&
+                      !campusAppsPortalInstance.getUserPerson().is_graduated!
+                  ? GridView.count(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.5,
+                      children: carouselCards,
+                    )
+                  : NavigationMenu(),
         ),
       );
     } else if (isTab) {
       return Scaffold(
-        body: Container(
+        body: Padding(
           padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
-          child: GridView.count(
-            crossAxisCount: 2,
-            childAspectRatio:
-                1.5, // set a higher value to make the cards wider and shorter
-            children: carouselCards,
-          ),
+          child:
+              campusAppsPortalInstance.getUserPerson().is_graduated != null &&
+                      !campusAppsPortalInstance.getUserPerson().is_graduated!
+                  ? GridView.count(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.5,
+                      children: carouselCards,
+                    )
+                  : NavigationMenu(),
         ),
       );
     } else {
@@ -277,14 +287,17 @@ class HomePage extends StatelessWidget {
       //   ),
       // );
       return Scaffold(
-        body: Container(
+        body: Padding(
           padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
-          child: GridView.count(
-            crossAxisCount: 1,
-            childAspectRatio:
-                1.5, // set a higher value to make the cards wider and shorter
-            children: carouselCards,
-          ),
+          child:
+              campusAppsPortalInstance.getUserPerson().is_graduated != null &&
+                      !campusAppsPortalInstance.getUserPerson().is_graduated!
+                  ? GridView.count(
+                      crossAxisCount: 1,
+                      childAspectRatio: 1.5,
+                      children: carouselCards,
+                    )
+                  : NavigationMenu(),
         ),
       );
     }
