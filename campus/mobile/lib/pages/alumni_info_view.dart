@@ -19,8 +19,8 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
     ..full_name = 'John'
     ..nic_no = '12';
 
-  late List<EducationQualifications> alumni_education_qualifications;
-  late List<WorkExperience> alumni_work_experience;
+  // late List<EducationQualifications> alumni_education_qualifications;
+  // late List<WorkExperience> alumni_work_experience;
 
   late Person UserPerson = Person(is_graduated: false)
     ..full_name = 'John'
@@ -605,15 +605,40 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                 });
               },
             ),
-            TextFormField(
-              controller: workStartDateController,
-              decoration: InputDecoration(labelText: "Start Date"),
-            ),
-            if (!isCurrentWork)
-              TextFormField(
-                controller: endDateController,
-                decoration: InputDecoration(labelText: "End Date"),
+            GestureDetector(
+              onTap: () => _selectDate(context, workStartDateController),
+              child: AbsorbPointer(
+                child: TextFormField(
+                  controller: workStartDateController,
+                  decoration: InputDecoration(
+                    labelText: "Start Date",
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                ),
               ),
+            ),
+            if (!isCurrentStudy)
+              GestureDetector(
+                onTap: () => _selectDate(context, endDateController),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: endDateController,
+                    decoration: InputDecoration(
+                      labelText: "End Date",
+                      suffixIcon: Icon(Icons.calendar_today),
+                    ),
+                  ),
+                ),
+              ),
+            // TextFormField(
+            //   controller: workStartDateController,
+            //   decoration: InputDecoration(labelText: "Start Date"),
+            // ),
+            // if (!isCurrentWork)
+            //   TextFormField(
+            //     controller: endDateController,
+            //     decoration: InputDecoration(labelText: "End Date"),
+            //   ),
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
@@ -625,6 +650,24 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
         ),
       ),
     );
+  }
+
+  // Function to show date picker and update text field
+  Future<void> _selectDate(
+      BuildContext context, TextEditingController controller) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        controller.text =
+            "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+      });
+    }
   }
 
   Widget _buildStudySection(id) {
@@ -659,15 +702,40 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                 });
               },
             ),
-            TextFormField(
-              controller: studyStartDateController,
-              decoration: InputDecoration(labelText: "Start Date"),
+            GestureDetector(
+              onTap: () => _selectDate(context, studyStartDateController),
+              child: AbsorbPointer(
+                child: TextFormField(
+                  controller: studyStartDateController,
+                  decoration: InputDecoration(
+                    labelText: "Start Date",
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                ),
+              ),
             ),
             if (!isCurrentStudy)
-              TextFormField(
-                controller: studyEndDateController,
-                decoration: InputDecoration(labelText: "End Date"),
+              GestureDetector(
+                onTap: () => _selectDate(context, studyEndDateController),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: studyEndDateController,
+                    decoration: InputDecoration(
+                      labelText: "End Date",
+                      suffixIcon: Icon(Icons.calendar_today),
+                    ),
+                  ),
+                ),
               ),
+            // TextFormField(
+            //   controller: studyStartDateController,
+            //   decoration: InputDecoration(labelText: "Start Date"),
+            // ),
+            // if (!isCurrentStudy)
+            //   TextFormField(
+            //     controller: studyEndDateController,
+            //     decoration: InputDecoration(labelText: "End Date"),
+            //   ),
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
@@ -695,7 +763,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
       WorkExperience createdWork =
           await createAlumniWorkQualification(workExperience);
       setState(() {
-        alumni_work_experience?.add(createdWork);
+        AlumniUserPerson.alumni_work_experience?.add(createdWork);
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Work experience added successfully!')),
