@@ -7,9 +7,9 @@
     "campusAlumniBffApiUrl": "http://10.110.0.74:9096",
     "campusEnrollmentsBffApiUrl": "http://10.110.0.74:9095",
     "choreo_sts_endpoint": "https://sts.choreo.dev/oauth2/token",
-    "asgardeo_token_endpoint": "https://api.asgardeo.io/t/avinyatest/oauth2/token",
-    "logout_url": "https://api.asgardeo.io/t/avinyatest/oidc/logout",
-    "bundle_id": "com.avinyafoundation.campusapp.dev",
-    "redirect_url": "com.avinyafoundation.campusapp.dev.mobile://oauth/callback",
-    "asgardeo_discovery_url": "https://api.asgardeo.io/t/avinyatest/oauth2/token/.well-known/openid-configuration"
+    "asgardeo_token_endpoint": "https://api.asgardeo.io/t/avinyaacademy/oauth2/token",
+    "logout_url": "https://api.asgardeo.io/t/avinyaacademy/oidc/logout",
+    "bundle_id": "com.avinyafoundation.campusapp.prod",
+    "redirect_url": "com.avinyafoundation.campusapp.prod.mobile://oauth/callback",
+    "asgardeo_discovery_url": "https://api.asgardeo.io/t/avinyaacademy/oauth2/token/.well-known/openid-configuration"
 }
