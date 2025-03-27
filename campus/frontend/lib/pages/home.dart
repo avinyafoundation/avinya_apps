@@ -168,27 +168,27 @@ class HomePage extends StatelessWidget {
         ),
 
       //2023-04-19 commented for prod and stag branches
-      if (campusAppsPortalInstance.isFoundation ||
-          campusAppsPortalInstance.isTeacher)
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: _CarouselCard(
-            demo: studyDemos['consumableApp'],
-            asset: const AssetImage(
-              'assets/images/consumable.png',
-              // package: 'flutter_gallery_assets',
-            ),
-            assetColor: const Color(0xFFFFFFFF),
-            // assetDark: const AssetImage(
-            //   'assets/studies/shrine_card_dark.png',
-            //   package: 'flutter_gallery_assets',
-            // ),
-            // assetDarkColor: const Color(0xFF543B3C),
-            //textColor: shrineBrown900,
-            textColor: Colors.black,
-            studyRoute: consumable_routes.consumableRoute,
-          ),
-        ),
+      // if (campusAppsPortalInstance.isFoundation ||
+      //     campusAppsPortalInstance.isTeacher)
+      //   Padding(
+      //     padding: const EdgeInsets.all(10.0),
+      //     child: _CarouselCard(
+      //       demo: studyDemos['consumableApp'],
+      //       asset: const AssetImage(
+      //         'assets/images/consumable.png',
+      //         // package: 'flutter_gallery_assets',
+      //       ),
+      //       assetColor: const Color(0xFFFFFFFF),
+      //       // assetDark: const AssetImage(
+      //       //   'assets/studies/shrine_card_dark.png',
+      //       //   package: 'flutter_gallery_assets',
+      //       // ),
+      //       // assetDarkColor: const Color(0xFF543B3C),
+      //       //textColor: shrineBrown900,
+      //       textColor: Colors.black,
+      //       studyRoute: consumable_routes.consumableRoute,
+      //     ),
+      //   ),
       // if (campusAppsPortalInstance.isFoundation ||
       //     campusAppsPortalInstance.isTeacher)
       //   Padding(
@@ -254,7 +254,7 @@ class HomePage extends StatelessWidget {
               campusAppsPortalInstance.getUserPerson().is_graduated != null &&
                       !campusAppsPortalInstance.getUserPerson().is_graduated!
                   ? GridView.count(
-                      crossAxisCount: 2,
+                      crossAxisCount: 3,
                       childAspectRatio: 1.5,
                       children: carouselCards,
                     )
