@@ -1,0 +1,372 @@
+mutation createAlumni(
+  $person: Person!
+  $mailing_address: Address
+  $mailing_address_city: City
+  $alumni: Alumni!
+) {
+  create_alumni(
+    person: $person
+    mailing_address: $mailing_address
+    mailing_address_city: $mailing_address_city
+    alumni: $alumni
+  ) {
+    id
+    preferred_name
+    full_name
+    mailing_address {
+      city {
+        id
+        name {
+          name_en
+          name_si
+          name_ta
+        }
+        district{
+          id
+          name {
+            name_en
+          }
+        }
+      }
+      street_address
+      phone
+      id
+    }
+    phone
+    email
+    documents_id
+    alumni_id
+  }
+}
+
+mutation updateAlumni(
+  $person: Person!
+  $mailing_address: Address
+  $mailing_address_city: City
+  $alumni: Alumni!
+) {
+  update_alumni(
+    person: $person
+    mailing_address: $mailing_address
+    mailing_address_city: $mailing_address_city
+    alumni: $alumni
+  ) {
+    id
+    preferred_name
+    full_name
+    mailing_address {
+      city {
+        id
+        name {
+          name_en
+          name_si
+          name_ta
+        }
+        district{
+          id
+          name {
+            name_en
+          }
+        }
+      }
+      street_address
+      phone
+      id
+    }
+    phone
+    email
+    documents_id
+    alumni_id
+  }
+}
+
+mutation createAlumniEducationQualification(
+  $alumni_education_qualification: AlumniEducationQualification!
+) {
+  create_alumni_education_qualification(
+    alumni_education_qualification: $alumni_education_qualification
+  ) {
+    id
+    person_id
+    university_name
+    course_name
+    is_currently_studying
+    start_date
+    end_date
+    created
+    updated
+  }
+}
+
+mutation createAlumniWorkExperience(
+  $alumni_work_experience: AlumniWorkExperience!
+) {
+  create_alumni_work_experience(
+    alumni_work_experience: $alumni_work_experience
+  ) {
+    id
+    person_id
+    company_name
+    job_title
+    currently_working
+    start_date
+    end_date
+    created
+    updated
+  }
+}
+
+mutation updateAlumniEducationQualification(
+  $alumni_education_qualification: AlumniEducationQualification!
+) {
+  update_alumni_education_qualification(
+    alumni_education_qualification: $alumni_education_qualification
+  ) {
+    id
+    person_id
+    university_name
+    course_name
+    is_currently_studying
+    start_date
+    end_date
+    created
+    updated
+  }
+}
+
+mutation updateAlumniWorkExperience(
+  $alumni_work_experience: AlumniWorkExperience!
+) {
+  update_alumni_work_experience(
+    alumni_work_experience: $alumni_work_experience
+  ) {
+    id
+    person_id
+    company_name
+    job_title
+    currently_working
+    start_date
+    end_date
+    created
+    updated
+  }
+}
+
+query getAlumniEducationQualificationById($id: Int!) {
+  alumni_education_qualification_by_id(id: $id) {
+    id
+    person_id
+    university_name
+    course_name
+    is_currently_studying
+    start_date
+    end_date
+  }
+}
+
+query getAlumniWorkExperienceById($id: Int!) {
+  alumni_work_experience_by_id(id: $id) {
+    id
+    person_id
+    company_name
+    job_title
+    currently_working
+    start_date
+    end_date
+  }
+}
+
+query getAlumniPersonById($id: Int!) {
+  person_by_id(id: $id) {
+    id
+    preferred_name
+    full_name
+    date_of_birth
+    sex
+    mailing_address {
+      city {
+        id
+        name {
+          name_en
+          name_si
+          name_ta
+        }
+        district {
+          id
+          name {
+            name_en
+          }
+        }
+      }
+      street_address
+      phone
+      id
+    }
+    phone
+    organization {
+      id
+      description
+      notes
+      address {
+        id
+      }
+      avinya_type {
+        id
+        name
+      }
+      name {
+        name_en
+      }
+      parent_organizations {
+        id
+        name {
+          name_en
+        }
+      }
+    }
+    nic_no
+    id_no
+    email
+    alumni {
+      id
+      status
+      company_name
+      job_title
+      linkedin_id
+      facebook_id
+      instagram_id
+      tiktok_id
+    }
+    alumni_education_qualifications {
+      id
+      person_id
+      university_name
+      course_name
+      is_currently_studying
+      start_date
+      end_date
+    }
+    alumni_work_experience {
+      id
+      person_id
+      company_name
+      job_title
+      currently_working
+      start_date
+      end_date
+    }
+  }
+}
+
+mutation createActivityParticipant(
+  $activity_participant: ActivityParticipant!
+) {
+  create_activity_participant(activity_participant: $activity_participant) {
+    id
+    activity_instance_id
+    person_id
+    organization_id
+    is_attending
+    created
+    updated
+  }
+}
+
+mutation updateActivityParticipant(
+  $activity_participant: ActivityParticipant!
+) {
+  create_activity_participant(activity_participant: $activity_participant) {
+    id
+    activity_instance_id
+    person_id
+    organization_id
+    is_attending
+    created
+    updated
+  }
+}
+
+mutation createActivityInstanceEvaluation(
+  $activity_instance_evaluation: ActivityInstanceEvaluation!
+) {
+  create_activity_instance_evaluation(
+    activity_instance_evaluation: $activity_instance_evaluation
+  ) {
+    id
+    activity_instance_id
+    evaluator_id
+    feedback
+    rating
+    created
+    updated
+  }
+}
+
+query getUpcomingEvents($person_id: Int!) {
+  upcoming_events(person_id: $person_id) {
+    id
+    activity_id
+    name
+    location
+    description
+    start_time
+    end_time
+    event_gift {
+      activity_instance_id
+      gift_amount
+      no_of_gifts
+      notes
+      description
+    }
+    activity_participant {
+      id
+      activity_instance_id
+      is_attending
+    }
+  }
+}
+
+query getCompletedEvents($person_id: Int!) {
+  completed_events(person_id: $person_id) {
+    id
+    activity_id
+    name
+    location
+    description
+    start_time
+    end_time
+    activity_evaluation {
+      activity_instance_id
+      evaluator_id
+      feedback
+      rating
+    }
+  }
+}
+
+query getAlumniPersons($parent_organization_id: Int!) {
+  alumni_persons(parent_organization_id: $parent_organization_id) {
+    id
+    preferred_name
+    full_name
+    email
+    phone
+    nic_no
+    alumni {
+      id
+      status
+      company_name
+      job_title
+      updated_by
+      updated
+    }
+  }
+}
+
+query getAlumniSummary($alumni_batch_id: Int!) {
+  alumni_summary(alumni_batch_id: $alumni_batch_id) {
+    status
+    person_count
+  }
+}
+

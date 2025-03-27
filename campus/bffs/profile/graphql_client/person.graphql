@@ -194,6 +194,8 @@ query getPerson($id: String!) {
     academy_org_id
     current_job
     documents_id
+    alumni_id
+    is_graduated
   }
 }
 

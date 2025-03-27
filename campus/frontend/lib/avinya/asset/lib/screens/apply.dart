@@ -449,13 +449,13 @@ class _ApplyScreenState extends State<ApplyScreen> {
   Future<bool> addSudentApplicant(BuildContext context) async {
     try {
       if (_formKey.currentState!.validate()) {
-        final Address address = Address(
-          record_type: 'address',
-          name_en: 'Mailing Address',
-          street_address: _address_Controller.text,
-          phone: int.parse(phoneMaskTextInputFormatter.getUnmaskedText()),
-          city_id: selectedcity.id,
-        );
+        // final Address address = Address(
+        //   record_type: 'address',
+        //   name_en: 'Mailing Address',
+        //   street_address: _address_Controller.text,
+        //   phone: int.parse(phoneMaskTextInputFormatter.getUnmaskedText()),
+        //   city_id: selectedcity.id,
+        // );
 
         var studentAddress = null;
         var studentPerson = null;
@@ -465,21 +465,21 @@ class _ApplyScreenState extends State<ApplyScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Processing Address Data')),
           );
-          studentAddress = await createAddress(address);
+          // studentAddress = await createAddress(address);
 
           log('studentAddress: ' + studentAddress.toString());
 
           final Person person = Person(
-            record_type: 'person',
-            full_name: _full_name_Controller.text,
-            preferred_name: _preferred_name_Controller.text,
-            sex: gender,
-            phone: int.parse(phoneMaskTextInputFormatter.getUnmaskedText()),
-            email: _email_Controller.text,
-            mailing_address_id: studentAddress.id,
-            jwt_sub_id: campusAppsPortalInstance.getJWTSub(),
-            jwt_email: campusAppsPortalInstance.getJWTEmail(),
-          );
+              record_type: 'person',
+              full_name: _full_name_Controller.text,
+              preferred_name: _preferred_name_Controller.text,
+              sex: gender,
+              phone: int.parse(phoneMaskTextInputFormatter.getUnmaskedText()),
+              email: _email_Controller.text,
+              mailing_address_id: studentAddress.id,
+              jwt_sub_id: campusAppsPortalInstance.getJWTSub(),
+              jwt_email: campusAppsPortalInstance.getJWTEmail(),
+              is_graduated: false);
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Processing Student Data')),

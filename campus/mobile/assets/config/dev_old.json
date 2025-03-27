@@ -1,14 +1,15 @@
 {
-    "campusProfileBffApiUrl" : "http://localhost:9090",
-    "campusAttendanceBffApiUrl" : "http://localhost:9091",
-    "campusPctiNotesBffApiUrl" : "http://localhost:9092",
-    "campusPctiFeedbackBffApiUrl" : "http://localhost:9093",
-    "campusAssetsBffApiUrl" : "http://localhost:9094",
-    "choreo_sts_endpoint" : "https://sts.choreo.dev/oauth2/token",
-    "asgardeo_token_endpoint" : "https://api.asgardeo.io/t/avinyatest/oauth2/token",
-    "logout_url" : "https://api.asgardeo.io/t/avinyatest/oidc/logout",
-    "bundle_id" : "com.avinyafoundation.campusapp.dev",
-    "redirect_url" : "com.avinyafoundation.campusapp.dev.mobile://oauth/callback",
-    "asgardeo_discovery_url" : "https://api.asgardeo.io/t/avinyatest/oauth2/token/.well-known/openid-configuration"
+    "campusProfileBffApiUrl": "http://localhost:9090",
+    "campusAttendanceBffApiUrl": "http://localhost:9091",
+    "campusPctiNotesBffApiUrl": "http://localhost:9092",
+    "campusPctiFeedbackBffApiUrl": "http://localhost:9093",
+    "campusAssetsBffApiUrl": "http://localhost:9094",
+    "campusAlumniBffApiUrl": "http://10.110.0.107:9096",
+    "campusEnrollmentsBffApiUrl": "http://192.168.8.187:9095",
+    "choreo_sts_endpoint": "https://sts.choreo.dev/oauth2/token",
+    "asgardeo_token_endpoint": "https://api.asgardeo.io/t/avinyatest/oauth2/token",
+    "logout_url": "https://api.asgardeo.io/t/avinyatest/oidc/logout",
+    "bundle_id": "com.avinyafoundation.campusapp.dev",
+    "redirect_url": "com.avinyafoundation.campusapp.dev.mobile://oauth/callback",
+    "asgardeo_discovery_url": "https://api.asgardeo.io/t/avinyatest/oauth2/token/.well-known/openid-configuration"
 }
-

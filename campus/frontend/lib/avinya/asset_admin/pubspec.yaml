@@ -36,6 +36,8 @@ dependencies:
   month_year_picker: ^0.3.0+1
   oktoast: ^3.4.0
   fl_chart: ^0.60.0
+  image_picker: ^1.0.8
+  file_picker: ^5.2.10
 
 dev_dependencies:
   flutter_lints: ^2.0.1
