@@ -21,6 +21,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
 
   // late List<EducationQualifications> alumni_education_qualifications;
   // late List<WorkExperience> alumni_work_experience;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late Person UserPerson = Person(is_graduated: false)
     ..full_name = 'John'
@@ -40,10 +41,13 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
   int? selectedCityId;
   int? selectedDistrictId;
 
+  TextEditingController _emailController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     getUserPerson();
+    _emailController.text = AlumniUserPerson.email ?? 'N/A';
     if (AlumniUserPerson.mailing_address != null &&
         AlumniUserPerson.mailing_address!.city!.district != null)
       _loadCities(AlumniUserPerson.mailing_address!.city!.district!.id);
@@ -125,311 +129,330 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
             color: kOtherColor,
             borderRadius: BorderRadius.circular(15.0),
           ),
-          child: Column(
-            children: [
-              sizedBox,
-              Container(
-                width: 100.w,
-                height: SizerUtil.deviceType == DeviceType.tablet ? 19.h : 15.h,
-                decoration: BoxDecoration(
-                  color: kPrimaryColor,
-                  borderRadius: kBottomBorderRadius,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                sizedBox,
+                Container(
+                  width: 100.w,
+                  height:
+                      SizerUtil.deviceType == DeviceType.tablet ? 19.h : 15.h,
+                  decoration: BoxDecoration(
+                    color: kPrimaryColor,
+                    borderRadius: kBottomBorderRadius,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircleAvatar(
+                        radius: SizerUtil.deviceType == DeviceType.tablet
+                            ? 12.w
+                            : 13.w,
+                        backgroundColor: kSecondaryColor,
+                        backgroundImage: AssetImage(imagePath),
+                      ),
+                      kWidthSizedBox,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '${AlumniUserPerson.full_name ?? 'N/A'}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  color: kTextBlackColor,
+                                  fontSize:
+                                      SizerUtil.deviceType == DeviceType.mobile
+                                          ? 12.sp
+                                          : SizerUtil.deviceType ==
+                                                  DeviceType.tablet
+                                              ? 15.sp
+                                              : SizerUtil.deviceType ==
+                                                      DeviceType.web
+                                                  ? 7.sp
+                                                  : 12.sp,
+                                ),
+                          ),
+                          Text(
+                            '${AlumniUserPerson.organization?.name?.name_en ?? 'N/A'}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  color: kTextBlackColor,
+                                  fontSize:
+                                      SizerUtil.deviceType == DeviceType.mobile
+                                          ? 13.sp
+                                          : SizerUtil.deviceType ==
+                                                  DeviceType.tablet
+                                              ? 14.sp
+                                              : SizerUtil.deviceType ==
+                                                      DeviceType.web
+                                                  ? 6.sp
+                                                  : 11.sp,
+                                ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                sizedBox,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    CircleAvatar(
-                      radius: SizerUtil.deviceType == DeviceType.tablet
-                          ? 12.w
-                          : 13.w,
-                      backgroundColor: kSecondaryColor,
-                      backgroundImage: AssetImage(imagePath),
-                    ),
-                    kWidthSizedBox,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '${AlumniUserPerson.full_name ?? 'N/A'}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                color: kTextBlackColor,
-                                fontSize: SizerUtil.deviceType ==
-                                        DeviceType.mobile
-                                    ? 12.sp
-                                    : SizerUtil.deviceType == DeviceType.tablet
-                                        ? 15.sp
-                                        : SizerUtil.deviceType == DeviceType.web
-                                            ? 7.sp
-                                            : 12.sp,
-                              ),
-                        ),
-                        Text(
-                          '${AlumniUserPerson.organization?.name?.name_en ?? 'N/A'}',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(
-                                color: kTextBlackColor,
-                                fontSize: SizerUtil.deviceType ==
-                                        DeviceType.mobile
-                                    ? 13.sp
-                                    : SizerUtil.deviceType == DeviceType.tablet
-                                        ? 14.sp
-                                        : SizerUtil.deviceType == DeviceType.web
-                                            ? 6.sp
-                                            : 11.sp,
-                              ),
-                        ),
-                      ],
-                    )
+                    ProfileDetailRow(
+                        title: 'Academic Year',
+                        value:
+                            '${UserPerson.updated == null ? 'N/A' : '${DateFormat('yyyy').format(DateTime.parse(UserPerson.updated!))} - ${DateFormat('yyyy').format(DateTime.parse(UserPerson.updated!).add(Duration(days: 365)))} '}'),
                   ],
                 ),
-              ),
-              sizedBox,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ProfileDetailRow(
-                      title: 'Academic Year',
-                      value:
-                          '${UserPerson.updated == null ? 'N/A' : '${DateFormat('yyyy').format(DateTime.parse(UserPerson.updated!))} - ${DateFormat('yyyy').format(DateTime.parse(UserPerson.updated!).add(Duration(days: 365)))} '}'),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ProfileDetailRow(
-                    title: 'Programme',
-                    value: '${UserPerson.avinya_type?.focus ?? 'N/A'}',
-                  ),
-                  ProfileDetailRow(
-                      title: 'Class',
-                      value:
-                          '${UserPerson.organization!.description ?? 'N/A'}'),
-                ],
-              ),
-              sizedBox,
-              sizedBox,
-              sizedBox,
-              Text(
-                'Contact Information',
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      color: kTextBlackColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: SizerUtil.deviceType == DeviceType.mobile
-                          ? 15.sp
-                          : SizerUtil.deviceType == DeviceType.tablet
-                              ? 14.sp
-                              : SizerUtil.deviceType == DeviceType.web
-                                  ? 6.sp
-                                  : 11.sp,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ProfileDetailRow(
+                      title: 'Programme',
+                      value: '${UserPerson.avinya_type?.focus ?? 'N/A'}',
                     ),
-              ),
-              sizedBox,
-              sizedBox,
-              ProfileDetailColumn(
-                title: 'Phone Number',
-                value: '${AlumniUserPerson.phone ?? 'N/A'}',
-                onChanged: (newValue) {
-                  setState(() {
-                    AlumniUserPerson.phone = int.tryParse(newValue);
-                  });
-                },
-                maxLines: 1,
-              ),
-              SizedBox(height: 10),
-              ProfileDetailColumn(
-                title: 'Email',
-                value: '${AlumniUserPerson.email ?? 'N/A'}',
-                onChanged: (newValue) {
-                  setState(() {
-                    AlumniUserPerson.email = newValue;
-                  });
-                },
-                maxLines: 1,
-              ),
-              SizedBox(height: 10),
-              ProfileDetailColumn(
-                title: 'Address',
-                value:
-                    '${AlumniUserPerson.mailing_address?.street_address ?? 'N/A'}',
-                onChanged: (newValue) {
-                  setState(() {
-                    AlumniUserPerson.mailing_address?.street_address = newValue;
-                  });
-                },
-                maxLines: 3,
-              ),
-              FutureBuilder<List<District>>(
-                  future: fetchDistrictList(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container(
-                        margin: EdgeInsets.only(top: 10),
-                        child: SpinKitCircle(
-                          color: (Color.fromARGB(255, 74, 161, 70)),
-                          size: 70,
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return const Center(
-                        child: Text('Something went wrong...'),
-                      );
-                    } else if (!snapshot.hasData) {
-                      return const Center(
-                        child: Text('No districts found'),
-                      );
-                    } else if (snapshot.connectionState ==
-                            ConnectionState.done &&
-                        snapshot.hasData) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (!isDistrictsDataLoaded) {
-                          setState(() {
-                            isDistrictsDataLoaded = true;
-                            print(
-                                "isDistrictsDataLoaded:${isDistrictsDataLoaded}");
-                          });
-                        }
-                      });
-                      districts = snapshot.data!;
-                      int? districtId = null;
-                      if (AlumniUserPerson.mailing_address!.city!.district !=
-                          null) {
-                        districtId = AlumniUserPerson
-                            .mailing_address!.city!.district!.id;
-                      }
-
-                      selectedDistrictId = districtId ?? selectedDistrictId;
-                      return Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            _buildDistrictField(),
-                            _buildCityField(),
-                          ],
-                        ),
-                      );
-                    }
-                    return SizedBox();
-                  }),
-              SizedBox(height: 10),
-              Text('Social Media Profiles',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              SizedBox(height: 10),
-              ProfileDetailColumn(
-                title: 'LinkedIn Profile Link',
-                value: '${AlumniUserPerson.alumni?.linkedin_id ?? 'N/A'}',
-                onChanged: (newValue) {
-                  setState(() {
-                    AlumniUserPerson.alumni?.linkedin_id = newValue;
-                  });
-                },
-                maxLines: 1,
-              ),
-              SizedBox(height: 10),
-              ProfileDetailColumn(
-                title: 'Facebook Profile Link',
-                value: '${AlumniUserPerson.alumni?.facebook_id ?? 'N/A'}',
-                onChanged: (newValue) {
-                  setState(() {
-                    AlumniUserPerson.alumni?.facebook_id = newValue;
-                  });
-                },
-                maxLines: 1,
-              ),
-              SizedBox(height: 10),
-              ProfileDetailColumn(
-                title: 'Instagram Profile Link',
-                value: '${AlumniUserPerson.alumni?.instagram_id ?? 'N/A'}',
-                onChanged: (newValue) {
-                  setState(() {
-                    AlumniUserPerson.alumni?.instagram_id = newValue;
-                  });
-                },
-                maxLines: 1,
-              ),
-              SizedBox(height: 10),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: DropdownButtonFormField<String>(
-                  value: AlumniUserPerson.alumni?.status,
-                  decoration: InputDecoration(
-                    labelText: "Employment Status",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  items: statusOptions.map((String status) {
-                    return DropdownMenuItem<String>(
-                      value: status,
-                      child: Text(status),
-                    );
-                  }).toList(),
+                    ProfileDetailRow(
+                        title: 'Class',
+                        value:
+                            '${UserPerson.organization!.description ?? 'N/A'}'),
+                  ],
+                ),
+                sizedBox,
+                sizedBox,
+                sizedBox,
+                Text(
+                  'Contact Information',
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: kTextBlackColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: SizerUtil.deviceType == DeviceType.mobile
+                            ? 15.sp
+                            : SizerUtil.deviceType == DeviceType.tablet
+                                ? 14.sp
+                                : SizerUtil.deviceType == DeviceType.web
+                                    ? 6.sp
+                                    : 11.sp,
+                      ),
+                ),
+                sizedBox,
+                sizedBox,
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: _buildEditableField(
+                      'Phone', AlumniUserPerson.phone?.toString() ?? '',
+                      (value) {
+                    AlumniUserPerson.phone = int.tryParse(value);
+                  }, validator: _validatePhone),
+                ),
+                // SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: _buildEditableField(
+                      'Personal Email', AlumniUserPerson.email, (value) {
+                    AlumniUserPerson.email = value;
+                  }, validator: _validateEmail),
+                ),
+                ProfileDetailColumn(
+                  title: 'Address',
+                  value:
+                      '${AlumniUserPerson.mailing_address?.street_address ?? 'N/A'}',
                   onChanged: (newValue) {
                     setState(() {
-                      AlumniUserPerson.alumni?.status = newValue;
+                      AlumniUserPerson.mailing_address?.street_address =
+                          newValue;
                     });
                   },
+                  maxLines: 3,
                 ),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  _submitAlumniData(
-                      AlumniUserPerson, UserPerson.id, selectedDistrictId);
-                },
-                child: Text("Save Changes"),
-              ),
-              SizedBox(height: 20),
-              _buildWorkSection(UserPerson.id),
-              SizedBox(height: 20),
-              _buildStudySection(UserPerson.id),
-              SizedBox(height: 10),
-              SizedBox(height: 10),
-              TimelineWidget(
-                workTimeline: AlumniUserPerson.alumni_work_experience != null
-                    ? AlumniUserPerson.alumni_work_experience!
-                        .map((workExperience) {
-                        return {
-                          "title": workExperience.jobTitle ?? '',
-                          "id": workExperience.id ?? '',
-                          "company": workExperience.companyName ?? '',
-                          "duration": workExperience.currentlyWorking == true
-                              ? "${workExperience.startDate} - Present"
-                              : "${workExperience.startDate} - ${workExperience.endDate ?? ''}",
-                        };
-                      }).toList()
-                    : [],
-                educationTimeline: AlumniUserPerson
-                            .alumni_education_qualifications !=
-                        null
-                    ? AlumniUserPerson.alumni_education_qualifications!
-                        .map((EduQualifications) {
-                        return {
-                          "university": EduQualifications.universityName ?? '',
-                          "id": EduQualifications.id ?? '',
-                          "course": EduQualifications.courseName ?? '',
-                          "duration": EduQualifications.isCurrentlyStudying ==
-                                  true
-                              ? "${EduQualifications.startDate} - Present"
-                              : "${EduQualifications.startDate} - ${EduQualifications.endDate ?? ''}",
-                        };
-                      }).toList()
-                    : [],
-                onItemTap: (item, type) {
-                  _showEditModal(context, item, type);
-                },
-              ),
-              SizedBox(height: 80),
-            ],
+                FutureBuilder<List<District>>(
+                    future: fetchDistrictList(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          margin: EdgeInsets.only(top: 10),
+                          child: SpinKitCircle(
+                            color: (Color.fromARGB(255, 74, 161, 70)),
+                            size: 70,
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return const Center(
+                          child: Text('Something went wrong...'),
+                        );
+                      } else if (!snapshot.hasData) {
+                        return const Center(
+                          child: Text('No districts found'),
+                        );
+                      } else if (snapshot.connectionState ==
+                              ConnectionState.done &&
+                          snapshot.hasData) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (!isDistrictsDataLoaded) {
+                            setState(() {
+                              isDistrictsDataLoaded = true;
+                              print(
+                                  "isDistrictsDataLoaded:${isDistrictsDataLoaded}");
+                            });
+                          }
+                        });
+                        districts = snapshot.data!;
+                        int? districtId = null;
+                        if (AlumniUserPerson.mailing_address!.city!.district !=
+                            null) {
+                          districtId = AlumniUserPerson
+                              .mailing_address!.city!.district!.id;
+                        }
+
+                        selectedDistrictId = districtId ?? selectedDistrictId;
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              _buildDistrictField(),
+                              _buildCityField(),
+                            ],
+                          ),
+                        );
+                      }
+                      return SizedBox();
+                    }),
+                SizedBox(height: 10),
+                Text('Social Media Profiles',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: _buildEditableField('LinkedIn Profile Link',
+                      AlumniUserPerson.alumni?.linkedin_id ?? '', (value) {
+                    AlumniUserPerson.alumni?.linkedin_id = value;
+                  }),
+                ),
+                // SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: _buildEditableField('Facebook Profile Link',
+                      AlumniUserPerson.alumni?.facebook_id ?? '', (value) {
+                    AlumniUserPerson.alumni?.facebook_id = value;
+                  }),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: _buildEditableField('Instagram Profile Link',
+                      AlumniUserPerson.alumni?.instagram_id ?? '', (value) {
+                    AlumniUserPerson.alumni?.instagram_id = value;
+                  }),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: DropdownButtonFormField<String>(
+                    value: AlumniUserPerson.alumni?.status,
+                    decoration: InputDecoration(
+                      labelText: "Employment Status",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    items: statusOptions.map((String status) {
+                      return DropdownMenuItem<String>(
+                        value: status,
+                        child: Text(status),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                      setState(() {
+                        AlumniUserPerson.alumni?.status = newValue;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      _submitAlumniData(
+                          AlumniUserPerson, UserPerson.id, selectedDistrictId);
+                    }
+                  },
+                  child: Text("Save Changes"),
+                ),
+                SizedBox(height: 20),
+                _buildWorkSection(UserPerson.id),
+                SizedBox(height: 20),
+                _buildStudySection(UserPerson.id),
+                SizedBox(height: 10),
+                SizedBox(height: 10),
+                TimelineWidget(
+                  workTimeline: AlumniUserPerson.alumni_work_experience != null
+                      ? AlumniUserPerson.alumni_work_experience!
+                          .map((workExperience) {
+                          return {
+                            "title": workExperience.jobTitle ?? '',
+                            "id": workExperience.id ?? '',
+                            "company": workExperience.companyName ?? '',
+                            "duration": workExperience.currentlyWorking == true
+                                ? "${workExperience.startDate} - Present"
+                                : "${workExperience.startDate} - ${workExperience.endDate ?? ''}",
+                          };
+                        }).toList()
+                      : [],
+                  educationTimeline:
+                      AlumniUserPerson.alumni_education_qualifications != null
+                          ? AlumniUserPerson.alumni_education_qualifications!
+                              .map((EduQualifications) {
+                              return {
+                                "university":
+                                    EduQualifications.universityName ?? '',
+                                "id": EduQualifications.id ?? '',
+                                "course": EduQualifications.courseName ?? '',
+                                "duration": EduQualifications
+                                            .isCurrentlyStudying ==
+                                        true
+                                    ? "${EduQualifications.startDate} - Present"
+                                    : "${EduQualifications.startDate} - ${EduQualifications.endDate ?? ''}",
+                              };
+                            }).toList()
+                          : [],
+                  onItemTap: (item, type) {
+                    _showEditModal(context, item, type);
+                  },
+                ),
+                SizedBox(height: 80),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email is required';
+    }
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    if (!emailRegex.hasMatch(value)) {
+      return 'Enter a valid email address';
+    }
+    return null;
+  }
+
+  String? _validatePhone(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Phone number is required';
+    }
+    final phoneRegex = RegExp(r'^[0-9]+$');
+    if (!phoneRegex.hasMatch(value) || value.length < 10) {
+      return 'Enter a valid phone number (at least 10 digits)';
+    }
+    return null;
   }
 
   void _showEditModal(
@@ -550,6 +573,34 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                 border: OutlineInputBorder(),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEditableField(
+      String label, String? initialValue, Function(String) onSave,
+      {String? Function(String?)? validator}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyText1,
+          ),
+          const SizedBox(height: 5),
+          TextFormField(
+            initialValue: initialValue ?? '',
+            decoration: InputDecoration(
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+              border: OutlineInputBorder(),
+            ),
+            onSaved: (value) => onSave(value!),
+            validator: validator,
           ),
         ],
       ),
