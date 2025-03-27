@@ -350,6 +350,13 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                   }),
                 ),
                 Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: _buildEditableField('TikTok Profile Link',
+                      AlumniUserPerson.alumni?.tiktok_id ?? '', (value) {
+                    AlumniUserPerson.alumni?.tiktok_id = value;
+                  }),
+                ),
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: DropdownButtonFormField<String>(
                     value: AlumniUserPerson.alumni?.status,
@@ -958,6 +965,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
         linkedin_id: AlumniUserPerson.alumni?.linkedin_id,
         facebook_id: AlumniUserPerson.alumni?.facebook_id,
         instagram_id: AlumniUserPerson.alumni?.instagram_id,
+        tiktok_id: AlumniUserPerson.alumni?.tiktok_id,
         updated_by: AlumniUserPerson.digital_id,
       ),
       is_graduated: null,

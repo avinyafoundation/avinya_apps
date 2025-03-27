@@ -136,6 +136,7 @@ class Alumni {
   String? linkedin_id;
   String? facebook_id;
   String? instagram_id;
+  String? tiktok_id;
   String? updated_by;
 
   Alumni(
@@ -146,6 +147,7 @@ class Alumni {
       this.linkedin_id,
       this.facebook_id,
       this.instagram_id,
+      this.tiktok_id,
       this.updated_by});
 
   factory Alumni.fromJson(Map<String, dynamic> json) {
@@ -157,6 +159,7 @@ class Alumni {
       linkedin_id: json['linkedin_id'],
       facebook_id: json['facebook_id'],
       instagram_id: json['instagram_id'],
+      tiktok_id: json['tiktok_id'],
       updated_by: json['updated_by'],
     );
   }
@@ -169,6 +172,7 @@ class Alumni {
         if (linkedin_id != null) 'linkedin_id': linkedin_id,
         if (facebook_id != null) 'facebook_id': facebook_id,
         if (instagram_id != null) 'instagram_id': instagram_id,
+        if (tiktok_id != null) 'tiktok_id': tiktok_id,
         if (updated_by != null) 'updated_by': updated_by,
       };
 }
@@ -946,6 +950,7 @@ Future<AlumniPerson> createAlumniPerson(
         linkedin_id: AlumniUserPerson.alumni?.linkedin_id,
         facebook_id: AlumniUserPerson.alumni?.facebook_id,
         instagram_id: AlumniUserPerson.alumni?.instagram_id,
+        tiktok_id: AlumniUserPerson.alumni?.tiktok_id,
         updated_by: AlumniUserPerson.digital_id,
       ),
       is_graduated: null,
@@ -1000,6 +1005,7 @@ Future<AlumniPerson> updateAlumniPerson(
         linkedin_id: AlumniUserPerson.alumni?.linkedin_id,
         facebook_id: AlumniUserPerson.alumni?.facebook_id,
         instagram_id: AlumniUserPerson.alumni?.instagram_id,
+        tiktok_id: AlumniUserPerson.alumni?.tiktok_id,
         updated_by: AlumniUserPerson.digital_id,
       ),
       is_graduated: null,
