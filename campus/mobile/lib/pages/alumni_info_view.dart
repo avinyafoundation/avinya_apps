@@ -353,6 +353,17 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                 maxLines: 1,
               ),
               SizedBox(height: 10),
+              ProfileDetailColumn(
+                title: 'TikTok Profile Link',
+                value: '${AlumniUserPerson.alumni?.tiktok_id ?? 'N/A'}',
+                onChanged: (newValue) {
+                  setState(() {
+                    AlumniUserPerson.alumni?.tiktok_id = newValue;
+                  });
+                },
+                maxLines: 1,
+              ),
+              SizedBox(height: 10),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: DropdownButtonFormField<String>(
@@ -907,6 +918,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
         linkedin_id: AlumniUserPerson.alumni?.linkedin_id,
         facebook_id: AlumniUserPerson.alumni?.facebook_id,
         instagram_id: AlumniUserPerson.alumni?.instagram_id,
+        tiktok_id: AlumniUserPerson.alumni?.tiktok_id,
         updated_by: AlumniUserPerson.digital_id,
       ),
       is_graduated: null,
