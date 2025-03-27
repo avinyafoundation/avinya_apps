@@ -299,7 +299,7 @@
                                         "name": "Int",
                                         "ofType": null
                                     },
-                                    "defaultValue": "0"
+                                    "defaultValue": null
                                 }
                             ],
                             "type": {
@@ -3791,6 +3791,15 @@
                         },
                         {
                             "name": "instagram_id",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "tiktok_id",
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "String",
@@ -15958,6 +15967,17 @@
                         },
                         {
                             "name": "instagram_id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "tiktok_id",
                             "args": [],
                             "type": {
                                 "kind": "SCALAR",

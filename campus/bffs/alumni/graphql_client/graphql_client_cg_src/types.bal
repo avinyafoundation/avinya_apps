@@ -92,17 +92,18 @@ public type Address record {
 
 public type Alumni record {
     string? created?;
-    string? company_name?;
-    string? updated_by?;
     string? linkedin_id?;
+    string? record_type?;
+    string? facebook_id?;
+    string? instagram_id?;
+    string? company_name?;
+    string? tiktok_id?;
+    string? updated_by?;
     int? id?;
     string? job_title?;
     int? person_count?;
     string? updated?;
-    string? record_type?;
     string? status?;
-    string? facebook_id?;
-    string? instagram_id?;
 };
 
 public type AlumniEducationQualification record {
@@ -740,6 +741,7 @@ public type GetAlumniPersonByIdResponse record {|
             string? linkedin_id;
             string? facebook_id;
             string? instagram_id;
+            string? tiktok_id;
         |}? alumni;
         record {|
             int? id;
@@ -853,6 +855,7 @@ public type GetAlumniPersonsResponse record {|
         string? full_name;
         string? email;
         int? phone;
+        string? nic_no;
         record {|
             int? id;
             string? status;

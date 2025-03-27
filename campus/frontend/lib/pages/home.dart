@@ -189,48 +189,46 @@ class HomePage extends StatelessWidget {
             studyRoute: consumable_routes.consumableRoute,
           ),
         ),
-      if (campusAppsPortalInstance.isFoundation ||
-          campusAppsPortalInstance.isTeacher)
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: _CarouselCard(
-            demo: studyDemos['smartAcademicScheduler'],
-            asset: const AssetImage(
-              'assets/images/academic_planner.jpg',
-              // package: 'flutter_gallery_assets',
-            ),
-            assetColor: const Color(0xFFFFFFFF),
-            // assetDark: const AssetImage(
-            //   'assets/studies/shrine_card_dark.png',
-            //   package: 'flutter_gallery_assets',
-            // ),
-            // assetDarkColor: const Color(0xFF543B3C),
-            //textColor: shrineBrown900,
-            textColor: Colors.white,
-            studyRoute: academic_scheduler_routes.academicSchedulerRoute,
+      // if (campusAppsPortalInstance.isFoundation ||
+      //     campusAppsPortalInstance.isTeacher)
+      //   Padding(
+      //     padding: const EdgeInsets.all(10.0),
+      //     child: _CarouselCard(
+      //       demo: studyDemos['smartAcademicScheduler'],
+      //       asset: const AssetImage(
+      //         'assets/images/academic_planner.jpg',
+      //         // package: 'flutter_gallery_assets',
+      //       ),
+      //       assetColor: const Color(0xFFFFFFFF),
+      //       // assetDark: const AssetImage(
+      //       //   'assets/studies/shrine_card_dark.png',
+      //       //   package: 'flutter_gallery_assets',
+      //       // ),
+      //       // assetDarkColor: const Color(0xFF543B3C),
+      //       //textColor: shrineBrown900,
+      //       textColor: Colors.white,
+      //       studyRoute: academic_scheduler_routes.academicSchedulerRoute,
+      //     ),
+      //   ),
+      Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: _CarouselCard(
+          demo: studyDemos['alumni'],
+          asset: const AssetImage(
+            'assets/images/consumable.png',
+            // package: 'flutter_gallery_assets',
           ),
+          assetColor: const Color(0xFFFFFFFF),
+          // assetDark: const AssetImage(
+          //   'assets/studies/shrine_card_dark.png',
+          //   package: 'flutter_gallery_assets',
+          // ),
+          // assetDarkColor: const Color(0xFF543B3C),
+          //textColor: shrineBrown900,
+          textColor: Colors.black,
+          studyRoute: alumni_routes.alumniRoute,
         ),
-      if (campusAppsPortalInstance.isFoundation ||
-          campusAppsPortalInstance.isTeacher)
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: _CarouselCard(
-            demo: studyDemos['alumni'],
-            asset: const AssetImage(
-              'assets/images/alumni.jpg',
-              // package: 'flutter_gallery_assets',
-            ),
-            assetColor: const Color(0xFFFFFFFF),
-            // assetDark: const AssetImage(
-            //   'assets/studies/shrine_card_dark.png',
-            //   package: 'flutter_gallery_assets',
-            // ),
-            // assetDarkColor: const Color(0xFF543B3C),
-            //textColor: shrineBrown900,
-            textColor: Colors.white,
-            studyRoute: alumni_routes.alumniRoute,
-          ),
-        ),
+      ),
     ];
 
     if (isDesktop) {
@@ -1019,7 +1017,6 @@ class _CarouselCard extends StatelessWidget {
                       color: assetColor,
                     ),
                     child: Ink.image(
-                      fit: BoxFit.cover,
                       width: MediaQuery.of(context).size.width * 0.5,
                       height: MediaQuery.of(context).size.height * 0.3,
                       image: asset,

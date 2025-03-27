@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gallery/avinya/alumni/lib/app_routes/app_routes.dart';
 import 'package:gallery/avinya/alumni/lib/screens/alumni_admin_screen.dart';
 import 'package:gallery/avinya/alumni/lib/screens/alumni_dashboard_screen.dart';
+import 'package:gallery/avinya/consumable/lib/data.dart';
 
 import '../routing.dart';
 import '../widgets/fade_transition_page.dart';
@@ -27,7 +28,9 @@ class SMSScaffoldBody extends StatelessWidget {
       key: navigatorKey,
       onPopPage: (route, dynamic result) => route.didPop(result),
       pages: [
-        if (currentRoute.pathTemplate.startsWith(AppRoutes.alumniDashboard))
+        if (currentRoute.pathTemplate.startsWith(AppRoutes.alumniDashboard) &&
+            (campusAppsPortalInstance.isFoundation ||
+                campusAppsPortalInstance.isTeacher))
           const FadeTransitionPage<void>(
             key: ValueKey('alumni_dashboard_Screen'),
             child: AlumniDashboardScreen(),
