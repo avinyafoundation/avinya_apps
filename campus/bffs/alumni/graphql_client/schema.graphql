@@ -215,6 +215,7 @@ input Alumni {
   linkedin_id: String
   facebook_id: String
   instagram_id: String
+  tiktok_id: String
   updated_by: String
   person_count: Int
   created: String
@@ -229,6 +230,7 @@ type AlumniData {
   linkedin_id: String
   facebook_id: String
   instagram_id: String
+  tiktok_id: String
   updated_by: String
   created: String
   updated: String
@@ -1072,7 +1074,7 @@ type Query {
   organization_structure(name: String, id: Int): OrganizationStructureData
   organizations(level: Int!): OrganizationStructureData
   organization(name: String, id: Int): OrganizationData
-  organizations_by_avinya_type(avinya_type: Int, active: Int = 0): [OrganizationData!]
+  organizations_by_avinya_type(avinya_type: Int, active: Int): [OrganizationData!]
   student_list_by_parent(parent_organization_id: Int, batch_id: Int): [PersonData!]
   person(name: String, id: Int): PersonData
   person_by_digital_id(id: String): PersonData

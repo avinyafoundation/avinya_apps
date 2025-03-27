@@ -1339,6 +1339,25 @@ Future<http.Response> deletePerson(String id) async {
   }
 }
 
+Future<Person> fetchPersonById(int? person_id) async {
+  final response = await http.get(
+    Uri.parse(
+        AppConfig.campusEnrollmentsBffApiUrl + '/person_by_id/$person_id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    Person person = Person.fromJson(json.decode(response.body));
+    return person;
+  } else {
+    throw Exception('Failed to load Person');
+  }
+}
+
 //-------- end of attendance functions ---------------
 
 //-------- start of pcti_notes_admin functions ---------------
