@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gallery/avinya/alumni/lib/screens/admin_edit_alumni_profile.dart';
 import 'package:gallery/avinya/alumni/lib/screens/alumni_info_view.dart';
 // import 'package:gallery/avinya/alumni/lib/data/organization.dart';
 import 'package:gallery/data/person.dart';
@@ -368,7 +369,7 @@ class MyData extends DataTableSource {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => MyAlumniScreen(
+                      builder: (context) => AdminEditAlumniProfileScreen(
                         id: _fetchedAlumniListData[index - 1]
                             .id!, // Pass the ID
                       ),
