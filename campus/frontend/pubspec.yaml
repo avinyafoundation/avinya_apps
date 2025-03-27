@@ -38,6 +38,7 @@ dependencies:
   url_strategy: ^0.2.0
   openid_client: ^0.4.7
   path_to_regexp: ^0.4.0
+  get: ^4.6.6
   attendance:
     path: ./lib/avinya/attendance
   pcti_notes:
@@ -54,6 +55,10 @@ dependencies:
     path: ./lib/avinya/consumable
   enrollment:
     path: ./lib/avinya/enrollment
+  academic_scheduler:
+    path: ./lib/avinya/academic_scheduler
+  alumni:
+    path: ./lib/avinya/alumni
   route_observer_mixin: ^1.7.0
   sizer: ^2.0.15
   flutter_spinkit: ^5.0.0
@@ -134,7 +139,6 @@ flutter:
       libraries:
         # Only one library from the loading unit is necessary.
         - package:attendance/avinya/lib/src/app.dart
-
 
   assets:
     - packages/flutter_gallery_assets/assets/studies/shrine_card_dark.png
@@ -301,4 +305,3 @@ flutter:
     - family: GalleryIcons
       fonts:
         - asset: packages/flutter_gallery_assets/fonts/GalleryIcons.ttf
-          

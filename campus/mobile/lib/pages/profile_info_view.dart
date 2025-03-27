@@ -13,7 +13,7 @@ class MyProfileScreen extends StatefulWidget {
 }
 
 class _MyProfileScreenState extends State<MyProfileScreen> {
-  late Person userPerson = Person()
+  late Person userPerson = Person(is_graduated: false)
     ..full_name = 'John'
     ..nic_no = '12';
 
@@ -47,7 +47,12 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          color: kOtherColor,
+          margin: EdgeInsets.only(top: 25.0),
+          decoration: BoxDecoration(
+            color: kOtherColor,
+            borderRadius:
+                BorderRadius.circular(15.0), // Adjust the radius as needed
+          ),
           child: Column(
             children: [
               sizedBox,
@@ -393,50 +398,53 @@ class ProfileDetailColumn extends StatelessWidget {
   final String value;
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.0), // Adjust as needed
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      color: kTextBlackColor,
-                      fontSize: SizerUtil.deviceType == DeviceType.mobile
-                          ? 15.sp
-                          : SizerUtil.deviceType == DeviceType.tablet
-                              ? 14.sp
-                              : SizerUtil.deviceType == DeviceType.web
-                                  ? 6.sp
-                                  : 11.sp,
-                    ),
-              ),
-              kHalfSizedBox,
-              Text(
-                value,
-                style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      color: kTextBlackColor,
-                      fontSize: SizerUtil.deviceType == DeviceType.mobile
-                          ? 15.sp
-                          : SizerUtil.deviceType == DeviceType.tablet
-                              ? 14.sp
-                              : SizerUtil.deviceType == DeviceType.web
-                                  ? 6.sp
-                                  : 11.sp,
-                    ),
-              ),
-              kHalfSizedBox,
-              SizedBox(
-                width: 92.w,
-                child: Divider(
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: kTextBlackColor,
+                        fontSize: SizerUtil.deviceType == DeviceType.mobile
+                            ? 15.sp
+                            : SizerUtil.deviceType == DeviceType.tablet
+                                ? 14.sp
+                                : SizerUtil.deviceType == DeviceType.web
+                                    ? 6.sp
+                                    : 11.sp,
+                      ),
+                ),
+                kHalfSizedBox,
+                SizedBox(
+                  width: double.infinity, // Allow full width
+                  child: Text(
+                    value,
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          color: kTextBlackColor,
+                          fontSize: SizerUtil.deviceType == DeviceType.mobile
+                              ? 15.sp
+                              : SizerUtil.deviceType == DeviceType.tablet
+                                  ? 14.sp
+                                  : SizerUtil.deviceType == DeviceType.web
+                                      ? 6.sp
+                                      : 11.sp,
+                        ),
+                    softWrap: true,
+                  ),
+                ),
+                kHalfSizedBox,
+                Divider(
                   thickness: 1.0,
                   color: kTextBlackColor,
                 ),
-              )
-            ],
+              ],
+            ),
           ),
           Icon(
             Icons.lock_outline,

@@ -55,6 +55,7 @@ dependencies:
   flutter_appauth: ^6.0.2
   flutter_secure_storage: ^8.0.0
   shared_preferences: ^2.2.0
+  get: ^4.6.6
   # pcti_notes:
   #   path: ./lib/avinya/pcti_notes
   # pcti_notes_admin:

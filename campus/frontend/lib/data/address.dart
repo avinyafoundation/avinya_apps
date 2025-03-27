@@ -12,6 +12,7 @@ class Address {
   String? street_address;
   int? phone;
   int? city_id;
+  int? district_id;
 
   Address({
     this.id,
@@ -19,6 +20,7 @@ class Address {
     this.street_address,
     this.phone,
     this.city_id,
+    this.district_id,
     this.record_type,
   });
 
@@ -29,6 +31,7 @@ class Address {
       street_address: json['street_address'],
       phone: json['phone'],
       city_id: json['city_id'],
+      district_id: json['district_id'],
       record_type: json['record_type'],
     );
   }
@@ -39,7 +42,9 @@ class Address {
         if (street_address != null) 'street_address': street_address,
         if (phone != null) 'phone': phone,
         if (city_id != null) 'city_id': city_id,
+        if (district_id != null) 'district_id': district_id,
         if (record_type != null) 'record_type': record_type,
+        // if (city != null) 'city': city,
       };
 }
 

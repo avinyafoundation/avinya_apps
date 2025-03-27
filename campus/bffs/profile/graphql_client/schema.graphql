@@ -176,6 +176,20 @@ type AddressData {
   id: Int
 }
 
+input Alumni {
+  record_type: String = "alumni"
+  id: Int
+  status: String
+  company_name: String
+  job_title: String
+  linkedin_id: String
+  facebook_id: String
+  instagram_id: String
+  updated_by: String
+  created: String
+  updated: String
+}
+
 input ApplicantConsent {
   record_type: String = "applicant_consent"
   id: Int
@@ -313,6 +327,7 @@ type AvinyaTypeData {
 type CalendarMetaData {
   id: Int
   organization_id: Int
+  batch_id: Int
   monthly_payment_amount: Decimal
 }
 
@@ -638,6 +653,7 @@ input MonthlyLeaveDates {
   month: Int
   total_days_in_month: Int
   organization_id: Int
+  batch_id: Int
   leave_dates_list: [Int!]!
   leave_dates: String
   daily_amount: Decimal
@@ -650,6 +666,7 @@ type MonthlyLeaveDatesData {
   year: Int
   month: Int
   organization_id: Int
+  batch_id: Int
   leave_dates_list: [Int!]
   daily_amount: Decimal
   created: String
@@ -719,6 +736,7 @@ type Mutation {
   upload_document(user_document: UserDocument!): DocumentsData
   add_monthly_leave_dates(monthly_leave_dates: MonthlyLeaveDates!): MonthlyLeaveDatesData
   update_monthly_leave_dates(monthly_leave_dates: MonthlyLeaveDates!): MonthlyLeaveDatesData
+  create_alumni(person: Person!, mailing_address: Address, mailing_address_city: City, alumni: Alumni!): PersonData
 }
 
 input Organization {
@@ -805,9 +823,10 @@ input Person {
   branch_code: String
   current_job: String
   documents_id: Int
-  document_list: [UserDocument!]
+  alumni_id: Int
   created_by: Int
   updated_by: Int
+  is_graduated: Boolean
 }
 
 type PersonData {
@@ -849,7 +868,8 @@ type PersonData {
   created_by: Int
   updated_by: Int
   documents_id: Int
-  document_list: [DocumentsData!]
+  alumni_id: Int
+  is_graduated: Boolean
 }
 
 type PlaceData {
@@ -919,7 +939,7 @@ type Query {
   organizations(level: Int!): OrganizationStructureData
   organization(name: String, id: Int): OrganizationData
   organizations_by_avinya_type(avinya_type: Int, active: Int = 0): [OrganizationData!]
-  student_list_by_parent(id: Int): [PersonData!]
+  student_list_by_parent(parent_organization_id: Int, batch_id: Int): [PersonData!]
   person(name: String, id: Int): PersonData
   person_by_digital_id(id: String): PersonData
   prospect(email: String, phone: Int): ProspectData
@@ -951,7 +971,7 @@ type Query {
   class_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_today(person_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int = 0): [ActivityParticipantAttendanceData!]
-  class_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
+  class_attendance_report(batch_id: Int, organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
   late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceDataForLateAttendance!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
@@ -989,11 +1009,12 @@ type Query {
   consumable_yearly_report(organization_id: Int, consumable_id: Int, year: Int): [InventoryData!]
   persons(organization_id: Int, avinya_type_id: Int): [PersonData!]
   person_by_id(id: Int): PersonData
+  document_list(id: Int!): [DocumentsData!]
   districts: [DistrictData!]
   cities(district_id: Int): [CityData!]
   all_organizations: [OrganizationData!]
-  monthly_leave_dates_record_by_id(organization_id: Int!, year: Int!, month: Int!): MonthlyLeaveDatesData
-  calendar_metadata_by_org_id(organization_id: Int!): CalendarMetaData
+  monthly_leave_dates_record_by_id(organization_id: Int!, batch_id: Int!, year: Int!, month: Int!): MonthlyLeaveDatesData
+  calendar_metadata_by_org_id(organization_id: Int!, batch_id: Int!): CalendarMetaData
 }
 
 input ResourceAllocation {

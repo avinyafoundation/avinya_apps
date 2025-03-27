@@ -1,5 +1,3 @@
-
-
 import 'package:pcti_notes_admin/data.dart';
 
 // import 'activity.dart';
@@ -38,7 +36,7 @@ class CampusConfigSystem {
   bool applicationSubmitted = false;
   final String schoolName = 'Bandaragama';
   int vacancyId = 1; // todo - this needs to be fetched and set from the server
-  Person studentPerson = Person();
+  Person studentPerson = Person(is_graduated: false);
   Application application = Application();
   String? user_jwt_sub;
   String? user_jwt_email;

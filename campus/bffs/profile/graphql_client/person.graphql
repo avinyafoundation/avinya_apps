@@ -194,6 +194,8 @@ query getPerson($id: String!) {
     academy_org_id
     current_job
     documents_id
+    alumni_id
+    is_graduated
   }
 }
 
@@ -227,8 +229,8 @@ query getOrganization($id: Int!) {
     }       
 }
 
-query getStudentByParentOrg($id: Int!) {
-  student_list_by_parent(id: $id) {
+query getStudentByParentOrg($parent_organization_id: Int,$batch_id:Int) {
+  student_list_by_parent(parent_organization_id: $parent_organization_id,batch_id:$batch_id) {
     id
     preferred_name
     full_name
