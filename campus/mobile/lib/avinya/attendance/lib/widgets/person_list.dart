@@ -432,6 +432,7 @@ class _AddPersonPageState extends State<AddPersonPage> {
           organization_id: int.parse(_organization_id_Controller.text),
           asgardeo_id: _asgardeo_id_Controller.text,
           email: _email_Controller.text,
+          is_graduated: false,
         );
         await createPerson(person);
         Navigator.of(context).pop(true);
@@ -761,6 +762,7 @@ class _EditPersonPageState extends State<EditPersonPage> {
           organization_id: int.parse(_organization_id_Controller.text),
           asgardeo_id: _asgardeo_id_Controller.text,
           email: _email_Controller.text,
+          is_graduated: false,
         );
         await updatePerson(person);
         Navigator.of(context).pop(true);

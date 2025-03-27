@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/layout/adaptive.dart';
 import 'package:mobile/pages/profile_info_view.dart';
+import 'package:mobile/pages/alumni_info_view.dart';
 import 'package:mobile/pages/splash.dart';
+import 'package:attendance/data.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final int? id;
   final String? recordType;
   final String? preferredName;
@@ -64,12 +66,48 @@ class ProfileScreen extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  late Person userPerson = Person(is_graduated: false)
+    ..full_name = 'John'
+    ..nic_no = '12';
+
+  @override
+  void initState() {
+    super.initState();
+    getUserPerson();
+  }
+
+  void getUserPerson() {
+    // Retrieve user data from local instance
+    Person user = campusAppsPortalInstance.getUserPerson();
+    setState(() {
+      userPerson = user;
+    });
+  }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   campusAppsPortalInstance.getUserPerson().avinya_type_id!;
+  // }
+
+  @override
   Widget build(BuildContext context) {
-    if (isDisplayDesktop(context)) {
+    if (campusAppsPortalInstance.getUserPerson().is_graduated != null &&
+        !userPerson.is_graduated!) {
       return Scaffold(
-        body: Container(
-          child: SplashPage(
-            child: MyProfileScreen(),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 50),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(40),
+            ),
+            child: Container(
+              child: MyProfileScreen(),
+            ),
           ),
         ),
       );
@@ -82,7 +120,7 @@ class ProfileScreen extends StatelessWidget {
               top: Radius.circular(40),
             ),
             child: Container(
-              child: MyProfileScreen(),
+              child: MyAlumniScreen(),
             ),
           ),
         ),

@@ -190,7 +190,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                   applicationName: AppConfig.applicationName,
                   applicationVersion: AppConfig.applicationVersion);
             }),
-        new Text("© 2024, Avinya Foundation."),
+        new Text("© 2025, Avinya Foundation."),
       ],
     );
   }
