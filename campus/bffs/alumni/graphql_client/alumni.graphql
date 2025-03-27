@@ -235,6 +235,7 @@ query getAlumniPersonById($id: Int!) {
       linkedin_id
       facebook_id
       instagram_id
+      tiktok_id
     }
     alumni_education_qualifications {
       id
@@ -350,6 +351,7 @@ query getAlumniPersons($parent_organization_id: Int!) {
     full_name
     email
     phone
+    nic_no
     alumni {
       id
       status

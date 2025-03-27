@@ -76,18 +76,18 @@ class _AlumniAdminState extends State<AlumniAdmin> {
     ));
     ColumnNames.add(DataColumn(
       label: SizedBox(
-        width: 90,
+        width: 170,
         child: Center(
-            child: Text('Status',
+            child: Text('Nic',
                 style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center)),
       ),
     ));
     ColumnNames.add(DataColumn(
       label: SizedBox(
-        width: 150,
+        width: 90,
         child: Center(
-            child: Text('Updated by',
+            child: Text('Status',
                 style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center)),
       ),
@@ -124,13 +124,16 @@ class _AlumniAdminState extends State<AlumniAdmin> {
         _filteredAlumniStudents = _fetchedAlumniListData.where((student) {
           print('Searching for: $query');
           print('Present count: ${student.preferred_name}');
+          print('NIC number: ${student.nic_no}');
 
           // Ensure preferred_name is not null and trimmed
           final presentCountString =
               student.preferred_name?.trim().toLowerCase() ?? '';
+          final attendancePercentageString = student.nic_no?.toString() ?? '';
 
           // Check for matching query
-          return presentCountString.contains(lowerCaseQuery);
+          return presentCountString.contains(lowerCaseQuery) ||
+              attendancePercentageString.contains(lowerCaseQuery);
         }).toList();
       }
 
@@ -221,7 +224,7 @@ class _AlumniAdminState extends State<AlumniAdmin> {
                           width: 250,
                           child: TextField(
                             decoration: InputDecoration(
-                              labelText: 'Search by Name',
+                              labelText: 'Search by Name or NIC',
                               border: OutlineInputBorder(),
                               prefixIcon: Icon(Icons.search),
                             ),
@@ -326,17 +329,17 @@ class MyData extends DataTableSource {
       ));
 
       cells[3] = DataCell(SizedBox(
+        width: 170,
+        child: Center(
+            child: Text(
+                _fetchedAlumniListData[index - 1].nic_no?.toString() ?? "N/A")),
+      ));
+
+      cells[4] = DataCell(SizedBox(
         width: 90,
         child: Center(
             child: Text(
                 _fetchedAlumniListData[index - 1].alumni?.status ?? "N/A")),
-      ));
-
-      cells[4] = DataCell(SizedBox(
-        width: 150,
-        child: Center(
-            child: Text(
-                _fetchedAlumniListData[index - 1].alumni?.updated_by ?? "N/A")),
       ));
 
       cells[5] = DataCell(SizedBox(
@@ -367,7 +370,7 @@ class MyData extends DataTableSource {
                     MaterialPageRoute(
                       builder: (context) => MyAlumniScreen(
                         id: _fetchedAlumniListData[index - 1]
-                            .id!,  // Pass the ID
+                            .id!, // Pass the ID
                       ),
                     ),
                   );

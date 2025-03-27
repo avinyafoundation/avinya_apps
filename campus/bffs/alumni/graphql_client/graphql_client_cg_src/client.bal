@@ -76,7 +76,7 @@ public isolated client class GraphqlClient {
         return <GetAlumniWorkExperienceByIdResponse> check performDataBinding(graphqlResponse, GetAlumniWorkExperienceByIdResponse);
     }
     remote isolated function getAlumniPersonById(int id) returns GetAlumniPersonByIdResponse|graphql:ClientError {
-        string query = string `query getAlumniPersonById($id:Int!) {person_by_id(id:$id) {id preferred_name full_name date_of_birth sex mailing_address {city {id name {name_en name_si name_ta} district {id name {name_en}}} street_address phone id} phone organization {id description notes address {id} avinya_type {id name} name {name_en} parent_organizations {id name {name_en}}} nic_no id_no email alumni {id status company_name job_title linkedin_id facebook_id instagram_id} alumni_education_qualifications {id person_id university_name course_name is_currently_studying start_date end_date} alumni_work_experience {id person_id company_name job_title currently_working start_date end_date}}}`;
+        string query = string `query getAlumniPersonById($id:Int!) {person_by_id(id:$id) {id preferred_name full_name date_of_birth sex mailing_address {city {id name {name_en name_si name_ta} district {id name {name_en}}} street_address phone id} phone organization {id description notes address {id} avinya_type {id name} name {name_en} parent_organizations {id name {name_en}}} nic_no id_no email alumni {id status company_name job_title linkedin_id facebook_id instagram_id tiktok_id} alumni_education_qualifications {id person_id university_name course_name is_currently_studying start_date end_date} alumni_work_experience {id person_id company_name job_title currently_working start_date end_date}}}`;
         map<anydata> variables = {"id": id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetAlumniPersonByIdResponse> check performDataBinding(graphqlResponse, GetAlumniPersonByIdResponse);
@@ -112,7 +112,7 @@ public isolated client class GraphqlClient {
         return <GetCompletedEventsResponse> check performDataBinding(graphqlResponse, GetCompletedEventsResponse);
     }
     remote isolated function getAlumniPersons(int parent_organization_id) returns GetAlumniPersonsResponse|graphql:ClientError {
-        string query = string `query getAlumniPersons($parent_organization_id:Int!) {alumni_persons(parent_organization_id:$parent_organization_id) {id preferred_name full_name email phone alumni {id status company_name job_title updated_by updated}}}`;
+        string query = string `query getAlumniPersons($parent_organization_id:Int!) {alumni_persons(parent_organization_id:$parent_organization_id) {id preferred_name full_name email phone nic_no alumni {id status company_name job_title updated_by updated}}}`;
         map<anydata> variables = {"parent_organization_id": parent_organization_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetAlumniPersonsResponse> check performDataBinding(graphqlResponse, GetAlumniPersonsResponse);
