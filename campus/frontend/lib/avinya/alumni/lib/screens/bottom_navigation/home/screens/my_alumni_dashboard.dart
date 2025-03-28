@@ -122,7 +122,13 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
                             'Current Status: ${alumniPerson.alumni_work_experience != null && alumniPerson.alumni_work_experience!.isNotEmpty ? alumniPerson.alumni_work_experience![0].companyName : "No work experience available"}',
                           ),
                           Text(
-                              'LinkedIn: ${alumniPerson.alumni?.linkedin_id ?? ''}'),
+                              'Facebook: ${alumniPerson.alumni?.facebook_id ?? '-'}'),
+                          Text(
+                              'Instagram: ${alumniPerson.alumni?.instagram_id ?? '-'}'),
+                          Text(
+                              'TikTok: ${alumniPerson.alumni?.tiktok_id ?? '-'}'),
+                          Text(
+                              'LinkedIn: ${alumniPerson.alumni?.linkedin_id ?? '-'}'),
                         ],
                       ),
                     ),

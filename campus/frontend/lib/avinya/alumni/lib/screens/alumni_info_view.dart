@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 
 class MyAlumniScreen extends StatefulWidget {
   final int? id;
-  const MyAlumniScreen({Key? key,this.id}) : super(key: key);
+  const MyAlumniScreen({Key? key, this.id}) : super(key: key);
 
   @override
   _MyAlumniScreenState createState() => _MyAlumniScreenState();
@@ -54,7 +54,7 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
       _loadCities(AlumniUserPerson.mailing_address!.city!.district!.id);
   }
 
-  void getUserPerson() async{
+  void getUserPerson() async {
     // Retrieve user data from local instance
     AlumniPerson AlumniUser = campusAppsPortalInstance.getAlumniUserPerson();
     Person user = campusAppsPortalInstance.getUserPerson();
@@ -378,6 +378,12 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                         AlumniUserPerson.alumni?.status = newValue;
                       });
                     },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please select an employment status";
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 SizedBox(height: 10),
@@ -457,8 +463,8 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
       return 'Phone number is required';
     }
     final phoneRegex = RegExp(r'^[0-9]+$');
-    if (!phoneRegex.hasMatch(value) || value.length < 10) {
-      return 'Enter a valid phone number (at least 10 digits)';
+    if (!phoneRegex.hasMatch(value) || value.length < 9) {
+      return 'Enter a valid phone number (at least 9 digits)';
     }
     return null;
   }
@@ -515,6 +521,12 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                   );
                   AlumniUserPerson.mailing_address?.city!.district!.id = value;
                 });
+              },
+              validator: (value) {
+                if (value == null) {
+                  return "Please select your District";
+                }
+                return null;
               },
               decoration: const InputDecoration(
                 labelText: 'Select District',
@@ -575,6 +587,12 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                   // Debugging: print selected city
                   print("Selected City ID: $selectedCityId");
                 });
+              },
+              validator: (value) {
+                if (value == null) {
+                  return "Please select your City";
+                }
+                return null;
               },
               decoration: const InputDecoration(
                 labelText: 'Select City',
