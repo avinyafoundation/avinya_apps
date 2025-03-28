@@ -67,8 +67,8 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
       UserPerson = user;
       _isFetching = false;
     });
-    selectedDistrictId = UserPerson.mailing_address?.city?.district?.id;
-    selectedCityId = UserPerson.mailing_address?.city?.id ?? 0;
+    selectedDistrictId = AlumniUserPerson.mailing_address?.city?.district?.id;
+    selectedCityId = AlumniUserPerson.mailing_address?.city?.id ?? 0;
     if (selectedDistrictId != null) {
       // _loadCities(AlumniUserPerson.mailing_address!.city!.district!.id);
       _loadCities(selectedDistrictId, selectedCityId);
@@ -414,6 +414,12 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                               AlumniUserPerson.alumni?.status = newValue;
                             });
                           },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please select an employment status";
+                            }
+                            return null;
+                          },
                         ),
                       ),
                       SizedBox(height: 10),
@@ -496,8 +502,8 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
       return 'Phone number is required';
     }
     final phoneRegex = RegExp(r'^[0-9]+$');
-    if (!phoneRegex.hasMatch(value) || value.length < 10) {
-      return 'Enter a valid phone number (at least 10 digits)';
+    if (!phoneRegex.hasMatch(value) || value.length < 9) {
+      return 'Enter a valid phone number (at least 9 digits)';
     }
     return null;
   }
@@ -566,6 +572,12 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                   }
                 });
               },
+              validator: (value) {
+                if (value == null) {
+                  return "Please select your District";
+                }
+                return null;
+              },
               decoration: const InputDecoration(
                 labelText: 'Select District',
                 border: OutlineInputBorder(),
@@ -625,6 +637,12 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                   // Debugging: print selected city
                   print("Selected City ID: $selectedCityId");
                 });
+              },
+              validator: (value) {
+                if (value == null) {
+                  return "Please select your City";
+                }
+                return null;
               },
               decoration: const InputDecoration(
                 labelText: 'Select City',
@@ -1021,12 +1039,24 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
       ),
       is_graduated: null,
     );
+    // late AlumniPerson AlumniUserPerson2;
+
+    // AlumniUserPerson2 = AlumniPerson(is_graduated: false)
+    //   ..full_name = 'John'
+    //   ..nic_no = '12';
 
     try {
+      // if (AlumniUserPerson.alumni?.id != null) {
+      //   await updateAlumniPerson(person2, id, selectedDistrictId);
+      // } else {
+      //   await createAlumniPerson(person2, selectedDistrictId);
+      // }
       if (AlumniUserPerson.alumni?.id != null) {
-        await updateAlumniPerson(person2, id, selectedDistrictId);
+        AlumniUserPerson =
+            await updateAlumniPerson(person2, id, selectedDistrictId);
       } else {
-        await createAlumniPerson(person2, selectedDistrictId);
+        AlumniUserPerson =
+            await createAlumniPerson(person2, selectedDistrictId);
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1216,6 +1246,12 @@ class _ProfileDetailColumnState extends State<ProfileDetailColumn> {
               border: OutlineInputBorder(),
             ),
             onChanged: widget.onChanged,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Address is Required";
+              }
+              return null;
+            },
             maxLines: widget.maxLines,
           ),
         ],
