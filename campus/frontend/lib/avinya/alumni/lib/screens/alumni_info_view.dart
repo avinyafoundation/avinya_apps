@@ -67,8 +67,8 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
       UserPerson = user;
       _isFetching = false;
     });
-    selectedDistrictId = UserPerson.mailing_address?.city?.district?.id;
-    selectedCityId = UserPerson.mailing_address?.city?.id ?? 0;
+    selectedDistrictId = AlumniUserPerson.mailing_address?.city?.district?.id;
+    selectedCityId = AlumniUserPerson.mailing_address?.city?.id ?? 0;
     if (selectedDistrictId != null) {
       // _loadCities(AlumniUserPerson.mailing_address!.city!.district!.id);
       _loadCities(selectedDistrictId, selectedCityId);
@@ -413,6 +413,12 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
                             setState(() {
                               AlumniUserPerson.alumni?.status = newValue;
                             });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please select an employment status";
+                            }
+                            return null;
                           },
                         ),
                       ),
@@ -1033,12 +1039,24 @@ class _MyAlumniScreenState extends State<MyAlumniScreen> {
       ),
       is_graduated: null,
     );
+    // late AlumniPerson AlumniUserPerson2;
+
+    // AlumniUserPerson2 = AlumniPerson(is_graduated: false)
+    //   ..full_name = 'John'
+    //   ..nic_no = '12';
 
     try {
+      // if (AlumniUserPerson.alumni?.id != null) {
+      //   await updateAlumniPerson(person2, id, selectedDistrictId);
+      // } else {
+      //   await createAlumniPerson(person2, selectedDistrictId);
+      // }
       if (AlumniUserPerson.alumni?.id != null) {
-        await updateAlumniPerson(person2, id, selectedDistrictId);
+        AlumniUserPerson =
+            await updateAlumniPerson(person2, id, selectedDistrictId);
       } else {
-        await createAlumniPerson(person2, selectedDistrictId);
+        AlumniUserPerson =
+            await createAlumniPerson(person2, selectedDistrictId);
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1228,6 +1246,12 @@ class _ProfileDetailColumnState extends State<ProfileDetailColumn> {
               border: OutlineInputBorder(),
             ),
             onChanged: widget.onChanged,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Address is Required";
+              }
+              return null;
+            },
             maxLines: widget.maxLines,
           ),
         ],
