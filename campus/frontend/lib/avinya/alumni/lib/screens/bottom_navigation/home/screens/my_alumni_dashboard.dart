@@ -31,6 +31,8 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
   late AlumniPerson alumniPerson = AlumniPerson(is_graduated: null)
     ..full_name = 'John'
     ..nic_no = '12';
+  bool lookingForJob = false;
+  bool updateCV = false;
 
   @override
   void initState() {
@@ -123,6 +125,24 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
                           ),
                           Text(
                               'LinkedIn: ${alumniPerson.alumni?.linkedin_id ?? ''}'),
+                          SwitchListTile(
+                            title: Text("I am looking for a job"),
+                            value: lookingForJob,
+                            activeColor:
+                                Colors.green, // Change switch color when ON
+                            inactiveThumbColor: Colors
+                                .grey, // Change switch thumb color when OFF
+                            onChanged: (value) =>
+                                setState(() => lookingForJob = value),
+                          ),
+                          SwitchListTile(
+                            title: Text("Help me update my CV?"),
+                            value: updateCV,
+                            activeColor: Colors.blue,
+                            inactiveThumbColor: Colors.grey,
+                            onChanged: (value) =>
+                                setState(() => updateCV = value),
+                          ),
                         ],
                       ),
                     ),
