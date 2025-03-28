@@ -131,6 +131,26 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
                               'TikTok: ${alumniPerson.alumni?.tiktok_id ?? '-'}'),
                           Text(
                               'LinkedIn: ${alumniPerson.alumni?.linkedin_id ?? '-'}'),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.edit, color: Colors.blue, size: 24),
+                  ],
+                ),
+              ),
+            ),
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           SwitchListTile(
                             title: Text("I am looking for a job"),
                             value: lookingForJob,
