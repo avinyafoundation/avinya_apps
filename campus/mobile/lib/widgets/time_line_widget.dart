@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/constants.dart';
+import 'package:sizer/sizer.dart';
 
 class TimelineWidget extends StatelessWidget {
   final List<Map<String, Object>> workTimeline;
@@ -37,30 +39,48 @@ class TimelineWidget extends StatelessWidget {
         .compareTo(_parseStartDate(b['duration'] as String)));
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
-      child: Column(
-        children: [
-          Text(
-            "Your Work & Study Timeline",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Column(
-                children: sortedWorkTimeline
-                    .map((item) => _buildWorkTimelineItem(item, true))
-                    .toList(),
-              ),
-              _buildTimelineArrow(),
-              Column(
-                children: sortedEducationTimelineTimeline
-                    .map((item) => _buildEduTimelineItem(item, false))
-                    .toList(),
-              ),
-            ],
-          ),
-        ],
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Your Work & Study Timeline",
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    color: kTextBlackColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: SizerUtil.deviceType == DeviceType.mobile
+                        ? 15.sp
+                        : SizerUtil.deviceType == DeviceType.tablet
+                            ? 16.sp
+                            : SizerUtil.deviceType == DeviceType.web
+                                ? 14.sp
+                                : 15.sp,
+                  ),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Column(
+                    children: sortedWorkTimeline
+                        .map((item) => _buildWorkTimelineItem(item, true))
+                        .toList(),
+                  ),
+                ),
+                _buildTimelineArrow(),
+                Expanded(
+                  child: Column(
+                    children: sortedEducationTimelineTimeline
+                        .map((item) => _buildEduTimelineItem(item, false))
+                        .toList(),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -89,15 +109,42 @@ class TimelineWidget extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Text(item['title'] as String? ?? 'No Title',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(
+                  item['title'] as String? ?? 'No Title',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: kTextBlackColor,
+                    fontSize: SizerUtil.deviceType == DeviceType.mobile
+                        ? 12.sp
+                        : SizerUtil.deviceType == DeviceType.tablet
+                            ? 14.sp
+                            : SizerUtil.deviceType == DeviceType.web
+                                ? 12.sp
+                                : 12.sp
+                  ),
+                ),
                 Text(item['company'] as String? ?? 'No Subtitle',
-                    style:
-                        TextStyle(color: Colors.grey.shade700, fontSize: 12)),
+                    style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontSize: SizerUtil.deviceType == DeviceType.mobile
+                          ? 10.sp
+                          : SizerUtil.deviceType == DeviceType.tablet
+                              ? 12.sp
+                              : SizerUtil.deviceType == DeviceType.web
+                                  ? 10.sp
+                                  : 10.sp
+                    )),
                 Text(item['duration'] as String? ?? 'No Duration',
-                    style:
-                        TextStyle(color: Colors.grey.shade500, fontSize: 10)),
+                    style: TextStyle(
+                      color: Colors.grey.shade500,
+                      fontSize: SizerUtil.deviceType == DeviceType.mobile
+                          ? 08.sp
+                          : SizerUtil.deviceType == DeviceType.tablet
+                              ? 10.sp
+                              : SizerUtil.deviceType == DeviceType.web
+                                  ? 08.sp
+                                  : 08.sp
+                    )),
               ],
             ),
           ),
@@ -131,14 +178,39 @@ class TimelineWidget extends StatelessWidget {
             child: Column(
               children: [
                 Text(item['course']?.toString() ?? 'No Title',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: kTextBlackColor,
+                      fontSize: SizerUtil.deviceType == DeviceType.mobile
+                          ? 12.sp
+                          : SizerUtil.deviceType == DeviceType.tablet
+                              ? 14.sp
+                              : SizerUtil.deviceType == DeviceType.web
+                                  ? 12.sp
+                                  : 12.sp
+                    )),
                 Text(item['university']?.toString() ?? 'No Subtitle',
-                    style:
-                        TextStyle(color: Colors.grey.shade700, fontSize: 12)),
+                    style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontSize: SizerUtil.deviceType == DeviceType.mobile
+                          ? 10.sp
+                          : SizerUtil.deviceType == DeviceType.tablet
+                              ? 12.sp
+                              : SizerUtil.deviceType == DeviceType.web
+                                  ? 10.sp
+                                  : 10.sp
+                    )),
                 Text(item['duration']?.toString() ?? 'No Duration',
-                    style:
-                        TextStyle(color: Colors.grey.shade500, fontSize: 10)),
+                    style: TextStyle(
+                      color: Colors.grey.shade500,
+                      fontSize: SizerUtil.deviceType == DeviceType.mobile
+                          ? 08.sp
+                          : SizerUtil.deviceType == DeviceType.tablet
+                              ? 10.sp
+                              : SizerUtil.deviceType == DeviceType.web
+                                  ? 08.sp
+                                  : 08.sp
+                    )),
               ],
             ),
           ),
@@ -152,7 +224,7 @@ class TimelineWidget extends StatelessWidget {
     return Container(
       width: 2,
       height: 40,
-      color: Colors.blue,
+      color: Colors.black,
     );
   }
 
@@ -162,9 +234,9 @@ class TimelineWidget extends StatelessWidget {
         Container(
           width: 5,
           height: 100,
-          color: Colors.blue,
+          color: Colors.black,
         ),
-        Icon(Icons.arrow_downward, color: Colors.blue),
+        Icon(Icons.arrow_downward, color: Colors.black),
       ],
     );
   }

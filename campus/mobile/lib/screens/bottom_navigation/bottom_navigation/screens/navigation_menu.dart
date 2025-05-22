@@ -20,9 +20,9 @@ class NavigationMenu extends StatelessWidget {
             items: [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.card_travel), label: 'My Cert'),
+                  icon: Icon(Icons.card_travel), label: 'Job Portal'),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.notifications), label: 'Notifications'),
+                  icon: Icon(Icons.notifications), label: 'Notification'),
               BottomNavigationBarItem(
                   icon: Icon(Icons.person), label: 'Profile'),
             ]);
