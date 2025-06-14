@@ -1,6 +1,9 @@
 import ballerina/graphql;
 import ballerina/http;
 import ballerina/log;
+import ballerina/mime;
+import ballerina/io;
+import ballerina/lang.array;
 
 
 public function initClientConfig() returns ConnectionConfig {
@@ -367,6 +370,84 @@ service / on new http:Listener(9096) {
             return error("Error while getting application: " + getAlumniSummaryResponse.message() +
                 ":: Detail: " + getAlumniSummaryResponse.detail().toString());
         }
+    }
+    
+    resource function post upload_person_profile_picture(http:Request req) returns PersonProfilePicture|ErrorDetail|error {
+        
+        PersonProfilePicture profile_picture = {};
+        PersonProfilePicture profile_picture_details = {};
+        int profile_picture_row_id = 0;
+        int person_id = 0;
+        string person_nic_no = "";
+        string profile_picture_uploaded_by = "";
+
+        if (req.getContentType().startsWith("multipart/form-data")) {
+
+            mime:Entity[] bodyParts = check req.getBodyParts();
+            string base64EncodedStringProfilePicture = "";
+
+            foreach var part in bodyParts {
+                mime:ContentDisposition contentDisposition = part.getContentDisposition();
+
+                if (contentDisposition.name == "profile_picture_details") {
+
+                    json profile_picture_details_in_json = check part.getJson();
+                    profile_picture_details = check profile_picture_details_in_json.cloneWithType(PersonProfilePicture);
+                    profile_picture_row_id = profile_picture_details?.id ?: 0;
+                    person_id = profile_picture_details?.person_id  ?:0;
+                    person_nic_no = profile_picture_details?.nic_no ?:"";
+                    profile_picture_uploaded_by = profile_picture_details?.uploaded_by ?:"";
+
+                } else if (contentDisposition.name == "profile_picture") {
+
+                    stream<byte[], io:Error?>|mime:ParserError str = part.getByteStream();
+
+                    if str is stream<byte[], io:Error?> {
+
+                        byte[] allBytes = []; // Initialize an empty byte array
+
+                        // Iterate through the stream and collect all chunks
+                        error? e = str.forEach(function(byte[] chunk) {
+                            array:push(allBytes, ...chunk); // Efficiently append all bytes from chunk
+                        });
+
+                        byte[] base64EncodedProfilePicture = <byte[]>(check mime:base64Encode(allBytes));
+                        base64EncodedStringProfilePicture = check string:fromBytes(base64EncodedProfilePicture);
+
+                    }
+                }
+
+            }
+
+            profile_picture = {
+                id: profile_picture_row_id,
+                person_id: person_id,
+                nic_no: person_nic_no,
+                picture: base64EncodedStringProfilePicture,
+                uploaded_by: profile_picture_uploaded_by
+            };
+
+        }
+
+        UploadPersonProfilePictureResponse|graphql:ClientError uploadPersonProfilePictureResponse = globalDataClient->uploadPersonProfilePicture(profile_picture);
+        if (uploadPersonProfilePictureResponse is UploadPersonProfilePictureResponse) {
+            PersonProfilePicture|error profile_picture_record = uploadPersonProfilePictureResponse.upload_person_profile_picture.cloneWithType(PersonProfilePicture);
+            if (profile_picture_record is PersonProfilePicture) {
+                return profile_picture_record;
+            } else {
+                log:printError("Error while processing Profile picture record received", profile_picture_record);
+                 return error("Error while processing Profile picture record received: " + profile_picture_record.message() + 
+                    ":: Detail: " + profile_picture_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating profile picture", uploadPersonProfilePictureResponse);
+            return error("Error while creating profile picture: " + uploadPersonProfilePictureResponse.message() + 
+                ":: Detail: " + uploadPersonProfilePictureResponse.detail().toString());
+        }
+    }
+    resource function delete person_profile_picture_by_id/[int id]() returns json|error {
+        json|error delete_count = globalDataClient->deletePersonProfilePictureById(id);
+        return  delete_count;
     }
 
 }

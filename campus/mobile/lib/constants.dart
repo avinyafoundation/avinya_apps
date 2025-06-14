@@ -9,10 +9,14 @@ import 'package:sizer/sizer.dart';
 //colors
 const Color kPrimaryColor = Color(0xFFFAFBFB);
 const Color kSecondaryColor = Color(0xFF6789CA);
+const Color kPrimaryButtonColor = Color(0xFF007BFF);
+const Color kSecondaryButtonColor = Color(0xFFE74C3C);
 const Color kTextBlackColor = Color(0xFF313131);
+const Color kTextBoxBorderPrimaryColor = Color(0xFF313131);
 const Color kTextWhiteColor = Color(0xFFFFFFFF);
 const Color kContainerColor = Color(0xFF777777);
 const Color kOtherColor = Color(0xFFFAFBFB);
+const Color kDarkModeSurfaceColor = Color(0xFFB0BEC5);
 const Color kTextLightColor = Color(0xFFA5A5A5);
 const Color kErrorBorderColor = Color(0xFFE74C3C);
 

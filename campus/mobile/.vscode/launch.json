@@ -41,7 +41,7 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "debug",
-            "deviceId": "SM M017F",
+            "deviceId": "R92TC02D4SM",
             "runTestsOnDevice": false,
             // "args": [
             //     "--flavor",
