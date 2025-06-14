@@ -49,9 +49,9 @@ class _BackdropState extends State<Backdrop>
 
   late AnimationController _settingsPanelController;
   late AnimationController _iconController;
-  late FocusNode _settingsPageFocusNode;
+  //late FocusNode _settingsPageFocusNode;
   late ValueNotifier<bool> _isSettingsOpenNotifier;
-  late Widget _settingsPage;
+  //late Widget _settingsPage;
   late Widget _homePage;
   late Completer<void> _completer;
 
@@ -68,12 +68,12 @@ class _BackdropState extends State<Backdrop>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
-    _settingsPageFocusNode = FocusNode();
+    // _settingsPageFocusNode = FocusNode();
     _isSettingsOpenNotifier = ValueNotifier(false);
-    _settingsPage = widget.settingsPage ??
-        SettingsPage(
-          animationController: _settingsPanelController,
-        );
+    //_settingsPage = widget.settingsPage ??
+    // SettingsPage(
+    //   animationController: _settingsPanelController,
+    // );
     // _homePage = widget.homePage ?? const HomePage();
     int count = 0;
     Future.delayed(const Duration(milliseconds: 500)).then((_) {
@@ -125,7 +125,7 @@ class _BackdropState extends State<Backdrop>
   void dispose() {
     _settingsPanelController.dispose();
     _iconController.dispose();
-    _settingsPageFocusNode.dispose();
+    //_settingsPageFocusNode.dispose();
     _isSettingsOpenNotifier.dispose();
     routeObserver.unsubscribe(this);
     if (!_completer.isCompleted) {
@@ -229,26 +229,26 @@ class _BackdropState extends State<Backdrop>
 
     log('is decktop2 $isDesktop');
 
-    final Widget settingsPage = ValueListenableBuilder<bool>(
-      valueListenable: _isSettingsOpenNotifier,
-      builder: (context, isSettingsOpen, child) {
-        return ExcludeSemantics(
-          excluding: !isSettingsOpen,
-          child: isSettingsOpen
-              ? RawKeyboardListener(
-                  includeSemantics: false,
-                  focusNode: _settingsPageFocusNode,
-                  onKey: (event) {
-                    if (event.logicalKey == LogicalKeyboardKey.escape) {
-                      _toggleSettings();
-                    }
-                  },
-                  child: FocusScope(child: _settingsPage),
-                )
-              : ExcludeFocus(child: _settingsPage),
-        );
-      },
-    );
+    // final Widget settingsPage = ValueListenableBuilder<bool>(
+    //   valueListenable: _isSettingsOpenNotifier,
+    //   builder: (context, isSettingsOpen, child) {
+    //     return ExcludeSemantics(
+    //       excluding: !isSettingsOpen,
+    //       child: isSettingsOpen
+    //           ? RawKeyboardListener(
+    //               includeSemantics: false,
+    //               //focusNode: _settingsPageFocusNode,
+    //               onKey: (event) {
+    //                 if (event.logicalKey == LogicalKeyboardKey.escape) {
+    //                   _toggleSettings();
+    //                 }
+    //               },
+    //               child: FocusScope(child: _settingsPage),
+    //             )
+    //           : ExcludeFocus(child: _settingsPage),
+    //     );
+    //   },
+    // );
 
     final Widget loginPage = ValueListenableBuilder<bool>(
       valueListenable: _isSettingsOpenNotifier,
@@ -307,43 +307,43 @@ class _BackdropState extends State<Backdrop>
                 }
               },
             ),
-            Semantics(
-              sortKey: const OrdinalSortKey(3),
-              child: ScaleTransition(
-                alignment: Directionality.of(context) == TextDirection.ltr
-                    ? Alignment.topRight
-                    : Alignment.topLeft,
-                scale: CurvedAnimation(
-                  parent: _settingsPanelController,
-                  curve: Curves.easeIn,
-                  reverseCurve: Curves.easeOut,
-                ),
-                child: Align(
-                  alignment: AlignmentDirectional.topEnd,
-                  child: Material(
-                    elevation: 7,
-                    clipBehavior: Clip.antiAlias,
-                    borderRadius: BorderRadius.circular(40),
-                    color: Theme.of(context).colorScheme.secondaryContainer,
-                    child: Container(
-                      constraints: const BoxConstraints(
-                        maxHeight: 560,
-                        maxWidth: desktopSettingsWidth,
-                        minWidth: desktopSettingsWidth,
-                      ),
-                      child: settingsPage,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            campusAppsPortalInstance.isGroupFetched != false
-                ? _SettingsIcon(
-                    animationController: _iconController,
-                    toggleSettings: _toggleSettings,
-                    isSettingsOpenNotifier: _isSettingsOpenNotifier,
-                  )
-                : Container(),
+            // Semantics(
+            //   sortKey: const OrdinalSortKey(3),
+            //   child: ScaleTransition(
+            //     alignment: Directionality.of(context) == TextDirection.ltr
+            //         ? Alignment.topRight
+            //         : Alignment.topLeft,
+            //     scale: CurvedAnimation(
+            //       parent: _settingsPanelController,
+            //       curve: Curves.easeIn,
+            //       reverseCurve: Curves.easeOut,
+            //     ),
+            //     child: Align(
+            //       alignment: AlignmentDirectional.topEnd,
+            //       child: Material(
+            //         elevation: 7,
+            //         clipBehavior: Clip.antiAlias,
+            //         borderRadius: BorderRadius.circular(40),
+            //         color: Theme.of(context).colorScheme.secondaryContainer,
+            //         child: Container(
+            //           constraints: const BoxConstraints(
+            //             maxHeight: 560,
+            //             maxWidth: desktopSettingsWidth,
+            //             minWidth: desktopSettingsWidth,
+            //           ),
+            //           child: settingsPage,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // campusAppsPortalInstance.isGroupFetched != false
+            //     ? _SettingsIcon(
+            //         animationController: _iconController,
+            //         toggleSettings: _toggleSettings,
+            //         isSettingsOpenNotifier: _isSettingsOpenNotifier,
+            //       )
+            //     : Container(),
             campusAppsPortalInstance.isGroupFetched != false
                 ? _LogoutIcon(
                     animationController: _iconController,
@@ -351,7 +351,9 @@ class _BackdropState extends State<Backdrop>
                     isSettingsOpenNotifier: _isSettingsOpenNotifier,
                   )
                 : Container(),
-            campusAppsPortalInstance.isGroupFetched != false
+            campusAppsPortalInstance.isGroupFetched != false &&
+                    (campusAppsPortalInstance.getUserPerson().is_graduated ==
+                        false)
                 ? _ProfileIcon(
                     animationController: _iconController,
                     toggleSettings: _toggleSettings,
@@ -376,51 +378,53 @@ class _BackdropState extends State<Backdrop>
                 }
               },
             ),
-            Semantics(
-              sortKey: const OrdinalSortKey(3),
-              child: ScaleTransition(
-                alignment: Directionality.of(context) == TextDirection.ltr
-                    ? Alignment.topRight
-                    : Alignment.topLeft,
-                scale: CurvedAnimation(
-                  parent: _settingsPanelController,
-                  curve: Curves.easeIn,
-                  reverseCurve: Curves.easeOut,
-                ),
-                child: Align(
-                  alignment: AlignmentDirectional.topEnd,
-                  child: Material(
-                    elevation: 7,
-                    clipBehavior: Clip.antiAlias,
-                    borderRadius: BorderRadius.circular(40),
-                    color: Theme.of(context).colorScheme.secondaryContainer,
-                    child: Container(
-                      constraints: const BoxConstraints(
-                        maxHeight: 560,
-                        maxWidth: desktopSettingsWidth,
-                        minWidth: desktopSettingsWidth,
-                      ),
-                      child: settingsPage,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            _SettingsIcon(
-              animationController: _iconController,
-              toggleSettings: _toggleSettings,
-              isSettingsOpenNotifier: _isSettingsOpenNotifier,
-            ),
+            // Semantics(
+            //   sortKey: const OrdinalSortKey(3),
+            //   child: ScaleTransition(
+            //     alignment: Directionality.of(context) == TextDirection.ltr
+            //         ? Alignment.topRight
+            //         : Alignment.topLeft,
+            //     scale: CurvedAnimation(
+            //       parent: _settingsPanelController,
+            //       curve: Curves.easeIn,
+            //       reverseCurve: Curves.easeOut,
+            //     ),
+            //     child: Align(
+            //       alignment: AlignmentDirectional.topEnd,
+            //       child: Material(
+            //         elevation: 7,
+            //         clipBehavior: Clip.antiAlias,
+            //         borderRadius: BorderRadius.circular(40),
+            //         color: Theme.of(context).colorScheme.secondaryContainer,
+            //         child: Container(
+            //           constraints: const BoxConstraints(
+            //             maxHeight: 560,
+            //             maxWidth: desktopSettingsWidth,
+            //             minWidth: desktopSettingsWidth,
+            //           ),
+            //           child: settingsPage,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // _SettingsIcon(
+            //   animationController: _iconController,
+            //   toggleSettings: _toggleSettings,
+            //   isSettingsOpenNotifier: _isSettingsOpenNotifier,
+            // ),
             _LogoutIcon(
               animationController: _iconController,
               toggleSettings: _toggleSettings,
               isSettingsOpenNotifier: _isSettingsOpenNotifier,
             ),
-            _ProfileIcon(
-              animationController: _iconController,
-              toggleSettings: _toggleSettings,
-              isSettingsOpenNotifier: _isSettingsOpenNotifier,
-            ),
+            campusAppsPortalInstance.getUserPerson().is_graduated == false
+                ? _ProfileIcon(
+                    animationController: _iconController,
+                    toggleSettings: _toggleSettings,
+                    isSettingsOpenNotifier: _isSettingsOpenNotifier,
+                  )
+                : Container(),
           ],
           if (isDesktop && !signedIn) ...[
             Semantics(sortKey: const OrdinalSortKey(2), child: loginPage),
@@ -439,41 +443,41 @@ class _BackdropState extends State<Backdrop>
                 }
               },
             ),
-            Semantics(
-              sortKey: const OrdinalSortKey(3),
-              child: ScaleTransition(
-                alignment: Directionality.of(context) == TextDirection.ltr
-                    ? Alignment.topRight
-                    : Alignment.topLeft,
-                scale: CurvedAnimation(
-                  parent: _settingsPanelController,
-                  curve: Curves.easeIn,
-                  reverseCurve: Curves.easeOut,
-                ),
-                child: Align(
-                  alignment: AlignmentDirectional.topEnd,
-                  child: Material(
-                    elevation: 7,
-                    clipBehavior: Clip.antiAlias,
-                    borderRadius: BorderRadius.circular(40),
-                    color: Theme.of(context).colorScheme.secondaryContainer,
-                    child: Container(
-                      constraints: const BoxConstraints(
-                        maxHeight: 560,
-                        maxWidth: desktopSettingsWidth,
-                        minWidth: desktopSettingsWidth,
-                      ),
-                      child: settingsPage,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            _SettingsIcon(
-              animationController: _iconController,
-              toggleSettings: _toggleSettings,
-              isSettingsOpenNotifier: _isSettingsOpenNotifier,
-            ),
+            // Semantics(
+            //   sortKey: const OrdinalSortKey(3),
+            //   child: ScaleTransition(
+            //     alignment: Directionality.of(context) == TextDirection.ltr
+            //         ? Alignment.topRight
+            //         : Alignment.topLeft,
+            //     scale: CurvedAnimation(
+            //       parent: _settingsPanelController,
+            //       curve: Curves.easeIn,
+            //       reverseCurve: Curves.easeOut,
+            //     ),
+            //     child: Align(
+            //       alignment: AlignmentDirectional.topEnd,
+            //       child: Material(
+            //         elevation: 7,
+            //         clipBehavior: Clip.antiAlias,
+            //         borderRadius: BorderRadius.circular(40),
+            //         color: Theme.of(context).colorScheme.secondaryContainer,
+            //         child: Container(
+            //           constraints: const BoxConstraints(
+            //             maxHeight: 560,
+            //             maxWidth: desktopSettingsWidth,
+            //             minWidth: desktopSettingsWidth,
+            //           ),
+            //           child: settingsPage,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // _SettingsIcon(
+            //   animationController: _iconController,
+            //   toggleSettings: _toggleSettings,
+            //   isSettingsOpenNotifier: _isSettingsOpenNotifier,
+            // ),
           ],
           if (!isDesktop && !signedIn) ...[
             Semantics(sortKey: const OrdinalSortKey(2), child: loginPage),
@@ -492,41 +496,41 @@ class _BackdropState extends State<Backdrop>
                 }
               },
             ),
-            Semantics(
-              sortKey: const OrdinalSortKey(3),
-              child: ScaleTransition(
-                alignment: Directionality.of(context) == TextDirection.ltr
-                    ? Alignment.topRight
-                    : Alignment.topLeft,
-                scale: CurvedAnimation(
-                  parent: _settingsPanelController,
-                  curve: Curves.easeIn,
-                  reverseCurve: Curves.easeOut,
-                ),
-                child: Align(
-                  alignment: AlignmentDirectional.topEnd,
-                  child: Material(
-                    elevation: 7,
-                    clipBehavior: Clip.antiAlias,
-                    borderRadius: BorderRadius.circular(40),
-                    color: Theme.of(context).colorScheme.secondaryContainer,
-                    child: Container(
-                      constraints: const BoxConstraints(
-                        maxHeight: 560,
-                        maxWidth: desktopSettingsWidth,
-                        minWidth: desktopSettingsWidth,
-                      ),
-                      child: settingsPage,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            _SettingsIcon(
-              animationController: _iconController,
-              toggleSettings: _toggleSettings,
-              isSettingsOpenNotifier: _isSettingsOpenNotifier,
-            ),
+            // Semantics(
+            //   sortKey: const OrdinalSortKey(3),
+            //   child: ScaleTransition(
+            //     alignment: Directionality.of(context) == TextDirection.ltr
+            //         ? Alignment.topRight
+            //         : Alignment.topLeft,
+            //     scale: CurvedAnimation(
+            //       parent: _settingsPanelController,
+            //       curve: Curves.easeIn,
+            //       reverseCurve: Curves.easeOut,
+            //     ),
+            //     child: Align(
+            //       alignment: AlignmentDirectional.topEnd,
+            //       child: Material(
+            //         elevation: 7,
+            //         clipBehavior: Clip.antiAlias,
+            //         borderRadius: BorderRadius.circular(40),
+            //         color: Theme.of(context).colorScheme.secondaryContainer,
+            //         child: Container(
+            //           constraints: const BoxConstraints(
+            //             maxHeight: 560,
+            //             maxWidth: desktopSettingsWidth,
+            //             minWidth: desktopSettingsWidth,
+            //           ),
+            //           child: settingsPage,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // _SettingsIcon(
+            //   animationController: _iconController,
+            //   toggleSettings: _toggleSettings,
+            //   isSettingsOpenNotifier: _isSettingsOpenNotifier,
+            // ),
           ]
         ],
       ),
@@ -539,66 +543,66 @@ class _BackdropState extends State<Backdrop>
   }
 }
 
-class _SettingsIcon extends AnimatedWidget {
-  const _SettingsIcon({
-    required this.animationController,
-    required this.toggleSettings,
-    required this.isSettingsOpenNotifier,
-  }) : super(listenable: animationController);
+// class _SettingsIcon extends AnimatedWidget {
+//   const _SettingsIcon({
+//     required this.animationController,
+//     required this.toggleSettings,
+//     required this.isSettingsOpenNotifier,
+//   }) : super(listenable: animationController);
 
-  final AnimationController animationController;
-  final VoidCallback toggleSettings;
-  final ValueNotifier<bool> isSettingsOpenNotifier;
+//   final AnimationController animationController;
+//   final VoidCallback toggleSettings;
+//   final ValueNotifier<bool> isSettingsOpenNotifier;
 
-  String _settingsSemanticLabel(bool isOpen, BuildContext context) {
-    return isOpen ? "Close settings" : "Open settings";
-  }
+//   String _settingsSemanticLabel(bool isOpen, BuildContext context) {
+//     return isOpen ? "Close settings" : "Open settings";
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    final isDesktop = isDisplayDesktop(context);
-    final safeAreaTopPadding = MediaQuery.of(context).padding.top;
+//   @override
+//   Widget build(BuildContext context) {
+//     final isDesktop = isDisplayDesktop(context);
+//     final safeAreaTopPadding = MediaQuery.of(context).padding.top;
 
-    return Align(
-      alignment: AlignmentDirectional.topEnd,
-      child: Semantics(
-        sortKey: const OrdinalSortKey(1),
-        button: true,
-        enabled: true,
-        label: _settingsSemanticLabel(isSettingsOpenNotifier.value, context),
-        child: SizedBox(
-          width: _settingsButtonWidth,
-          height: isDesktop
-              ? _settingsButtonHeightDesktop
-              : _settingsButtonHeightMobile + safeAreaTopPadding,
-          child: Material(
-            borderRadius: const BorderRadiusDirectional.only(
-              bottomStart: Radius.circular(10),
-            ),
-            color:
-                isSettingsOpenNotifier.value & !animationController.isAnimating
-                    ? Colors.transparent
-                    : Theme.of(context).colorScheme.secondaryContainer,
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              onTap: () {
-                toggleSettings();
-                SemanticsService.announce(
-                  _settingsSemanticLabel(isSettingsOpenNotifier.value, context),
-                  GalleryOptions.of(context).resolvedTextDirection()!,
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsetsDirectional.only(start: 3, end: 18),
-                child: settings_icon.SettingsIcon(animationController.value),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//     return Align(
+//       alignment: AlignmentDirectional.topEnd,
+//       child: Semantics(
+//         sortKey: const OrdinalSortKey(1),
+//         button: true,
+//         enabled: true,
+//         label: _settingsSemanticLabel(isSettingsOpenNotifier.value, context),
+//         child: SizedBox(
+//           width: _settingsButtonWidth,
+//           height: isDesktop
+//               ? _settingsButtonHeightDesktop
+//               : _settingsButtonHeightMobile + safeAreaTopPadding,
+//           child: Material(
+//             borderRadius: const BorderRadiusDirectional.only(
+//               bottomStart: Radius.circular(10),
+//             ),
+//             color:
+//                 isSettingsOpenNotifier.value & !animationController.isAnimating
+//                     ? Colors.transparent
+//                     : Theme.of(context).colorScheme.secondaryContainer,
+//             clipBehavior: Clip.antiAlias,
+//             child: InkWell(
+//               onTap: () {
+//                 toggleSettings();
+//                 SemanticsService.announce(
+//                   _settingsSemanticLabel(isSettingsOpenNotifier.value, context),
+//                   GalleryOptions.of(context).resolvedTextDirection()!,
+//                 );
+//               },
+//               child: Padding(
+//                 padding: const EdgeInsetsDirectional.only(start: 3, end: 18),
+//                 child: settings_icon.SettingsIcon(animationController.value),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class _LogoutIcon extends AnimatedWidget {
   const _LogoutIcon({
@@ -621,7 +625,7 @@ class _LogoutIcon extends AnimatedWidget {
     final safeAreaTopPadding = MediaQuery.of(context).padding.top;
 
     return Container(
-      margin: const EdgeInsetsDirectional.only(end: 80),
+      margin: const EdgeInsetsDirectional.only(end: 30),
       child: Align(
         alignment: AlignmentDirectional.topEnd,
         child: Semantics(
@@ -693,7 +697,7 @@ class _ProfileIcon extends AnimatedWidget {
     final safeAreaTopPadding = MediaQuery.of(context).padding.top;
 
     return Container(
-      margin: const EdgeInsetsDirectional.only(end: 160),
+      margin: const EdgeInsetsDirectional.only(end: 100),
       child: Align(
         alignment: AlignmentDirectional.topEnd,
         child: Semantics(

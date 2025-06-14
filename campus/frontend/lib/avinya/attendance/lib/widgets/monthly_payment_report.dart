@@ -16,18 +16,6 @@ class MonthlyPaymentReport extends StatefulWidget {
     Key? key,
     required this.title,
   }) : super(key: key);
-  //final Function(DateTime, DateTime) updateDateRangeForExcel;
-  // final Function(int, int) onYearMonthSelected;
-  //final List<String?> classes;
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -41,11 +29,9 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   List<Person> _fetchedStudentList = [];
   Organization? _fetchedOrganization;
   bool _isFetching = true;
+  bool _isFetchingClassPaymentData = false;
   int organization_id = 0;
   double? MonthlyPayment = 0.00;
-  // double? DailyPayment = 0.00;
-
-  //calendar specific variables
   DateTime? _selectedDay;
   DateTime? _selected = DateTime.now();
   late DateTime firstDateOfMonth;
@@ -92,17 +78,23 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
     firstDateOfMonth = DateTime(today.year, today.month, 1);
     lastDateOfMonth =
         DateTime(today.year, today.month + 1, 1).subtract(Duration(days: 1));
-    _fetchBatchData = _loadBatchData();
-    activityId = campusAppsPortalInstance.activityIds['homeroom']!;
-    // selectedYearAndMonth(_year, _month);
     organization_id =
         campusAppsPortalInstance.getUserPerson().organization!.id!;
+    _fetchBatchData = _loadBatchData();
+
+    activityId = campusAppsPortalInstance.activityIds['homeroom']!;
   }
 
   Future<List<Organization>> _loadBatchData() async {
     _batchData = await fetchActiveOrganizationsByAvinyaType(86);
     _selectedOrganizationValue = _batchData.isNotEmpty ? _batchData.last : null;
+    if (_selectedOrganizationValue != null) {
+      _loadInitialData();
+    }
+    return _batchData;
+  }
 
+  void _loadInitialData() async {
     if (_selectedOrganizationValue != null) {
       int orgId = _selectedOrganizationValue!.id!;
       _fetchedOrganization = await fetchOrganization(orgId);
@@ -127,7 +119,6 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
         this._isFetching = false;
       });
     }
-    return _batchData;
   }
 
   Future<void> _fetchLeaveDates(int year, int month) async {
@@ -143,7 +134,6 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
       setState(() {
         if (fetchedDates.isNotEmpty) {
           _dailyAmount = fetchedDates.first.dailyAmount;
-          // MonthlyPayment = DailyPayment * fetchedDates.length;
         } else {
           _dailyAmount = 0.00;
         }
@@ -190,28 +180,26 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
 
       // Pass the calculated dates to updateDateRange
       updateDateRange(_rangeStart, _rangeEnd);
-
       setState(() {
+        final startDate = _rangeStart ?? _selectedDay;
+        final endDate = _rangeEnd ?? _selectedDay;
+        final formatter = DateFormat('MMM d, yyyy');
+        final formattedStartDate = formatter.format(startDate!);
+        final formattedEndDate = formatter.format(endDate!);
+        this.formattedStartDate = formattedStartDate;
+        this.formattedEndDate = formattedEndDate;
+        if (this._selectedValue != null) {
+          refreshState(this._selectedValue);
+        }
         _selected = selected;
       });
-      //widget.onYearMonthSelected(selected.year, selected.month);
       selectedYearAndMonth(selected.year, selected.month);
     }
   }
 
   void updateDateRange(_rangeStart, _rangeEnd) async {
-    //widget.updateDateRangeForExcel(_rangeStart, _rangeEnd);
-    // int? parentOrgId =
-    //     campusAppsPortalInstance.getUserPerson().organization!.id;
     _fetchLeaveDates(_rangeStart.year, _rangeStart.month);
 
-    // if (_fetchedOrganization != null) {
-    //   _fetchedAttendance = await getClassActivityAttendanceReportForPayment(
-    //       this._fetchedOrganization!.id!,
-    //       activityId,
-    //       DateFormat('yyyy-MM-dd').format(_rangeStart),
-    //       DateFormat('yyyy-MM-dd').format(_rangeEnd));
-    // }
     if (_selectedOrganizationValue != null) {
       setState(() {
         _isFetching = true; // Set _isFetching to true before starting the fetch
@@ -230,22 +218,12 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
         final fetchedStudentList =
             await fetchStudentListByBatchId(_selectedOrganizationValue!.id!);
         setState(() {
-          final startDate = _rangeStart ?? _selectedDay;
-          final endDate = _rangeEnd ?? _selectedDay;
-          final formatter = DateFormat('MMM d, yyyy');
-          final formattedStartDate = formatter.format(startDate!);
-          final formattedEndDate = formatter.format(endDate!);
-          this.formattedStartDate = formattedStartDate;
-          this.formattedEndDate = formattedEndDate;
           this._fetchedStudentList = fetchedStudentList;
           this._fetchedExcelReportData = _fetchedExcelReportData;
           _fetchedAttendance;
           MonthlyPayment;
           _calendarMetadata;
           _isFetching = false;
-          if (this._selectedValue != null) {
-            refreshState(this._selectedValue);
-          }
         });
       } catch (error) {
         // Handle any errors that occur during the fetch
@@ -259,12 +237,12 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
 
   void refreshState(Organization? newValue) async {
     setState(() {
-      _isFetching = true; // Set _isFetching to true before starting the fetch
+      _isFetchingClassPaymentData = true;
     });
     var cols =
         columnNames.map((label) => DataColumn(label: Text(label!))).toList();
     _selectedValue = newValue!;
-    // print(newValue.id);
+
     _fetchedOrganization = await fetchOrganization(newValue.id!);
 
     _fetchedAttendance = await getClassActivityAttendanceReportForPayment(
@@ -294,7 +272,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
     columnNames.insert(columnNames.length, "Present Count");
     columnNames.insert(columnNames.length, "Absent Count");
     columnNames.insert(columnNames.length, "Student Payment Rs.");
-    // columnNames.insert(columnNames.length, "Phone Payment Rs.");
+
     cols = columnNames.map((label) => DataColumn(label: Text(label!))).toList();
     print(cols.length);
     if (_fetchedAttendance.length == 0)
@@ -312,7 +290,8 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
 
     setState(() {
       _fetchedOrganization;
-      this._isFetching = false;
+      _fetchedAttendance;
+      this._isFetchingClassPaymentData = false;
       _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
           updateSelected, _dailyAmount);
     });
@@ -335,13 +314,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                   children: [
                     SizedBox(width: 20),
                     Row(
-                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        // for (var org in campusAppsPortalInstance
-                        //     .getUserPerson()
-                        //     .organization!
-                        //     .child_organizations)
-                        // create a text widget with some padding
                         SizedBox(width: 5),
                         Text('Select a Batch:'),
                         SizedBox(width: 5),
@@ -392,6 +365,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                   _fetchedOrganizations = _fetchedOrganization
                                           ?.child_organizations ??
                                       [];
+                                  _selectedValue = null;
 
                                   // Calculate the start and end dates of the selected month
                                   final _rangeStart = DateTime(_year, _month,
@@ -423,9 +397,8 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                           _selectedOrganizationValue!.id!);
                                   setState(() {
                                     _fetchedOrganizations;
-                                    _selectedValue = null;
-                                    _selectedValue;
                                     _selectedOrganizationValue = newValue;
+                                    _selectedValue;
                                     MonthlyPayment;
                                     _calendarMetadata;
                                     this._fetchedStudentList =
@@ -454,25 +427,32 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                           (Organization? newValue) async {
                                         _selectedValue = newValue!;
                                         print(newValue.id);
+
                                         setState(() {
-                                          _isFetching = true;
+                                          _isFetchingClassPaymentData = true;
                                         });
                                         _fetchedOrganization =
                                             await fetchOrganization(
                                                 newValue.id!);
 
+                                        // Calculate the start and end dates of the selected month
+                                        final _rangeStart = DateTime(
+                                            _year,
+                                            _month,
+                                            1); // First day of the month
+                                        final _rangeEnd = DateTime(
+                                            _year,
+                                            _month + 1,
+                                            0); // Last day of the month
+
                                         _fetchedAttendance =
                                             await getClassActivityAttendanceReportForPayment(
                                                 _fetchedOrganization!.id!,
                                                 activityId,
-                                                DateFormat('yyyy-MM-dd').format(
-                                                    DateFormat('MMM d, yyyy')
-                                                        .parse(this
-                                                            .formattedStartDate)),
-                                                DateFormat('yyyy-MM-dd').format(
-                                                    DateFormat('MMM d, yyyy')
-                                                        .parse(this
-                                                            .formattedEndDate)));
+                                                DateFormat('yyyy-MM-dd')
+                                                    .format(_rangeStart),
+                                                DateFormat('yyyy-MM-dd')
+                                                    .format(_rangeEnd));
                                         if (_fetchedAttendance.length > 0) {
                                           // Add null check here
                                           // Process attendance data here
@@ -502,8 +482,6 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                             columnNames.length, "Absent Count");
                                         columnNames.insert(columnNames.length,
                                             "Student Payment Rs.");
-                                        // columnNames.insert(columnNames.length,
-                                        //     "Phone Payment Rs.");
                                         cols = columnNames
                                             .map((label) =>
                                                 DataColumn(label: Text(label!)))
@@ -534,7 +512,6 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                           }
                                         }
                                         setState(() {
-                                          _isFetching = false;
                                           _fetchedOrganization;
                                           _data = MyData(
                                               _fetchedAttendance,
@@ -542,6 +519,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                               _fetchedOrganization,
                                               updateSelected,
                                               _dailyAmount);
+                                          _isFetchingClassPaymentData = false;
                                         });
                                       },
                                       items: _fetchedOrganizations
@@ -577,13 +555,11 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                       ),
                                     )).then((value) {
                                   setState(() {
-                                    _isFetching = true;
+                                    _isFetchingClassPaymentData = true;
                                   });
-
                                   _fetchLeaveDates(_year, _month);
-
                                   setState(() {
-                                    _isFetching = false;
+                                    _isFetchingClassPaymentData = false;
                                   });
                                 });
                               },
@@ -678,7 +654,6 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                               const SizedBox(height: 5),
                               Text(
                                 'Rs. ${MonthlyPayment}',
-                                // 'Rs.10000.00',
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.normal,
@@ -724,7 +699,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    if (_isFetching)
+                    if (_isFetchingClassPaymentData)
                       Container(
                         margin: EdgeInsets.only(top: 180),
                         child: SpinKitCircle(
@@ -744,7 +719,6 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                           showCheckboxColumn: false,
                           source: _data,
                           columns: cols,
-                          // header: const Center(child: Text('Daily Attendance')),
                           columnSpacing: 100,
                           horizontalMargin: 60,
                           rowsPerPage: 22,
@@ -800,7 +774,6 @@ class MyData extends DataTableSource {
       );
       cells[0] = DataCell(Text(''));
       cells[1] = DataCell(Text(''));
-      // cells[columnNames.length - 4] = DataCell(Text(''));
       cells[columnNames.length - 3] = DataCell(Text(''));
       cells[columnNames.length - 2] = DataCell(Text(''));
       cells[columnNames.length - 1] = DataCell(Text(''));
@@ -808,7 +781,6 @@ class MyData extends DataTableSource {
       for (final date in columnNames) {
         if (columnNames.indexOf(date) == 0 ||
             columnNames.indexOf(date) == 1 ||
-            // columnNames.indexOf(date) == columnNames.length - 4 ||
             columnNames.indexOf(date) == columnNames.length - 3 ||
             columnNames.indexOf(date) == columnNames.length - 2 ||
             columnNames.indexOf(date) == columnNames.length - 1) {
@@ -895,16 +867,6 @@ class MyData extends DataTableSource {
               ),
               '0')));
 
-      // cells[columnNames.length - 1] = DataCell(Container(
-      //     alignment: Alignment.center,
-      //     child: Text(
-      //         style: TextStyle(
-      //           color: Color.fromARGB(255, 14, 72, 90),
-      //           fontSize: 16,
-      //           fontWeight: FontWeight.bold,
-      //         ),
-      //         '0')));
-
       int presentCount = 0;
       for (final attendance in _fetchedAttendance) {
         if (attendance.person_id == person.id) {
@@ -949,15 +911,6 @@ class MyData extends DataTableSource {
                     fontWeight: FontWeight.bold,
                   ),
                   studentPayment.toDouble().toStringAsFixed(2))));
-          // cells[columnNames.length - 1] = DataCell(Container(
-          //     alignment: Alignment.center,
-          //     child: Text(
-          //         style: TextStyle(
-          //           color: Color.fromARGB(255, 14, 72, 90),
-          //           fontSize: 16,
-          //           fontWeight: FontWeight.bold,
-          //         ),
-          //         studentPayment.toDouble().toStringAsFixed(2))));
         }
       }
 
