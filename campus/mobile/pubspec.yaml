@@ -51,11 +51,15 @@ dependencies:
   package_info_plus: ^4.1.0
   attendance:
     path: ./lib/avinya/attendance
+  alumni:
+    path: ./lib/avinya/alumni
   universal_html: ^2.2.3
   flutter_appauth: ^6.0.2
   flutter_secure_storage: ^8.0.0
   shared_preferences: ^2.2.0
   get: ^4.6.6
+  image_picker: ^1.0.8
+  oktoast: ^3.4.0
   # pcti_notes:
   #   path: ./lib/avinya/pcti_notes
   # pcti_notes_admin:

@@ -192,9 +192,9 @@ class CampusAppsPortal {
           campusAppsPortalInstance.getAlumniUserPerson();
       if (person.digital_id == null || person.digital_id != user_digital_id!) {
         person = await fetchPerson(user_digital_id!);
-        if (person.is_graduated != null && person.is_graduated!) {
+        //if (person.is_graduated != null && person.is_graduated!) {
           alumniPerson = await fetchAlumniPerson(person.id!);
-        }
+        //}
 
         userPerson = person;
         log('Campus Apps Portal - fetchPersonForUser: ' +
