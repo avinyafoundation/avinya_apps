@@ -12,6 +12,7 @@ import 'package:mobile/main.dart';
 import 'package:mobile/pages/home.dart';
 import 'package:mobile/pages/login.dart';
 import 'package:attendance/app.dart' deferred as attendance;
+import 'package:alumni/app.dart' deferred as alumni;
 // import 'package:pcti_notes_admin/app.dart' deferred as pcti_notes_admin;
 // import 'package:pcti_notes_admin/routes.dart' as pcti_notes_admin_routes;
 // import 'package:pcti_notes/app.dart' deferred as pcti_notes;
@@ -22,6 +23,7 @@ import 'package:attendance/app.dart' deferred as attendance;
 // import 'package:mobile/avinya/asset_admin/lib/routes.dart'
 //     as asset_admin_routes;
 import 'package:attendance/routes.dart' as routes;
+import 'package:alumni/app_routes/app_routes.dart' as alumni_routes;
 import 'package:mobile/pages/profile.dart' as profile;
 // import 'package:pcti_feedback/app.dart' deferred as feedback;
 // import 'package:pcti_feedback/routes.dart' as feedback_routes;
@@ -66,6 +68,15 @@ class RouteConfiguration {
             attendance.loadLibrary,
             () => attendance
                 .CampusAttendanceManagementSystem()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),
+    Path(
+      r'^' + alumni_routes.AppRoutes.alumniHome,
+      (context, match) => StudyWrapper(
+        hasBottomNavBar: true,
+        study: DeferredWidget(alumni.loadLibrary,
+            () => alumni.AlumniSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),
