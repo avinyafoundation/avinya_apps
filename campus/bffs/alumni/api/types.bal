@@ -215,6 +215,30 @@ public type ActivityParticipant record {
     string? start_date?;
 };
 
+public type JobPost record {
+    string? job_type?;
+    string? job_link?;
+    string? created?;
+    string? application_deadline?;
+    string? job_image_drive_id?;
+    string? record_type?;
+    string? uploaded_by?;
+    string? job_text?;
+    string? currentDateTime?;
+    int? id?;
+    int? job_category_id?;
+    string? job_post_image?;
+    string? job_category?;
+    string? updated?;
+};
+
+public type JobCategory record {
+    string? record_type?;
+    int? id?;
+    string? name?;
+    string? description?;
+};
+
 public type CreateAlumniResponse record {|
     map<json?> __extensions?;
     record {|
@@ -591,4 +615,78 @@ public type UploadPersonProfilePictureResponse record {|
         string? profile_picture_drive_id;
         string? uploaded_by;
     |}? upload_person_profile_picture;
+|};
+
+public type CreateJobPostResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? job_type;
+        string? job_text;
+        string? job_link;
+        string? job_image_drive_id;
+        int? job_category_id;
+        string? application_deadline;
+        string? uploaded_by;
+        string? created;
+        string? updated;
+    |}? create_job_post;
+|};
+
+public type UpdateJobPostResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? job_type;
+        string? job_text;
+        string? job_link;
+        string? job_image_drive_id;
+        int? job_category_id;
+        string? application_deadline;
+        string? uploaded_by;
+        string? created;
+        string? updated;
+    |}? update_job_post;
+|};
+
+public type GetJobPostResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? job_type;
+        string? job_text;
+        string? job_link;
+        string? job_image_drive_id;
+        string? job_post_image;
+        int? job_category_id;
+        string? application_deadline;
+        string? uploaded_by;
+        string? created;
+        string? updated;
+    |}? job_post;
+|};
+
+public type GetJobPostsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? job_type;
+        string? job_text;
+        string? job_link;
+        string? job_image_drive_id;
+        string? job_post_image;
+        int? job_category_id;
+        string? application_deadline;
+        string? uploaded_by;
+        string? created;
+        string? updated;
+    |}[] job_posts;
+|};
+
+public type GetJobCategoriesResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? name;
+    |}[] job_categories;
 |};
