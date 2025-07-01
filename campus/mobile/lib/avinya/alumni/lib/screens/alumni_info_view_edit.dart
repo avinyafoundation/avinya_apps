@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -10,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/data/campus_apps_portal.dart';
 import 'package:mobile/data/person.dart';
 import 'package:mobile/data/profile_picture.dart';
-import 'package:alumni/screens/bottom_navigation/bottom_navigation/controllers/bottom_navigation_controller.dart';
+import 'package:mobile/avinya/alumni/lib/screens/bottom_navigation/bottom_navigation/controllers/bottom_navigation_controller.dart';
 import 'package:alumni/screens/bottom_navigation/home/screens/my_alumni_dashboard.dart';
 import 'package:alumni/widgets/time_line_widget.dart';
 import 'package:sizer/sizer.dart';
@@ -242,7 +241,7 @@ class _MyAlumniInfoViweScreenState extends State<MyAlumniInfoViweScreen> {
     }
   }
 
-  void _deleteProfilePicture() async {
+  void _deleteProfilePicture(BuildContext dialogContext) async {
     if (AlumniUserPerson.alumni_profile_picture != null) {
       try {
         var result = await deleteProfilePictureById(
@@ -253,21 +252,21 @@ class _MyAlumniInfoViweScreenState extends State<MyAlumniInfoViweScreen> {
           setState(() {
             AlumniUserPerson.alumni_profile_picture = null;
           });
-          Navigator.pop(context, true);
+          Navigator.pop(dialogContext, true);
         } else {
-          Navigator.pop(context, false);
+          Navigator.pop(dialogContext, false);
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(dialogContext).showSnackBar(
           SnackBar(content: Text('Failed To Delete Profile Picture: $e')),
         );
-        Navigator.pop(context, false);
+        Navigator.pop(dialogContext, false);
       }
     }
   }
 
   @override
-  Widget build(BuildContexcosdantext) {
+  Widget build(BuildContext context) {
     String imagePath = AlumniUserPerson.sex == 'Male'
         ? 'assets/images/student_profile_male.jpg' // Replace with the male profile image path
         : 'assets/images/student_profile.jpeg'; // Default or female profile image
@@ -480,7 +479,7 @@ class _MyAlumniInfoViweScreenState extends State<MyAlumniInfoViweScreen> {
                                                               ),
                                                               TextButton(
                                                                 onPressed:
-                                                                    _deleteProfilePicture,
+                                                                  ()=>  _deleteProfilePicture(context),
                                                                 child: Text(
                                                                   'Remove',
                                                                   style: Theme.of(

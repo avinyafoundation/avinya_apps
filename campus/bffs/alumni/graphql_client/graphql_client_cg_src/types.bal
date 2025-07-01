@@ -338,12 +338,12 @@ public type JobPost record {
     string? record_type?;
     string? uploaded_by?;
     string? job_text?;
-    string? currentDateTime?;
     int? id?;
     int? job_category_id?;
     string? job_post_image?;
     string? job_category?;
     string? updated?;
+    string? current_date_time?;
 };
 
 public type MonthlyLeaveDates record {

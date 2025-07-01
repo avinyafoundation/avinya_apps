@@ -8149,7 +8149,7 @@
                             "defaultValue": null
                         },
                         {
-                            "name": "currentDateTime",
+                            "name": "current_date_time",
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "String",

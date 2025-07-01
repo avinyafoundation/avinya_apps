@@ -1,6 +1,7 @@
 
 class AppRoutes {
-  static const alumniDashboard = '/alumni_dashboard';
-  static const alumniAdmin = '/alumni_admin';
-
+  static const alumniDashboardRoute = '/alumni_dashboard';
+  static const alumniAdminRoute = '/alumni_admin';
+  static const createJobPostRoute = '/jobs';
+  static const jobPostListRoute = '/job_posts';
 }

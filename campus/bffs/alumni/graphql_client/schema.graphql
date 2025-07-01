@@ -760,7 +760,7 @@ input JobPost {
   job_link: String
   job_image_drive_id: String
   job_post_image: String
-  currentDateTime: String
+  current_date_time: String
   job_category: String
   job_category_id: Int
   application_deadline: String

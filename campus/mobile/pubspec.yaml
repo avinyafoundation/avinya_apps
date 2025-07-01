@@ -60,6 +60,9 @@ dependencies:
   get: ^4.6.6
   image_picker: ^1.0.8
   oktoast: ^3.4.0
+  photo_view: ^0.15.0
+  gallery_saver: ^2.2.0
+  mime: ^1.0.4
   # pcti_notes:
   #   path: ./lib/avinya/pcti_notes
   # pcti_notes_admin:
