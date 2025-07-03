@@ -27,10 +27,13 @@ class _AlumniSystemState extends State<AlumniSystem> {
   void initState() {
     /// Configure the parser with all of the app's allowed path templates.
     _routeParser = TemplateRouteParser(
-      allowedPaths: [AppRoutes.alumniDashboard, AppRoutes.alumniAdmin],
+      allowedPaths: [AppRoutes.alumniDashboardRoute, 
+                     AppRoutes.alumniAdminRoute,
+                     AppRoutes.createJobPostRoute,
+                     AppRoutes.jobPostListRoute],
       guard: _guard,
       // initialRoute: '/signin',
-      initialRoute: AppRoutes.alumniDashboard,
+      initialRoute: AppRoutes.alumniDashboardRoute,
     );
 
     _routeState = RouteState(_routeParser);
@@ -92,15 +95,25 @@ class _AlumniSystemState extends State<AlumniSystem> {
     final signedIn = await _auth.getSignedIn();
 
     final alumniDashboardReportRoute = ParsedRoute(
-        AppRoutes.alumniDashboard, AppRoutes.alumniDashboard, {}, {});
+        AppRoutes.alumniDashboardRoute, AppRoutes.alumniDashboardRoute, {}, {});
 
     final alumniAdminRoute =
-        ParsedRoute(AppRoutes.alumniAdmin, AppRoutes.alumniAdmin, {}, {});
+        ParsedRoute(AppRoutes.alumniAdminRoute, AppRoutes.alumniAdminRoute, {}, {});
+
+    final createJobPostRoute =
+        ParsedRoute(AppRoutes.createJobPostRoute, AppRoutes.createJobPostRoute, {}, {});
+    
+    final jobPostListRoute = ParsedRoute(
+        AppRoutes.jobPostListRoute, AppRoutes.jobPostListRoute, {}, {});
 
     if (signedIn && from == alumniDashboardReportRoute) {
       return alumniDashboardReportRoute;
     } else if (signedIn && from == alumniAdminRoute) {
       return alumniAdminRoute;
+    } else if (signedIn && from == createJobPostRoute){
+      return createJobPostRoute;
+    } else if (signedIn && from == jobPostListRoute){
+      return jobPostListRoute;
     }
     // } else if (signedIn && from == signInRoute) {
     //   ParsedRoute('/enrollment_dashboard', '/enrollment_dashboard', {}, {});
@@ -116,7 +129,7 @@ class _AlumniSystemState extends State<AlumniSystem> {
   void _handleAuthStateChanged() async {
     bool signedIn = await _auth.getSignedIn();
     if (!signedIn) {
-      _routeState.go(AppRoutes.alumniDashboard);
+      _routeState.go(AppRoutes.alumniDashboardRoute);
     }
   }
 
