@@ -164,4 +164,43 @@ public isolated client class GraphqlClient {
         json|error row_count = check responseData.delete_person_profile_picture_by_id;
         return row_count;
     }
+    remote isolated function createJobPost(JobPost job_post) returns CreateJobPostResponse|graphql:ClientError {
+        string query = string `mutation createJobPost($job_post:JobPost!) {create_job_post(job_post:$job_post) {id job_type job_text job_link job_image_drive_id job_category_id application_deadline uploaded_by created updated}}`;
+        map<anydata> variables = {"job_post": job_post};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <CreateJobPostResponse>check performDataBinding(graphqlResponse, CreateJobPostResponse);
+    }
+    remote isolated function updateJobPost(JobPost job_post) returns UpdateJobPostResponse|graphql:ClientError {
+        string query = string `mutation updateJobPost($job_post:JobPost!) {update_job_post(job_post:$job_post) {id job_type job_text job_link job_image_drive_id job_category_id application_deadline uploaded_by created updated}}`;
+        map<anydata> variables = {"job_post": job_post};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <UpdateJobPostResponse>check performDataBinding(graphqlResponse, UpdateJobPostResponse);
+    }
+    remote isolated function deleteJobPost(JobPost job_post) returns json|error {
+        string query = string `mutation deleteJobPost($job_post: JobPost!){delete_job_post(job_post:$job_post)}`;
+        map<anydata> variables = {"job_post": job_post};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        map<json> responseMap = <map<json>>graphqlResponse;
+        json responseData = responseMap.get("data");
+        json|error row_count = check responseData.delete_job_post;
+        return row_count;
+    }
+    remote isolated function getJobPost(int id) returns GetJobPostResponse|graphql:ClientError {
+        string query = string `query getJobPost($id:Int!) {job_post(id:$id) {id job_type job_text job_link job_image_drive_id job_post_image job_category_id application_deadline uploaded_by created updated}}`;
+        map<anydata> variables = {"id": id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetJobPostResponse>check performDataBinding(graphqlResponse, GetJobPostResponse);
+    }
+    remote isolated function getJobPosts(int offset, int result_limit) returns GetJobPostsResponse|graphql:ClientError {
+        string query = string `query getJobPosts($result_limit:Int!,$offset:Int!) {job_posts(result_limit:$result_limit,offset:$offset) {id job_type job_text job_link job_image_drive_id job_post_image job_category_id application_deadline uploaded_by created updated}}`;
+        map<anydata> variables = {"offset": offset, "result_limit": result_limit};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetJobPostsResponse>check performDataBinding(graphqlResponse, GetJobPostsResponse);
+    }
+    remote isolated function getJobCategories() returns GetJobCategoriesResponse|graphql:ClientError {
+        string query = string `query getJobCategories {job_categories {id name}}`;
+        map<anydata> variables = {};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetJobCategoriesResponse>check performDataBinding(graphqlResponse, GetJobCategoriesResponse);
+    }
 }

@@ -402,3 +402,72 @@ mutation uploadPersonProfilePicture($person_profile_picture:PersonProfilePicture
     uploaded_by
   }
 }
+
+mutation createJobPost($job_post: JobPost!) {
+  create_job_post(job_post: $job_post) {
+    id
+    job_type
+    job_text
+    job_link
+    job_image_drive_id
+    job_category_id
+    application_deadline
+    uploaded_by
+    created
+    updated
+  }
+}
+
+mutation updateJobPost($job_post: JobPost!) {
+  update_job_post(job_post: $job_post) {
+    id
+    job_type
+    job_text
+    job_link
+    job_image_drive_id
+    job_category_id
+    application_deadline
+    uploaded_by
+    created
+    updated
+  }
+}
+
+query getJobPost($id: Int!) {
+  job_post(id: $id) {
+    id
+    job_type
+    job_text
+    job_link
+    job_image_drive_id
+    job_post_image
+    job_category_id
+    application_deadline
+    uploaded_by
+    created
+    updated
+  }
+}
+
+query getJobPosts($result_limit: Int!, $offset: Int!) {
+  job_posts(result_limit: $result_limit, offset: $offset) {
+    id
+    job_type
+    job_text
+    job_link
+    job_image_drive_id
+    job_post_image
+    job_category_id
+    application_deadline
+    uploaded_by
+    created
+    updated
+  }
+}
+
+query getJobCategories {
+  job_categories {
+    id
+    name
+  }
+}
