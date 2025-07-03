@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:alumni/screens/bottom_navigation/bottom_navigation/controllers/bottom_navigation_controller.dart';
+import 'package:mobile/avinya/alumni/lib/screens/bottom_navigation/bottom_navigation/controllers/bottom_navigation_controller.dart';
 
 class NavigationMenu extends StatelessWidget {
   NavigationMenu({super.key});

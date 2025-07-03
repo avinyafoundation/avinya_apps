@@ -4,4 +4,4 @@
 
 import 'package:gallery/avinya/alumni/lib/app_routes/app_routes.dart';
 
-const String alumniRoute = AppRoutes.alumniDashboard;
+const String alumniRoute = AppRoutes.alumniDashboardRoute;
