@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'dart:developer';
 
-import 'package:dual_screen/dual_screen.dart';
+// import 'package:dual_screen/dual_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/data/campus_apps_portal.dart';
@@ -130,14 +130,14 @@ class RouteConfiguration {
     //   ),
     //   openInSecondScreen: true,
     // ),
-    Path(
-      r'^' + routes.profileRoute,
-      (context, match) => StudyWrapper(
-        study: DeferredWidget(attendance.loadLibrary,
-            () => profile.ProfileScreen()), // ignore: prefer_const_constructors
-      ),
-      openInSecondScreen: true,
-    ),
+    // Path(
+    //   r'^' + routes.profileRoute,
+    //   (context, match) => StudyWrapper(
+    //     study: DeferredWidget(attendance.loadLibrary,
+    //         () => profile.ProfileScreen()), // ignore: prefer_const_constructors
+    //   ),
+    //   openInSecondScreen: true,
+    // ),
     // Path(
     //   r'^' + consumable_routes.consumableRoute,
     //   (context, match) => StudyWrapper(
@@ -275,17 +275,17 @@ class TwoPanePageRoute<T> extends OverlayRoute<T> {
   @override
   Iterable<OverlayEntry> createOverlayEntries() sync* {
     yield OverlayEntry(builder: (context) {
-      final hinge = MediaQuery.of(context).hinge?.bounds;
-      if (hinge == null) {
+      //final hinge = MediaQuery.of(context).hinge?.bounds;
+      //if (hinge == null) {
         return builder.call(context);
-      } else {
-        return Positioned(
-            top: 0,
-            left: hinge.right,
-            right: 0,
-            bottom: 0,
-            child: builder.call(context));
-      }
+      // } else {
+      //   return Positioned(
+      //       top: 0,
+      //       left: hinge.right,
+      //       right: 0,
+      //       bottom: 0,
+      //       child: builder.call(context));
+      // }
     });
   }
 }

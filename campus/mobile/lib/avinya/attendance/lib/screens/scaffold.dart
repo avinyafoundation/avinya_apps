@@ -1,4 +1,4 @@
-import 'package:adaptive_navigation/adaptive_navigation.dart';
+// import 'package:adaptive_navigation/adaptive_navigation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/auth.dart';
@@ -425,23 +425,23 @@ class _SMSScaffoldState extends State<SMSScaffold> {
         )),
       ),
       body: const SMSScaffoldBody(),
-      persistentFooterButtons: [
-        new OutlinedButton(
-            child: Text(
-             'About',
-             style: TextStyle(
-                      color: Colors.deepPurpleAccent,
-                      fontSize: 12,
-                   ),
-              ),
-            onPressed: () {
-              showAboutDialog(
-                  context: context,
-                  applicationName: AppConfig.applicationName,
-                  applicationVersion: AppConfig.applicationVersion);
-            }),
-        new Text("© 2024, Avinya Foundation."),
-      ],
+      // persistentFooterButtons: [
+      //   new OutlinedButton(
+      //       child: Text(
+      //        'About',
+      //        style: TextStyle(
+      //                 color: Colors.deepPurpleAccent,
+      //                 fontSize: 12,
+      //              ),
+      //         ),
+      //       onPressed: () {
+      //         showAboutDialog(
+      //             context: context,
+      //             applicationName: AppConfig.applicationName,
+      //             applicationVersion: AppConfig.applicationVersion);
+      //       }),
+      //   new Text("© 2024, Avinya Foundation."),
+      //],
     );
   }
 }
