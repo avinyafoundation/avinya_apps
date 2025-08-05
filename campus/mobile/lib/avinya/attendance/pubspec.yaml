@@ -4,24 +4,22 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.17.0-0 <3.0.0"
+  sdk: '>=3.0.6 <4.0.0'
 
 dependencies:
-  adaptive_navigation: ^0.0.3
+  #adaptive_navigation: ^0.0.3
   collection: ^1.15.0
   cupertino_icons: ^1.0.2
   email_validator: ^2.1.17
   flutter:
     sdk: flutter
   flutter_appauth: ^6.0.2
-  http: ^0.13.5
-  intl: ^0.17.0
+  http: ^1.4.0
+  intl: ^0.20.2
   jwt_decoder: ^2.0.1
   mask_text_input_formatter: ^2.4.0
   path_to_regexp: ^0.4.0
-  quiver: ^3.1.0
   url_launcher: ^6.1.1
-  url_strategy: ^0.2.0
   mobile:
     path: ../../../
   window_size:
@@ -32,11 +30,9 @@ dependencies:
   excel: 2.0.4
   flutter_spinkit: ^5.0.0
   qr_flutter: ^4.0.0
-  qr_code_scanner: ^1.0.1
-  universal_html: ^2.2.3
 
 dev_dependencies:
-  flutter_lints: ^2.0.1
+  flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
   test: ^1.16.0
