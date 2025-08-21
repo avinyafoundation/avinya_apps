@@ -1,4 +1,4 @@
-import 'package:gallery/avinya/pcti_feedback/lib/screens/feedbacks.dart';
+
 import 'package:pcti_feedback/screens/evaluations.dart';
 import 'package:pcti_feedback/screens/pcti_activities.dart';
 import 'package:flutter/material.dart';
