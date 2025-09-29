@@ -192,9 +192,9 @@ class CampusAppsPortal {
           campusAppsPortalInstance.getAlumniUserPerson();
       if (person.digital_id == null || person.digital_id != user_digital_id!) {
         person = await fetchPerson(user_digital_id!);
-        if (person.is_graduated != null && person.is_graduated!) {
-          alumniPerson = await fetchAlumniPerson(person.id!);
-        }
+        //if (person.is_graduated != null && person.is_graduated!) {
+        //alumniPerson = await fetchAlumniPerson(person.id!);
+        //}
 
         userPerson = person;
         log('Campus Apps Portal - fetchPersonForUser: ' +
@@ -202,7 +202,7 @@ class CampusAppsPortal {
         print('Campus Apps Portal - fetchPersonForUser: ' +
             person.toJson().toString());
         campusAppsPortalInstance.setUserPerson(person);
-        campusAppsPortalInstance.setAlumniUserPerson(alumniPerson);
+        //campusAppsPortalInstance.setAlumniUserPerson(alumniPerson);
 
         if (person.digital_id != null) {
           isStudent = campusAppsPortalPersonMetaDataInstance
@@ -225,18 +225,19 @@ class CampusAppsPortal {
               .contains('Foundation');
           if (isSecurity || isTeacher || isFoundation || isStudent) {
             isGroupFetched = true;
+            print("=========Group fetched========:${isGroupFetched}");
           }
 
-          if (isStudent) {
-            DutyParticipant? dutyParticipant =
-                await fetchDutyParticipant(person.id!);
+          // if (isStudent) {
+          //   DutyParticipant? dutyParticipant =
+          //       await fetchDutyParticipant(person.id!);
 
-            if (dutyParticipant != null &&
-                (dutyParticipant.role == 'leader' ||
-                    dutyParticipant.role == 'assistant-leader')) {
-              campusAppsPortalInstance.setLeaderParticipant(dutyParticipant);
-            }
-          }
+          //   if (dutyParticipant != null &&
+          //       (dutyParticipant.role == 'leader' ||
+          //           dutyParticipant.role == 'assistant-leader')) {
+          //     campusAppsPortalInstance.setLeaderParticipant(dutyParticipant);
+          //   }
+          // }
         }
       }
     } catch (e) {

@@ -746,6 +746,43 @@ type InventoryData {
   updated: String
 }
 
+type JobCategoryData {
+  id: Int
+  name: String
+  description: String
+}
+
+input JobPost {
+  record_type: String = "job_post"
+  id: Int
+  job_type: String
+  job_text: String
+  job_link: String
+  job_image_drive_id: String
+  job_post_image: String
+  current_date_time: String
+  job_category: String
+  job_category_id: Int
+  application_deadline: String
+  uploaded_by: String
+  created: String
+  updated: String
+}
+
+type JobPostData {
+  id: Int
+  job_type: String
+  job_text: String
+  job_link: String
+  job_image_drive_id: String
+  job_category_id: Int
+  application_deadline: String
+  uploaded_by: String
+  job_post_image: String
+  created: String
+  updated: String
+}
+
 type LocalizedName {
   name_en: String
   name_ta: String
@@ -850,10 +887,13 @@ type Mutation {
   update_alumni_work_experience(alumni_work_experience: AlumniWorkExperience!): AlumniWorkExperienceData
   delete_alumni_education_qualification_by_id(id: Int): Int
   delete_alumni_work_experience_by_id(id: Int): Int
-  upload_alumni_picture(person_profile_picture: PersonProfilePicture!): PersonProfilePictureData
-  delete_alumni_picture_by_id(person_profile_picture: PersonProfilePicture!): Int
+  upload_person_profile_picture(person_profile_picture: PersonProfilePicture!): PersonProfilePictureData
+  delete_person_profile_picture_by_id(id: Int!): Int
   create_activity_participant(activity_participant: ActivityParticipant!): ActivityParticipantData
   create_activity_instance_evaluation(activity_instance_evaluation: ActivityInstanceEvaluation!): ActivityInstanceEvaluationData
+  create_job_post(job_post: JobPost!): JobPostData
+  update_job_post(job_post: JobPost!): JobPostData
+  delete_job_post(job_post: JobPost!): Int
 }
 
 input Organization {
@@ -945,6 +985,7 @@ input Person {
   created_by: Int
   updated_by: Int
   is_graduated: Boolean
+  profile_picture_folder_id: String
 }
 
 type PersonData {
@@ -991,21 +1032,30 @@ type PersonData {
   is_graduated: Boolean
   alumni_education_qualifications: [AlumniEducationQualificationData!]
   alumni_work_experience: [AlumniWorkExperienceData!]
+  profile_picture: PersonProfilePictureData
+  profile_picture_folder_id: String
 }
 
 input PersonProfilePicture {
-  record_type: String = "person_profile_picutres"
+  record_type: String = "person_profile_pictures"
   id: Int
   person_id: Int
-  organization_id: Int
-  picture_id: String
+  profile_picture_drive_id: String
   picture: String
+  nic_no: String
+  uploaded_by: String
+  created: String
+  updated: String
 }
 
 type PersonProfilePictureData {
   id: Int
   person_id: Int
-  picture_id: String
+  profile_picture_drive_id: String
+  uploaded_by: String
+  created: String
+  updated: String
+  picture: String
 }
 
 type PlaceData {
@@ -1153,11 +1203,13 @@ type Query {
   calendar_metadata_by_org_id(organization_id: Int!, batch_id: Int!): CalendarMetaData
   alumni_education_qualification_by_id(id: Int): AlumniEducationQualificationData
   alumni_work_experience_by_id(id: Int): AlumniWorkExperienceData
-  alumni_profile_pictures(person_id: Int!, page: Int!): [PersonProfilePictureData!]
   upcoming_events(person_id: Int): [ActivityInstanceData!]
   completed_events(person_id: Int): [ActivityInstanceData!]
   alumni_persons(parent_organization_id: Int): [PersonData!]
   alumni_summary(alumni_batch_id: Int): [AlumniData!]
+  job_post(id: Int): JobPostData
+  job_posts(result_limit: Int! = 4, offset: Int! = 0): [JobPostData!]
+  job_categories: [JobCategoryData!]
 }
 
 input ResourceAllocation {

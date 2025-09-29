@@ -28,11 +28,11 @@ class AddressTypeDetailsScreen extends StatelessWidget {
           children: [
             Text(
               addressType!.name!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
               addressType!.description!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
         ),

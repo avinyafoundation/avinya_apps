@@ -113,22 +113,22 @@ class _LatestConsumableDataState extends State<LatestConsumableData> {
             ),
           )
         else if (_fetchedLatestConsumableData.length > 0)
-          Container(
-            margin: EdgeInsets.only(left: 10.0, top: 20.0),
-            child: ScrollConfiguration(
-              behavior: ScrollConfiguration.of(context).copyWith(dragDevices: {
-                PointerDeviceKind.touch,
-                PointerDeviceKind.mouse,
-              }),
-              child: Container(
-                width: screenWidth * 0.95,
-                height: screenHeight * 1.8,
-                child: PaginatedDataTable(
-                  showCheckboxColumn: false,
-                  source: _data,
-                  columns: _buildDataColumns(),
-                  columnSpacing: 50,
-                  rowsPerPage: 20,
+          SingleChildScrollView(
+            child: Container(
+              margin: EdgeInsets.only(left: 10.0, top: 20.0),
+              child: ScrollConfiguration(
+                behavior: ScrollConfiguration.of(context).copyWith(dragDevices: {
+                  PointerDeviceKind.touch,
+                  PointerDeviceKind.mouse,
+                }),
+                child: Container(
+                  child: PaginatedDataTable(
+                    showCheckboxColumn: false,
+                    source: _data,
+                    columns: _buildDataColumns(),
+                    columnSpacing: 50,
+                    rowsPerPage: 20,
+                  ),
                 ),
               ),
             ),

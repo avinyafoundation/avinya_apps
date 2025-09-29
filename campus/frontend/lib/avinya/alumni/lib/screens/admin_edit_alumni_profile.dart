@@ -499,8 +499,8 @@ class _AdminEditAlumniProfileScreenState
       return 'Phone number is required';
     }
     final phoneRegex = RegExp(r'^[0-9]+$');
-    if (!phoneRegex.hasMatch(value) || value.length < 10) {
-      return 'Enter a valid phone number (at least 10 digits)';
+    if (!phoneRegex.hasMatch(value) || value.length < 9) {
+      return 'Enter a valid phone number (at least 9 digits)';
     }
     return null;
   }
@@ -646,7 +646,7 @@ class _AdminEditAlumniProfileScreenState
         children: [
           Text(
             label,
-            style: Theme.of(context).textTheme.bodyText1,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 5),
           TextFormField(
@@ -734,7 +734,7 @@ class _AdminEditAlumniProfileScreenState
                 ),
               ),
             ),
-            if (!isCurrentStudy)
+            if (!isCurrentWork)
               GestureDetector(
                 onTap: () => _selectDate(context, endDateController),
                 child: AbsorbPointer(

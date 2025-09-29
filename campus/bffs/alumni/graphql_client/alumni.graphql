@@ -21,7 +21,7 @@ mutation createAlumni(
           name_si
           name_ta
         }
-        district{
+        district {
           id
           name {
             name_en
@@ -31,6 +31,16 @@ mutation createAlumni(
       street_address
       phone
       id
+    }
+    alumni {
+      id
+      status
+      company_name
+      job_title
+      linkedin_id
+      facebook_id
+      instagram_id
+      tiktok_id
     }
     phone
     email
@@ -62,7 +72,7 @@ mutation updateAlumni(
           name_si
           name_ta
         }
-        district{
+        district {
           id
           name {
             name_en
@@ -72,6 +82,16 @@ mutation updateAlumni(
       street_address
       phone
       id
+    }
+    alumni {
+      id
+      status
+      company_name
+      job_title
+      linkedin_id
+      facebook_id
+      instagram_id
+      tiktok_id
     }
     phone
     email
@@ -255,6 +275,10 @@ query getAlumniPersonById($id: Int!) {
       start_date
       end_date
     }
+    profile_picture {
+      id
+      picture
+    }
   }
 }
 
@@ -370,3 +394,80 @@ query getAlumniSummary($alumni_batch_id: Int!) {
   }
 }
 
+mutation uploadPersonProfilePicture($person_profile_picture:PersonProfilePicture!) {
+  upload_person_profile_picture(person_profile_picture:$person_profile_picture) {
+    id
+    person_id
+    profile_picture_drive_id
+    uploaded_by
+  }
+}
+
+mutation createJobPost($job_post: JobPost!) {
+  create_job_post(job_post: $job_post) {
+    id
+    job_type
+    job_text
+    job_link
+    job_image_drive_id
+    job_category_id
+    application_deadline
+    uploaded_by
+    created
+    updated
+  }
+}
+
+mutation updateJobPost($job_post: JobPost!) {
+  update_job_post(job_post: $job_post) {
+    id
+    job_type
+    job_text
+    job_link
+    job_image_drive_id
+    job_category_id
+    application_deadline
+    uploaded_by
+    created
+    updated
+  }
+}
+
+query getJobPost($id: Int!) {
+  job_post(id: $id) {
+    id
+    job_type
+    job_text
+    job_link
+    job_image_drive_id
+    job_post_image
+    job_category_id
+    application_deadline
+    uploaded_by
+    created
+    updated
+  }
+}
+
+query getJobPosts($result_limit: Int!, $offset: Int!) {
+  job_posts(result_limit: $result_limit, offset: $offset) {
+    id
+    job_type
+    job_text
+    job_link
+    job_image_drive_id
+    job_post_image
+    job_category_id
+    application_deadline
+    uploaded_by
+    created
+    updated
+  }
+}
+
+query getJobCategories {
+  job_categories {
+    id
+    name
+  }
+}

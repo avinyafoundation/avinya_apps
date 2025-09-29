@@ -100,6 +100,7 @@ public type Person record {
     boolean? is_graduated?;
     int? mailing_address_id?;
     Alumni? alumni?;
+    string? profile_picture_folder_id?;
     string? id_no?;
     string? jwt_email?;
     string? bank_name?;
@@ -133,9 +134,12 @@ public type Person record {
 };
 
 public type PersonProfilePicture record {
-    int? organization_id?;
+    string? uploaded_by?;
+    string? nic_no?;
+    string? created?;
+    string? profile_picture_drive_id?;
     int? id?;
-    string? picture_id?;
+    string? updated?;
     string? record_type?;
     string? picture?;
     int? person_id?;
@@ -211,6 +215,30 @@ public type ActivityParticipant record {
     string? start_date?;
 };
 
+public type JobPost record {
+    string? job_type?;
+    string? job_link?;
+    string? created?;
+    string? application_deadline?;
+    string? job_image_drive_id?;
+    string? record_type?;
+    string? uploaded_by?;
+    string? job_text?;
+    int? id?;
+    int? job_category_id?;
+    string? job_post_image?;
+    string? job_category?;
+    string? updated?;
+    string? current_date_time?;
+};
+
+public type JobCategory record {
+    string? record_type?;
+    int? id?;
+    string? name?;
+    string? description?;
+};
+
 public type CreateAlumniResponse record {|
     map<json?> __extensions?;
     record {|
@@ -236,6 +264,16 @@ public type CreateAlumniResponse record {|
             int? phone;
             int? id;
         |}? mailing_address;
+        record {|
+            int? id;
+            string? status;
+            string? company_name;
+            string? job_title;
+            string? linkedin_id;
+            string? facebook_id;
+            string? instagram_id;
+            string? tiktok_id;
+        |}? alumni;
         int? phone;
         string? email;
         int? documents_id;
@@ -268,6 +306,16 @@ public type UpdateAlumniResponse record {|
             int? phone;
             int? id;
         |}? mailing_address;
+        record {|
+            int? id;
+            string? status;
+            string? company_name;
+            string? job_title;
+            string? linkedin_id;
+            string? facebook_id;
+            string? instagram_id;
+            string? tiktok_id;
+        |}? alumni;
         int? phone;
         string? email;
         int? documents_id;
@@ -441,6 +489,10 @@ public type GetAlumniPersonByIdResponse record {|
             string? start_date;
             string? end_date;
         |}[]? alumni_work_experience;
+        record {|
+            int? id;
+            string? picture;
+        |}? profile_picture;
     |}? person_by_id;
 |};
 
@@ -553,4 +605,88 @@ public type GetAlumniSummaryResponse record {|
         string? status;
         int? person_count;
     |}[] alumni_summary;
+|};
+
+public type UploadPersonProfilePictureResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        string? profile_picture_drive_id;
+        string? uploaded_by;
+    |}? upload_person_profile_picture;
+|};
+
+public type CreateJobPostResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? job_type;
+        string? job_text;
+        string? job_link;
+        string? job_image_drive_id;
+        int? job_category_id;
+        string? application_deadline;
+        string? uploaded_by;
+        string? created;
+        string? updated;
+    |}? create_job_post;
+|};
+
+public type UpdateJobPostResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? job_type;
+        string? job_text;
+        string? job_link;
+        string? job_image_drive_id;
+        int? job_category_id;
+        string? application_deadline;
+        string? uploaded_by;
+        string? created;
+        string? updated;
+    |}? update_job_post;
+|};
+
+public type GetJobPostResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? job_type;
+        string? job_text;
+        string? job_link;
+        string? job_image_drive_id;
+        string? job_post_image;
+        int? job_category_id;
+        string? application_deadline;
+        string? uploaded_by;
+        string? created;
+        string? updated;
+    |}? job_post;
+|};
+
+public type GetJobPostsResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? job_type;
+        string? job_text;
+        string? job_link;
+        string? job_image_drive_id;
+        string? job_post_image;
+        int? job_category_id;
+        string? application_deadline;
+        string? uploaded_by;
+        string? created;
+        string? updated;
+    |}[] job_posts;
+|};
+
+public type GetJobCategoriesResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? name;
+    |}[] job_categories;
 |};

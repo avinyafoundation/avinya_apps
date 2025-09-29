@@ -16,10 +16,69 @@ class SMSScaffold extends StatefulWidget {
 class _SMSScaffoldState extends State<SMSScaffold> {
   bool isAlumniDashboardSectionHovered = false;
   bool isAlumniAdminSectionHovered = false;
+  bool isJobPortalSectionHovered = false;
 
   @override
   Widget build(BuildContext context) {
     final routeState = RouteStateScope.of(context);
+
+    List<Material> jobPortalDestinations = [];
+
+    if (campusAppsPortalInstance.isTeacher ||
+        campusAppsPortalInstance.isFoundation) {
+      jobPortalDestinations = [
+        Material(
+          type: MaterialType.transparency,
+          child: Container(
+            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
+            child: ListTile(
+              hoverColor: Colors.white.withOpacity(0.3),
+              leading: Icon(Icons.post_add, color: Colors.white, size: 20.0),
+              title: Container(
+                margin: EdgeInsets.only(left: 12.0),
+                transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                child: Text(
+                  "Post a Job",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                routeState.go(AppRoutes.createJobPostRoute);
+              },
+            ),
+          ),
+        ),
+        Material(
+          type: MaterialType.transparency,
+          child: Container(
+            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
+            child: ListTile(
+              hoverColor: Colors.white.withOpacity(0.3),
+              leading: Icon(Icons.list_alt, color: Colors.white, size: 20.0),
+              title: Container(
+                margin: EdgeInsets.only(left: 12.0),
+                transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                child: Text(
+                  "Manage Job Posts",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                routeState.go(AppRoutes.jobPostListRoute);
+              },
+            ),
+          ),
+        ),
+      ];
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -119,7 +178,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                           ),
                           onTap: () {
                             Navigator.pop(context); // Close the drawer
-                            routeState.go(AppRoutes.alumniDashboard);
+                            routeState.go(AppRoutes.alumniDashboardRoute);
                           },
                         ),
                       ),
@@ -167,12 +226,61 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                           ),
                           onTap: () {
                             Navigator.pop(context); // Close the drawer
-                            routeState.go(AppRoutes.alumniAdmin);
+                            routeState.go(AppRoutes.alumniAdminRoute);
                           },
                         ),
                       ),
                     ),
                     // ),
+                  ),
+                ),
+                MouseRegion(
+                  onEnter: (_) {
+                    setState(() {
+                      isJobPortalSectionHovered = true;
+                    });
+                  },
+                  onExit: (_) {
+                    setState(() {
+                      isJobPortalSectionHovered = false;
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isJobPortalSectionHovered
+                          ? Colors.white.withOpacity(0.3)
+                          : null,
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    margin: EdgeInsets.all(8.0),
+                    child: ExpansionTile(
+                      trailing: Icon(Icons.keyboard_arrow_down, size: 20.0),
+                      backgroundColor: Colors.blueGrey[400],
+                      collapsedIconColor: Colors.white,
+                      iconColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      title: Container(
+                        margin: EdgeInsets.only(left: 12.0),
+                        transform: Matrix4.translationValues(-21, 0.0, 0.0),
+                        child: Text(
+                          "Career Center",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                      leading: Icon(
+                        Icons.work_outline,
+                        color: Colors.white,
+                        size: 20.0,
+                      ),
+                      //childrenPadding: EdgeInsets.only(left: 25.0),
+                      children: jobPortalDestinations,
+                    ),
+                    //),
                   ),
                 ),
             ],

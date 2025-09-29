@@ -196,6 +196,7 @@ query getPerson($id: String!) {
     documents_id
     alumni_id
     is_graduated
+    profile_picture_folder_id
   }
 }
 

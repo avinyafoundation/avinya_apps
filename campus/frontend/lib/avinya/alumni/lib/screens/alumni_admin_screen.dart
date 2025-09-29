@@ -16,7 +16,7 @@ class _AlumniAdminScreenState extends State<AlumniAdminScreen> {
       appBar: AppBar(
         title: Text("Admin - Alumni Managment",
             style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.blueGrey[400],
+        backgroundColor: Colors.blueGrey[300],
       ),
       body: SingleChildScrollView(
         child: Container(

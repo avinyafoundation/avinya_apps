@@ -1,6 +1,9 @@
 import ballerina/graphql;
 import ballerina/http;
 import ballerina/log;
+import ballerina/mime;
+import ballerina/io;
+import ballerina/lang.array;
 
 
 public function initClientConfig() returns ConnectionConfig {
@@ -368,5 +371,273 @@ service / on new http:Listener(9096) {
                 ":: Detail: " + getAlumniSummaryResponse.detail().toString());
         }
     }
+    
+    resource function post upload_person_profile_picture(http:Request req) returns PersonProfilePicture|ErrorDetail|error {
+        
+        PersonProfilePicture profile_picture = {};
+        PersonProfilePicture profile_picture_details = {};
+        int profile_picture_row_id = 0;
+        int person_id = 0;
+        string person_nic_no = "";
+        string profile_picture_uploaded_by = "";
 
+        if (req.getContentType().startsWith("multipart/form-data")) {
+
+            mime:Entity[] bodyParts = check req.getBodyParts();
+            string base64EncodedStringProfilePicture = "";
+
+            foreach var part in bodyParts {
+                mime:ContentDisposition contentDisposition = part.getContentDisposition();
+
+                if (contentDisposition.name == "profile_picture_details") {
+
+                    json profile_picture_details_in_json = check part.getJson();
+                    profile_picture_details = check profile_picture_details_in_json.cloneWithType(PersonProfilePicture);
+                    profile_picture_row_id = profile_picture_details?.id ?: 0;
+                    person_id = profile_picture_details?.person_id  ?:0;
+                    person_nic_no = profile_picture_details?.nic_no ?:"";
+                    profile_picture_uploaded_by = profile_picture_details?.uploaded_by ?:"";
+
+                } else if (contentDisposition.name == "profile_picture") {
+
+                    stream<byte[], io:Error?>|mime:ParserError str = part.getByteStream();
+
+                    if str is stream<byte[], io:Error?> {
+
+                        byte[] allBytes = []; // Initialize an empty byte array
+
+                        // Iterate through the stream and collect all chunks
+                        error? e = str.forEach(function(byte[] chunk) {
+                            array:push(allBytes, ...chunk); // Efficiently append all bytes from chunk
+                        });
+
+                        byte[] base64EncodedProfilePicture = <byte[]>(check mime:base64Encode(allBytes));
+                        base64EncodedStringProfilePicture = check string:fromBytes(base64EncodedProfilePicture);
+
+                    }
+                }
+
+            }
+
+            profile_picture = {
+                id: profile_picture_row_id,
+                person_id: person_id,
+                nic_no: person_nic_no,
+                picture: base64EncodedStringProfilePicture,
+                uploaded_by: profile_picture_uploaded_by
+            };
+
+        }
+
+        UploadPersonProfilePictureResponse|graphql:ClientError uploadPersonProfilePictureResponse = globalDataClient->uploadPersonProfilePicture(profile_picture);
+        if (uploadPersonProfilePictureResponse is UploadPersonProfilePictureResponse) {
+            PersonProfilePicture|error profile_picture_record = uploadPersonProfilePictureResponse.upload_person_profile_picture.cloneWithType(PersonProfilePicture);
+            if (profile_picture_record is PersonProfilePicture) {
+                return profile_picture_record;
+            } else {
+                log:printError("Error while processing Profile picture record received", profile_picture_record);
+                 return error("Error while processing Profile picture record received: " + profile_picture_record.message() + 
+                    ":: Detail: " + profile_picture_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating profile picture", uploadPersonProfilePictureResponse);
+            return error("Error while creating profile picture: " + uploadPersonProfilePictureResponse.message() + 
+                ":: Detail: " + uploadPersonProfilePictureResponse.detail().toString());
+        }
+    }
+    resource function delete person_profile_picture_by_id/[int id]() returns json|error {
+        json|error delete_count = globalDataClient->deletePersonProfilePictureById(id);
+        return  delete_count;
+    }
+
+    resource function post create_job_post(http:Request req) returns JobPost|error {
+
+        JobPost job_post_details = {};
+
+        if (req.getContentType().startsWith("multipart/form-data")) {
+
+            mime:Entity[] bodyParts = check req.getBodyParts();
+            //string base64EncodedStringProfilePicture = "";
+            string base64EncodedStringJobPostPicture = "";
+
+
+            foreach var part in bodyParts {
+                mime:ContentDisposition contentDisposition = part.getContentDisposition();
+
+                if (contentDisposition.name == "job_post_details") {
+
+                    json job_post_details_in_json = check part.getJson();
+                    job_post_details = check job_post_details_in_json.cloneWithType(JobPost);
+
+                } else if (contentDisposition.name == "job_post_picture") {
+
+                    stream<byte[], io:Error?>|mime:ParserError str = part.getByteStream();
+
+                    if str is stream<byte[], io:Error?> {
+
+                        byte[] allBytes = []; // Initialize an empty byte array
+
+                        // Iterate through the stream and collect all chunks
+                        error? e = str.forEach(function(byte[] chunk) {
+                            array:push(allBytes, ...chunk); // Efficiently append all bytes from chunk
+                        });
+
+                        byte[] base64EncodedJobPostPicture = <byte[]>(check mime:base64Encode(allBytes));
+                        base64EncodedStringJobPostPicture = check string:fromBytes(base64EncodedJobPostPicture);
+                        job_post_details.job_post_image = base64EncodedStringJobPostPicture;
+                        // byte[] base64EncodedProfilePicture = <byte[]>(check mime:base64Encode(allBytes));
+                        // base64EncodedStringProfilePicture = check string:fromBytes(base64EncodedProfilePicture);
+
+                    }
+                }
+
+            }
+        }
+        CreateJobPostResponse|graphql:ClientError createJobPostResponse = globalDataClient->createJobPost(job_post_details);
+        if (createJobPostResponse is CreateJobPostResponse) {
+            JobPost|error job_post_record = createJobPostResponse.create_job_post.cloneWithType(JobPost);
+            if (job_post_record is JobPost) {
+                return job_post_record;
+            } else {
+                log:printError("Error while processing Profile picture record received", job_post_record);
+                 return error("Error while processing Profile picture record received: " + job_post_record.message() + 
+                    ":: Detail: " + job_post_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating profile picture", createJobPostResponse);
+            return error("Error while creating profile picture: " + createJobPostResponse.message() + 
+                ":: Detail: " + createJobPostResponse.detail().toString());
+        }
+    }
+
+    resource function put update_job_post(http:Request req) returns JobPost|error {
+
+        JobPost update_job_post_details = {};
+
+        if (req.getContentType().startsWith("multipart/form-data")) {
+
+            mime:Entity[] bodyParts = check req.getBodyParts();
+            //string base64EncodedStringProfilePicture = "";
+            string base64EncodedStringJobPostPicture = "";
+
+
+            foreach var part in bodyParts {
+                mime:ContentDisposition contentDisposition = part.getContentDisposition();
+
+                if (contentDisposition.name == "job_post_details") {
+
+                    json job_post_details_in_json = check part.getJson();
+                    update_job_post_details = check job_post_details_in_json.cloneWithType(JobPost);
+
+                } else if (contentDisposition.name == "job_post_picture") {
+
+                    stream<byte[], io:Error?>|mime:ParserError str = part.getByteStream();
+
+                    if str is stream<byte[], io:Error?> {
+
+                        byte[] allBytes = []; // Initialize an empty byte array
+
+                        // Iterate through the stream and collect all chunks
+                        error? e = str.forEach(function(byte[] chunk) {
+                            array:push(allBytes, ...chunk); // Efficiently append all bytes from chunk
+                        });
+
+                        byte[] base64EncodedJobPostPicture = <byte[]>(check mime:base64Encode(allBytes));
+                        base64EncodedStringJobPostPicture = check string:fromBytes(base64EncodedJobPostPicture);
+                        update_job_post_details.job_post_image = base64EncodedStringJobPostPicture;
+                        // byte[] base64EncodedProfilePicture = <byte[]>(check mime:base64Encode(allBytes));
+                        // base64EncodedStringProfilePicture = check string:fromBytes(base64EncodedProfilePicture);
+
+                    }
+                }
+
+            }
+        }
+        UpdateJobPostResponse|graphql:ClientError updateJobPostResponse = globalDataClient->updateJobPost(update_job_post_details);
+        if (updateJobPostResponse is UpdateJobPostResponse) {
+            JobPost|error job_post_record = updateJobPostResponse.update_job_post.cloneWithType(JobPost);
+            if (job_post_record is JobPost) {
+                return job_post_record;
+            } else {
+                log:printError("Error while processing Profile picture record received", job_post_record);
+                 return error("Error while processing Profile picture record received: " + job_post_record.message() + 
+                    ":: Detail: " + job_post_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating profile picture", updateJobPostResponse);
+            return error("Error while creating profile picture: " + updateJobPostResponse.message() + 
+                ":: Detail: " + updateJobPostResponse.detail().toString());
+        }
+    }
+
+    resource function delete job_post(@http:Payload JobPost jobPost) returns json|error {
+        json|error delete_count = globalDataClient->deleteJobPost(jobPost);
+        return  delete_count;
+    }
+
+    resource function get job_post/[int id]() returns JobPost|error {
+        GetJobPostResponse|graphql:ClientError getJobPostResponse = globalDataClient->getJobPost(id);
+        if (getJobPostResponse is GetJobPostResponse) {
+            JobPost|error job_post_record = getJobPostResponse.job_post.cloneWithType(JobPost);
+            if (job_post_record is JobPost) {
+                return job_post_record;
+            } else {
+                log:printError("Error while processing Application record received", job_post_record);
+                return error("Error while processing Application record received: " + job_post_record.message() +
+                    ":: Detail: " + job_post_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while creating application", getJobPostResponse);
+            return error("Error while creating application: " + getJobPostResponse.message() +
+                ":: Detail: " + getJobPostResponse.detail().toString());
+        }
+    }
+
+    resource function get job_posts/[int result_limit]/[int offset]() returns JobPost[]|error {
+        GetJobPostsResponse|graphql:ClientError getJobPostsResponse = globalDataClient->getJobPosts(offset,result_limit);
+        if (getJobPostsResponse is GetJobPostsResponse) {
+            JobPost[] job_posts_data = [];
+            foreach var job_post_data_record in getJobPostsResponse.job_posts {
+                JobPost|error job_data_record = job_post_data_record.cloneWithType(JobPost);
+                if (job_data_record is JobPost) {
+                    job_posts_data.push(job_data_record);
+                } else {
+                    log:printError("Error while processing Application record received", job_data_record);
+                    return error("Error while processing Application record received: " + job_data_record.message() +
+                        ":: Detail: " + job_data_record.detail().toString());
+                }
+            }
+
+            return job_posts_data;
+
+        } else {
+            log:printError("Error while getting application", getJobPostsResponse);
+            return error("Error while getting application: " + getJobPostsResponse.message() +
+                ":: Detail: " + getJobPostsResponse.detail().toString());
+        }
+    }
+    
+    resource function get job_categories() returns JobCategory[]|error {
+        GetJobCategoriesResponse|graphql:ClientError getJobCategoriesResponse = globalDataClient->getJobCategories();
+        if (getJobCategoriesResponse is GetJobCategoriesResponse) {
+            JobCategory[] jobCategoriesData = [];
+            foreach var jobCategory in getJobCategoriesResponse.job_categories {
+                JobCategory|error jobCategoryData = jobCategory.cloneWithType(JobCategory);
+                if (jobCategoryData is JobCategory) {
+                    jobCategoriesData.push(jobCategoryData);
+                } else {
+                    log:printError("Error while processing Application record received", jobCategoryData);
+                    return error("Error while processing Application record received: " + jobCategoryData.message() +
+                        ":: Detail: " + jobCategoryData.detail().toString());
+                }
+            }
+
+            return jobCategoriesData;
+
+        } else {
+            log:printError("Error while getting application", getJobCategoriesResponse);
+            return error("Error while getting application: " + getJobCategoriesResponse.message() +
+                ":: Detail: " + getJobCategoriesResponse.detail().toString());
+        }
+    }
 }

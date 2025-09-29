@@ -4,6 +4,7 @@ import 'package:flutter/src/material/data_table.dart';
 import 'package:mobile/data/avinya_type.dart';
 import 'package:mobile/data/address.dart';
 import 'package:http/http.dart' as http;
+import 'package:mobile/data/profile_picture.dart';
 import 'dart:convert';
 
 import '../config/app_config.dart';
@@ -291,7 +292,7 @@ class AlumniPerson {
   List<EducationQualifications>? alumni_education_qualifications;
   // EducationQualifications? alumni_education_qualifications;
   Alumni? alumni;
-
+  ProfilePicture? alumni_profile_picture;
   // var alumni_work_experience;
 
   AlumniPerson(
@@ -333,7 +334,9 @@ class AlumniPerson {
       this.document_id,
       this.alumni_education_qualifications,
       this.alumni_work_experience,
-      this.alumni});
+      this.alumni,
+      this.alumni_profile_picture
+      });
 
   factory AlumniPerson.fromJson(Map<String, dynamic> json) {
     return AlumniPerson(
@@ -375,7 +378,6 @@ class AlumniPerson {
       created: json['created'],
       updated: json['updated'],
       alumni_id: json['alumni_id'],
-
       // alumni_work_experience: json['alumni_work_experience']
       //     ?.map<WorkExperience>(
       //         (alumni_json) => WorkExperience.fromJson(alumni_json))
@@ -400,6 +402,7 @@ class AlumniPerson {
               : [],
       is_graduated: json['is_graduated'],
       document_id: json['document_id'],
+      alumni_profile_picture: ProfilePicture.fromJson(json['profile_picture'] != null ? json['profile_picture'] : {}),
     );
   }
 
@@ -454,6 +457,7 @@ class AlumniPerson {
         if (is_graduated != null) 'is_graduated': is_graduated,
         if (document_id != null) 'document_id': document_id,
         if (updated != null) 'updated': updated,
+        if (alumni_profile_picture != null) 'alumni_profile_picture' : alumni_profile_picture
       };
 }
 
@@ -921,8 +925,9 @@ Future<AlumniPerson> createAlumniPerson(
     // var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
     AlumniPerson AlumniUserPerson =
         AlumniPerson.fromJson(json.decode(response.body));
+    print("Response Alumni person:${jsonEncode(AlumniUserPerson.toJson())}");
     AlumniPerson person2 = AlumniPerson(
-      id: null,
+      id: AlumniUserPerson.id,
       full_name: AlumniUserPerson.full_name,
       email: AlumniUserPerson.email,
       phone: AlumniUserPerson.phone,
@@ -937,7 +942,7 @@ Future<AlumniPerson> createAlumniPerson(
             name_en: AlumniUserPerson.mailing_address?.city?.name?.name_en,
           ),
           district:
-              District(id: selectedDistrictId, name: Name(name_en: "Kalutara")),
+              District(id: AlumniUserPerson.mailing_address?.city?.district?.id, name: Name(name_en: "Kalutara")),
           latitude: AlumniUserPerson.mailing_address?.city?.latitude ?? 0.0,
           longitude: AlumniUserPerson.mailing_address?.city?.longitude ?? 0.0,
         ),
@@ -955,6 +960,7 @@ Future<AlumniPerson> createAlumniPerson(
       ),
       is_graduated: null,
     );
+    print("After Assign Alumni person:${jsonEncode(person2.toJson())}");
     return person2;
   } else {
     log(response.body + " Status code =" + response.statusCode.toString());
@@ -992,7 +998,7 @@ Future<AlumniPerson> updateAlumniPerson(
             name_en: AlumniUserPerson.mailing_address?.city?.name?.name_en,
           ),
           district:
-              District(id: selectedDistrictId, name: Name(name_en: "Kalutara")),
+              District(id: AlumniUserPerson.mailing_address?.city?.district?.id, name: Name(name_en: "Kalutara")),
           latitude: AlumniUserPerson.mailing_address?.city?.latitude ?? 0.0,
           longitude: AlumniUserPerson.mailing_address?.city?.longitude ?? 0.0,
         ),
