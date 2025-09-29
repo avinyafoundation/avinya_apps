@@ -646,7 +646,7 @@ class _AdminEditAlumniProfileScreenState
         children: [
           Text(
             label,
-            style: Theme.of(context).textTheme.bodyText1,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 5),
           TextFormField(

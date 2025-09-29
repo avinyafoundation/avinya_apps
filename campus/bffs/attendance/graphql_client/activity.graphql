@@ -400,18 +400,21 @@ query getDailyAttendanceSummaryReport($organization_id: Int!,$avinya_type_id: In
     }      
 }
 
-query getOrganizationsByAvinyaType($avinya_type: Int!) {
-    organizations_by_avinya_type(avinya_type:$avinya_type) {   
-        id
-        name{
-            name_en
-        }
-        description
-        organization_metadata{
-            key_name
-            value
-        }
+query getOrganizationsByAvinyaTypeAndStatus($avinya_type: Int, $active: Int) {
+  organizations_by_avinya_type_and_status(
+    avinya_type: $avinya_type
+    active: $active
+  ) {
+    id
+    name {
+      name_en
     }
+    description
+    organization_metadata {
+      key_name
+      value
+    }
+  }
 }
 
 mutation createMonthlyLeaveDates($monthlyLeaveDates: MonthlyLeaveDates!) {
@@ -454,21 +457,6 @@ query getMonthlyLeaveDatesRecordById($organization_id:Int!,$batch_id:Int!,$year:
         created
         updated
     }      
-}
-
-query getOrganizationsByAvinyaTypeWithActiveStatus($avinya_type:Int!,$active:Int!) {
-    organizations_by_avinya_type(avinya_type:$avinya_type,active:$active) {
-        id 
-        name {
-            name_en
-        } 
-        description
-        organization_metadata{
-            key_name 
-            value
-        }
-        active
-    }
 }
 
 query getCalendarMetadataByOrgId($organization_id:Int!,$batch_id:Int!) {

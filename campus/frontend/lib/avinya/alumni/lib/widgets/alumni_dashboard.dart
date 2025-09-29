@@ -24,7 +24,7 @@ class _AlumniDashboardState extends State<AlumniDashboard> {
   }
 
   Future<List<Organization>> _loadBatchData() async {
-    return await fetchInActiveOrganizationsByAvinyaType(86);
+    return await fetchOrganizationsByAvinyaTypeAndStatus(86,null);
   }
 
   final List<String> labels = [

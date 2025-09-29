@@ -68,7 +68,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
   }
 
   Future<List<Organization>> _loadBatchData() async {
-    _batchData = await fetchOrganizationsByAvinyaType(86);
+    //_batchData = await fetchOrganizationsByAvinyaType(86);
+    _batchData = await fetchOrganizationsByAvinyaTypeAndStatus(86,null);
     _selectedOrganizationValue = _batchData.isNotEmpty ? _batchData.last : null;
     batchStartDate = DateFormat('MMM d, yyyy').format(DateTime.parse(
         _selectedOrganizationValue!.organization_metadata[0].value.toString()));
@@ -350,7 +351,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   ElevatedButton(
-                    onPressed: () => showDateRangePickerDialog(
+                    onPressed: () => showDateRangePickerDialogWithOffset(
                         context: context,
                         builder: datePickerBuilder,
                         offset: Offset(20, 155)),
@@ -704,7 +705,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                   Row(
                     children: [
                       ElevatedButton(
-                        onPressed: () => showDateRangePickerDialog(
+                        onPressed: () => showDateRangePickerDialogWithOffset(
                             context: context,
                             builder: datePickerBuilderMobile,
                             offset: Offset(5, 220)),

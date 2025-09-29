@@ -84,7 +84,8 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
   }
 
   Future<List<Organization>> _loadBatchData() async {
-    _batchData = await fetchActiveOrganizationsByAvinyaType(86);
+    // _batchData = await fetchActiveOrganizationsByAvinyaType();
+    _batchData = await fetchOrganizationsByAvinyaTypeAndStatus(null, 1);
     _selectedOrganizationValue = _batchData.isNotEmpty ? _batchData.last : null;
 
     if (_selectedOrganizationValue != null) {

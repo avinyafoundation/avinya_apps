@@ -154,15 +154,11 @@ query getPersonById($id: Int!) {
 
 mutation updatePerson(
   $person: Person!
-  $permanent_address: Address
-  $permanent_address_city: City
   $mailing_address: Address
   $mailing_address_city: City
 ) {
   update_person(
     person: $person
-    permanent_address: $permanent_address
-    permanent_address_city: $permanent_address_city
     mailing_address: $mailing_address
     mailing_address_city: $mailing_address_city
   ) {

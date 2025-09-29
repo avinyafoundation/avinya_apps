@@ -8,6 +8,7 @@ class AssetRegistrationListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.yellow[600],
         title: const Text('Asset Registration'),
         centerTitle: true,
       ),

@@ -13,6 +13,7 @@ class _StockDepletionScreenState extends State<StockDepletionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.yellow[600],
         automaticallyImplyLeading: false,
         title: Text("Stock Depletion"),
       ),

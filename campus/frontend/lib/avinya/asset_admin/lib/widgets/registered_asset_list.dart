@@ -47,7 +47,7 @@ class _MainAssetScreenState extends State<MainAssetScreen> {
     //   _organizationsList = await fetchOrganizationsByAvinyaType(2);
     // }
 
-    _organizationsList = await fetchOrganizationsByAvinyaType(2);
+    _organizationsList = await fetchOrganizationsByAvinyaTypeAndStatus(2, null);
 
     setState(() {
       organizationsLoaded = true;
