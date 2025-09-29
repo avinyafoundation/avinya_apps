@@ -2,7 +2,10 @@
 // import 'package:ShoolManagementSystem/src/screens/resource_allocations.dart';
 import 'package:flutter/material.dart';
 import 'package:asset_admin/screens/empty_screen.dart';
+import 'package:gallery/avinya/asset_admin/lib/screens/asset_acquisition_screen.dart';
+import 'package:gallery/avinya/asset_admin/lib/screens/asset_assignment_screen.dart';
 import 'package:gallery/avinya/asset_admin/lib/screens/asset_dashboard_screen.dart';
+import 'package:gallery/avinya/asset_admin/lib/screens/asset_registration_list_screen.dart';
 import 'package:gallery/avinya/asset_admin/lib/screens/consumable_dashboard_screen.dart';
 import 'package:gallery/avinya/asset_admin/lib/screens/stock_depletion.dart';
 import 'package:gallery/avinya/asset_admin/lib/screens/stock_replenishment.dart';
@@ -53,6 +56,21 @@ class SMSScaffoldBody extends StatelessWidget {
           const FadeTransitionPage<void>(
             key: ValueKey('stock_replenishment'),
             child: StockReplenishmentScreen(),
+          )
+        else if (currentRoute.pathTemplate.startsWith('/asset_registration'))
+          const FadeTransitionPage<void>(
+            key: ValueKey('asset_registration'),
+            child: AssetRegistrationListScreen(),
+          )
+        else if (currentRoute.pathTemplate.startsWith('/asset_acquisition'))
+          const FadeTransitionPage<void>(
+            key: ValueKey('asset_acquisition'),
+            child: AssetAcquisitionScreen(),
+          )
+        else if (currentRoute.pathTemplate.startsWith('/asset_assignment'))
+          const FadeTransitionPage<void>(
+            key: ValueKey('asset_assignment'),
+            child: AssetAssignmentScreen(),
           )
         else if (currentRoute.pathTemplate.startsWith('/stock_depletion'))
           const FadeTransitionPage<void>(

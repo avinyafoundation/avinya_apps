@@ -46,7 +46,7 @@ bool organizationsLoaded = false;
    
    }else if(campusAppsPortalInstance.isFoundation){
 
-    _organizationsList = await fetchOrganizationsByAvinyaType(2);
+    _organizationsList = await fetchOrganizationsByAvinyaTypeAndStatus(2, null);  
    }
 
     setState(() {

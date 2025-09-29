@@ -243,6 +243,22 @@ public type Organization record {
     string name_en?;
 };
 
+public type Alumni record {
+    string? created?;
+    string? linkedin_id?;
+    string? record_type?;
+    string? facebook_id?;
+    string? instagram_id?;
+    string? company_name?;
+    string? tiktok_id?;
+    string? updated_by?;
+    int? id?;
+    string? job_title?;
+    int? person_count?;
+    string? updated?;
+    string? status?;
+};
+
 public type Person record {
     int? permanent_address_id?;
     string? street_address?;
@@ -254,10 +270,14 @@ public type Person record {
     int? parent_organization_id?;
     int? avinya_type_id?;
     Address? permanent_address?;
+    boolean? is_graduated?;
     int? mailing_address_id?;
+    Alumni? alumni?;
+    string? profile_picture_folder_id?;
     string? id_no?;
     string? jwt_email?;
     string? bank_name?;
+    int? alumni_id?;
     int? id?;
     string? email?;
     string? created?;
@@ -280,7 +300,6 @@ public type Person record {
     string? academy_org_name?;
     string? asgardeo_id?;
     int? documents_id?;
-    UserDocument[]? document_list?;
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
@@ -598,8 +617,12 @@ public type GetPersonResponse record {|
         int? academy_org_id;
         string? current_job;
         int? documents_id;
+        int? alumni_id;
+        boolean? is_graduated;
+        string? profile_picture_folder_id;
     |}? person_by_digital_id;
 |};
+
 public type GetOrganizationResponse record {|
     map<json?> __extensions?;
     record {|

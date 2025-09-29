@@ -8,8 +8,11 @@ import '../auth.dart';
 final campusAppsPortalInstance = CampusAppsPortal()
   ..setJWTSub('jwt-sub-id123')
   ..setDigitalId('digital-id123')
-  ..setUserPerson(
-      Person(id: 2, jwt_sub_id: 'jwt-sub-id123', preferred_name: 'Nimal'));
+  ..setUserPerson(Person(
+      id: 2,
+      jwt_sub_id: 'jwt-sub-id123',
+      preferred_name: 'Nimal',
+      is_graduated: false));
 
 final campusAppsPortalPersonMetaDataInstance = CampusAppsPortalPersonMetaData()
   ..setGroups(['educator', 'teacher'])
@@ -21,7 +24,8 @@ class CampusAppsPortal {
   bool applicationSubmitted = false;
   final String schoolName = 'Bandaragama';
   int vacancyId = 1; // todo - this needs to be fetched and set from the server
-  Person userPerson = Person();
+  Person userPerson = Person(is_graduated: false);
+  AlumniPerson AlumniUserPerson = AlumniPerson(is_graduated: false);
   String? user_jwt_sub;
   String? user_jwt_email;
   String? user_digital_id;
@@ -101,15 +105,23 @@ class CampusAppsPortal {
     userPerson = person;
   }
 
+  void setAlumniUserPerson(AlumniPerson person) {
+    AlumniUserPerson = person;
+  }
+
   Person getUserPerson() {
     return userPerson;
   }
 
-  void setLeaderParticipant(DutyParticipant dutyLeaderParticipant){
+  AlumniPerson getAlumniUserPerson() {
+    return AlumniUserPerson;
+  }
+
+  void setLeaderParticipant(DutyParticipant dutyLeaderParticipant) {
     leaderParticipant = dutyLeaderParticipant;
   }
 
-  DutyParticipant getLeaderParticipant(){
+  DutyParticipant getLeaderParticipant() {
     return leaderParticipant;
   }
 
@@ -176,14 +188,21 @@ class CampusAppsPortal {
     // check if user is in Avinya database person table as a student
     try {
       Person person = campusAppsPortalInstance.getUserPerson();
+      AlumniPerson alumniPerson =
+          campusAppsPortalInstance.getAlumniUserPerson();
       if (person.digital_id == null || person.digital_id != user_digital_id!) {
         person = await fetchPerson(user_digital_id!);
+        //if (person.is_graduated != null && person.is_graduated!) {
+        //alumniPerson = await fetchAlumniPerson(person.id!);
+        //}
+
         userPerson = person;
         log('Campus Apps Portal - fetchPersonForUser: ' +
             person.toJson().toString());
         print('Campus Apps Portal - fetchPersonForUser: ' +
             person.toJson().toString());
         campusAppsPortalInstance.setUserPerson(person);
+        //campusAppsPortalInstance.setAlumniUserPerson(alumniPerson);
 
         if (person.digital_id != null) {
           isStudent = campusAppsPortalPersonMetaDataInstance
@@ -206,17 +225,19 @@ class CampusAppsPortal {
               .contains('Foundation');
           if (isSecurity || isTeacher || isFoundation || isStudent) {
             isGroupFetched = true;
+            print("=========Group fetched========:${isGroupFetched}");
           }
 
-          if(isStudent){
-            
-            DutyParticipant? dutyParticipant =  await fetchDutyParticipant(person.id!);
-            
-            if( dutyParticipant !=null &&  (dutyParticipant.role == 'leader' || dutyParticipant.role == 'assistant-leader' )){
-                  campusAppsPortalInstance.setLeaderParticipant(dutyParticipant);
-            }
-          }
+          // if (isStudent) {
+          //   DutyParticipant? dutyParticipant =
+          //       await fetchDutyParticipant(person.id!);
 
+          //   if (dutyParticipant != null &&
+          //       (dutyParticipant.role == 'leader' ||
+          //           dutyParticipant.role == 'assistant-leader')) {
+          //     campusAppsPortalInstance.setLeaderParticipant(dutyParticipant);
+          //   }
+          // }
         }
       }
     } catch (e) {

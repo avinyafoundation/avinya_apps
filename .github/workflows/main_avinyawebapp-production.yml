@@ -21,7 +21,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: "3.13.1"
+          flutter-version: "3.27.3"
       - run: flutter doctor -v
 
       - name: Set up Node.js version
@@ -45,7 +45,7 @@ jobs:
           flutter config --enable-web
 
       - name: Upload Flutter build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: flutter-build
           path: campus/frontend/build/web
@@ -62,7 +62,7 @@ jobs:
           npm run test --if-present
 
       - name: Upload artifact for node app
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: node-app
           path: campus/deployment/node-app
@@ -76,7 +76,7 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: node-app
 

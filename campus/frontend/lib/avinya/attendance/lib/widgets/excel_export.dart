@@ -124,7 +124,7 @@ class _ExcelExportState extends State<ExcelExport> {
     // Styling for organization header
     final organizationHeaderStyle = CellStyle(
       bold: true,
-      backgroundColorHex: '#807f7d',
+      backgroundColorHex: ExcelColor.fromHexString('#807f7d'),
       horizontalAlign: HorizontalAlign.Center,
     );
 
@@ -144,7 +144,7 @@ class _ExcelExportState extends State<ExcelExport> {
     final subHeaderStyle = CellStyle(
       bold: true,
       horizontalAlign: HorizontalAlign.Center,
-      backgroundColorHex: '#a3a3a2',
+      backgroundColorHex: ExcelColor.fromHexString('#a3a3a2'),
       textWrapping: TextWrapping.WrapText,
     );
 
@@ -154,25 +154,25 @@ class _ExcelExportState extends State<ExcelExport> {
         colIndex++) {
       sheet
           .cell(CellIndex.indexByColumnRow(columnIndex: colIndex, rowIndex: 1))
-          .value = columnNamesWithoutDates[colIndex];
+          .value = TextCellValue(columnNamesWithoutDates[colIndex]??'');
       sheet
           .cell(CellIndex.indexByColumnRow(columnIndex: colIndex, rowIndex: 1))
           .cellStyle = subHeaderStyle;
     }
-    sheet.setColWidth(0, 10);
-    sheet.setColWidth(1, 25);
-    sheet.setColWidth(2, 26);
-    sheet.setColWidth(3, 20);
-    sheet.setColWidth(4, 25);
-    sheet.setColWidth(5, 26);
-    sheet.setColWidth(6, 25);
-    sheet.setColWidth(7, 25);
-    sheet.setColWidth(8, 25);
-    sheet.setColWidth(9, 25);
-    sheet.setColWidth(10, 25);
+    sheet.setColumnWidth(0, 10);
+    sheet.setColumnWidth(1, 25);
+    sheet.setColumnWidth(2, 26);
+    sheet.setColumnWidth(3, 20);
+    sheet.setColumnWidth(4, 25);
+    sheet.setColumnWidth(5, 26);
+    sheet.setColumnWidth(6, 25);
+    sheet.setColumnWidth(7, 25);
+    sheet.setColumnWidth(8, 25);
+    sheet.setColumnWidth(9, 25);
+    sheet.setColumnWidth(10, 25);
 
     sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0)).value =
-        "Avinya Foundation Student Payment Report From ${fromDate} to ${toDate}";
+      TextCellValue("Avinya Foundation Student Payment Report From ${fromDate} to ${toDate}");
     sheet
         .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0))
         .cellStyle = organizationHeaderStyle;
@@ -188,7 +188,7 @@ class _ExcelExportState extends State<ExcelExport> {
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: index + 2))
-            .value = index + 1;
+            .value = TextCellValue((index + 1).toString()??'');
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: index + 2))
@@ -197,23 +197,23 @@ class _ExcelExportState extends State<ExcelExport> {
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: index + 2))
-            .value = person.bank_account_name?.toString() ?? '';
+            .value = TextCellValue(person.bank_account_name?.toString() ?? '');
 
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: index + 2))
-            .value = person.bank_name?.toString() ?? '';
+            .value = TextCellValue(person.bank_name?.toString() ?? '');
 
         sheet
                 .cell(CellIndex.indexByColumnRow(
                     columnIndex: 3, rowIndex: index + 2))
                 .value =
-            person.bank_branch?.toString() ?? ''; // update bank branch name
+          TextCellValue(person.bank_branch?.toString() ?? ''); // update bank branch name
 
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: index + 2))
-            .value = person.bank_account_number?.toString() ?? '';
+            .value =TextCellValue(person.bank_account_number?.toString() ?? '');
 
         var generatedTransactionCode =
             generateTransactionCode(DateTime.parse(toDate!));
@@ -223,7 +223,7 @@ class _ExcelExportState extends State<ExcelExport> {
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: index + 2))
-            .value = generatedTransactionCode;
+            .value =TextCellValue(generatedTransactionCode);
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: index + 2))
@@ -232,7 +232,7 @@ class _ExcelExportState extends State<ExcelExport> {
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: index + 2))
-            .value = DateFormat('yyyy').format(generatedNextWeekMonday);
+            .value = TextCellValue(DateFormat('yyyy').format(generatedNextWeekMonday)??'');
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 7, rowIndex: index + 2))
@@ -241,7 +241,7 @@ class _ExcelExportState extends State<ExcelExport> {
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 8, rowIndex: index + 2))
-            .value = DateFormat('MM').format(generatedNextWeekMonday);
+            .value =TextCellValue(DateFormat('MM').format(generatedNextWeekMonday));
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 8, rowIndex: index + 2))
@@ -250,7 +250,7 @@ class _ExcelExportState extends State<ExcelExport> {
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 9, rowIndex: index + 2))
-            .value = DateFormat('dd').format(generatedNextWeekMonday);
+            .value = TextCellValue(DateFormat('dd').format(generatedNextWeekMonday));
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 9, rowIndex: index + 2))
@@ -259,7 +259,7 @@ class _ExcelExportState extends State<ExcelExport> {
         sheet
             .cell(CellIndex.indexByColumnRow(
                 columnIndex: 10, rowIndex: index + 2))
-            .value = generatedWeek;
+            .value = TextCellValue(generatedWeek);
         sheet
             .cell(CellIndex.indexByColumnRow(
                 columnIndex: 10, rowIndex: index + 2))
@@ -280,7 +280,7 @@ class _ExcelExportState extends State<ExcelExport> {
             sheet
                 .cell(CellIndex.indexByColumnRow(
                     columnIndex: 6, rowIndex: index + 2))
-                .value = studentPayment.toDouble().toStringAsFixed(2);
+                .value = TextCellValue(studentPayment.toDouble().toStringAsFixed(2));
           }
         }
       }

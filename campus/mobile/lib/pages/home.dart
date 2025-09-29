@@ -12,9 +12,11 @@ import 'package:mobile/constants.dart';
 import 'package:mobile/data/campus_apps_portal.dart';
 // import 'package:mobile/data/demos.dart';
 import 'package:mobile/data/gallery_options.dart';
+import 'package:mobile/data/person.dart';
 import 'package:mobile/layout/adaptive.dart';
 import 'package:mobile/layout/image_placeholder.dart';
-// import 'package:asset/routes.dart' as asset_routes;
+import 'package:mobile/pages/my_alumni_dashboard.dart';
+import 'package:mobile/screens/bottom_navigation/bottom_navigation/screens/navigation_menu.dart';
 // import 'package:pcti_notes/routes.dart' as campus_pcti_routes;
 // import 'package:pcti_notes_admin/routes.dart' as campus_pcti_admin;
 // import 'package:asset_admin/routes.dart' as asset_admin_routes;
@@ -29,6 +31,7 @@ const _horizontalDesktopPadding = 81.0;
 const _carouselHeightMin = 200.0 + 2 * _carouselItemMargin;
 const _desktopCardsPerPage = 4;
 const String attendanceRoute = '/attendance_marker';
+const String alumniHomeRoute = '/alumni_home';
 
 class ToggleSplashNotification extends Notification {}
 
@@ -40,6 +43,12 @@ Map<String, GalleryDemo> studies() {
       category: GalleryDemoCategory.study,
       studyId: 'starter',
     ),
+    'alumni': GalleryDemo(
+        title: "Alumni",
+        subtitle: "Alumni App for the Users",
+        category: GalleryDemoCategory.study,
+        studyId: 'starter',
+      ),
   };
 }
 
@@ -53,22 +62,42 @@ class HomePage extends StatelessWidget {
     final isTab = isDisplayTab(context);
     final studyDemos = studies();
     final carouselCards = <Widget>[
-      Padding(
+      if (campusAppsPortalInstance.getUserPerson().is_graduated != null &&
+          !campusAppsPortalInstance.getUserPerson().is_graduated!)
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: _CarouselCard(
+            demo: studyDemos['attendanceApp'],
+            asset: const AssetImage(
+              'assets/images/attendance_.png',
+              //package: 'flutter_gallery_assets',
+            ),
+            assetColor: const Color(0xFFFFFFFF),
+            // assetDark: const AssetImage(
+            //   'assets/studies/shrine_card_dark.png',
+            //   package: 'flutter_gallery_assets',
+            // ),
+            //assetDarkColor: const Color(0xFF543B3C),
+            textColor: Colors.black,
+            studyRoute: attendanceRoute,
+          ),
+        ),
+    Padding(
         padding: const EdgeInsets.all(10.0),
         child: _CarouselCard(
-          demo: studyDemos['attendanceApp'],
+          demo: studyDemos['alumni'],
           asset: const AssetImage(
-            'assets/images/attendance_.png',
-            //package: 'flutter_gallery_assets',
+            'assets/images/consumable.png',
+            // package: 'flutter_gallery_assets',
           ),
           assetColor: const Color(0xFFFFFFFF),
           // assetDark: const AssetImage(
-          //   'assets/studies/shrine_card_dark.png',
+          //   'assets/studies/rally_card_dark.png',
           //   package: 'flutter_gallery_assets',
           // ),
-          //assetDarkColor: const Color(0xFF543B3C),
+          //assetDarkColor: const Color(0xFF253538),
           textColor: Colors.black,
-          studyRoute: attendanceRoute,
+          studyRoute: alumniHomeRoute,
         ),
       ),
       //2023-04-19 commented for prod and stag branches
@@ -205,25 +234,34 @@ class HomePage extends StatelessWidget {
       //   ),
       // );
       return Scaffold(
-        body: Container(
+        body: Padding(
           padding: EdgeInsets.symmetric(vertical: 70.0, horizontal: 70.0),
-          child: GridView.count(
-            crossAxisCount: 3,
-            childAspectRatio: 1.8,
-            children: carouselCards,
-          ),
+          child:
+              // campusAppsPortalInstance.getUserPerson().is_graduated != null &&
+              //         !campusAppsPortalInstance.getUserPerson().is_graduated!
+              //     ? 
+                  GridView.count(
+                      crossAxisCount: 3,
+                      childAspectRatio: 1.8,
+                      children: carouselCards,
+                    )
+                  //: MyAlumniDashboardScreen(),
         ),
       );
     } else if (isTab) {
       return Scaffold(
-        body: Container(
+        body: Padding(
           padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
-          child: GridView.count(
-            crossAxisCount: 2,
-            childAspectRatio:
-                1.5, // set a higher value to make the cards wider and shorter
-            children: carouselCards,
-          ),
+          child:
+              // campusAppsPortalInstance.getUserPerson().is_graduated != null &&
+              //         !campusAppsPortalInstance.getUserPerson().is_graduated!
+              //     ? 
+                  GridView.count(
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.5,
+                      children: carouselCards,
+                    )
+                  //: NavigationMenu(),
         ),
       );
     } else {
@@ -237,14 +275,18 @@ class HomePage extends StatelessWidget {
       //   ),
       // );
       return Scaffold(
-        body: Container(
+        body: Padding(
           padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
-          child: GridView.count(
-            crossAxisCount: 1,
-            childAspectRatio:
-                1.5, // set a higher value to make the cards wider and shorter
-            children: carouselCards,
-          ),
+          child:
+              // campusAppsPortalInstance.getUserPerson().is_graduated != null &&
+              //         !campusAppsPortalInstance.getUserPerson().is_graduated!
+              //     ?
+                   GridView.count(
+                      crossAxisCount: 1,
+                      childAspectRatio: 1.5,
+                      children: carouselCards,
+                    )
+                 // : NavigationMenu(),
         ),
       );
     }

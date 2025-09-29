@@ -1,6 +1,6 @@
 import 'dart:developer';
 // import 'dart:html';
-import 'package:universal_html/html.dart';
+//import 'package:universal_html/html.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:path_to_regexp/path_to_regexp.dart';
@@ -43,9 +43,9 @@ class TemplateRouteParser extends RouteInformationParser<ParsedRoute> {
     }
     if (mypath.contains('access_token')) {
       log("mypath :  $mypath");
-      log(window.location.href);
-      var uri = Uri.dataFromString(window.location.href);
-      log('query params ' + uri.queryParameters.toString());
+     // log(window.location.href);
+     // var uri = Uri.dataFromString(window.location.href);
+     // log('query params ' + uri.queryParameters.toString());
       log(_pathTemplates.toString());
     }
 

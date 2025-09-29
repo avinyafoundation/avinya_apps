@@ -18,7 +18,7 @@ import 'package:mobile/themes/gallery_theme_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:google_fonts/google_fonts.dart' as google_fonts;
 import 'package:sizer/sizer.dart';
-import 'package:url_strategy/url_strategy.dart';
+//import 'package:url_strategy/url_strategy.dart';
 
 import 'config/app_config.dart';
 
@@ -31,7 +31,7 @@ void main() async {
   // server to redirect all paths to index.html.
   //
   // On mobile platforms, both functions are no-ops.
-  setHashUrlStrategy();
+  //setHashUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
 
   String? currentEnvironment = Constants.currentEnvironment;

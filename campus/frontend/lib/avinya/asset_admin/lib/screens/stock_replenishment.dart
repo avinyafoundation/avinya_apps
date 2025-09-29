@@ -14,6 +14,7 @@ class _StockReplenishmentScreenState extends State<StockReplenishmentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.yellow[600],
         automaticallyImplyLeading: false,
         title: Text("Stock Replenishment"),
       ),

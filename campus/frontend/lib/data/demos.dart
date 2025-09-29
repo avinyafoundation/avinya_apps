@@ -210,6 +210,18 @@ class Demos {
         category: GalleryDemoCategory.study,
         studyId: 'starter',
       ),
+      'smartAcademicScheduler': GalleryDemo(
+        title: "Smart Academic Scheduler App",
+        subtitle: "Academic Scheduler App for the Users",
+        category: GalleryDemoCategory.study,
+        studyId: 'starter',
+      ),
+      'alumni': GalleryDemo(
+        title: "Alumni",
+        subtitle: "Alumni App for the Users",
+        category: GalleryDemoCategory.study,
+        studyId: 'starter',
+      ),
     };
   }
 

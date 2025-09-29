@@ -30,18 +30,24 @@ class _AttendanceMarkerScreenState extends State<AttendanceMarkerScreen> {
         ),
         body: SingleChildScrollView(
           child: Center(
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
-                AttendanceMarker(),
-                const SizedBox(height: 20),
-                const Text('Person Attendance Report'),
-                const SizedBox(height: 5),
-                const SizedBox(
-                    width: 500,
-                    height: 500,
-                    child: PersonAttendanceMarkerReport()),
-              ],
+            child:Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),
+                  FittedBox(child: AttendanceMarker()),
+                  const SizedBox(height: 20),
+                  const Text('Person Attendance Report'),
+                  const SizedBox(height: 5),
+                  const SizedBox(
+                      width: 500,
+                      height: 500,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 5.0,vertical: 25.0),
+                        child: PersonAttendanceMarkerReport(),
+                      )),
+                ],
+              ),
             ),
           ),
         ),
