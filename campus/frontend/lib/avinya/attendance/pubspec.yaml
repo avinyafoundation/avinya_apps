@@ -36,7 +36,7 @@ dependencies:
   #qr_code_scanner: ^1.0.1
   flutter_date_range_picker: ^0.2.1
   flutter_svg: 
-  fl_chart: ^0.70.0
+  fl_chart: ^0.70.2
   month_year_picker: ^0.4.0+1
   oktoast: ^3.4.0
   pdf: ^3.11.3
