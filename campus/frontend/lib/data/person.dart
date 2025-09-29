@@ -277,11 +277,17 @@ Future<List<Person>> fetchOrganizationForAll(int id) async {
   }
 }
 
-Future<List<Organization>> fetchOrganizationsByAvinyaType(
-    int avinya_type) async {
+Future<List<Organization>> fetchOrganizationsByAvinyaTypeAndStatus(
+    int? avinya_type, int? active) async {
+  Map<String, String> queryParams = {};
+
+  if (avinya_type != null) queryParams['avinya_type'] = avinya_type.toString();
+  if (active != null) queryParams['active'] = active.toString();
+
   final response = await http.get(
     Uri.parse(
-        '${AppConfig.campusAttendanceBffApiUrl}/organizations_by_avinya_type/$avinya_type'),
+            '${AppConfig.campusAttendanceBffApiUrl}/organizations_by_avinya_type_and_status')
+        .replace(queryParameters: queryParams),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -300,31 +306,6 @@ Future<List<Organization>> fetchOrganizationsByAvinyaType(
     throw Exception('Failed to load organizations');
   }
 }
-
-Future<List<Organization>> fetchActiveOrganizationsByAvinyaType(
-    int avinya_type) async {
-  final response = await http.get(
-    Uri.parse(
-        '${AppConfig.campusAttendanceBffApiUrl}/organizations_by_avinya_type_with_active_status/$avinya_type/1'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
-    },
-  );
-
-  if (response.statusCode > 199 && response.statusCode < 300) {
-    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-
-    List<Organization> organization = await resultsJson
-        .map<Organization>((json) => Organization.fromJson(json))
-        .toList();
-    return organization;
-  } else {
-    throw Exception('Failed to load organizations');
-  }
-}
-
 class Alumni {
   int? id;
   String? status;

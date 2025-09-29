@@ -90,4 +90,3 @@ class Organization {
         // if (employees != null) 'employees': List<dynamic>.from(employees!.map((x) => x.toJson())),
       };
 }
-

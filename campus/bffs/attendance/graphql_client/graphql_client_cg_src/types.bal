@@ -24,9 +24,21 @@ public type ActivityInstance record {
     int? organization_id?;
     int? activity_id?;
     string? name?;
+    string? location?;
     int? id?;
     string? updated?;
     int? place_id?;
+};
+
+public type ActivityInstanceEvaluation record {
+    string? feedback?;
+    int? activity_instance_id?;
+    string? created?;
+    int? evaluator_id?;
+    int? rating?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
 };
 
 public type ActivityParticipant record {
@@ -36,6 +48,7 @@ public type ActivityParticipant record {
     string? notes?;
     string? created?;
     int? organization_id?;
+    int? is_attending?;
     int? id?;
     string? updated?;
     string? record_type?;
@@ -75,6 +88,48 @@ public type Address record {
     int? id?;
     string? record_type?;
     int? city_id?;
+};
+
+public type Alumni record {
+    string? created?;
+    string? linkedin_id?;
+    string? record_type?;
+    string? facebook_id?;
+    string? instagram_id?;
+    string? company_name?;
+    string? tiktok_id?;
+    string? updated_by?;
+    int? id?;
+    string? job_title?;
+    int? person_count?;
+    string? updated?;
+    string? status?;
+};
+
+public type AlumniEducationQualification record {
+    string? end_date?;
+    string? course_name?;
+    string? created?;
+    int? is_currently_studying?;
+    int? id?;
+    string? university_name?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+    string? start_date?;
+};
+
+public type AlumniWorkExperience record {
+    string? end_date?;
+    string? created?;
+    string? company_name?;
+    int? id?;
+    string? job_title?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+    int? currently_working?;
+    string? start_date?;
 };
 
 public type ApplicantConsent record {
@@ -274,6 +329,23 @@ public type Inventory record {
     int? person_id?;
 };
 
+public type JobPost record {
+    string? job_type?;
+    string? job_link?;
+    string? created?;
+    string? application_deadline?;
+    string? job_image_drive_id?;
+    string? record_type?;
+    string? uploaded_by?;
+    string? job_text?;
+    int? id?;
+    int? job_category_id?;
+    string? job_post_image?;
+    string? job_category?;
+    string? updated?;
+    string? current_date_time?;
+};
+
 public type MonthlyLeaveDates record {
     string? leave_dates?;
     int? month?;
@@ -317,10 +389,14 @@ public type Person record {
     int? parent_organization_id?;
     int? avinya_type_id?;
     Address? permanent_address?;
+    boolean? is_graduated?;
     int? mailing_address_id?;
+    Alumni? alumni?;
+    string? profile_picture_folder_id?;
     string? id_no?;
     string? jwt_email?;
     string? bank_name?;
+    int? alumni_id?;
     int? id?;
     string? email?;
     string? created?;
@@ -347,6 +423,18 @@ public type Person record {
     string? preferred_name?;
     string? jwt_sub_id?;
     int? academy_org_id?;
+};
+
+public type PersonProfilePicture record {
+    string? uploaded_by?;
+    string? nic_no?;
+    string? created?;
+    string? profile_picture_drive_id?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    string? picture?;
+    int? person_id?;
 };
 
 public type Prospect record {
@@ -940,7 +1028,7 @@ public type GetDailyAttendanceSummaryReportResponse record {|
     |}[]? daily_attendance_summary_report;
 |};
 
-public type GetOrganizationsByAvinyaTypeResponse record {|
+public type GetOrganizationsByAvinyaTypeAndStatusResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
@@ -952,7 +1040,7 @@ public type GetOrganizationsByAvinyaTypeResponse record {|
             string? key_name;
             string? value;
         |}[]? organization_metadata;
-    |}[]? organizations_by_avinya_type;
+    |}[]? organizations_by_avinya_type_and_status;
 |};
 
 public type CreateMonthlyLeaveDatesResponse record {|
@@ -998,22 +1086,6 @@ public type GetMonthlyLeaveDatesRecordByIdResponse record {|
         string? created;
         string? updated;
     |}? monthly_leave_dates_record_by_id;
-|};
-
-public type GetOrganizationsByAvinyaTypeWithActiveStatusResponse record {|
-    map<json?> __extensions?;
-    record {|
-        int? id;
-        record {|
-            string? name_en;
-        |} name;
-        string? description;
-        record {|
-            string? key_name;
-            string? value;
-        |}[]? organization_metadata;
-        int? active;
-    |}[]? organizations_by_avinya_type;
 |};
 
 public type GetCalendarMetadataByOrgIdResponse record {|

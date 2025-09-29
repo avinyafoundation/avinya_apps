@@ -15,9 +15,9 @@ class StudentUpdate extends StatefulWidget {
 class _StudentUpdateState extends State<StudentUpdate> {
   late Person userPerson = Person();
   List<District> districts = [];
-  List<MainOrganization> organizations = [];
+  List<Organization> organizations = [];
   List<AvinyaType> avinyaTypes = [];
-  List<MainOrganization> classes = [];
+  List<Organization> classes = [];
   int _currentStep = 0; // Track the current step
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   List<City> cityList = [];
@@ -98,7 +98,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
           (user.organization?.parent_organizations?.isNotEmpty ?? false)
               ? user.organization?.parent_organizations?.first.id
               : null;
-
+      print("parent org id:${parentOrganizationId}");
       // Fetch classes with a fallback to an empty list if null
       if (parentOrganizationId != null) {
         classes = await fetchClasses(parentOrganizationId);
@@ -158,7 +158,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
   //     });
   //   }
   // }
-  Future<List<MainOrganization>> fetchOrganizationList() async {
+  Future<List<Organization>> fetchOrganizationList() async {
     final result = await fetchOrganizations();
     return result ?? []; // Fallback to an empty list
   }
@@ -210,7 +210,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
               child: SizedBox(
                 width: 850,
                 child: Stepper(
-                  connectorColor: MaterialStateProperty.all(
+                  connectorColor: WidgetStateProperty.all(
                       Color.fromARGB(255, 74, 161, 70)),
                   type: StepperType.vertical,
                   currentStep: _currentStep,
@@ -233,7 +233,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
                                   const SizedBox(height: 20),
                                   _buildSectionTitle(
                                       context, 'Student Information'),
-                                  _buildEditableField('Preferred Name',
+                                  _buildEditableField(true, 'Preferred Name',
                                       userPerson.preferred_name, (value) {
                                     userPerson.preferred_name = value;
                                   },
@@ -241,7 +241,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
                                           ? 'Preferred name is required'
                                           : null),
                                   _buildEditableField(
-                                      'Full Name', userPerson.full_name,
+                                      true, 'Full Name', userPerson.full_name,
                                       (value) {
                                     userPerson.full_name = value;
                                   },
@@ -249,13 +249,14 @@ class _StudentUpdateState extends State<StudentUpdate> {
                                           ? 'Full name is required'
                                           : null),
                                   _buildEditableField(
-                                      'NIC Number', userPerson.nic_no, (value) {
+                                      false, 'NIC Number', userPerson.nic_no,
+                                      (value) {
                                     userPerson.nic_no = value;
                                   }, validator: _validateNIC),
                                   _buildDateOfBirthField(context),
                                   _buildSexField(),
                                   const SizedBox(height: 10),
-                                  FutureBuilder<List<MainOrganization>>(
+                                  FutureBuilder<List<Organization>>(
                                       future: fetchOrganizationList(),
                                       builder: (context, snapshot) {
                                         if (snapshot.connectionState ==
@@ -305,16 +306,17 @@ class _StudentUpdateState extends State<StudentUpdate> {
                                   _buildSectionTitle(
                                       context, 'Contact Information'),
                                   _buildEditableField(
-                                      'Personal Email', userPerson.email,
+                                      true, 'Personal Email', userPerson.email,
                                       (value) {
                                     userPerson.email = value;
                                   }),
-                                  _buildEditableField('Phone',
+                                  _buildEditableField(true, 'Phone',
                                       userPerson.phone?.toString() ?? '',
                                       (value) {
                                     userPerson.phone = int.tryParse(value);
                                   }, validator: _validatePhone),
                                   _buildEditableField(
+                                      true,
                                       'Street Address',
                                       userPerson.mailing_address
                                               ?.street_address ??
@@ -377,7 +379,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
                                   _buildSectionTitle(
                                       context, 'Digital Information'),
                                   _buildEditableField(
-                                      'Digital ID', userPerson.digital_id,
+                                      true, 'Digital ID', userPerson.digital_id,
                                       (value) {
                                     userPerson.digital_id = value;
                                   }),
@@ -386,29 +388,27 @@ class _StudentUpdateState extends State<StudentUpdate> {
                                   _buildSectionTitle(
                                       context, 'Bank Information'),
                                   _buildEditableField(
-                                      'Bank Name', userPerson.bank_name,
+                                      true, 'Bank Name', userPerson.bank_name,
                                       (value) {
                                     userPerson.bank_name = value;
                                   }),
-                                  _buildEditableField(
-                                      'Bank Branch', userPerson.bank_branch,
-                                      (value) {
+                                  _buildEditableField(true, 'Bank Branch',
+                                      userPerson.bank_branch, (value) {
                                     userPerson.bank_branch = value;
                                   }),
-                                  _buildEditableField('Bank Account Name',
+                                  _buildEditableField(true, 'Bank Account Name',
                                       userPerson.bank_account_name, (value) {
                                     userPerson.bank_account_name = value;
                                   }),
-                                  _buildEditableField('Account Number',
+                                  _buildEditableField(true, 'Account Number',
                                       userPerson.bank_account_number, (value) {
                                     userPerson.bank_account_number = value;
                                   }),
                                   const SizedBox(height: 20),
                                   _buildSectionTitle(
                                       context, 'Professional Information'),
-                                  _buildEditableField(
-                                      'Current Job', userPerson.current_job,
-                                      (value) {
+                                  _buildEditableField(true, 'Current Job',
+                                      userPerson.current_job, (value) {
                                     userPerson.current_job = value;
                                   }),
                                   _buildEditableTextArea(
@@ -645,13 +645,13 @@ class _StudentUpdateState extends State<StudentUpdate> {
       title,
       style: Theme.of(context)
           .textTheme
-          .subtitle1!
+          .titleMedium!
           .copyWith(fontWeight: FontWeight.bold),
     );
   }
 
   Widget _buildEditableField(
-      String label, String? initialValue, Function(String) onSave,
+      bool enable, String label, String? initialValue, Function(String) onSave,
       {String? Function(String?)? validator}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -661,12 +661,13 @@ class _StudentUpdateState extends State<StudentUpdate> {
             flex: 4,
             child: Text(
               label,
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
             flex: 6,
             child: TextFormField(
+              enabled: enable,
               initialValue: initialValue ?? '',
               decoration: InputDecoration(
                 contentPadding:
@@ -694,7 +695,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
             flex: 4,
             child: Text(
               label,
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
@@ -739,7 +740,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
             flex: 4,
             child: Text(
               'Sex',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
@@ -782,7 +783,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
             flex: 4,
             child: Text(
               'District',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
@@ -817,7 +818,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
             flex: 4,
             child: Text(
               'City',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
@@ -881,11 +882,11 @@ class _StudentUpdateState extends State<StudentUpdate> {
     // Ensure parentOrganizationId is in the organizations list or set it to null
     final validParentOrganizationId = organizations.any((org) =>
             org.id == parentOrganizationId &&
-            (org.avinya_type?.id == 105 || org.avinya_type?.id == 86))
+            (org.avinya_type?.id == 105 ||
+                org.avinya_type?.id == 86 ||
+                org.avinya_type?.id == 108))
         ? parentOrganizationId
         : null;
-    
-    userPerson.parent_organization_id = validParentOrganizationId;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -895,17 +896,20 @@ class _StudentUpdateState extends State<StudentUpdate> {
             flex: 4,
             child: Text(
               'Main Organization',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
             flex: 6,
             child: DropdownButtonFormField<int>(
-              value: validParentOrganizationId ?? userPerson.organization_id,
+              isExpanded: true,
+              value: validParentOrganizationId ??
+                  userPerson.parent_organization_id,
               items: organizations
                   .where((org) =>
                       org.avinya_type?.id == 105 ||
-                      org.avinya_type?.id == 86) // Filter organizations
+                      org.avinya_type?.id == 86 ||
+                      org.avinya_type?.id == 108) // Filter organizations
                   .map((org) {
                 return DropdownMenuItem<int>(
                   value: org.id,
@@ -919,7 +923,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
                   // userPerson.organization_id =
                   //     newValue; // Update the organization ID
                   userPerson.parent_organization_id = newValue;
-
+                  print("");
                 });
               },
               decoration: InputDecoration(
@@ -984,7 +988,15 @@ class _StudentUpdateState extends State<StudentUpdate> {
           org.id == 100 || // dropout-cs-student
           org.id == 99 || // dropout-it-student
           org.id == 103 || // Future Enrollees
-          org.id == 94; // dropout-student-applicant
+          org.id == 94 || // dropout-student-applicant
+          org.id == 110 || // Empower & NVQ Level 3 - Student
+          org.id == 111 || //Dropout-Empower & NVQ Level 3 - Student
+          org.id == 115 || //Work Study - City & Guilds - Student
+          org.id == 116 || //Dropout-Work Study - City & Guilds - Student
+          org.id == 120 || //Work Study - Maths & IT - Student
+          org.id == 121 || //Dropout- Work Study - Maths & IT-Student
+          org.id == 125 || //Full-Time Work Placement-Student
+          org.id == 126; //Dropout-Full-Time Work Placement-Student
     }).toList();
 
     return Padding(
@@ -995,7 +1007,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
             flex: 4,
             child: Text(
               'Avinya Type',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
@@ -1082,7 +1094,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
             flex: 4,
             child: Text(
               'Date of Birth',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
@@ -1136,7 +1148,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
               flex: 4,
               child: Text(
                 'Class',
-                style: Theme.of(context).textTheme.bodyText1,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
             Expanded(

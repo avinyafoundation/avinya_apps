@@ -28,35 +28,35 @@ class SupplyDetailsScreen extends StatelessWidget {
           children: [
             Text(
               supply!.asset_id!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
               supply!.consumable_id!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
               supply!.supplier_id!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
               supply!.person_id!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
               supply!.order_date!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
               supply!.delivery_date!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
               supply!.order_id!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
               supply!.order_amount!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
         ),

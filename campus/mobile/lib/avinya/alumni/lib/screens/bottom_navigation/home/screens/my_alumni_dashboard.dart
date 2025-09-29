@@ -16,6 +16,8 @@ import 'package:mobile/data/person.dart';
 import 'package:alumni/screens/alumni_info_view_edit.dart';
 import 'package:alumni/screens/bottom_navigation/home/controllers/home_controller.dart';
 import 'package:alumni/widgets/time_line_widget.dart';
+import 'package:mobile/widgets/avinya_logo_widget.dart';
+import 'package:mobile/widgets/avinya_brand_header.dart';
 import 'package:sizer/sizer.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -31,8 +33,8 @@ class MyAlumniDashboardScreen extends StatefulWidget {
 class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
   final HomeController _homeController = Get.put(HomeController());
   bool showFeedbackForm = false;
-  late Future<List<ActivityInstance>> _upcomingEventsData;
-  late Future<List<ActivityInstance>> _completedEventsData;
+  //late Future<List<ActivityInstance>> _upcomingEventsData;
+  //late Future<List<ActivityInstance>> _completedEventsData;
   String? selectedRsvp;
   String feedback = '';
   int? selectedRating;
@@ -45,15 +47,18 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
     ..nic_no = '12';
 
   Color turquoiseBlue = Color(0xFF009DB1);
+  int person_id = 0;
 
   @override
   void initState() {
     super.initState();
-    getUserPerson();
-    if (alumniPerson.id != null) {
-      _upcomingEventsData = _loadUpcomingEventsData(alumniPerson.id!);
-      _completedEventsData = _loadCompletedEventsData(alumniPerson.id!);
-    }
+    person_id = campusAppsPortalInstance.getUserPerson().id!;
+    userPerson = campusAppsPortalInstance.getUserPerson();
+    getUserPerson(person_id);
+    // if (person_id != null) {
+    //   _upcomingEventsData = _loadUpcomingEventsData(person_id);
+    //   _completedEventsData = _loadCompletedEventsData(person_id);
+    // }
   }
 
   // void getUserPerson() {
@@ -64,13 +69,20 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
   //     userPerson = user;
   //   });
   // }
-  void getUserPerson() {
+  void getUserPerson(int person_id) async {
     // Retrieve user data from local instance
-    AlumniPerson AlumniUser = campusAppsPortalInstance.getAlumniUserPerson();
-    Person user = campusAppsPortalInstance.getUserPerson();
+    //AlumniPerson AlumniUser = campusAppsPortalInstance.getAlumniUserPerson();
+    AlumniPerson AlumniUser;
+    if (alumniPerson.id == null) {
+      // to check alumni object is null
+      AlumniUser = await fetchAlumniPerson(person_id);
+      campusAppsPortalInstance.setAlumniUserPerson(AlumniUser);
+    } else {
+      AlumniUser = campusAppsPortalInstance.getAlumniUserPerson();
+    }
+
     setState(() {
       alumniPerson = AlumniUser;
-      userPerson = user;
     });
   }
 
@@ -741,141 +753,88 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String firstName = alumniPerson.preferred_name?.split(' ').first ?? 'User';
     String imagePath = alumniPerson.sex == 'Male'
         ? 'assets/images/student_profile_male.jpg' // Replace with the male profile image path
-        : 'assets/images/student_profile.jpeg'; // Default or female profile image
-    String firstName = alumniPerson.preferred_name?.split(' ').first ?? 'User';
+        : 'assets/images/student_profile.jpg'; // Default or female profile image
 
     return Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 16.0),
-        child: Column(
-          children: [
-            Card(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? kDarkModeSurfaceColor
-                  : kOtherColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  //mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Card(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? kDarkModeSurfaceColor
+                    : kOtherColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: RepaintBoundary(
+                    child: Column(
+                      //mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset(
-                          'assets/images/avinya_logo.png',
-                          width: SizerUtil.deviceType == DeviceType.tablet
-                              ? 13.w
-                              : 11.w,
-                          height: SizerUtil.deviceType == DeviceType.tablet
-                              ? 13.h
-                              : 11.h,
-                        ),
-                        SizedBox(
-                          width: 1.w,
-                        ),
-                        Column(
-                          children: [
-                            Text('AVINYA FOUNDATION',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        fontStyle: FontStyle.normal,
-                                        color: kTextBlackColor,
-                                        letterSpacing: 0.8,
-                                        fontSize: SizerUtil.deviceType ==
-                                                DeviceType.mobile
-                                            ? 16.sp
-                                            : SizerUtil.deviceType ==
-                                                    DeviceType.tablet
-                                                ? 18.sp
-                                                : SizerUtil.deviceType ==
-                                                        DeviceType.web
-                                                    ? 12.sp
-                                                    : 14.sp),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis),
-                            Text('Giving Hope.Creating Vision.Changing Lives.',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        fontStyle: FontStyle.normal,
-                                        color: kTextBlackColor,
-                                        //letterSpacing: 1.2,
-                                        fontSize: SizerUtil.deviceType ==
-                                                DeviceType.mobile
-                                            ? 08.sp
-                                            : SizerUtil.deviceType ==
-                                                    DeviceType.tablet
-                                                ? 10.sp
-                                                : SizerUtil.deviceType ==
-                                                        DeviceType.web
-                                                    ? 04.sp
-                                                    : 06.sp),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis),
-                          ],
-                        )
-                      ],
-                    ),
-                    Text('👋 Welcome ${firstName}!',
-                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.normal,
-                              color: turquoiseBlue,
-                              letterSpacing: 1.2,
-                              fontSize: SizerUtil.deviceType ==
-                                      DeviceType.mobile
-                                  ? 14.sp
-                                  : SizerUtil.deviceType == DeviceType.tablet
-                                      ? 16.sp
-                                      : SizerUtil.deviceType == DeviceType.web
-                                          ? 10.sp
-                                          : 12.sp,
-                            ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis),
-                    if (userPerson.is_graduated != null &&
-                        userPerson.is_graduated!) ...[
-                      Text('Avinya ACC',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall!
-                              .copyWith(
-                                fontWeight: FontWeight.bold,
-                                fontStyle: FontStyle.normal,
-                                color: kTextBlackColor,
-                                letterSpacing: 1.2,
-                                fontSize: SizerUtil.deviceType ==
-                                        DeviceType.mobile
-                                    ? 12.sp
-                                    : SizerUtil.deviceType == DeviceType.tablet
-                                        ? 14.sp
-                                        : SizerUtil.deviceType == DeviceType.web
-                                            ? 08.sp
-                                            : 10.sp,
-                              ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis),
-                      Text('Avinya Alumni Community Center',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall!
-                              .copyWith(
+                        AvinyaBrandHeaderWidget(),
+                        Text('👋 Welcome ${firstName}!',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall!
+                                .copyWith(
                                   fontWeight: FontWeight.bold,
                                   fontStyle: FontStyle.normal,
-                                  color: kTextBlackColor,
-                                  //letterSpacing: 1.2,
+                                  color: turquoiseBlue,
+                                  letterSpacing: 1.2,
                                   fontSize:
                                       SizerUtil.deviceType == DeviceType.mobile
+                                          ? 14.sp
+                                          : SizerUtil.deviceType ==
+                                                  DeviceType.tablet
+                                              ? 16.sp
+                                              : SizerUtil.deviceType ==
+                                                      DeviceType.web
+                                                  ? 10.sp
+                                                  : 12.sp,
+                                ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis),
+                        if (userPerson.is_graduated != null &&
+                            userPerson.is_graduated!) ...[
+                          Text('Avinya ACC',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontStyle: FontStyle.normal,
+                                    color: kTextBlackColor,
+                                    letterSpacing: 1.2,
+                                    fontSize: SizerUtil.deviceType ==
+                                            DeviceType.mobile
+                                        ? 12.sp
+                                        : SizerUtil.deviceType ==
+                                                DeviceType.tablet
+                                            ? 14.sp
+                                            : SizerUtil.deviceType ==
+                                                    DeviceType.web
+                                                ? 08.sp
+                                                : 10.sp,
+                                  ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis),
+                          Text('Avinya Alumni Community Center',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontStyle: FontStyle.normal,
+                                      color: kTextBlackColor,
+                                      //letterSpacing: 1.2,
+                                      fontSize: SizerUtil.deviceType ==
+                                              DeviceType.mobile
                                           ? 08.sp
                                           : SizerUtil.deviceType ==
                                                   DeviceType.tablet
@@ -884,55 +843,33 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
                                                       DeviceType.web
                                                   ? 04.sp
                                                   : 06.sp),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis),
-                    ] else
-                      Text('Avinya Student',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleSmall!
-                              .copyWith(
-                                fontWeight: FontWeight.bold,
-                                fontStyle: FontStyle.normal,
-                                color: kTextBlackColor,
-                                letterSpacing: 1.2,
-                                fontSize: SizerUtil.deviceType ==
-                                        DeviceType.mobile
-                                    ? 12.sp
-                                    : SizerUtil.deviceType == DeviceType.tablet
-                                        ? 14.sp
-                                        : SizerUtil.deviceType == DeviceType.web
-                                            ? 08.sp
-                                            : 10.sp,
-                              ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis),
-                    Text(
-                        '${alumniPerson.organization != null ? alumniPerson.organization!.parent_organizations.first.name!.name_en ?? 'N/A' : '/NA'}',
-                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.normal,
-                              color: kTextBlackColor,
-                              //letterSpacing: 1.2,
-                              fontSize: SizerUtil.deviceType ==
-                                      DeviceType.mobile
-                                  ? 10.sp
-                                  : SizerUtil.deviceType == DeviceType.tablet
-                                      ? 12.sp
-                                      : SizerUtil.deviceType == DeviceType.web
-                                          ? 06.sp
-                                          : 08.sp,
-                            ),
-                        //maxLines: 2,
-                        overflow: TextOverflow.ellipsis),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _getAnimalIcon(alumniPerson.organization != null
-                            ? alumniPerson.organization!.description ?? 'N/A'
-                            : 'N/A'),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis),
+                        ] else
+                          Text('Avinya Student',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontStyle: FontStyle.normal,
+                                    color: kTextBlackColor,
+                                    letterSpacing: 1.2,
+                                    fontSize: SizerUtil.deviceType ==
+                                            DeviceType.mobile
+                                        ? 12.sp
+                                        : SizerUtil.deviceType ==
+                                                DeviceType.tablet
+                                            ? 14.sp
+                                            : SizerUtil.deviceType ==
+                                                    DeviceType.web
+                                                ? 08.sp
+                                                : 10.sp,
+                                  ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis),
                         Text(
-                            '${alumniPerson.organization != null ? alumniPerson.organization!.description ?? 'N/A' : '/NA'}',
+                            '${alumniPerson.organization != null ? alumniPerson.organization!.parent_organizations.first.name!.name_en ?? 'N/A' : '/NA'}',
                             style: Theme.of(context)
                                 .textTheme
                                 .titleSmall!
@@ -952,60 +889,17 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
                                                   ? 06.sp
                                                   : 08.sp,
                                 ),
-                            maxLines: 2,
+                            //maxLines: 2,
                             overflow: TextOverflow.ellipsis),
-                      ],
-                    ),
-                    // SizedBox(
-                    //   height: 1.h,
-                    // ),
-                    CircleAvatar(
-                      radius: SizerUtil.deviceType == DeviceType.tablet
-                          ? 12.w
-                          : 13.w,
-                      backgroundColor: kSecondaryColor,
-                      backgroundImage: alumniPerson
-                                  .alumni_profile_picture?.picture !=
-                              null
-                          ? MemoryImage(base64Decode(
-                              alumniPerson.alumni_profile_picture!.picture!))
-                          : AssetImage(imagePath) as ImageProvider,
-                    ),
-                    SizedBox(
-                      height: 1.h,
-                    ),
-                    Table(
-                      columnWidths: {
-                        0: FixedColumnWidth(20.w),
-                        1: FlexColumnWidth(), // Value (takes the rest)// Width for labels
-                      },
-                      children: [
-                        TableRow(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('NIC :',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FontStyle.normal,
-                                      color: kTextBlackColor,
-                                      //letterSpacing: 1.2,
-                                      fontSize: SizerUtil.deviceType ==
-                                              DeviceType.mobile
-                                          ? 10.sp
-                                          : SizerUtil.deviceType ==
-                                                  DeviceType.tablet
-                                              ? 12.sp
-                                              : SizerUtil.deviceType ==
-                                                      DeviceType.web
-                                                  ? 06.sp
-                                                  : 08.sp,
-                                    ),
-                                //maxLines: 2,
-                                overflow: TextOverflow.ellipsis),
+                            _getAnimalIcon(alumniPerson.organization != null
+                                ? alumniPerson.organization!.description ??
+                                    'N/A'
+                                : 'N/A'),
                             Text(
-                                '${alumniPerson.nic_no != null ? alumniPerson.nic_no : 'N/A'}',
+                                '${alumniPerson.organization != null ? alumniPerson.organization!.description ?? 'N/A' : '/NA'}',
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleSmall!
@@ -1029,310 +923,383 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
                                 overflow: TextOverflow.ellipsis),
                           ],
                         ),
-                        TableRow(
-                          children: [
-                            Text('Phone :',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FontStyle.normal,
-                                      color: kTextBlackColor,
-                                      //letterSpacing: 1.2,
-                                      fontSize: SizerUtil.deviceType ==
-                                              DeviceType.mobile
-                                          ? 10.sp
-                                          : SizerUtil.deviceType ==
-                                                  DeviceType.tablet
-                                              ? 12.sp
-                                              : SizerUtil.deviceType ==
-                                                      DeviceType.web
-                                                  ? 06.sp
-                                                  : 08.sp,
-                                    ),
-                                //maxLines: 2,
-                                overflow: TextOverflow.ellipsis),
-                            Text(
-                                '${alumniPerson.phone != null ? alumniPerson.phone : 'N/A'}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FontStyle.normal,
-                                      color: kTextBlackColor,
-                                      //letterSpacing: 1.2,
-                                      fontSize: SizerUtil.deviceType ==
-                                              DeviceType.mobile
-                                          ? 10.sp
-                                          : SizerUtil.deviceType ==
-                                                  DeviceType.tablet
-                                              ? 12.sp
-                                              : SizerUtil.deviceType ==
-                                                      DeviceType.web
-                                                  ? 06.sp
-                                                  : 08.sp,
-                                    ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            Text('Status :',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FontStyle.normal,
-                                      color: kTextBlackColor,
-                                      //letterSpacing: 1.2,
-                                      fontSize: SizerUtil.deviceType ==
-                                              DeviceType.mobile
-                                          ? 10.sp
-                                          : SizerUtil.deviceType ==
-                                                  DeviceType.tablet
-                                              ? 12.sp
-                                              : SizerUtil.deviceType ==
-                                                      DeviceType.web
-                                                  ? 06.sp
-                                                  : 08.sp,
-                                    ),
-                                //maxLines: 2,
-                                overflow: TextOverflow.ellipsis),
-                            Text(
-                                '${alumniPerson.alumni != null ? alumniPerson.alumni!.status : 'N/A'}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FontStyle.normal,
-                                      color: kTextBlackColor,
-                                      //letterSpacing: 1.2,
-                                      fontSize: SizerUtil.deviceType ==
-                                              DeviceType.mobile
-                                          ? 10.sp
-                                          : SizerUtil.deviceType ==
-                                                  DeviceType.tablet
-                                              ? 12.sp
-                                              : SizerUtil.deviceType ==
-                                                      DeviceType.web
-                                                  ? 06.sp
-                                                  : 08.sp,
-                                    ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis),
-                          ],
-                        ),
-
                         // SizedBox(
                         //   height: 1.h,
                         // ),
-                        // _renderSocialLinks(
-                        //     assetPath: "assets/images/linkedin.png",
-                        //     platformName: "Linkedin",
-                        //     url: alumniPerson.alumni?.linkedin_id),
-                        // _renderSocialLinks(
-                        //     assetPath: "assets/images/facebook.png",
-                        //     platformName: "Facebook",
-                        //     url: alumniPerson.alumni?.facebook_id),
-                        // _renderSocialLinks(
-                        //     assetPath: "assets/images/instagram.png",
-                        //     platformName: "Instagram",
-                        //     url: alumniPerson.alumni?.instagram_id),
-                        // _renderSocialLinks(
-                        //     assetPath: "assets/images/tiktok.png",
-                        //     platformName: "Tiktok",
-                        //     url: alumniPerson.alumni?.tiktok_id),
-                      ],
-                    ),
-                    _buildStatusSection(alumniPerson),
-                    SizedBox(
-                      height: 1.h,
-                    ),
-                    Column(
-                      children: [
-                        Obx(() {
-                          return SwitchListTile(
-                              title: Text("I am looking for a job",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall!
-                                      .copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        fontStyle: FontStyle.normal,
-                                        color: kTextBlackColor,
-                                        letterSpacing: 1.2,
-                                        fontSize: SizerUtil.deviceType ==
-                                                DeviceType.mobile
-                                            ? 12.sp
-                                            : SizerUtil.deviceType ==
-                                                    DeviceType.tablet
-                                                ? 14.sp
-                                                : SizerUtil.deviceType ==
-                                                        DeviceType.web
-                                                    ? 08.sp
-                                                    : 10.sp,
-                                      ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis),
-                              value: _homeController.lookingForJob.value,
-                              activeColor:
-                                  turquoiseBlue, // Change switch color when ON
-                              inactiveThumbColor: Colors
-                                  .grey, // Change switch thumb color when OFF
-                              onChanged: (value) =>
-                                  _homeController.lookingForJob.value = value);
-                        }),
-                        Obx(() {
-                          return SwitchListTile(
-                            title: Text("Help me update my CV?",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FontStyle.normal,
-                                      color: kTextBlackColor,
-                                      letterSpacing: 1.2,
-                                      fontSize: SizerUtil.deviceType ==
-                                              DeviceType.mobile
-                                          ? 12.sp
-                                          : SizerUtil.deviceType ==
-                                                  DeviceType.tablet
-                                              ? 14.sp
-                                              : SizerUtil.deviceType ==
-                                                      DeviceType.web
-                                                  ? 08.sp
-                                                  : 10.sp,
-                                    ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis),
-                            value: _homeController.updateCV.value,
-                            activeColor: turquoiseBlue,
-                            inactiveThumbColor: Colors.grey,
-                            onChanged: (value) =>
-                                _homeController.updateCV.value = value,
-                          );
-                        }),
-                      ],
-                    ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: ((context) {
-                                  return MyAlumniInfoViweScreen(
-                                    cameFromEditButton: true,
-                                  );
-                                }),
-                              ),
-                            );
+                        CircleAvatar(
+                          radius: SizerUtil.deviceType == DeviceType.tablet
+                              ? 12.w
+                              : 13.w,
+                          backgroundColor: kSecondaryColor,
+                          backgroundImage:
+                              alumniPerson.alumni_profile_picture?.picture !=
+                                      null
+                                  ? MemoryImage(base64Decode(alumniPerson
+                                      .alumni_profile_picture!.picture!))
+                                  : AssetImage(imagePath) as ImageProvider,
+                        ),
+                        SizedBox(
+                          height: 1.h,
+                        ),
+                        Table(
+                          columnWidths: {
+                            0: FixedColumnWidth(20.w),
+                            1: FlexColumnWidth(), // Value (takes the rest)// Width for labels
                           },
-                          icon: Icon(
-                            Icons.edit,
-                            size: SizerUtil.deviceType == DeviceType.tablet
-                                ? 6.w
-                                : 5.w,
-                          )),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 1.h),
-            Card(
-              color: turquoiseBlue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: SizedBox(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors
-                                    .white, // You can change this to any color
-                                width: 2,
-                              ),
-                            ),
-                            child: Image.asset(
-                              'assets/images/avinya_logo.png',
-                              width: SizerUtil.deviceType == DeviceType.tablet
-                                  ? 13.w
-                                  : 11.w,
-                              height: SizerUtil.deviceType == DeviceType.tablet
-                                  ? 13.h
-                                  : 11.h,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 1.w,
-                          ),
-                          Column(
-                            children: [
-                              Text('AVINYA FOUNDATION',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall!
-                                      .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          fontStyle: FontStyle.normal,
-                                          color: kTextBlackColor,
-                                          letterSpacing: 0.8,
-                                          fontSize: SizerUtil.deviceType ==
-                                                  DeviceType.mobile
-                                              ? 16.sp
-                                              : SizerUtil.deviceType ==
-                                                      DeviceType.tablet
-                                                  ? 18.sp
-                                                  : SizerUtil.deviceType ==
-                                                          DeviceType.web
-                                                      ? 12.sp
-                                                      : 14.sp),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis),
-                              Text(
-                                  'Giving Hope.Creating Vision.Changing Lives.',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall!
-                                      .copyWith(
+                          children: [
+                            TableRow(
+                              children: [
+                                Text('NIC :',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(
                                           fontWeight: FontWeight.bold,
                                           fontStyle: FontStyle.normal,
                                           color: kTextBlackColor,
                                           //letterSpacing: 1.2,
                                           fontSize: SizerUtil.deviceType ==
                                                   DeviceType.mobile
-                                              ? 08.sp
+                                              ? 10.sp
                                               : SizerUtil.deviceType ==
                                                       DeviceType.tablet
-                                                  ? 10.sp
+                                                  ? 12.sp
                                                   : SizerUtil.deviceType ==
                                                           DeviceType.web
-                                                      ? 04.sp
-                                                      : 06.sp),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis),
-                            ],
-                          )
-                        ],
-                      ),
-                      Text('Upcoming Events',
+                                                      ? 06.sp
+                                                      : 08.sp,
+                                        ),
+                                    //maxLines: 2,
+                                    overflow: TextOverflow.ellipsis),
+                                Text(
+                                    '${alumniPerson.nic_no != null ? alumniPerson.nic_no : 'N/A'}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.normal,
+                                          color: kTextBlackColor,
+                                          //letterSpacing: 1.2,
+                                          fontSize: SizerUtil.deviceType ==
+                                                  DeviceType.mobile
+                                              ? 10.sp
+                                              : SizerUtil.deviceType ==
+                                                      DeviceType.tablet
+                                                  ? 12.sp
+                                                  : SizerUtil.deviceType ==
+                                                          DeviceType.web
+                                                      ? 06.sp
+                                                      : 08.sp,
+                                        ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis),
+                              ],
+                            ),
+                            TableRow(
+                              children: [
+                                Text('Phone :',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.normal,
+                                          color: kTextBlackColor,
+                                          //letterSpacing: 1.2,
+                                          fontSize: SizerUtil.deviceType ==
+                                                  DeviceType.mobile
+                                              ? 10.sp
+                                              : SizerUtil.deviceType ==
+                                                      DeviceType.tablet
+                                                  ? 12.sp
+                                                  : SizerUtil.deviceType ==
+                                                          DeviceType.web
+                                                      ? 06.sp
+                                                      : 08.sp,
+                                        ),
+                                    //maxLines: 2,
+                                    overflow: TextOverflow.ellipsis),
+                                Text(
+                                    '${alumniPerson.phone != null ? alumniPerson.phone : 'N/A'}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.normal,
+                                          color: kTextBlackColor,
+                                          //letterSpacing: 1.2,
+                                          fontSize: SizerUtil.deviceType ==
+                                                  DeviceType.mobile
+                                              ? 10.sp
+                                              : SizerUtil.deviceType ==
+                                                      DeviceType.tablet
+                                                  ? 12.sp
+                                                  : SizerUtil.deviceType ==
+                                                          DeviceType.web
+                                                      ? 06.sp
+                                                      : 08.sp,
+                                        ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis),
+                              ],
+                            ),
+                            TableRow(
+                              children: [
+                                Text('Status :',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.normal,
+                                          color: kTextBlackColor,
+                                          //letterSpacing: 1.2,
+                                          fontSize: SizerUtil.deviceType ==
+                                                  DeviceType.mobile
+                                              ? 10.sp
+                                              : SizerUtil.deviceType ==
+                                                      DeviceType.tablet
+                                                  ? 12.sp
+                                                  : SizerUtil.deviceType ==
+                                                          DeviceType.web
+                                                      ? 06.sp
+                                                      : 08.sp,
+                                        ),
+                                    //maxLines: 2,
+                                    overflow: TextOverflow.ellipsis),
+                                Text(
+                                    '${alumniPerson.alumni != null ? alumniPerson.alumni!.status : 'N/A'}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.normal,
+                                          color: kTextBlackColor,
+                                          //letterSpacing: 1.2,
+                                          fontSize: SizerUtil.deviceType ==
+                                                  DeviceType.mobile
+                                              ? 10.sp
+                                              : SizerUtil.deviceType ==
+                                                      DeviceType.tablet
+                                                  ? 12.sp
+                                                  : SizerUtil.deviceType ==
+                                                          DeviceType.web
+                                                      ? 06.sp
+                                                      : 08.sp,
+                                        ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis),
+                              ],
+                            ),
+
+                            // SizedBox(
+                            //   height: 1.h,
+                            // ),
+                            // _renderSocialLinks(
+                            //     assetPath: "assets/images/linkedin.png",
+                            //     platformName: "Linkedin",
+                            //     url: alumniPerson.alumni?.linkedin_id),
+                            // _renderSocialLinks(
+                            //     assetPath: "assets/images/facebook.png",
+                            //     platformName: "Facebook",
+                            //     url: alumniPerson.alumni?.facebook_id),
+                            // _renderSocialLinks(
+                            //     assetPath: "assets/images/instagram.png",
+                            //     platformName: "Instagram",
+                            //     url: alumniPerson.alumni?.instagram_id),
+                            // _renderSocialLinks(
+                            //     assetPath: "assets/images/tiktok.png",
+                            //     platformName: "Tiktok",
+                            //     url: alumniPerson.alumni?.tiktok_id),
+                          ],
+                        ),
+                        _buildStatusSection(alumniPerson),
+                        SizedBox(
+                          height: 1.h,
+                        ),
+                        Column(
+                          children: [
+                            Obx(() {
+                              return SwitchListTile(
+                                  title: Text("I am looking for a job",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall!
+                                          .copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            fontStyle: FontStyle.normal,
+                                            color: kTextBlackColor,
+                                            letterSpacing: 1.2,
+                                            fontSize: SizerUtil.deviceType ==
+                                                    DeviceType.mobile
+                                                ? 12.sp
+                                                : SizerUtil.deviceType ==
+                                                        DeviceType.tablet
+                                                    ? 14.sp
+                                                    : SizerUtil.deviceType ==
+                                                            DeviceType.web
+                                                        ? 08.sp
+                                                        : 10.sp,
+                                          ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis),
+                                  value: _homeController.lookingForJob.value,
+                                  activeColor:
+                                      turquoiseBlue, // Change switch color when ON
+                                  inactiveThumbColor: Colors
+                                      .grey, // Change switch thumb color when OFF
+                                  onChanged: (value) => _homeController
+                                      .lookingForJob.value = value);
+                            }),
+                            Obx(() {
+                              return SwitchListTile(
+                                title: Text("Help me update my CV?",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.normal,
+                                          color: kTextBlackColor,
+                                          letterSpacing: 1.2,
+                                          fontSize: SizerUtil.deviceType ==
+                                                  DeviceType.mobile
+                                              ? 12.sp
+                                              : SizerUtil.deviceType ==
+                                                      DeviceType.tablet
+                                                  ? 14.sp
+                                                  : SizerUtil.deviceType ==
+                                                          DeviceType.web
+                                                      ? 08.sp
+                                                      : 10.sp,
+                                        ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis),
+                                value: _homeController.updateCV.value,
+                                activeColor: turquoiseBlue,
+                                inactiveThumbColor: Colors.grey,
+                                onChanged: (value) =>
+                                    _homeController.updateCV.value = value,
+                              );
+                            }),
+                          ],
+                        ),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: ((context) {
+                                      return MyAlumniInfoViweScreen(
+                                        cameFromEditButton: true,
+                                      );
+                                    }),
+                                  ),
+                                );
+                              },
+                              icon: Icon(
+                                Icons.edit,
+                                size: SizerUtil.deviceType == DeviceType.tablet
+                                    ? 6.w
+                                    : 5.w,
+                              )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 1.h),
+              Card(
+                color: turquoiseBlue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: SizedBox(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        RepaintBoundary(child: AvinyaBrandHeaderWidget()),
+                        Text('Upcoming Events',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(
+                                  color: kTextBlackColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize:
+                                      SizerUtil.deviceType == DeviceType.mobile
+                                          ? 15.sp
+                                          : SizerUtil.deviceType ==
+                                                  DeviceType.tablet
+                                              ? 16.sp
+                                              : SizerUtil.deviceType ==
+                                                      DeviceType.web
+                                                  ? 14.sp
+                                                  : 15.sp,
+                                )),
+                        FutureBuilder<List<ActivityInstance>>(
+                          future: _loadUpcomingEventsData(person_id),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Container(
+                                margin: EdgeInsets.only(top: 10),
+                                child: SpinKitCircle(
+                                  color: (Colors.blueGrey[400]),
+                                  size: 70,
+                                ),
+                              );
+                            } else if (snapshot.hasError) {
+                              return const Center(
+                                child: Text('Something went wrong...'),
+                              );
+                            } else if (!snapshot.hasData) {
+                              return const Center(
+                                child: Text('No Upcoming Events Found'),
+                              );
+                            }
+                            final upcomingEventData = snapshot.data!;
+                            return ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: upcomingEventData.length,
+                              itemBuilder: (context, index) {
+                                return RepaintBoundary(
+                                  child: UpcomingEventCard(
+                                      eventData: upcomingEventData[index],
+                                      alumniPerson: alumniPerson),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 1.h),
+              Card(
+                color: turquoiseBlue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      RepaintBoundary(child: AvinyaBrandHeaderWidget()),
+                      Text('Completed Events',
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium!
@@ -1349,7 +1316,7 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
                                             : 15.sp,
                               )),
                       FutureBuilder<List<ActivityInstance>>(
-                        future: _upcomingEventsData,
+                        future: _loadCompletedEventsData(person_id),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -1366,286 +1333,80 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
                             );
                           } else if (!snapshot.hasData) {
                             return const Center(
-                              child: Text('No Upcoming Events Found'),
+                              child: Text('No Completed Events Found'),
                             );
                           }
-                          final upcomingEventData = snapshot.data!;
+                          final completedEventData = snapshot.data!;
                           return ListView.builder(
                             physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
-                            itemCount: upcomingEventData.length,
+                            itemCount: completedEventData.length,
                             itemBuilder: (context, index) {
-                              return UpcomingEventCard(
-                                  eventData: upcomingEventData[index],
-                                  alumniPerson: alumniPerson);
+                              return RepaintBoundary(
+                                child: CompletedEventCard(
+                                    eventData: completedEventData[index],
+                                    alumniPerson: alumniPerson),
+                              );
                             },
                           );
                         },
                       ),
-                      SizedBox(height: 10),
                     ],
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 1.h),
-            Card(
-              color: turquoiseBlue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
+              SizedBox(height: 1.h),
+              Card(
+                color: turquoiseBlue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors
-                                  .white, // You can change this to any color
-                              width: 2,
-                            ),
-                          ),
-                          child: Image.asset(
-                            'assets/images/avinya_logo.png',
-                            width: SizerUtil.deviceType == DeviceType.tablet
-                                ? 13.w
-                                : 11.w,
-                            height: SizerUtil.deviceType == DeviceType.tablet
-                                ? 13.h
-                                : 11.h,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 1.w,
-                        ),
-                        Column(
-                          children: [
-                            Text('AVINYA FOUNDATION',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        fontStyle: FontStyle.normal,
-                                        color: kTextBlackColor,
-                                        letterSpacing: 0.8,
-                                        fontSize: SizerUtil.deviceType ==
-                                                DeviceType.mobile
-                                            ? 16.sp
-                                            : SizerUtil.deviceType ==
-                                                    DeviceType.tablet
-                                                ? 18.sp
-                                                : SizerUtil.deviceType ==
-                                                        DeviceType.web
-                                                    ? 12.sp
-                                                    : 14.sp),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis),
-                            Text('Giving Hope.Creating Vision.Changing Lives.',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        fontStyle: FontStyle.normal,
-                                        color: kTextBlackColor,
-                                        //letterSpacing: 1.2,
-                                        fontSize: SizerUtil.deviceType ==
-                                                DeviceType.mobile
-                                            ? 08.sp
-                                            : SizerUtil.deviceType ==
-                                                    DeviceType.tablet
-                                                ? 10.sp
-                                                : SizerUtil.deviceType ==
-                                                        DeviceType.web
-                                                    ? 04.sp
-                                                    : 06.sp),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis),
-                          ],
-                        )
-                      ],
-                    ),
-                    Text('Completed Events',
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(
-                              color: kTextBlackColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: SizerUtil.deviceType ==
-                                      DeviceType.mobile
-                                  ? 15.sp
-                                  : SizerUtil.deviceType == DeviceType.tablet
-                                      ? 16.sp
-                                      : SizerUtil.deviceType == DeviceType.web
-                                          ? 14.sp
-                                          : 15.sp,
-                            )),
-                    FutureBuilder<List<ActivityInstance>>(
-                      future: _completedEventsData,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Container(
-                            margin: EdgeInsets.only(top: 10),
-                            child: SpinKitCircle(
-                              color: (Colors.blueGrey[400]),
-                              size: 70,
-                            ),
-                          );
-                        } else if (snapshot.hasError) {
-                          return const Center(
-                            child: Text('Something went wrong...'),
-                          );
-                        } else if (!snapshot.hasData) {
-                          return const Center(
-                            child: Text('No Completed Events Found'),
-                          );
-                        }
-                        final completedEventData = snapshot.data!;
-                        return ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: completedEventData.length,
-                          itemBuilder: (context, index) {
-                            return CompletedEventCard(
-                                eventData: completedEventData[index],
-                                alumniPerson: alumniPerson);
-                          },
-                        );
+                    RepaintBoundary(child: AvinyaBrandHeaderWidget()),
+                    TimelineWidget(
+                      personName: userPerson.preferred_name!,
+                      workTimeline: alumniPerson.alumni_work_experience != null
+                          ? alumniPerson.alumni_work_experience!
+                              .map((workExperience) {
+                              return {
+                                "title": workExperience.jobTitle ?? '',
+                                "id": workExperience.id ?? '',
+                                "company": workExperience.companyName ?? '',
+                                "duration": workExperience.currentlyWorking ==
+                                        true
+                                    ? "${workExperience.startDate} - Present"
+                                    : "${workExperience.startDate} - ${workExperience.endDate ?? ''}",
+                              };
+                            }).toList()
+                          : [],
+                      educationTimeline:
+                          alumniPerson.alumni_education_qualifications != null
+                              ? alumniPerson.alumni_education_qualifications!
+                                  .map((EduQualifications) {
+                                  return {
+                                    "university":
+                                        EduQualifications.universityName ?? '',
+                                    "id": EduQualifications.id ?? '',
+                                    "course":
+                                        EduQualifications.courseName ?? '',
+                                    "duration": EduQualifications
+                                                .isCurrentlyStudying ==
+                                            true
+                                        ? "${EduQualifications.startDate} - Present"
+                                        : "${EduQualifications.startDate} - ${EduQualifications.endDate ?? ''}",
+                                  };
+                                }).toList()
+                              : [],
+                      onItemTap: (item, type) {
+                        _showEditModal(context, item, type);
                       },
                     ),
                   ],
                 ),
               ),
-            ),
-            SizedBox(height: 1.h),
-            Card(
-              color: turquoiseBlue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors
-                                .white, // You can change this to any color
-                            width: 2,
-                          ),
-                        ),
-                        child: Image.asset(
-                          'assets/images/avinya_logo.png',
-                          width: SizerUtil.deviceType == DeviceType.tablet
-                              ? 13.w
-                              : 11.w,
-                          height: SizerUtil.deviceType == DeviceType.tablet
-                              ? 13.h
-                              : 11.h,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 1.w,
-                      ),
-                      Column(
-                        children: [
-                          Text('AVINYA FOUNDATION',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleSmall!
-                                  .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FontStyle.normal,
-                                      color: kTextBlackColor,
-                                      letterSpacing: 0.8,
-                                      fontSize: SizerUtil.deviceType ==
-                                              DeviceType.mobile
-                                          ? 16.sp
-                                          : SizerUtil.deviceType ==
-                                                  DeviceType.tablet
-                                              ? 18.sp
-                                              : SizerUtil.deviceType ==
-                                                      DeviceType.web
-                                                  ? 12.sp
-                                                  : 14.sp),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis),
-                          Text('Giving Hope.Creating Vision.Changing Lives.',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleSmall!
-                                  .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FontStyle.normal,
-                                      color: kTextBlackColor,
-                                      //letterSpacing: 1.2,
-                                      fontSize: SizerUtil.deviceType ==
-                                              DeviceType.mobile
-                                          ? 08.sp
-                                          : SizerUtil.deviceType ==
-                                                  DeviceType.tablet
-                                              ? 10.sp
-                                              : SizerUtil.deviceType ==
-                                                      DeviceType.web
-                                                  ? 04.sp
-                                                  : 06.sp),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis),
-                        ],
-                      )
-                    ],
-                  ),
-                  TimelineWidget(
-                    personName: userPerson.preferred_name!,
-                    workTimeline: alumniPerson.alumni_work_experience != null
-                        ? alumniPerson.alumni_work_experience!
-                            .map((workExperience) {
-                            return {
-                              "title": workExperience.jobTitle ?? '',
-                              "id": workExperience.id ?? '',
-                              "company": workExperience.companyName ?? '',
-                              "duration": workExperience.currentlyWorking == true
-                                  ? "${workExperience.startDate} - Present"
-                                  : "${workExperience.startDate} - ${workExperience.endDate ?? ''}",
-                            };
-                          }).toList()
-                        : [],
-                    educationTimeline: alumniPerson
-                                .alumni_education_qualifications !=
-                            null
-                        ? alumniPerson.alumni_education_qualifications!
-                            .map((EduQualifications) {
-                            return {
-                              "university": EduQualifications.universityName ?? '',
-                              "id": EduQualifications.id ?? '',
-                              "course": EduQualifications.courseName ?? '',
-                              "duration": EduQualifications.isCurrentlyStudying ==
-                                      true
-                                  ? "${EduQualifications.startDate} - Present"
-                                  : "${EduQualifications.startDate} - ${EduQualifications.endDate ?? ''}",
-                            };
-                          }).toList()
-                        : [],
-                    onItemTap: (item, type) {
-                      _showEditModal(context, item, type);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -1704,12 +1465,12 @@ class _UpcomingEventCardState extends State<UpcomingEventCard> {
                       color: kTextBlackColor,
                       fontWeight: FontWeight.bold,
                       fontSize: SizerUtil.deviceType == DeviceType.mobile
-                          ? 14.sp
+                          ? 12.sp
                           : SizerUtil.deviceType == DeviceType.tablet
-                              ? 15.sp
+                              ? 13.sp
                               : SizerUtil.deviceType == DeviceType.web
-                                  ? 13.sp
-                                  : 14.sp,
+                                  ? 11.sp
+                                  : 12.sp,
                     ),
               ),
               SizedBox(
@@ -2023,7 +1784,7 @@ class _CompletedEventCardState extends State<CompletedEventCard> {
     final eventGift = widget.eventData.event_gift;
 
     return SizedBox(
-      width: MediaQuery.of(context).size.height * 0.6,
+      width: MediaQuery.of(context).size.width * 0.6,
       child: Card(
         color: Theme.of(context).brightness == Brightness.dark
             ? kDarkModeSurfaceColor
@@ -2033,13 +1794,15 @@ class _CompletedEventCardState extends State<CompletedEventCard> {
         ),
         margin: EdgeInsets.all(8),
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(8),
           child: Row(
-            //crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              SizedBox(
+                width: 25.w,
+                child: Wrap(
+                  direction: Axis.horizontal,
                   children: [
                     Text(
                       widget.eventData.name ?? '',
@@ -2047,12 +1810,12 @@ class _CompletedEventCardState extends State<CompletedEventCard> {
                             color: kTextBlackColor,
                             fontWeight: FontWeight.bold,
                             fontSize: SizerUtil.deviceType == DeviceType.mobile
-                                ? 14.sp
+                                ? 12.sp
                                 : SizerUtil.deviceType == DeviceType.tablet
-                                    ? 15.sp
+                                    ? 13.sp
                                     : SizerUtil.deviceType == DeviceType.web
-                                        ? 13.sp
-                                        : 14.sp,
+                                        ? 11.sp
+                                        : 12.sp,
                           ),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
@@ -2093,15 +1856,15 @@ class _CompletedEventCardState extends State<CompletedEventCard> {
                 ),
               ),
               SizedBox(width: 1.w),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+              Expanded(
+                  child: Wrap(
                 children: List.generate(5, (index) {
                   return IconButton(
                     padding: EdgeInsets.zero,
                     constraints: BoxConstraints(),
                     icon: Icon(
                       size:
-                          SizerUtil.deviceType == DeviceType.tablet ? 8.w : 7.w,
+                          SizerUtil.deviceType == DeviceType.tablet ? 6.w : 5.w,
                       Icons.star,
                       color: selectedRating != null && selectedRating! > index
                           ? Colors.amber
@@ -2115,7 +1878,7 @@ class _CompletedEventCardState extends State<CompletedEventCard> {
                           },
                   );
                 }),
-              ),
+              )),
               // SizedBox(height: 8),
               // Row(
               //   children: [

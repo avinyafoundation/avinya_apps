@@ -2,5 +2,5 @@
   "githubPullRequests.ignoredPullRequestBranches": [
     "main"
   ],
-  "dart.flutterSdkPath": ".fvm/versions/3.13.1"
+  "dart.flutterSdkPath": ".fvm/versions/3.27.0"
 }

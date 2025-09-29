@@ -15,6 +15,7 @@ class _VehicleFuelConsumptionScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.yellow[600],
         automaticallyImplyLeading: false,
         title: Text("Vehicle Fuel Consumption"),
       ),

@@ -54,7 +54,8 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
   }
 
   Future<List<Organization>> _loadBatchData() async {
-    _batchData = await fetchActiveOrganizationsByAvinyaType(86);
+    //_batchData = await fetchActiveOrganizationsByAvinyaType();
+    _batchData = await fetchOrganizationsByAvinyaTypeAndStatus(null,1);
     return _batchData;
   }
 
@@ -817,6 +818,7 @@ class _AssignDutyForParticipantState extends State<AssignDutyForParticipant> {
 
   Widget buildRoleDropDownButton(int tableIndex) {
     return DropdownButton<String>(
+      isExpanded: true,
       value: _selectedRoleValues[tableIndex],
       items: _dropDownRoleList.map<DropdownMenuItem<String>>(
         (String value) {

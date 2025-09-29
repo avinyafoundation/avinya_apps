@@ -86,28 +86,57 @@ class Organization {
       };
 }
 
-Future<List<Organization>> fetchOrganizationsByAvinyaType(
-    int avinya_type) async {
-  final uri = Uri.parse(
-          AppConfig.campusAssetsBffApiUrl + '/organizations_by_avinya_type')
-      .replace(queryParameters: {'avinya_type': avinya_type.toString()});
+// Future<List<Organization>> fetchOrganizationsByAvinyaType(
+//     int avinya_type) async {
+//   final uri = Uri.parse(
+//           AppConfig.campusAssetsBffApiUrl + '/organizations_by_avinya_type')
+//       .replace(queryParameters: {'avinya_type': avinya_type.toString()});
+
+//   final response = await http.get(
+//     uri,
+//     headers: <String, String>{
+//       'Content-Type': 'application/json; charset=UTF-8',
+//       'accept': 'application/json',
+//       'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+//     },
+//   );
+
+//   if (response.statusCode == 200) {
+//     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+
+//     List<Organization> organization = await resultsJson
+//         .map<Organization>((json) => Organization.fromJson(json))
+//         .toList();
+
+//     return organization;
+//   } else {
+//     throw Exception('Failed to load organizations');
+//   }
+// }
+Future<List<Organization>> fetchOrganizationsByAvinyaTypeAndStatus(
+    int? avinya_type, int? active) async {
+  Map<String, String> queryParams = {};
+
+  if (avinya_type != null) queryParams['avinya_type'] = avinya_type.toString();
+  if (active != null) queryParams['active'] = active.toString();
 
   final response = await http.get(
-    uri,
+    Uri.parse(
+            '${AppConfig.campusAttendanceBffApiUrl}/organizations_by_avinya_type_and_status')
+        .replace(queryParameters: queryParams),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
-  if (response.statusCode == 200) {
+  if (response.statusCode > 199 && response.statusCode < 300) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
 
     List<Organization> organization = await resultsJson
         .map<Organization>((json) => Organization.fromJson(json))
         .toList();
-
     return organization;
   } else {
     throw Exception('Failed to load organizations');

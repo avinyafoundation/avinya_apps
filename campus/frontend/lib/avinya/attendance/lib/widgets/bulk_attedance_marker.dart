@@ -46,7 +46,8 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
   }
 
   Future<List<Organization>> _loadBatchData() async {
-    _batchData = await fetchActiveOrganizationsByAvinyaType(86);
+    //_batchData = await fetchActiveOrganizationsByAvinyaType();
+    _batchData = await fetchOrganizationsByAvinyaTypeAndStatus(null, 1);
     _selectedOrganizationValue = _batchData.isNotEmpty ? _batchData.last : null;
     batchStartDate = DateFormat('MMM d, yyyy').format(DateTime.parse(
         _selectedOrganizationValue!.organization_metadata[0].value.toString()));

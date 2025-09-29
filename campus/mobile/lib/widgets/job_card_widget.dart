@@ -3,15 +3,15 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:gallery_saver/gallery_saver.dart';
+// import 'package:gallery_saver/gallery_saver.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:mobile/constants.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:gallery_saver/gallery_saver.dart';
+// import 'package:path_provider/path_provider.dart';
+// import 'package:gallery_saver/gallery_saver.dart';
 
 class JobCardWidget extends StatefulWidget {
   final String jobType;
@@ -36,22 +36,22 @@ class JobCardWidget extends StatefulWidget {
 class _JobCardWidgetState extends State<JobCardWidget> {
   Future<bool?> saveDecodedImage(Uint8List decodedImageBytes) async {
     //Determine MIME type
-    final mimeType = lookupMimeType('', headerBytes: decodedImageBytes);
-    final extension = getExtensionFromMime(mimeType ?? 'image/jpeg');
+    // final mimeType = lookupMimeType('', headerBytes: decodedImageBytes);
+    // final extension = getExtensionFromMime(mimeType ?? 'image/jpeg');
 
-    //Create file path with correct extension
-    final tempDir = await getTemporaryDirectory();
-    final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-    final filePath = '${tempDir.path}/jobPost_$timestamp.$extension';
+    // //Create file path with correct extension
+    // final tempDir = await getTemporaryDirectory();
+    // final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+    // final filePath = '${tempDir.path}/jobPost_$timestamp.$extension';
 
-    //Save the file
-    final file = await File(filePath).create();
-    await file.writeAsBytes(decodedImageBytes);
+    // //Save the file
+    // final file = await File(filePath).create();
+    // await file.writeAsBytes(decodedImageBytes);
 
-    //save to the gallery
-    bool? isSaved = await GallerySaver.saveImage(file.path);
+    // //save to the gallery
+    // bool? isSaved = await GallerySaver.saveImage(file.path);
 
-    return isSaved;
+    // return isSaved;
   }
 
   String getExtensionFromMime(String mime) {

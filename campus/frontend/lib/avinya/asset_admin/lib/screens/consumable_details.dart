@@ -28,27 +28,27 @@ class ConsumableDetailsScreen extends StatelessWidget {
           children: [
             Text(
               consumable!.name!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
               consumable!.description!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
               consumable!.avinyaTypeId!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
               consumable!.manufacturer!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
               consumable!.model!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
               consumable!.serialNumber!.toString(),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
         ),

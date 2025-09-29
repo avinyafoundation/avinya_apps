@@ -15,7 +15,7 @@ class _ManageJobsScreenState extends State<ManageJobsScreen> {
       appBar: AppBar(
         title: Text("Admin - Job Board",
             style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.blueGrey[400],
+        backgroundColor: Colors.blueGrey[300],
       ),
       body: SingleChildScrollView(
         child: Container(

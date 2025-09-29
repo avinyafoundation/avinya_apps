@@ -1,19 +1,33 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import 'package:attendance/data/organization.dart';
+//import 'package:enrollment/data/organization.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gallery/avinya/enrollment/lib/data/person.dart';
 import 'package:gallery/avinya/enrollment/lib/screens/student_create_screen.dart';
 import 'package:gallery/avinya/enrollment/lib/screens/student_update_screen.dart';
 import 'person_data_excel_report.dart';
 
-enum AvinyaTypeId { Empower, IT, CS }
+enum AvinyaTypeId {
+  Future_Enrollees,
+  Empower,
+  IT,
+  CS,
+  Empower_And_NVQ_Level3,
+  WorkStudy_City_And_Guilds,
+  WorkStudy_Maths_And_IT,
+  FullTime_Work_Placement
+}
 
 const avinyaTypeId = {
+  AvinyaTypeId.Future_Enrollees: 103,
   AvinyaTypeId.Empower: 37,
   AvinyaTypeId.IT: 10,
   AvinyaTypeId.CS: 96,
+  AvinyaTypeId.Empower_And_NVQ_Level3: 110,
+  AvinyaTypeId.WorkStudy_City_And_Guilds: 115,
+  AvinyaTypeId.WorkStudy_Maths_And_IT: 120,
+  AvinyaTypeId.FullTime_Work_Placement: 125
 };
 
 class Students extends StatefulWidget {
@@ -54,7 +68,7 @@ class _StudentsState extends State<Students> {
   }
 
   Future<List<Organization>> _loadBatchData() async {
-    return await fetchOrganizationsByAvinyaType(86);
+    return await fetchOrganizationsByAvinyaTypeAndStatus(null,null);
   }
 
   Future<List<AvinyaTypeId>> fetchAvinyaTypes(dynamic newValue) async {
@@ -70,19 +84,30 @@ class _StudentsState extends State<Students> {
 
       if (newValue.organization_metadata[1].value.toString() == '2024-07-26') {
         filteredAvinyaTypeIdValues = [
+          AvinyaTypeId.Future_Enrollees,
           AvinyaTypeId.Empower,
           AvinyaTypeId.IT,
           AvinyaTypeId.CS,
         ];
       } else {
         filteredAvinyaTypeIdValues = [
+          AvinyaTypeId.Future_Enrollees,
           AvinyaTypeId.Empower,
+          AvinyaTypeId.Empower_And_NVQ_Level3,
+          AvinyaTypeId.WorkStudy_City_And_Guilds,
+          AvinyaTypeId.WorkStudy_Maths_And_IT,
+          AvinyaTypeId.FullTime_Work_Placement
         ];
       }
     } else {
       // Default value if newValue is null or invalid
       filteredAvinyaTypeIdValues = [
+        AvinyaTypeId.Future_Enrollees,
         AvinyaTypeId.Empower,
+        AvinyaTypeId.Empower_And_NVQ_Level3,
+        AvinyaTypeId.WorkStudy_City_And_Guilds,
+        AvinyaTypeId.WorkStudy_Maths_And_IT,
+        AvinyaTypeId.FullTime_Work_Placement
       ];
     }
 
@@ -175,182 +200,193 @@ class _StudentsState extends State<Students> {
           Wrap(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.only(top: 20, left: 20),
-                child: Row(
+                padding: EdgeInsets.only(top: 20, left: 5),
+                child: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Text('Select a Batch :'),
                     SizedBox(
-                      width: 10,
+                      width: 5,
                     ),
-                    FutureBuilder<List<Organization>>(
-                      future: _fetchBatchData,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Container(
-                            margin: EdgeInsets.only(top: 10),
-                            child: SpinKitCircle(
-                              color: (Color.fromARGB(255, 74, 161, 70)),
-                              size: 70,
-                            ),
-                          );
-                        } else if (snapshot.hasError) {
-                          return const Center(
-                            child: Text('Something went wrong...'),
-                          );
-                        } else if (!snapshot.hasData) {
-                          return const Center(
-                            child: Text('No batch found'),
-                          );
-                        }
-                        final batchData = snapshot.data!;
-                        return DropdownButton<Organization>(
-                            value: _selectedValue,
-                            items: batchData.map((Organization batch) {
-                              return DropdownMenuItem(
-                                  value: batch,
-                                  child: Text(batch.name!.name_en ?? ''));
-                            }).toList(),
-                            onChanged: (Organization? newValue) async {
-                              if (newValue == null) {
-                                return;
-                              }
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: FutureBuilder<List<Organization>>(
+                        future: _fetchBatchData,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Container(
+                              margin: EdgeInsets.only(top: 10),
+                              child: SpinKitCircle(
+                                color: (Color.fromARGB(255, 74, 161, 70)),
+                                size: 70,
+                              ),
+                            );
+                          } else if (snapshot.hasError) {
+                            return const Center(
+                              child: Text('Something went wrong...'),
+                            );
+                          } else if (!snapshot.hasData) {
+                            return const Center(
+                              child: Text('No batch found'),
+                            );
+                          }
+                          final batchData = snapshot.data!;
+                          return DropdownButton<Organization>(
+                              value: _selectedValue,
+                              items: batchData.map((Organization batch) {
+                                return DropdownMenuItem(
+                                    value: batch,
+                                    child: Text(batch.name!.name_en ?? ''));
+                              }).toList(),
+                              onChanged: (Organization? newValue) async {
+                                if (newValue == null) {
+                                  return;
+                                }
 
-                              if (newValue.organization_metadata.isEmpty) {
-                                return;
-                              }
+                                // if (newValue.organization_metadata.isEmpty) {
+                                //   return;
+                                // }
 
-                              if (DateTime.parse(newValue
-                                      .organization_metadata[1].value
-                                      .toString())
-                                  .isBefore(DateTime.parse('2024-03-01'))) {
-                                filteredAvinyaTypeIdValues = [
-                                  AvinyaTypeId.Empower,
-                                ];
-                              } else {
-                                filteredAvinyaTypeIdValues = [
-                                  AvinyaTypeId.Empower,
-                                  AvinyaTypeId.IT,
-                                  AvinyaTypeId.CS,
-                                ];
-                              }
+                                // if (DateTime.parse(newValue
+                                //         .organization_metadata[1].value
+                                //         .toString())
+                                //     .isBefore(DateTime.parse('2024-03-01'))) {
+                                //   filteredAvinyaTypeIdValues = [
+                                //     AvinyaTypeId.Empower,
 
-                              setState(() {
-                                this._isFetching = true;
-                                filteredAvinyaTypeIdValues;
+                                //   ];
+                                // } else {
+                                //   filteredAvinyaTypeIdValues = [
+                                //     AvinyaTypeId.Empower,
+                                //     AvinyaTypeId.IT,
+                                //     AvinyaTypeId.CS,
+                                //   ];
+                                // }
+
+                                setState(() {
+                                  this._isFetching = true;
+                                  filteredAvinyaTypeIdValues;
+                                });
+
+                                if (filteredAvinyaTypeIdValues
+                                    .contains(_selectedAvinyaTypeId)) {
+                                  _fetchedPersonData = await fetchPersons(
+                                      newValue.id!,
+                                      avinyaTypeId[_selectedAvinyaTypeId]!);
+                                } else {
+                                  _selectedAvinyaTypeId =
+                                      filteredAvinyaTypeIdValues.first;
+
+                                  _fetchedPersonData = await fetchPersons(
+                                      newValue.id!,
+                                      avinyaTypeId[_selectedAvinyaTypeId]!);
+                                }
+
+                                setState(() {
+                                  _selectedValue = newValue;
+                                  this._isFetching = false;
+                                  _selectedAvinyaTypeId;
+                                  _data = MyData(_fetchedPersonData,
+                                      updateSelected, context);
+                                  filteredStudents = _fetchedPersonData;
+                                });
                               });
-
-                              if (filteredAvinyaTypeIdValues
-                                  .contains(_selectedAvinyaTypeId)) {
-                                _fetchedPersonData = await fetchPersons(
-                                    newValue.id!,
-                                    avinyaTypeId[_selectedAvinyaTypeId]!);
-                              } else {
-                                _selectedAvinyaTypeId =
-                                    filteredAvinyaTypeIdValues.first;
-
-                                _fetchedPersonData = await fetchPersons(
-                                    newValue.id!,
-                                    avinyaTypeId[_selectedAvinyaTypeId]!);
-                              }
-
-                              setState(() {
-                                _selectedValue = newValue;
-                                this._isFetching = false;
-                                _selectedAvinyaTypeId;
-                                _data = MyData(_fetchedPersonData,
-                                    updateSelected, context);
-                                filteredStudents = _fetchedPersonData;
-                              });
-                            });
-                      },
+                        },
+                      ),
                     ),
                     SizedBox(
                       width: 10,
                     ),
                     Text('Select a Programme :'),
                     SizedBox(
-                      width: 10,
+                      width: 5,
                     ),
-                    FutureBuilder<List<AvinyaTypeId>>(
-                      future: fetchAvinyaTypes(_selectedValue),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Container(
-                            margin: EdgeInsets.only(top: 10),
-                            child: SpinKitCircle(
-                              color: Colors.deepPurpleAccent,
-                              size: 70,
-                            ),
-                          );
-                        } else if (snapshot.hasError) {
-                          return const Center(
-                            child: Text('Something went wrong...'),
-                          );
-                        } else if (!snapshot.hasData) {
-                          return const Center(
-                            child: Text('No Avinya Type found'),
-                          );
-                        }
-
-                        final avinyaTypeData = snapshot.data!;
-                        return DropdownButton<AvinyaTypeId>(
-                          value: _selectedAvinyaTypeId,
-                          items: avinyaTypeData.map((typeId) {
-                            return DropdownMenuItem<AvinyaTypeId>(
-                              value: typeId,
-                              child: Text(
-                                typeId.name.toUpperCase(),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: FutureBuilder<List<AvinyaTypeId>>(
+                        future: fetchAvinyaTypes(_selectedValue),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Container(
+                              margin: EdgeInsets.only(top: 10),
+                              child: SpinKitCircle(
+                                color: Colors.deepPurpleAccent,
+                                size: 70,
                               ),
                             );
-                          }).toList(),
-                          onChanged: (AvinyaTypeId? value) async {
-                            if (value == null) {
-                              return;
-                            }
+                          } else if (snapshot.hasError) {
+                            return const Center(
+                              child: Text('Something went wrong...'),
+                            );
+                          } else if (!snapshot.hasData) {
+                            return const Center(
+                              child: Text('No Avinya Type found'),
+                            );
+                          }
 
-                            setState(() {
-                              _selectedAvinyaTypeId = value;
-                              _isFetching = true;
-                            });
+                          final avinyaTypeData = snapshot.data!;
+                          return DropdownButton<AvinyaTypeId>(
+                            value: _selectedAvinyaTypeId,
+                            items: avinyaTypeData.map((typeId) {
+                              return DropdownMenuItem<AvinyaTypeId>(
+                                value: typeId,
+                                child: Text(
+                                  typeId.name.toString(),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (AvinyaTypeId? value) async {
+                              if (value == null) {
+                                return;
+                              }
 
-                            if (avinyaTypeId[value] == 103 ||
-                                _selectedValue == null) {
-                              _fetchedPersonData =
-                                  await fetchPersons(-1, avinyaTypeId[value]!);
-                            } else {
-                              _fetchedPersonData = await fetchPersons(
-                                  _selectedValue!.id!, avinyaTypeId[value]!);
-                            }
+                              setState(() {
+                                _selectedAvinyaTypeId = value;
+                                _isFetching = true;
+                              });
 
-                            setState(() {
-                              _isFetching = false;
-                              _data = MyData(
-                                  _fetchedPersonData, updateSelected, context);
-                              filteredStudents = _fetchedPersonData;
-                            });
-                          },
-                        );
-                      },
+                              if (avinyaTypeId[value] == 103 ||
+                                  _selectedValue == null) {
+                                _fetchedPersonData = await fetchPersons(
+                                    -1, avinyaTypeId[value]!);
+                              } else {
+                                _fetchedPersonData = await fetchPersons(
+                                    _selectedValue!.id!, avinyaTypeId[value]!);
+                              }
+
+                              setState(() {
+                                _isFetching = false;
+                                _data = MyData(_fetchedPersonData,
+                                    updateSelected, context);
+                                filteredStudents = _fetchedPersonData;
+                              });
+                            },
+                          );
+                        },
+                      ),
                     ),
                     SizedBox(
                       width: 10,
                     ),
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SizedBox(
-                          width: 250,
-                          child: TextField(
-                            decoration: InputDecoration(
-                              labelText: 'Search by Name or NIC',
-                              border: OutlineInputBorder(),
-                              prefixIcon: Icon(Icons.search),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: 250,
+                            child: TextField(
+                              decoration: InputDecoration(
+                                labelText: 'Search by Name or NIC',
+                                border: OutlineInputBorder(),
+                                prefixIcon: Icon(Icons.search),
+                              ),
+                              onChanged: (query) {
+                                searchStudents(query);
+                              },
                             ),
-                            onChanged: (query) {
-                              searchStudents(query);
-                            },
                           ),
                         ),
                       ),
@@ -360,7 +396,7 @@ class _StudentsState extends State<Students> {
                     ),
                     FittedBox(
                       alignment: Alignment.topLeft,
-                      fit: BoxFit.contain,
+                      fit: BoxFit.scaleDown,
                       child: Container(
                         alignment: Alignment.bottomRight,
                         margin: const EdgeInsets.only(right: 20.0),
@@ -390,11 +426,11 @@ class _StudentsState extends State<Students> {
                       ),
                     ),
                     SizedBox(
-                      width: 5,
+                      width: 10,
                     ),
                     FittedBox(
                       alignment: Alignment.topLeft,
-                      fit: BoxFit.contain,
+                      fit: BoxFit.scaleDown,
                       child: Container(
                           alignment: Alignment.centerLeft,
                           margin: EdgeInsets.only(right: 10.0),

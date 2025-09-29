@@ -80,7 +80,7 @@ class _ExcelExportState extends State<MonthlyPaymentReportExcelExport> {
     // Styling for organization header
     final organizationHeaderStyle = CellStyle(
       bold: true,
-      backgroundColorHex: '#807f7d',
+      backgroundColorHex: ExcelColor.fromHexString('#807f7d'),
       horizontalAlign: HorizontalAlign.Center,
     );
 
@@ -100,7 +100,7 @@ class _ExcelExportState extends State<MonthlyPaymentReportExcelExport> {
     final subHeaderStyle = CellStyle(
       bold: true,
       horizontalAlign: HorizontalAlign.Center,
-      backgroundColorHex: '#a3a3a2',
+      backgroundColorHex:ExcelColor.fromHexString('#a3a3a2'),
       textWrapping: TextWrapping.WrapText,
     );
 
@@ -110,19 +110,19 @@ class _ExcelExportState extends State<MonthlyPaymentReportExcelExport> {
         colIndex++) {
       sheet
           .cell(CellIndex.indexByColumnRow(columnIndex: colIndex, rowIndex: 1))
-          .value = columnNamesWithoutDates[colIndex];
+          .value = TextCellValue(columnNamesWithoutDates[colIndex]??'');
       sheet
           .cell(CellIndex.indexByColumnRow(columnIndex: colIndex, rowIndex: 1))
           .cellStyle = subHeaderStyle;
     }
-    sheet.setColWidth(0, 50);
-    sheet.setColWidth(1, 25);
-    sheet.setColWidth(2, 26);
-    sheet.setColWidth(3, 20);
-    sheet.setColWidth(4, 25);
+    sheet.setColumnWidth(0, 50);
+    sheet.setColumnWidth(1, 25);
+    sheet.setColumnWidth(2, 26);
+    sheet.setColumnWidth(3, 20);
+    sheet.setColumnWidth(4, 25);
 
     sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0)).value =
-        "Avinya Foundation Student Payment Report For Year:${widget.year} For Month:${widget.month} For Batch:${widget.batch}";
+       TextCellValue("Avinya Foundation Student Payment Report For Year:${widget.year} For Month:${widget.month} For Batch:${widget.batch}");
     sheet
         .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0))
         .cellStyle = organizationHeaderStyle;
@@ -149,7 +149,7 @@ class _ExcelExportState extends State<MonthlyPaymentReportExcelExport> {
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 0, rowIndex: next_class_start_index + 2))
-              .value = "${className.toString()}";
+              .value = TextCellValue("${className.toString()}");
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 0, rowIndex: next_class_start_index + 2))
@@ -157,12 +157,12 @@ class _ExcelExportState extends State<MonthlyPaymentReportExcelExport> {
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 1, rowIndex: next_class_start_index + 2))
-              .value = "";
+              .value =TextCellValue("");
 
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 4, rowIndex: next_class_start_index + 2))
-              .value = "${widget.dailyAmount} per day";
+              .value = TextCellValue("${widget.dailyAmount} per day");
 
           sheet
               .cell(CellIndex.indexByColumnRow(
@@ -175,7 +175,7 @@ class _ExcelExportState extends State<MonthlyPaymentReportExcelExport> {
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 0, rowIndex: next_class_start_index))
-              .value = "${className.toString()}";
+              .value = TextCellValue("${className.toString()}");
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 0, rowIndex: next_class_start_index))
@@ -184,7 +184,7 @@ class _ExcelExportState extends State<MonthlyPaymentReportExcelExport> {
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 1, rowIndex: next_class_start_index))
-              .value = "";
+              .value = TextCellValue("");
 
           next_class_start_index++;
         }
@@ -195,19 +195,19 @@ class _ExcelExportState extends State<MonthlyPaymentReportExcelExport> {
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 0, rowIndex: index + next_class_start_index))
-              .value = person.full_name?.toString() ?? '';
+              .value = TextCellValue(person.full_name?.toString() ?? '');
 
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 1, rowIndex: index + next_class_start_index))
-              .value = person.bank_name?.toString() ?? '';
+              .value = TextCellValue(person.bank_name?.toString() ?? '');
 
           sheet
                   .cell(CellIndex.indexByColumnRow(
                       columnIndex: 2, rowIndex: index + next_class_start_index))
                   .value =
-              person.bank_account_number?.toString() ??
-                  ''; // update bank branch name
+            TextCellValue(person.bank_account_number?.toString() ??
+                  ''); // update bank branch name
 
           int presentCount = 0;
           for (final attendance in _fetchedAttendance) {
@@ -224,11 +224,11 @@ class _ExcelExportState extends State<MonthlyPaymentReportExcelExport> {
               sheet
                   .cell(CellIndex.indexByColumnRow(
                       columnIndex: 3, rowIndex: index + next_class_start_index))
-                  .value = '${presentCount}/${widget.totalSchoolDaysInMonth}';
+                  .value = TextCellValue('${presentCount}/${widget.totalSchoolDaysInMonth}');
               sheet
                   .cell(CellIndex.indexByColumnRow(
                       columnIndex: 4, rowIndex: index + next_class_start_index))
-                  .value = studentPayment.toDouble().toStringAsFixed(2);
+                  .value = TextCellValue(studentPayment.toDouble().toStringAsFixed(2));
             }
           }
         }
