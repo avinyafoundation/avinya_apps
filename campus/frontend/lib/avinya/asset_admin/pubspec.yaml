@@ -35,7 +35,7 @@ dependencies:
       path: plugins/window_size
   month_year_picker: ^0.4.0+1
   oktoast: ^3.4.0
-  fl_chart: ^0.70.0
+  fl_chart: ^0.70.2
   image_picker: ^1.1.2
   file_picker: ^10.3.1
 
