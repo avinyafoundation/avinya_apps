@@ -901,3 +901,17 @@ public type GetCalendarMetadataByOrgIdResponse record {|
     |}? calendar_metadata_by_org_id;
 |};
 
+public type GetOrganizationsByAvinyaTypeAndStatusResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string? name_en;
+        |} name;
+        string? description;
+        record {|
+            string? key_name;
+            string? value;
+        |}[]? organization_metadata;
+    |}[] organizations_by_avinya_type_and_status;
+|};

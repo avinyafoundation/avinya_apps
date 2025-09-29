@@ -153,23 +153,16 @@ service / on new http:Listener(9095) {
 
     resource function put update_person(@http:Payload Person person) returns Person|error {
 
-        Address? permanent_address = person?.permanent_address;
         Address? mailing_address = person?.mailing_address;
-        City? permanent_address_city = permanent_address?.city;
         City? mailing_address_city = mailing_address?.city;
-
-        if (permanent_address is Address) {
-            permanent_address.city = ();
-        }
 
         if (mailing_address is Address) {
             mailing_address.city = ();
         }
 
-        person.permanent_address = ();
         person.mailing_address = ();
 
-        UpdatePersonResponse|graphql:ClientError updatePersonResponse = globalDataClient->updatePerson(person, permanent_address_city, mailing_address, permanent_address, mailing_address_city);
+        UpdatePersonResponse|graphql:ClientError updatePersonResponse = globalDataClient->updatePerson(person,mailing_address,mailing_address_city);
         if (updatePersonResponse is UpdatePersonResponse) {
             Person|error person_record = updatePersonResponse.update_person.cloneWithType(Person);
             if (person_record is Person) {

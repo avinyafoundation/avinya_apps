@@ -315,11 +315,11 @@ log:printInfo("Formatted Response: " + formattedJson);
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetDailyAttendanceSummaryReportResponse> check performDataBinding(graphqlResponse, GetDailyAttendanceSummaryReportResponse);
     }
-    remote isolated function getOrganizationsByAvinyaType(int avinya_type) returns GetOrganizationsByAvinyaTypeResponse|graphql:ClientError {
-        string query = string `query getOrganizationsByAvinyaType($avinya_type:Int!) {organizations_by_avinya_type(avinya_type:$avinya_type) {id name {name_en} description organization_metadata {key_name value}}}`;
-        map<anydata> variables = {"avinya_type": avinya_type};
+    remote isolated function getOrganizationsByAvinyaTypeAndStatus(int? avinya_type = (), int? active = ()) returns GetOrganizationsByAvinyaTypeAndStatusResponse|graphql:ClientError {
+        string query = string `query getOrganizationsByAvinyaTypeAndStatus($avinya_type:Int,$active:Int) {organizations_by_avinya_type_and_status(avinya_type:$avinya_type,active:$active) {id name {name_en} description organization_metadata {key_name value}}}`;
+        map<anydata> variables = {"avinya_type": avinya_type, "active": active};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <GetOrganizationsByAvinyaTypeResponse> check performDataBinding(graphqlResponse, GetOrganizationsByAvinyaTypeResponse);
+        return <GetOrganizationsByAvinyaTypeAndStatusResponse> check performDataBinding(graphqlResponse, GetOrganizationsByAvinyaTypeAndStatusResponse);
     }
    
     remote isolated function createMonthlyLeaveDates(MonthlyLeaveDates monthlyLeaveDates) returns CreateMonthlyLeaveDatesResponse|graphql:ClientError {
@@ -340,13 +340,6 @@ log:printInfo("Formatted Response: " + formattedJson);
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetMonthlyLeaveDatesRecordByIdResponse> check performDataBinding(graphqlResponse, GetMonthlyLeaveDatesRecordByIdResponse);
     }
-    remote isolated function getOrganizationsByAvinyaTypeWithActiveStatus(int avinya_type, int active) returns GetOrganizationsByAvinyaTypeWithActiveStatusResponse|graphql:ClientError {
-        string query = string `query getOrganizationsByAvinyaTypeWithActiveStatus($avinya_type:Int!,$active:Int!) {organizations_by_avinya_type(avinya_type:$avinya_type,active:$active) {id name {name_en} description organization_metadata {key_name value} active}}`;
-        map<anydata> variables = {"avinya_type": avinya_type, "active": active};
-        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <GetOrganizationsByAvinyaTypeWithActiveStatusResponse> check performDataBinding(graphqlResponse, GetOrganizationsByAvinyaTypeWithActiveStatusResponse);
-    }
-    
     remote isolated function getCalendarMetadataByOrgId(int batch_id, int organization_id) returns GetCalendarMetadataByOrgIdResponse|graphql:ClientError {
         string query = string `query getCalendarMetadataByOrgId($organization_id:Int!,$batch_id:Int!) {calendar_metadata_by_org_id(organization_id:$organization_id,batch_id:$batch_id) {id organization_id batch_id monthly_payment_amount}}`;
         map<anydata> variables = {"batch_id": batch_id, "organization_id": organization_id};

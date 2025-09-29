@@ -15,7 +15,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
       appBar: AppBar(
         title: Text("Admin - Alumni Job Portal",
             style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.blueGrey[400],
+        backgroundColor: Colors.blueGrey[300],
       ),
       body: SingleChildScrollView(
         child: Container(

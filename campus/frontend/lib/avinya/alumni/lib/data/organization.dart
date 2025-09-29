@@ -92,38 +92,17 @@ class Organization {
 
 
 }
+Future<List<Organization>> fetchOrganizationsByAvinyaTypeAndStatus(
+    int? avinya_type, int? active) async {
+  Map<String, String> queryParams = {};
 
-Future<List<Organization>> fetchOrganizationsByAvinyaType(int avinya_type) async {
-  
+  if (avinya_type != null) queryParams['avinya_type'] = avinya_type.toString();
+  if (active != null) queryParams['active'] = active.toString();
+
   final response = await http.get(
     Uri.parse(
-        '${AppConfig.campusAttendanceBffApiUrl}/organizations_by_avinya_type/$avinya_type'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
-    },
-  );
-
-  if (response.statusCode > 199 && response.statusCode < 300) {
-
-    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-
-    List<Organization> organization =
-        await resultsJson
-        .map<Organization>((json) => Organization.fromJson(json))
-        .toList();
-    return organization;
-  } else {
-    throw Exception('Failed to load organizations');
-  }
-}
-
-Future<List<Organization>> fetchInActiveOrganizationsByAvinyaType(
-    int avinya_type) async {
-  final response = await http.get(
-    Uri.parse(
-        '${AppConfig.campusAttendanceBffApiUrl}/organizations_by_avinya_type_with_active_status/$avinya_type/0'),
+            '${AppConfig.campusAttendanceBffApiUrl}/organizations_by_avinya_type_and_status')
+        .replace(queryParameters: queryParams),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',

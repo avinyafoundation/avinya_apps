@@ -15,9 +15,9 @@ class StudentCreate extends StatefulWidget {
 class _StudentCreateState extends State<StudentCreate> {
   late Person userPerson = Person();
   List<District> districts = [];
-  List<MainOrganization> organizations = [];
+  List<Organization> organizations = [];
   List<AvinyaType> avinyaTypes = [];
-  List<MainOrganization> classes = [];
+  List<Organization> classes = [];
   int _currentStep = 0; // Track the current step
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   List<City> cityList = [];
@@ -61,7 +61,7 @@ class _StudentCreateState extends State<StudentCreate> {
   //   }
   // }
 
-  Future<List<MainOrganization>> fetchOrganizationList() async {
+  Future<List<Organization>> fetchOrganizationList() async {
     return await fetchOrganizations();
   }
 
@@ -110,7 +110,7 @@ class _StudentCreateState extends State<StudentCreate> {
         width: 850,
         child: Stepper(
             connectorColor:
-                MaterialStateProperty.all(Color.fromARGB(255, 74, 161, 70)),
+                WidgetStateProperty.all(Color.fromARGB(255, 74, 161, 70)),
             type: StepperType.vertical,
             currentStep: _currentStep,
             onStepContinue: _nextStep,
@@ -154,7 +154,7 @@ class _StudentCreateState extends State<StudentCreate> {
                             _buildDateOfBirthField(context),
                             _buildSexField(),
                             const SizedBox(height: 10),
-                            FutureBuilder<List<MainOrganization>>(
+                            FutureBuilder<List<Organization>>(
                                 future: fetchOrganizationList(),
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
@@ -579,7 +579,7 @@ class _StudentCreateState extends State<StudentCreate> {
       title,
       style: Theme.of(context)
           .textTheme
-          .subtitle1!
+          .titleMedium!
           .copyWith(fontWeight: FontWeight.bold),
     );
   }
@@ -595,7 +595,7 @@ class _StudentCreateState extends State<StudentCreate> {
             flex: 4,
             child: Text(
               label,
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
@@ -625,7 +625,7 @@ class _StudentCreateState extends State<StudentCreate> {
             flex: 4,
             child: Text(
               'Sex',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
@@ -668,7 +668,7 @@ class _StudentCreateState extends State<StudentCreate> {
             flex: 4,
             child: Text(
               'District',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
@@ -711,7 +711,7 @@ class _StudentCreateState extends State<StudentCreate> {
             flex: 4,
             child: Text(
               'City',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
@@ -766,12 +766,13 @@ class _StudentCreateState extends State<StudentCreate> {
             flex: 4,
             child: Text(
               'Main Organization',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
             flex: 6,
             child: DropdownButtonFormField<int>(
+              isExpanded: true,
               value: selectedOrgId,
               items: [
                 DropdownMenuItem<int>(
@@ -781,7 +782,7 @@ class _StudentCreateState extends State<StudentCreate> {
                 ...organizations
                     .where((org) =>
                         org.avinya_type?.id == 105 ||
-                        org.avinya_type?.id == 86) // Filter organizations
+                        org.avinya_type?.id == 86 || org.avinya_type?.id == 108) // Filter organizations
                     .map((org) {
                   return DropdownMenuItem<int>(
                     value: org.id,
@@ -842,7 +843,7 @@ class _StudentCreateState extends State<StudentCreate> {
     // Determine the Avinya Type ID
     final int? avinyaTypeId = (userPerson.date_of_birth != null &&
             calculateAge(userPerson.date_of_birth) != null &&
-            calculateAge(userPerson.date_of_birth)! < 19)
+            calculateAge(userPerson.date_of_birth)! < 18)
         ? 103 // Auto-select Future Enrollees if under 18
         : (userPerson.avinya_type_id ??
             userPerson.avinya_type
@@ -858,7 +859,15 @@ class _StudentCreateState extends State<StudentCreate> {
           org.id == 100 || // dropout-cs-student
           org.id == 99 || // dropout-it-student
           org.id == 103 || // Future Enrollees
-          org.id == 94; // dropout-student-applicant
+          org.id == 94 || // dropout-student-applicant
+          org.id == 110 || // Empower & NVQ Level 3 - Student
+          org.id == 111 || //Dropout-Empower & NVQ Level 3 - Student
+          org.id == 115 || //Work Study - City & Guilds - Student
+          org.id == 116 || //Dropout-Work Study - City & Guilds - Student
+          org.id == 120 || //Work Study - Maths & IT - Student
+          org.id == 121 || //Dropout- Work Study - Maths & IT-Student
+          org.id == 125 || //Full-Time Work Placement-Student
+          org.id == 126; //Dropout-Full-Time Work Placement-Student
     }).toList();
 
     filteredAvinyaTypes.any((org) => org.id == avinyaTypeId)
@@ -873,7 +882,7 @@ class _StudentCreateState extends State<StudentCreate> {
             flex: 4,
             child: Text(
               'Avinya Type',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
@@ -940,7 +949,7 @@ class _StudentCreateState extends State<StudentCreate> {
             flex: 4,
             child: Text(
               'Date of Birth',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           Expanded(
@@ -994,7 +1003,7 @@ class _StudentCreateState extends State<StudentCreate> {
               flex: 4,
               child: Text(
                 'Class',
-                style: Theme.of(context).textTheme.bodyText1,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
             Expanded(

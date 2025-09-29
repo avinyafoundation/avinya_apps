@@ -21,7 +21,7 @@ class _UpdateJobScreenState extends State<UpdateJobScreen> {
               Navigator.pop(context);
             },
             icon: Icon(Icons.arrow_back)),
-        backgroundColor: Colors.blueGrey[400],
+        backgroundColor: Colors.blueGrey[300],
       ),
       body: SingleChildScrollView(
         child: Container(

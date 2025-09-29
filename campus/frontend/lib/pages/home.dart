@@ -1029,9 +1029,9 @@ class _CarouselCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Divider(
-                      thickness: 1,
-                    ),
+                    // Divider(
+                    //   thickness: 1,
+                    // ),
                     Text(
                       demo!.title,
                       style: textTheme.bodyMedium!.apply(color: textColor),
