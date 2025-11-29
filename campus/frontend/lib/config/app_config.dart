@@ -9,6 +9,7 @@ class AppConfig {
   static String campusAssetsBffApiUrl = '';
   static String campusEnrollmentsBffApiUrl = '';
   static String campusAlumniBffApiUrl = '';
+  static String campusMaintenanceBffApiUrl = '';
   static String campusBffApiKey = '';
   static String refreshToken = '';
   static String choreoSTSEndpoint = "";

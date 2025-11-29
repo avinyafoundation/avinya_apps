@@ -35,6 +35,8 @@ import 'package:academic_scheduler/app.dart' deferred as academic_scheduler;
 import 'package:academic_scheduler/routes.dart' as academic_scheduler_routes;
 import 'package:alumni/app.dart' deferred as alumni;
 import 'package:alumni/routes.dart' as alumni_routes;
+import 'package:maintenance/app.dart' deferred as maintenance;
+import 'package:maintenance/routes.dart' as maintenance_routes;
 
 typedef PathWidgetBuilder = Widget Function(BuildContext, String?);
 
@@ -172,6 +174,16 @@ class RouteConfiguration {
             alumni.loadLibrary,
             () => alumni
                 .AlumniSystem()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),
+    Path(
+      r'^' + maintenance_routes.maintenanceDashboardRoute,
+      (context, match) => StudyWrapper(
+        study: DeferredWidget(
+            maintenance.loadLibrary,
+            () => maintenance
+                .MaintenanceManagementSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),

@@ -27,6 +27,7 @@ import 'package:consumable/routes.dart' as consumable_routes;
 import 'package:academic_scheduler/routes.dart' as academic_scheduler_routes;
 import 'package:alumni/routes.dart' as alumni_routes;
 import 'package:enrollment/routes.dart' as enrollment_routes;
+import 'package:maintenance/routes.dart' as maintenance_routes;
 
 const _horizontalPadding = 32.0;
 const _carouselItemMargin = 8.0;
@@ -87,6 +88,26 @@ class HomePage extends StatelessWidget {
             //assetDarkColor: const Color(0xFF253538),
             textColor: Colors.black,
             studyRoute: enrollment_routes.enrollmentRoute,
+          ),
+        ),
+      if (!campusAppsPortalInstance.isStudent)
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: _CarouselCard(
+            //2023-03-09 lahiru added for campus_pcti
+            demo: studyDemos['maintenance'],
+            asset: const AssetImage(
+              'assets/images/maintenance.png',
+              // package: 'flutter_gallery_assets',
+            ),
+            assetColor: const Color(0xFFFFFFFF),
+            // assetDark: const AssetImage(
+            //   'assets/studies/rally_card_dark.png',
+            //   package: 'flutter_gallery_assets',
+            // ),
+            //assetDarkColor: const Color(0xFF253538),
+            textColor: Colors.black,
+            studyRoute: maintenance_routes.maintenanceDashboardRoute,
           ),
         ),
       // Padding(
@@ -1017,8 +1038,8 @@ class _CarouselCard extends StatelessWidget {
                       color: assetColor,
                     ),
                     child: Ink.image(
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      height: MediaQuery.of(context).size.height * 0.3,
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      height: MediaQuery.of(context).size.height * 0.2,
                       image: asset,
                     ),
                   ),
