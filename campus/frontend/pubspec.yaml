@@ -59,6 +59,8 @@ dependencies:
     path: ./lib/avinya/academic_scheduler
   alumni:
     path: ./lib/avinya/alumni
+  maintenance:
+    path: ./lib/avinya/maintenance
   route_observer_mixin: ^1.7.0
   sizer: ^2.0.15
   flutter_spinkit: ^5.0.0
