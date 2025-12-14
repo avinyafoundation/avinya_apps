@@ -100,23 +100,5 @@ service / on new http:Listener(9097) {
             return error("Error while getting persons data: " + getEmployeesByOrganizationResponse.message() + 
                 ":: Detail: " + getEmployeesByOrganizationResponse.detail().toString());
         }
-    }
-
-    //Add a new academy location for the given organization[bandaragama,etc..]
-    resource function post organizations/[int organizationId]/locations(@http:Payload OrganizationLocation organizationLocation) returns OrganizationLocation|ApiErrorResponse|error {
-        SaveOrganizationLocationResponse|graphql:ClientError saveOrganizationLocationResponse = globalDataClient->saveOrganizationLocation(organizationId,organizationLocation);
-        if(saveOrganizationLocationResponse is SaveOrganizationLocationResponse) {
-            OrganizationLocation|error organizationLocationRecord = saveOrganizationLocationResponse.saveOrganizationLocation.cloneWithType(OrganizationLocation);
-            if(organizationLocationRecord is OrganizationLocation) {
-                return organizationLocationRecord;
-            } else {
-                log:printError("Error while adding organization location record", organizationLocationRecord);
-                return <ApiErrorResponse>{body: { message: "Error while adding organization location record" }};
-            }
-        } else {
-            log:printError("Error while adding organization location", saveOrganizationLocationResponse);
-            return <ApiErrorResponse>{body: { message: "Error while adding adding organization location record" }};
-        }
-    }
-    
+    }    
 }
