@@ -1,0 +1,30 @@
+mutation saveOrganizationLocation(
+  $organizationId: Int!
+  $organizationLocation: OrganizationLocation!
+) {
+  saveOrganizationLocation(
+    organizationId: $organizationId
+    organizationLocation: $organizationLocation
+  ) {
+    id
+    organization_id
+    location_name
+    description
+  }
+}
+
+query getLocationsByOrganization($organizationId: Int!) {
+  locationsByOrganization(organizationId: $organizationId) {
+    id
+    organization_id
+    location_name
+    description
+  }
+}
+
+query getEmployeesByOrganization($organization_id: Int!, $avinya_type_id: Int) {
+  persons(organization_id: $organization_id, avinya_type_id: $avinya_type_id) {
+    id
+    preferred_name
+  }
+}
