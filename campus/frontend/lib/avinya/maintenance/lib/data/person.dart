@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
-//import 'package:mock_maintenance_web/data/alumni.dart';
+//import '../data/alumni.dart';
 //import 'package:mime/mime.dart';
 
 class MainOrganization {
@@ -289,47 +289,47 @@ class AlumniPerson {
 
   // var alumni_work_experience;
 
-  AlumniPerson(
-      {this.id,
-      this.record_type,
-      this.preferred_name,
-      this.full_name,
-      this.notes,
-      this.date_of_birth,
-      this.sex,
-      this.avinya_type_id,
-      this.passport_no,
-      this.permanent_address_id,
-      this.mailing_address_id,
-      this.nic_no,
-      this.id_no,
-      this.phone,
-      this.organization_id,
-      this.organization,
-      this.avinya_type,
-      this.asgardeo_id,
-      this.jwt_sub_id,
-      this.jwt_email,
-      this.email,
-      this.permanent_address,
-      this.mailing_address,
-      this.street_address,
-      this.bank_account_number,
-      this.bank_name,
-      this.bank_branch,
-      this.digital_id,
-      this.bank_account_name,
-      this.avinya_phone,
-      this.academy_org_id,
-      this.created,
-      this.updated,
-      this.alumni_id,
-      required this.is_graduated,
-      this.document_id,
-      this.alumni_education_qualifications,
-      this.alumni_work_experience,
-      //this.alumni
-      });
+  AlumniPerson({
+    this.id,
+    this.record_type,
+    this.preferred_name,
+    this.full_name,
+    this.notes,
+    this.date_of_birth,
+    this.sex,
+    this.avinya_type_id,
+    this.passport_no,
+    this.permanent_address_id,
+    this.mailing_address_id,
+    this.nic_no,
+    this.id_no,
+    this.phone,
+    this.organization_id,
+    this.organization,
+    this.avinya_type,
+    this.asgardeo_id,
+    this.jwt_sub_id,
+    this.jwt_email,
+    this.email,
+    this.permanent_address,
+    this.mailing_address,
+    this.street_address,
+    this.bank_account_number,
+    this.bank_name,
+    this.bank_branch,
+    this.digital_id,
+    this.bank_account_name,
+    this.avinya_phone,
+    this.academy_org_id,
+    this.created,
+    this.updated,
+    this.alumni_id,
+    required this.is_graduated,
+    this.document_id,
+    this.alumni_education_qualifications,
+    this.alumni_work_experience,
+    //this.alumni
+  });
 
   factory AlumniPerson.fromJson(Map<String, dynamic> json) {
     return AlumniPerson(
@@ -641,112 +641,112 @@ class Person {
   List<EducationQualifications>? alumni_education_qualifications;
   bool? is_graduated;
 
-  Person(
-      {this.id,
-      this.record_type,
-      this.preferred_name,
-      this.full_name,
-      this.notes,
-      this.date_of_birth,
-      this.sex,
-      this.avinya_type_id,
-      this.passport_no,
-      this.permanent_address_id,
-      this.mailing_address_id,
-      this.nic_no,
-      this.id_no,
-      this.phone,
-      this.organization_id,
-      this.organization,
-      this.parent_organization_id,
-      this.avinya_type,
-      this.asgardeo_id,
-      this.jwt_sub_id,
-      this.jwt_email,
-      this.email,
-      this.permanent_address,
-      this.mailing_address,
-      this.street_address,
-      this.bank_account_number,
-      this.bank_name,
-      this.bank_branch,
-      this.digital_id,
-      this.bank_account_name,
-      this.guardian_name,
-      this.guardian_contact_number,
-      this.avinya_phone,
-      this.academy_org_id,
-      this.created,
-      this.updated,
-      this.parent_students = const [],
-      this.current_job,
-      this.documents_id,
-      this.is_graduated,
-      this.alumni_education_qualifications,
-      this.alumni_work_experience,
-      //this.alumni
-      });
+  Person({
+    this.id,
+    this.record_type,
+    this.preferred_name,
+    this.full_name,
+    this.notes,
+    this.date_of_birth,
+    this.sex,
+    this.avinya_type_id,
+    this.passport_no,
+    this.permanent_address_id,
+    this.mailing_address_id,
+    this.nic_no,
+    this.id_no,
+    this.phone,
+    this.organization_id,
+    this.organization,
+    this.parent_organization_id,
+    this.avinya_type,
+    this.asgardeo_id,
+    this.jwt_sub_id,
+    this.jwt_email,
+    this.email,
+    this.permanent_address,
+    this.mailing_address,
+    this.street_address,
+    this.bank_account_number,
+    this.bank_name,
+    this.bank_branch,
+    this.digital_id,
+    this.bank_account_name,
+    this.guardian_name,
+    this.guardian_contact_number,
+    this.avinya_phone,
+    this.academy_org_id,
+    this.created,
+    this.updated,
+    this.parent_students = const [],
+    this.current_job,
+    this.documents_id,
+    this.is_graduated,
+    this.alumni_education_qualifications,
+    this.alumni_work_experience,
+    //this.alumni
+  });
 
   factory Person.fromJson(Map<String, dynamic> json) {
     return Person(
-        id: json['id'],
-        record_type: json['record_type'],
-        preferred_name: json['preferred_name'],
-        full_name: json['full_name'],
-        notes: json['notes'],
-        date_of_birth: json['date_of_birth'],
-        sex: json['sex'],
-        avinya_type_id: json['avinya_type_id'],
-        passport_no: json['passport_no'],
-        permanent_address_id: json['permanent_address_id'],
-        mailing_address_id: json['mailing_address_id'],
-        nic_no: json['nic_no'],
-        id_no: json['id_no'],
-        phone: json['phone'],
-        organization_id: json['organization_id'],
-        asgardeo_id: json['asgardeo_id'],
-        jwt_sub_id: json['jwt_sub_id'],
-        jwt_email: json['jwt_email'],
-        email: json['email'],
-        permanent_address: Address.fromJson(
-            json['permanent_address'] != null ? json['permanent_address'] : {}),
-        mailing_address: Address.fromJson(
-            json['mailing_address'] != null ? json['mailing_address'] : {}),
-        street_address: json['street_address'],
-        bank_account_number: json['bank_account_number'],
-        bank_name: json['bank_name'],
-        bank_branch: json['bank_branch'],
-        digital_id: json['digital_id'],
-        guardian_name: json['guardian_name'],
-        guardian_contact_number: json['guardian_contact_number'],
-        bank_account_name: json['bank_account_name'],
-        avinya_phone: json['avinya_phone'],
-        academy_org_id: json['academy_org_id'],
-        organization: MainOrganization.fromJson(
-            json['organization'] != null ? json['organization'] : {}),
-        parent_organization_id: json['parent_organization_id'],
-        avinya_type: AvinyaType.fromJson(
-            json['avinya_type'] != null ? json['avinya_type'] : {}),
-        created: json['created'],
-        updated: json['updated'],
-        parent_students: json['parent_students'] != null
-            ? json['parent_students']
-                .map<Person>((eval_json) => Person.fromJson(eval_json))
-                .toList()
-            : [],
-        alumni_work_experience: json['alumni_work_experience']
-            ?.map<WorkExperience>(
-                (alumni_json) => WorkExperience.fromJson(alumni_json))
-            ?.toList(),
-        alumni_education_qualifications: json['alumni_education_qualifications']
-            ?.map<EducationQualifications>(
-                (alumni_json) => EducationQualifications.fromJson(alumni_json))
-            ?.toList(),
-        current_job: json['current_job'],
-        documents_id: json['documents_id'],
-        is_graduated: json['is_graduated'],
-        //alumni: Alumni.fromJson(json['alumni'] != null ? json['alumni'] : {})
-        );
+      id: json['id'],
+      record_type: json['record_type'],
+      preferred_name: json['preferred_name'],
+      full_name: json['full_name'],
+      notes: json['notes'],
+      date_of_birth: json['date_of_birth'],
+      sex: json['sex'],
+      avinya_type_id: json['avinya_type_id'],
+      passport_no: json['passport_no'],
+      permanent_address_id: json['permanent_address_id'],
+      mailing_address_id: json['mailing_address_id'],
+      nic_no: json['nic_no'],
+      id_no: json['id_no'],
+      phone: json['phone'],
+      organization_id: json['organization_id'],
+      asgardeo_id: json['asgardeo_id'],
+      jwt_sub_id: json['jwt_sub_id'],
+      jwt_email: json['jwt_email'],
+      email: json['email'],
+      permanent_address: Address.fromJson(
+          json['permanent_address'] != null ? json['permanent_address'] : {}),
+      mailing_address: Address.fromJson(
+          json['mailing_address'] != null ? json['mailing_address'] : {}),
+      street_address: json['street_address'],
+      bank_account_number: json['bank_account_number'],
+      bank_name: json['bank_name'],
+      bank_branch: json['bank_branch'],
+      digital_id: json['digital_id'],
+      guardian_name: json['guardian_name'],
+      guardian_contact_number: json['guardian_contact_number'],
+      bank_account_name: json['bank_account_name'],
+      avinya_phone: json['avinya_phone'],
+      academy_org_id: json['academy_org_id'],
+      organization: MainOrganization.fromJson(
+          json['organization'] != null ? json['organization'] : {}),
+      parent_organization_id: json['parent_organization_id'],
+      avinya_type: AvinyaType.fromJson(
+          json['avinya_type'] != null ? json['avinya_type'] : {}),
+      created: json['created'],
+      updated: json['updated'],
+      parent_students: json['parent_students'] != null
+          ? json['parent_students']
+              .map<Person>((eval_json) => Person.fromJson(eval_json))
+              .toList()
+          : [],
+      alumni_work_experience: json['alumni_work_experience']
+          ?.map<WorkExperience>(
+              (alumni_json) => WorkExperience.fromJson(alumni_json))
+          ?.toList(),
+      alumni_education_qualifications: json['alumni_education_qualifications']
+          ?.map<EducationQualifications>(
+              (alumni_json) => EducationQualifications.fromJson(alumni_json))
+          ?.toList(),
+      current_job: json['current_job'],
+      documents_id: json['documents_id'],
+      is_graduated: json['is_graduated'],
+      //alumni: Alumni.fromJson(json['alumni'] != null ? json['alumni'] : {})
+    );
   }
 
   Map<String, dynamic> toJson() => {
@@ -871,7 +871,8 @@ Future<List<UserDocument>?> fetchDocuments(int id) async {
 
 Future<List<Person>> fetchAlumniPersonList(int? parent_organization_id) async {
   final response = await http.get(
-    Uri.parse('${AppConfig.campusAlumniBffApiUrl}/alumni_persons/$parent_organization_id'),
+    Uri.parse(
+        '${AppConfig.campusAlumniBffApiUrl}/alumni_persons/$parent_organization_id'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -929,4 +930,3 @@ Future<http.StreamedResponse?> uploadFile(
     return null;
   }
 }
-
