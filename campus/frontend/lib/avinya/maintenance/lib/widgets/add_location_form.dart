@@ -120,19 +120,22 @@ class _AddLocationFormState extends State<AddLocationForm> {
                 label: "Location Name",
                 hintText: "e.g. Pod 1, Front Office, Café",
                 controller: nameController,
-                validator: (v) =>
-                    v == null || v.isEmpty ? "Please enter location name" : null,
+                validator: (v) => v == null || v.isEmpty
+                    ? "Please enter location name"
+                    : null,
               ),
               const SizedBox(height: 16),
               TextFieldForm(
                 label: "Location Description (Optional)",
                 maxLines: 5,
                 hintText: "Short description of the location",
+                textAlignVertical: TextAlignVertical.top,
                 controller: descriptionController,
               ),
               const SizedBox(height: 30),
               Button(
                 label: "Add Location",
+                width: double.infinity,
                 onPressed: submitForm,
                 buttonColor: Colors.blue,
                 textColor: Colors.white,

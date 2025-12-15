@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gallery/avinya/maintenance/lib/app_routes/app_routes.dart';
 import 'package:gallery/avinya/maintenance/lib/data.dart';
+import 'package:gallery/avinya/maintenance/lib/screens/add_location_screen.dart';
 import 'package:gallery/avinya/maintenance/lib/screens/maintenance_dashboard_screen.dart';
 
 import '../routing.dart';
@@ -24,13 +25,22 @@ class SMSScaffoldBody extends StatelessWidget {
     return Navigator(
       key: navigatorKey,
       pages: [
-        if (currentRoute.pathTemplate.startsWith(AppRoutes.maintenanceDashboardRoute) &&
+        if (currentRoute.pathTemplate
+                .startsWith(AppRoutes.maintenanceDashboardRoute) &&
             (campusAppsPortalInstance.isFoundation ||
                 campusAppsPortalInstance.isTeacher))
           const FadeTransitionPage<void>(
             key: ValueKey('maintenance_dashboard_Screen'),
             child: MaintenanceDashboardScreen(),
-        )
+          )
+        else if (currentRoute.pathTemplate
+                .startsWith(AppRoutes.addLocationRoute) &&
+            (campusAppsPortalInstance.isFoundation ||
+                campusAppsPortalInstance.isTeacher))
+          const FadeTransitionPage<void>(
+            key: ValueKey('add_location_screen'),
+            child: AddLocationScreen(),
+          )
         // else if (currentRoute.pathTemplate.startsWith(AppRoutes.alumniAdminRoute))
         //   const FadeTransitionPage<void>(
         //     key: ValueKey('alumni_admin'),

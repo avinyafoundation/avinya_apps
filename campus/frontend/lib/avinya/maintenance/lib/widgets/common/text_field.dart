@@ -8,6 +8,7 @@ class TextFieldForm extends StatelessWidget {
   final double? width;
   final double? height;
   final int? maxLines;
+  final TextAlignVertical? textAlignVertical;
   final String? Function(String?)? validator;
   final Function(String?)? onSaved;
 
@@ -19,6 +20,7 @@ class TextFieldForm extends StatelessWidget {
     this.width,
     this.height,
     this.maxLines,
+    this.textAlignVertical,
     this.validator,
     this.onSaved,
   });
@@ -43,6 +45,7 @@ class TextFieldForm extends StatelessWidget {
             controller: controller,
             validator: validator,
             maxLines: maxLines,
+            textAlignVertical: textAlignVertical,
             decoration: InputDecoration(
               labelText: label,
               hintText: hintText,

@@ -38,7 +38,13 @@ class _SMSNavigatorState extends State<SMSNavigator> {
         return route.didPop(result);
       },
       pages: [
-        if (routeState.route.pathTemplate == AppRoutes.maintenanceDashboardRoute)
+        if (routeState.route.pathTemplate ==
+            AppRoutes.maintenanceDashboardRoute)
+          FadeTransitionPage<void>(
+            key: _scaffoldKey,
+            child: SMSScaffold(),
+          )
+        else if (routeState.route.pathTemplate == AppRoutes.addLocationRoute)
           FadeTransitionPage<void>(
             key: _scaffoldKey,
             child: SMSScaffold(),
