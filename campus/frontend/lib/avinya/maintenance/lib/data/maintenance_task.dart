@@ -1,0 +1,258 @@
+import 'dart:convert';
+
+import 'package:gallery/config/app_config.dart';
+
+import '../data/academy_location.dart';
+import '../data/maintenance_finance.dart';
+import 'package:http/http.dart' as http;
+
+class MaintenanceTask {
+
+  int? id;
+  String? title;
+  String? description;
+  MaintenanceType? type;
+  MaintenanceFrequency? frequency;
+  AcademyLocation? location;
+  int? locationId;
+  List<int>? personId;
+  String? startDate;
+  int? exceptionDeadline;
+  bool? hasFinancialInfo;
+  String? modifiedBy;
+  bool? isDeleted;
+  MaintenanceFinance? financialInformation;
+  String? deadline;
+  String? statusText;
+  bool? isOverdue;
+
+
+  MaintenanceTask({
+    this.id,
+    this.title,
+    this.description,
+    this.type,
+    this.frequency,
+    this.location,
+    this.locationId,
+    this.personId,
+    this.startDate,
+    this.exceptionDeadline,
+    this.hasFinancialInfo,
+    this.modifiedBy,
+    this.isDeleted,
+    this.financialInformation,
+    this.deadline,
+    this.statusText,
+    this.isOverdue,
+  });
+
+
+  //Create MaintenanceTask instance from JSON
+  factory MaintenanceTask.fromJson(Map<String, dynamic> json){
+    return MaintenanceTask(
+      id: json['id'],
+      title: json['title'],
+      description: json['description'],
+      type: json['type'] != null ? getMaintenanceTypeFromString(json['type']) : null,
+      frequency: json['frequency'] != null ? getMaintenanceFrequencyFromString(json['frequency']) : null,
+      location: json['location'] != null ? AcademyLocation.fromJson(json['location']) : null,
+      locationId: json['locationId'],
+      personId: json['personId'] != null
+        ? List<int>.from(json['personId'])
+        : null,
+      startDate: json['startDate'],
+      exceptionDeadline: json['exceptionDeadline'],
+      hasFinancialInfo: json['hasFinancialInfo'],
+      modifiedBy: json['modifiedBy'],
+      isDeleted: json['isDeleted'],
+      financialInformation: json['financialInformation'] != null
+        ? MaintenanceFinance.fromJson(json['financialInformation'])
+        : null,
+      deadline: json['deadline'],
+      statusText: json['statusText'],
+      isOverdue: json['isOverdue'],
+    );
+  }
+
+
+  //Create MaintenanceTask instance to JSON
+  Map<String, dynamic> toJson() => {
+    if(id != null) 'id': id,
+    if(title != null) 'title': title,
+    if(description != null) 'description': description,
+    if(type != null) 'type': maintenanceTypeToString(type!),
+    if(frequency != null) 'frequency': maintenanceFrequencyToString(frequency!),
+    if(location != null) 'location': location!.toJson(),
+    if(locationId != null) 'locationId': locationId,
+    if(personId != null) 'personId': personId,
+    if(startDate != null) 'startDate': startDate,
+    if(exceptionDeadline != null) 'exceptionDeadline': exceptionDeadline,
+    if(hasFinancialInfo != null) 'hasFinancialInfo': hasFinancialInfo,
+    if(modifiedBy != null) 'modifiedBy': modifiedBy,
+    if(isDeleted != null) 'isDeleted': isDeleted,
+    if(financialInformation != null) 'financialInformation': financialInformation!.toJson(),
+    if(deadline != null) 'deadline': deadline,
+    if(statusText != null) 'statusText': statusText,
+    if(isOverdue != null) 'isOverdue': isOverdue,
+  };
+
+}
+
+
+
+
+
+
+//Save task details
+Future<http.Response> saveMaintenanceTask(MaintenanceTask task) async {
+  
+  final response = await http.post(
+    Uri.parse('campusMaintenanceBffApiUrl' + '/tasks'),
+    headers: {
+        "Content-Type": "application/json",
+        "accept": "application/json",
+    },
+    body: jsonEncode(task.toJson()),
+  );
+
+  if(response.statusCode == 200 || response.statusCode == 201){
+    return response;
+  }
+  else{
+    throw Exception('Failed to save maintenance task. Status code: ${response.statusCode}');
+  }
+}
+
+
+
+
+//Update task details
+Future<http.Response> updateMaintenanceTask(int taskId, MaintenanceTask task) async {
+  final reponse = await http.put(
+    Uri.parse('${AppConfig.campusMaintenanceBffApiUrl}/tasks/$taskId'),
+    headers: {
+        "Content-Type": "application/json",
+        "accept": "application/json",
+    },
+    body: jsonEncode(task.toJson()),
+  );
+  if(reponse.statusCode == 200){
+    return reponse;
+  }
+  else{
+    throw Exception('Failed to update maintenance task. Status code: ${reponse.statusCode}');
+  }
+}
+
+
+
+//Soft delete task
+Future<http.Response> deleteMaintenanceTask(int taskId) async {
+
+  final body = {
+    "id": taskId,
+    "isDeleted": true
+  };
+
+  final response = await http.patch(
+    Uri.parse('${AppConfig.campusMaintenanceBffApiUrl}/tasks/$taskId/delete'),
+    headers: {
+        "Content-Type": "application/json",
+        "accept": "application/json",
+    },
+    body: jsonEncode(body),
+  );
+
+  if(response.statusCode == 200){
+    return response;
+  }
+  else{
+    throw Exception('Failed to delete maintenance task. Status code: ${response.statusCode}');
+  }
+}
+
+
+//enum for maintenance type
+enum MaintenanceType {
+  oneTime,
+  recurring,
+}
+
+//Convert MaintenanceType to String
+String maintenanceTypeToString(MaintenanceType type) {
+  switch (type) {
+    case MaintenanceType.oneTime:
+      return 'oneTime';
+    case MaintenanceType.recurring:
+      return 'recurring';
+  }
+}
+
+//Get MaintenanceType from String
+MaintenanceType getMaintenanceTypeFromString(String typeString) {
+  switch (typeString.toLowerCase()) {
+    case 'onetime':
+      return MaintenanceType.oneTime;
+    case 'recurring':
+      return MaintenanceType.recurring;
+    default:
+      throw Exception('Unknown maintenance type: $typeString');
+  }
+}
+
+
+
+//enum for maintenance frequency
+enum MaintenanceFrequency {
+  daily,
+  weekly,
+  biWeekly,
+  monthly,
+  quarterly,
+  yearly,
+  annually,
+}
+
+
+//Convert MaintenanceFrequency to String
+String maintenanceFrequencyToString(MaintenanceFrequency frequency) {
+  switch (frequency) {
+    case MaintenanceFrequency.daily:
+      return 'daily';
+    case MaintenanceFrequency.weekly:
+      return 'weekly';
+    case MaintenanceFrequency.biWeekly:
+      return 'biWeekly';
+    case MaintenanceFrequency.monthly:
+      return 'monthly';
+    case MaintenanceFrequency.quarterly:
+      return 'quarterly';
+    case MaintenanceFrequency.yearly:
+      return 'yearly';
+    case MaintenanceFrequency.annually:
+      return 'annually';
+  }
+}
+
+//Get MaintenanceFrequency from String
+MaintenanceFrequency getMaintenanceFrequencyFromString(String frequencyString) {
+  switch (frequencyString.toLowerCase()) {
+    case 'daily':
+      return MaintenanceFrequency.daily;
+    case 'weekly':
+      return MaintenanceFrequency.weekly;
+    case 'biweekly':
+      return MaintenanceFrequency.biWeekly;
+    case 'monthly':
+      return MaintenanceFrequency.monthly;
+    case 'quarterly':
+      return MaintenanceFrequency.quarterly;
+    case 'yearly':
+      return MaintenanceFrequency.yearly;
+    case 'annually':
+      return MaintenanceFrequency.annually;
+    default:
+      throw Exception('Unknown maintenance frequency: $frequencyString');
+  }
+}
