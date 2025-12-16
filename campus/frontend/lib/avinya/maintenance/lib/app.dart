@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:gallery/auth.dart';
 import 'package:gallery/avinya/maintenance/lib/app_routes/app_routes.dart';
+import 'package:gallery/avinya/maintenance/lib/routes.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -13,10 +14,12 @@ class MaintenanceManagementSystem extends StatefulWidget {
   const MaintenanceManagementSystem({super.key});
 
   @override
-  State<MaintenanceManagementSystem> createState() => _MaintenanceManagementSystemState();
+  State<MaintenanceManagementSystem> createState() =>
+      _MaintenanceManagementSystemState();
 }
 
-class _MaintenanceManagementSystemState extends State<MaintenanceManagementSystem> {
+class _MaintenanceManagementSystemState
+    extends State<MaintenanceManagementSystem> {
   final _auth = CampusAppsPortalAuth();
   final _navigatorKey = GlobalKey<NavigatorState>();
   late final RouteState _routeState;
@@ -28,7 +31,8 @@ class _MaintenanceManagementSystemState extends State<MaintenanceManagementSyste
     /// Configure the parser with all of the app's allowed path templates.
     _routeParser = TemplateRouteParser(
       allowedPaths: [
-        AppRoutes.maintenanceDashboardRoute
+        AppRoutes.maintenanceDashboardRoute,
+        AppRoutes.addLocationRoute
       ],
       guard: _guard,
       // initialRoute: '/signin',
@@ -94,13 +98,17 @@ class _MaintenanceManagementSystemState extends State<MaintenanceManagementSyste
   Future<ParsedRoute> _guard(ParsedRoute from) async {
     final signedIn = await _auth.getSignedIn();
 
-    final maintenanceDashboardRoute =
-        ParsedRoute(
+    final maintenanceDashboardRoute = ParsedRoute(
         AppRoutes.maintenanceDashboardRoute,
         AppRoutes.maintenanceDashboardRoute, {}, {});
 
+    final addLocationRoute = ParsedRoute(
+        AppRoutes.addLocationRoute, AppRoutes.addLocationRoute, {}, {});
+
     if (signedIn && from == maintenanceDashboardRoute) {
       return maintenanceDashboardRoute;
+    } else if (signedIn && from == addLocationRoute) {
+      return addLocationRoute;
     }
     // else if (signedIn && from == studentsRoute) {
     //   return studentsRoute;

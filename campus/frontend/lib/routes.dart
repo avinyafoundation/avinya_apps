@@ -170,10 +170,8 @@ class RouteConfiguration {
     Path(
       r'^' + alumni_routes.alumniRoute,
       (context, match) => StudyWrapper(
-        study: DeferredWidget(
-            alumni.loadLibrary,
-            () => alumni
-                .AlumniSystem()), // ignore: prefer_const_constructors
+        study: DeferredWidget(alumni.loadLibrary,
+            () => alumni.AlumniSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),

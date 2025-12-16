@@ -14,6 +14,7 @@ class SMSScaffold extends StatefulWidget {
 
 class _SMSScaffoldState extends State<SMSScaffold> {
   bool isMaintenanceDashboardSectionHovered = false;
+  bool isAddLocationSectionHovered = false;
 
   @override
   Widget build(BuildContext context) {
@@ -122,6 +123,51 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                     ),
                   ),
                   // ),
+                ),
+              ),
+              MouseRegion(
+                onEnter: (_) {
+                  setState(() {
+                    isAddLocationSectionHovered = true;
+                  });
+                },
+                onExit: (_) {
+                  setState(() {
+                    isAddLocationSectionHovered = false;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isAddLocationSectionHovered
+                        ? Colors.white.withOpacity(0.3)
+                        : null,
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  margin: EdgeInsets.all(8.0),
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Container(
+                      child: ListTile(
+                        leading: Icon(Icons.add_location,
+                            color: Colors.white, size: 20.0),
+                        title: Container(
+                          margin: EdgeInsets.only(left: 12.0),
+                          transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                          child: Text(
+                            "Add Academy Location",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context); // Close the drawer
+                          routeState.go(AppRoutes.addLocationRoute);
+                        },
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
