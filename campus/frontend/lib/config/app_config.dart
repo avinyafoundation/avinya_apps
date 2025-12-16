@@ -49,6 +49,7 @@ class AppConfig {
     campusAssetsBffApiUrl = json['campusAssetsBffApiUrl'];
     campusEnrollmentsBffApiUrl = json['campusEnrollmentsBffApiUrl'];
     campusAlumniBffApiUrl = json['campusAlumniBffApiUrl'];
+    campusMaintenanceBffApiUrl = json['campusMaintenanceBffApiUrl'];
     choreoSTSEndpoint = json['choreo_sts_endpoint'];
     asgardeoTokenEndpoint = json['asgardeo_token_endpoint'];
     asgardeoLogoutUrl = json['logout_url'];

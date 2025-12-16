@@ -25,17 +25,18 @@ class _AddLocationFormState extends State<AddLocationForm> {
   @override
   void initState() {
     super.initState();
-    organizationsFuture = loadHardcodedOrganizations();
+    //organizationsFuture = loadHardcodedOrganizations();
+    organizationsFuture = fetchOrganizationsByAvinyaTypeAndStatus(2, null); 
   }
 
   // Hardcoded data
-  Future<List<Organization>> loadHardcodedOrganizations() async {
-    return [
-      Organization(id: 1, name: Name(name_en: "Avinya Academy - Colombo")),
-      Organization(id: 2, name: Name(name_en: "Avinya Academy - Kandy")),
-      Organization(id: 3, name: Name(name_en: "Avinya Academy - Galle")),
-    ];
-  }
+  // Future<List<Organization>> loadHardcodedOrganizations() async {
+  //   return [
+  //     Organization(id: 1, name: Name(name_en: "Avinya Academy - Colombo")),
+  //     Organization(id: 2, name: Name(name_en: "Avinya Academy - Kandy")),
+  //     Organization(id: 3, name: Name(name_en: "Avinya Academy - Galle")),
+  //   ];
+  // }
 
   void submitForm() {
     if (_formKey.currentState!.validate()) {
