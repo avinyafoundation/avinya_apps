@@ -37,8 +37,6 @@ import 'package:alumni/app.dart' deferred as alumni;
 import 'package:alumni/routes.dart' as alumni_routes;
 import 'package:maintenance/app.dart' deferred as maintenance;
 import 'package:maintenance/routes.dart' as maintenance_routes;
-import 'package:maintenance/screens/add_location_screen.dart' as AddLocationScreen;
-import 'package:maintenance/screens/add_task_screen.dart' as AddTaskScreen;
 
 typedef PathWidgetBuilder = Widget Function(BuildContext, String?);
 
@@ -172,10 +170,8 @@ class RouteConfiguration {
     Path(
       r'^' + alumni_routes.alumniRoute,
       (context, match) => StudyWrapper(
-        study: DeferredWidget(
-            alumni.loadLibrary,
-            () => alumni
-                .AlumniSystem()), // ignore: prefer_const_constructors
+        study: DeferredWidget(alumni.loadLibrary,
+            () => alumni.AlumniSystem()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),
@@ -186,24 +182,6 @@ class RouteConfiguration {
             maintenance.loadLibrary,
             () => maintenance
                 .MaintenanceManagementSystem()), // ignore: prefer_const_constructors
-      ),
-      openInSecondScreen: true,
-    ),
-    Path(
-      r'^' + maintenance_routes.addLocationRoute,
-      (context, match) => StudyWrapper(
-        study: DeferredWidget(
-            maintenance.loadLibrary,
-            () => AddLocationScreen.AddLocationScreen()), // ignore: prefer_const_constructors
-      ),
-      openInSecondScreen: true,
-    ),
-    Path(
-      r'^' + maintenance_routes.addTaskRoute,
-      (context, match) => StudyWrapper(
-        study: DeferredWidget(
-            maintenance.loadLibrary,
-            () => AddTaskScreen.AddTaskScreen()), // ignore: prefer_const_constructors
       ),
       openInSecondScreen: true,
     ),
