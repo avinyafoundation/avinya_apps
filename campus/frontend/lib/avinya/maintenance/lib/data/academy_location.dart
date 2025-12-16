@@ -46,6 +46,7 @@ Future<http.Response> createAcademyLocation(
       },
       body: jsonEncode(academyLocation.toJson()),
     );
+    print('CampusBFF API URL: ${AppConfig.campusMaintenanceBffApiUrl}');
 
     if (resposne.statusCode == 200 || resposne.statusCode == 201) {
       return resposne;
