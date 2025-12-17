@@ -36,7 +36,7 @@ class ActivityParticipant {
         organization_id: json['organization_id'],
         start_time: json['start_time'],
         end_time: json['end_time'],
-        status: getProgressStatusFromString(json['status']),
+        status: json['status'] != null ? getProgressStatusFromString(json['status']) : null,
         active: json['active'],
         is_attending: json['is_attending']);
   }
@@ -97,38 +97,38 @@ Future<http.Response> updateActivityParticipantProgress(int activityParticipantI
   if (response.statusCode >= 200 && response.statusCode < 300) {
     return response;
   } else {
-    throw Exception('Failed to update activity participant progress. Status code: ${response.statusCode}');
+    throw Exception(
+        'Failed to update activity participant progress. Status code: ${response.statusCode}');
   }
 }
 
 //Create status enum
-enum ProgressStatus{
+enum ProgressStatus {
   pending,
   inProgress,
   completed,
 }
 
 //Convert status enum to string
-String progressStatusToString(ProgressStatus status){
-  switch(status){
+String progressStatusToString(ProgressStatus status) {
+  switch (status) {
     case ProgressStatus.pending:
-      return 'pending';
+      return 'Pending';
     case ProgressStatus.inProgress:
-      return 'inProgress';
+      return 'In Progress';
     case ProgressStatus.completed:
-      return 'completed';
+      return 'Completed';
     // default:
     //   throw Exception('Unknown status: $status');
   }
 }
 
-
 //Convert string to status enum
-ProgressStatus getProgressStatusFromString(String statusString){
-  switch(statusString.toLowerCase()){
+ProgressStatus getProgressStatusFromString(String statusString) {
+  switch (statusString.toLowerCase()) {
     case 'pending':
       return ProgressStatus.pending;
-    case 'inprogress':
+    case 'in progress':
       return ProgressStatus.inProgress;
     case 'completed':
       return ProgressStatus.completed;

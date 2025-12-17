@@ -38,6 +38,8 @@ dependencies:
   month_year_picker: ^0.4.0+1
   oktoast: ^3.4.0
   pdf: ^3.11.3
+  appflowy_board: ^0.1.2
+  mime: ^1.0.4
 
 dev_dependencies:
   flutter_lints: ^2.0.1

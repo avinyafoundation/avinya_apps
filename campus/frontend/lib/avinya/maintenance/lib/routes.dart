@@ -4,3 +4,5 @@
 const String maintenanceDashboardRoute = '/maintenance-dashboard';
 const String addLocationRoute = '/add-location';
 const String addTaskRoute = '/add-task';
+const String kanbanBoardRoute = '/board';
+const String taskDetailsRoute = '/tasks';

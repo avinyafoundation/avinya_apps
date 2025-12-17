@@ -15,6 +15,8 @@ class SMSScaffold extends StatefulWidget {
 class _SMSScaffoldState extends State<SMSScaffold> {
   bool isMaintenanceDashboardSectionHovered = false;
   bool isAddLocationSectionHovered = false;
+  bool isKanbanBoardSectionHovered = false;
+  bool isTaskDetailsSectionHovered = false;
 
   @override
   Widget build(BuildContext context) {
@@ -164,6 +166,96 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                         onTap: () {
                           Navigator.pop(context); // Close the drawer
                           routeState.go(AppRoutes.addLocationRoute);
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              MouseRegion(
+                onEnter: (_) {
+                  setState(() {
+                    isKanbanBoardSectionHovered = true;
+                  });
+                },
+                onExit: (_) {
+                  setState(() {
+                    isKanbanBoardSectionHovered = false;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isKanbanBoardSectionHovered
+                        ? Colors.white.withOpacity(0.3)
+                        : null,
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  margin: EdgeInsets.all(8.0),
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Container(
+                      child: ListTile(
+                        leading: Icon(Icons.view_kanban,
+                            color: Colors.white, size: 20.0),
+                        title: Container(
+                          margin: EdgeInsets.only(left: 12.0),
+                          transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                          child: Text(
+                            "Kanban Board",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context); // Close the drawer
+                          routeState.go(AppRoutes.kanbanBoardRoute);
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              MouseRegion(
+                onEnter: (_) {
+                  setState(() {
+                    isTaskDetailsSectionHovered = true;
+                  });
+                },
+                onExit: (_) {
+                  setState(() {
+                    isTaskDetailsSectionHovered = false;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isTaskDetailsSectionHovered
+                        ? Colors.white.withOpacity(0.3)
+                        : null,
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  margin: EdgeInsets.all(8.0),
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Container(
+                      child: ListTile(
+                        leading: Icon(Icons.info_rounded,
+                            color: Colors.white, size: 20.0),
+                        title: Container(
+                          margin: EdgeInsets.only(left: 12.0),
+                          transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                          child: Text(
+                            "Task Details",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context); // Close the drawer
+                          routeState.go(AppRoutes.taskDetailsRoute);
                         },
                       ),
                     ),

@@ -32,7 +32,9 @@ class _MaintenanceManagementSystemState
     _routeParser = TemplateRouteParser(
       allowedPaths: [
         AppRoutes.maintenanceDashboardRoute,
-        AppRoutes.addLocationRoute
+        AppRoutes.addLocationRoute,
+        AppRoutes.kanbanBoardRoute,
+        AppRoutes.taskDetailsRoute
       ],
       guard: _guard,
       // initialRoute: '/signin',
@@ -105,10 +107,21 @@ class _MaintenanceManagementSystemState
     final addLocationRoute = ParsedRoute(
         AppRoutes.addLocationRoute, AppRoutes.addLocationRoute, {}, {});
 
+    final kanbanBoardRoute = ParsedRoute(
+        AppRoutes.kanbanBoardRoute, AppRoutes.kanbanBoardRoute, {}, {});
+
+    final taskDetailsRoute = ParsedRoute(
+        AppRoutes.taskDetailsRoute, AppRoutes.taskDetailsRoute, {}, {});    
+
     if (signedIn && from == maintenanceDashboardRoute) {
       return maintenanceDashboardRoute;
     } else if (signedIn && from == addLocationRoute) {
       return addLocationRoute;
+    } else if (signedIn && from == kanbanBoardRoute) {
+      return kanbanBoardRoute;
+    }
+    else if (signedIn && from == taskDetailsRoute) {
+      return taskDetailsRoute;
     }
     // else if (signedIn && from == studentsRoute) {
     //   return studentsRoute;
@@ -120,7 +133,7 @@ class _MaintenanceManagementSystemState
     // } else if (signedIn && jwt_sub != null) {
     //   return resourceAllocationRoute;
     // }
-    return from;
+    return ParsedRoute('/signin', '/signin', {}, {});
   }
 
   void _handleAuthStateChanged() async {

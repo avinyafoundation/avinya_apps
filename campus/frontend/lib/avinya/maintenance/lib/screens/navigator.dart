@@ -48,7 +48,17 @@ class _SMSNavigatorState extends State<SMSNavigator> {
           FadeTransitionPage<void>(
             key: _scaffoldKey,
             child: SMSScaffold(),
-          ),
+          )
+        else if (routeState.route.pathTemplate == AppRoutes.kanbanBoardRoute)
+          FadeTransitionPage<void>(
+            key: _scaffoldKey,
+            child: SMSScaffold(),
+          )
+        else if (routeState.route.pathTemplate == AppRoutes.taskDetailsRoute)
+          FadeTransitionPage<void>(
+            key: _scaffoldKey,
+            child: SMSScaffold(),
+          )  
       ],
     );
   }
