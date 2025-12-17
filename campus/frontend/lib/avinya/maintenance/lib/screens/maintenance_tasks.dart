@@ -7,7 +7,7 @@ import '../widgets/common/date_picker.dart';
 import '../widgets/common/drop_down.dart';
 import '../widgets/common/page_title.dart';
 import '../widgets/common/text_field.dart';
-import '../widgets/pagination_controls.dart';
+import '../widgets/common/pagination_controls.dart';
 import '../widgets/task_details_dialog.dart';
 
 class ReportScreen extends StatefulWidget {
