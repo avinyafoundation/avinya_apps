@@ -45,4 +45,10 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetEmployeesByOrganizationResponse> check performDataBinding(graphqlResponse, GetEmployeesByOrganizationResponse);
     }
+    remote isolated function createMaintenanceTask(int organizationId, MaintenanceTask maintenanceTask, MaterialCost[]? materialCosts = (), MaintenanceFinance? finance = ()) returns CreateMaintenanceTaskResponse|graphql:ClientError {
+        string query = string `mutation createMaintenanceTask($organizationId:Int!,$maintenanceTask:MaintenanceTask!,$finance:MaintenanceFinance,$materialCosts:[MaterialCost!]) {createMaintenanceTask(organizationId:$organizationId,maintenanceTask:$maintenanceTask,finance:$finance,materialCosts:$materialCosts) {id}}`;
+        map<anydata> variables = {"organizationId": organizationId, "maintenanceTask": maintenanceTask, "materialCosts": materialCosts, "finance": finance};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <CreateMaintenanceTaskResponse> check performDataBinding(graphqlResponse, CreateMaintenanceTaskResponse);
+    }
 }

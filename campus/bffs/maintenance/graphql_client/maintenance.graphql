@@ -28,3 +28,19 @@ query getEmployeesByOrganization($organization_id: Int!, $avinya_type_id: Int) {
     preferred_name
   }
 }
+
+mutation createMaintenanceTask(
+  $organizationId: Int!
+  $maintenanceTask: MaintenanceTask!
+  $finance: MaintenanceFinance
+  $materialCosts: [MaterialCost!]
+) {
+  createMaintenanceTask(
+    organizationId: $organizationId
+    maintenanceTask: $maintenanceTask
+    finance: $finance
+    materialCosts: $materialCosts
+  ) {
+    id
+  }
+}

@@ -134,7 +134,6 @@ public type MaintenanceFinance record {
     int? activity_instance_id?;
     anydata? labour_cost?;
     string? reviewed_by?;
-    MaterialCost[]? material_costs?;
     string? created?;
     anydata? estimated_cost?;
     string? rejection_reason?;
@@ -160,7 +159,6 @@ public type MaintenanceTask record {
     int? id?;
     string? task_type?;
     string? updated?;
-    MaintenanceFinance? finance?;
     string? start_date?;
 };
 
@@ -208,4 +206,11 @@ public type GetEmployeesByOrganizationResponse record {|
         int? id;
         string? preferred_name;
     |}[] persons;
+|};
+
+public type CreateMaintenanceTaskResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+    |}? createMaintenanceTask;
 |};

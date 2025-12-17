@@ -4637,15 +4637,6 @@
                             "defaultValue": null
                         },
                         {
-                            "name": "finance",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "MaintenanceFinance",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
                             "name": "person_id_list",
                             "type": {
                                 "kind": "LIST",
@@ -12431,23 +12422,6 @@
                                 "ofType": null
                             },
                             "defaultValue": null
-                        },
-                        {
-                            "name": "material_costs",
-                            "type": {
-                                "kind": "LIST",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "NON_NULL",
-                                    "name": null,
-                                    "ofType": {
-                                        "kind": "INPUT_OBJECT",
-                                        "name": "MaterialCost",
-                                        "ofType": null
-                                    }
-                                }
-                            },
-                            "defaultValue": null
                         }
                     ],
                     "interfaces": null,
@@ -15918,6 +15892,32 @@
                                             "kind": "INPUT_OBJECT",
                                             "name": "MaintenanceTask",
                                             "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "finance",
+                                    "type": {
+                                        "kind": "INPUT_OBJECT",
+                                        "name": "MaintenanceFinance",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "materialCosts",
+                                    "type": {
+                                        "kind": "LIST",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "NON_NULL",
+                                            "name": null,
+                                            "ofType": {
+                                                "kind": "INPUT_OBJECT",
+                                                "name": "MaterialCost",
+                                                "ofType": null
+                                            }
                                         }
                                     },
                                     "defaultValue": null

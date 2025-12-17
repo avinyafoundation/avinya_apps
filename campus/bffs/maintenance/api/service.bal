@@ -100,5 +100,5 @@ service / on new http:Listener(9097) {
             return error("Error while getting persons data: " + getEmployeesByOrganizationResponse.message() + 
                 ":: Detail: " + getEmployeesByOrganizationResponse.detail().toString());
         }
-    }    
+    }
 }
