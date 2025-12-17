@@ -17,11 +17,22 @@ class TaskDetailsDialog extends StatefulWidget {
 class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final dialogWidth = screenWidth < 600
+        ? screenWidth * 0.9 // 90% width on mobile
+        : (screenWidth < 1200
+            ? 500.0 // 500px on tablets
+            : 600.0); // 600px on desktop
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
-        padding: const EdgeInsets.all(24),
-        width: 500, // Fixed width for desktop/web look
+        padding: EdgeInsets.all(screenWidth < 600 ? 16 : 24),
+        width: dialogWidth,
+        constraints: BoxConstraints(
+          maxWidth: 700,
+          maxHeight: MediaQuery.of(context).size.height * 0.9,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,8 +151,10 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                     const SizedBox(height: 20),
 
                     // Save and Cancel Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                    Wrap(
+                      alignment: WrapAlignment.end,
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
                         Button(
                           label: "Save",
@@ -156,7 +169,6 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                             Navigator.of(context).pop();
                           },
                         ),
-                        const SizedBox(width: 8),
                         Button(
                           label: "Cancel",
                           buttonColor: Colors.grey[300],
