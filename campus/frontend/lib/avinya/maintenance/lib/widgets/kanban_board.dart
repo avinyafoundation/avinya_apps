@@ -5,6 +5,7 @@ import 'dart:math';
 import '../widgets/animated_task_card.dart';
 import '../widgets/animated_status_icon.dart';
 import '../widgets/common/drop_down.dart';
+import '../widgets/common/page_title.dart';
 
 class KanbanBoard extends StatefulWidget {
   const KanbanBoard({super.key});
@@ -114,12 +115,11 @@ class _KanbanBoardState extends State<KanbanBoard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Task Activities",
-                        style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
+                      const PageTitle(
+                        title: "Task Activities",
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
                       const SizedBox(height: 15),
                       SizedBox(

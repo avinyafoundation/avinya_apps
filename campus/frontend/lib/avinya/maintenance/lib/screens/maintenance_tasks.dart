@@ -5,6 +5,7 @@ import '../widgets/common/button.dart';
 import '../widgets/common/data_table.dart';
 import '../widgets/common/date_picker.dart';
 import '../widgets/common/drop_down.dart';
+import '../widgets/common/page_title.dart';
 import '../widgets/common/text_field.dart';
 import '../widgets/pagination_controls.dart';
 import '../widgets/task_details_dialog.dart';
@@ -106,13 +107,11 @@ class _ReportScreenState extends State<ReportScreen> {
                       children: [
                         // --- TITLE ---
                         const SizedBox(height: 20),
-                        const Text(
-                          "Maintenance Monthly Tasks Report - Overview",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF172B4D), // Kanban Text Color
-                          ),
+                        const PageTitle(
+                          title: "Maintenance Monthly Tasks Report - Overview",
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF172B4D),
                         ),
 
                         const SizedBox(height: 25),
@@ -145,13 +144,11 @@ class _ReportScreenState extends State<ReportScreen> {
                         ],
 
                         // --- 3. ALL TASKS SECTION ---
-                        const Text(
-                          "All Maintenance Tasks",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF172B4D),
-                          ),
+                        const PageTitle(
+                          title: "All Maintenance Tasks",
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF172B4D),
                         ),
                         const SizedBox(height: 10),
                         _buildAllTasksTable(),
