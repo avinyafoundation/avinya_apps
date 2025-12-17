@@ -3,4 +3,5 @@ class AppRoutes {
   static const addLocationRoute = '/add-location';
   static const addTaskRoute = '/add-task';
   static const kanbanBoardRoute = '/board';
+  static const taskDetailsRoute = '/tasks';
 }

@@ -4,6 +4,7 @@ import 'package:gallery/avinya/maintenance/lib/data.dart';
 import 'package:gallery/avinya/maintenance/lib/screens/add_location_screen.dart';
 import 'package:gallery/avinya/maintenance/lib/screens/kanban_screen.dart';
 import 'package:gallery/avinya/maintenance/lib/screens/maintenance_dashboard_screen.dart';
+import 'package:gallery/avinya/maintenance/lib/screens/maintenance_tasks.dart';
 
 import '../routing.dart';
 import '../widgets/fade_transition_page.dart';
@@ -50,7 +51,14 @@ class SMSScaffoldBody extends StatelessWidget {
             key: ValueKey('kanban_board_screen'),
             child: KanbanScreen(),
           )
-            
+        else if (currentRoute.pathTemplate
+                .startsWith(AppRoutes.taskDetailsRoute) &&
+            (campusAppsPortalInstance.isFoundation ||
+                campusAppsPortalInstance.isTeacher))
+          const FadeTransitionPage<void>(
+            key: ValueKey('task_details_screen'),
+            child: ReportScreen(),
+          )
         // else if (currentRoute.pathTemplate.startsWith(AppRoutes.alumniAdminRoute))
         //   const FadeTransitionPage<void>(
         //     key: ValueKey('alumni_admin'),

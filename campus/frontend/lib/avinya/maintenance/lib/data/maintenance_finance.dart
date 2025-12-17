@@ -12,6 +12,7 @@ class MaintenanceFinance {
   int? id;
   int? activityInstanceId;
   double? estimatedCost;
+  double? totalCost;
   double? labourCost;
   FinanceStatus? status;
   String? rejectionReason;
@@ -23,6 +24,7 @@ class MaintenanceFinance {
     this.id,
     this.activityInstanceId,
     this.estimatedCost,
+    this.totalCost,
     this.labourCost,
     this.status,
     this.rejectionReason,
@@ -38,6 +40,7 @@ class MaintenanceFinance {
       id: json['id'],
       activityInstanceId: json['activityInstanceId'],
       estimatedCost: (json['estimatedCost'] as num?)?.toDouble(),
+      totalCost: (json['totalCost'] as num?)?.toDouble(),
       labourCost: (json['labourCost'] as num?)?.toDouble(),
       status: getStatusFromString(json['status']),
       rejectionReason: json['rejectionReason'],
@@ -57,6 +60,7 @@ class MaintenanceFinance {
     if(id != null) 'id': id,
     if(activityInstanceId != null) 'activityInstanceId': activityInstanceId,
     if(estimatedCost != null) 'estimatedCost': estimatedCost,
+    if(totalCost != null) 'totalCost': totalCost,
     if(labourCost != null) 'labourCost': labourCost,
     if(status != null) 'status': statusToString(status!),
     if(rejectionReason != null) 'rejectionReason': rejectionReason,

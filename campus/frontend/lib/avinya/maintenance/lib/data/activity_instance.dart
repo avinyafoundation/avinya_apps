@@ -6,6 +6,7 @@ import '../data/activity_participant.dart';
 import '../data/maintenance_finance.dart';
 import '../data/maintenance_task.dart';
 //import 'package:gallery/config/app_config.dart';
+import '../data/dummy_data.dart';
 
 class ActivityInstance {
   int? id;
@@ -25,7 +26,8 @@ class ActivityInstance {
   List<ActivityParticipant>? activityParticipants;
   MaintenanceFinance? financialInformation;
   MaintenanceTask? maintenanceTask;
-  String? taskStatus;
+  String? overallTaskStatus;
+  int? overdueDays;
 
   ActivityInstance({
     this.id,
@@ -45,7 +47,8 @@ class ActivityInstance {
     this.activityParticipants,
     this.financialInformation,
     this.maintenanceTask,
-    this.taskStatus,
+    this.overallTaskStatus,
+    this.overdueDays,
   });
 
   factory ActivityInstance.fromJson(Map<String, dynamic> json) {
@@ -75,7 +78,8 @@ class ActivityInstance {
       maintenanceTask: json['maintenanceTask'] != null
           ? MaintenanceTask.fromJson(json['maintenanceTask'])
           : null,
-      taskStatus: json['taskStatus'],
+      overallTaskStatus: json['overallTaskStatus'],
+      overdueDays: json['overdueDays'],
     );
   }
 
@@ -101,13 +105,15 @@ class ActivityInstance {
           'financialInformation': financialInformation!.toJson(),
         if (maintenanceTask != null)
           'maintenanceTask': maintenanceTask!.toJson(),
-        if (taskStatus != null) 'taskStatus': taskStatus,
+        if (overallTaskStatus != null) 'overallTaskStatus': overallTaskStatus,
+        if (overdueDays != null) 'overdueDays': overdueDays,
       };
 }
 
 Future<List<ActivityInstance>> fetchActivityInstance(int activityID) async {
   final response = await http.get(
-    Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/activity_instances_today/$activityID'),
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/activity_instances_today/$activityID'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -126,15 +132,13 @@ Future<List<ActivityInstance>> fetchActivityInstance(int activityID) async {
   }
 }
 
-
-
 //Get activity instances
 Future<List<ActivityInstance>> getOrganizationTasks({
   required int organizationId,
   List<int>? personId,
   String? fromDate,
   String? toDate,
-  String? taskStatus,
+  String? overallTaskStatus,
   String? financialStatus,
   String? taskType,
   int? location,
@@ -147,7 +151,7 @@ Future<List<ActivityInstance>> getOrganizationTasks({
     if (personId != null && personId.isNotEmpty) 'personId': personId.join(','),
     if (fromDate != null) 'fromDate': fromDate,
     if (toDate != null) 'toDate': toDate,
-    if (taskStatus != null) 'taskStatus': taskStatus,
+    if (overallTaskStatus != null) 'overallTaskStatus': overallTaskStatus,
     if (financialStatus != null) 'financialStatus': financialStatus,
     if (taskType != null) 'taskType': taskType,
     if (location != null) 'location': location.toString(),
@@ -158,8 +162,8 @@ Future<List<ActivityInstance>> getOrganizationTasks({
 
   // Construct URL
   final uri = Uri.https(
-    AppConfig.campusMaintenanceBffApiUrl, 
-    '/organizations/$organizationId/tasks', 
+    AppConfig.campusMaintenanceBffApiUrl,
+    '/organizations/$organizationId/tasks',
     queryParams,
   );
 
@@ -181,32 +185,27 @@ Future<List<ActivityInstance>> getOrganizationTasks({
     return activityInstances;
   } else {
     throw Exception(
-      'Failed to fetch tasks. Status code: ${response.statusCode}, Body: ${response.body}'
-    );
+        'Failed to fetch tasks. Status code: ${response.statusCode}, Body: ${response.body}');
   }
 }
-
-
-
-
 
 //Fetch task details based on month and year
 Future<List<ActivityInstance>> getMonthlyTasksByStatus({
   required int organizationId,
   required int year,
   required int month,
-  String? taskStatus,
+  String? overallTaskStatus,
   int? limit,
   int? offset,
 }) async {
   final queryParams = {
-    if (taskStatus != null) 'taskStatus': taskStatus,
+    if (overallTaskStatus != null) 'overallTaskStatus': overallTaskStatus,
     if (limit != null) 'limit': limit.toString(),
     if (offset != null) 'offset': offset.toString(),
   };
 
   final uri = Uri.parse(
-      '${AppConfig.campusMaintenanceBffApiUrl}/organizations/$organizationId/reports/monthly/$year/$month/task')
+          '${AppConfig.campusMaintenanceBffApiUrl}/organizations/$organizationId/reports/monthly/$year/$month/task')
       .replace(queryParameters: queryParams);
 
   final response = await http.get(
@@ -225,18 +224,16 @@ Future<List<ActivityInstance>> getMonthlyTasksByStatus({
     return activityInstances;
   } else {
     throw Exception(
-      'Failed to fetch tasks. Status code: ${response.statusCode}, Body: ${response.body}'
-    );
+        'Failed to fetch tasks. Status code: ${response.statusCode}, Body: ${response.body}');
   }
 }
 
-
-
-
 //Get overdue tasks
-Future<List<ActivityInstance>> fetchOverdueActivityInstance(int organizationId) async {
+Future<List<ActivityInstance>> fetchOverdueActivityInstance(
+    int organizationId) async {
   final response = await http.get(
-    Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/tasks/$organizationId/overdue'),
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/tasks/$organizationId/overdue'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -253,4 +250,25 @@ Future<List<ActivityInstance>> fetchOverdueActivityInstance(int organizationId) 
   } else {
     throw Exception('Failed to load Activity');
   }
+}
+
+// MOCK APIs. Use these for testing UI without backend integration.
+List<ActivityInstance> getMockActivityInstancesData() {
+  final Map<String, dynamic> decoded = jsonDecode(maintenanceTasksJson);
+  final List<dynamic> tasks = decoded['tasks'];
+
+  return tasks.map((taskItem) {
+    final instance = taskItem['activityInstance'];
+    return ActivityInstance.fromJson(instance);
+  }).toList();
+}
+
+List<ActivityInstance> getMockOverdueActivityInstancesData() {
+  final Map<String, dynamic> decoded = jsonDecode(overdueTasksJson);
+  final List<dynamic> tasks = decoded['overdueTasks'];
+
+  return tasks.map((taskItem) {
+    final instance = taskItem['activityInstance'];
+    return ActivityInstance.fromJson(instance);
+  }).toList();
 }

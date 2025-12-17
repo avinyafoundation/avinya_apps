@@ -33,7 +33,8 @@ class _MaintenanceManagementSystemState
       allowedPaths: [
         AppRoutes.maintenanceDashboardRoute,
         AppRoutes.addLocationRoute,
-        AppRoutes.kanbanBoardRoute
+        AppRoutes.kanbanBoardRoute,
+        AppRoutes.taskDetailsRoute
       ],
       guard: _guard,
       // initialRoute: '/signin',
@@ -109,12 +110,18 @@ class _MaintenanceManagementSystemState
     final kanbanBoardRoute = ParsedRoute(
         AppRoutes.kanbanBoardRoute, AppRoutes.kanbanBoardRoute, {}, {});
 
+    final taskDetailsRoute = ParsedRoute(
+        AppRoutes.taskDetailsRoute, AppRoutes.taskDetailsRoute, {}, {});    
+
     if (signedIn && from == maintenanceDashboardRoute) {
       return maintenanceDashboardRoute;
     } else if (signedIn && from == addLocationRoute) {
       return addLocationRoute;
     } else if (signedIn && from == kanbanBoardRoute) {
       return kanbanBoardRoute;
+    }
+    else if (signedIn && from == taskDetailsRoute) {
+      return taskDetailsRoute;
     }
     // else if (signedIn && from == studentsRoute) {
     //   return studentsRoute;
