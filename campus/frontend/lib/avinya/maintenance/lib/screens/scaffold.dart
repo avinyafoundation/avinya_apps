@@ -18,6 +18,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
   bool isKanbanBoardSectionHovered = false;
   bool isTaskDetailsSectionHovered = false;
   bool isDirectorDashboardSectionHovered = false;
+  bool isAddTaskSectionHovered = false;
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +138,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                 onExit: (_) {
                   setState(() {
                     isAddLocationSectionHovered = false;
+                    //isAddTaskSectionHovered = false;
                   });
                 },
                 child: Container(
@@ -212,6 +214,51 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                         onTap: () {
                           Navigator.pop(context); // Close the drawer
                           routeState.go(AppRoutes.kanbanBoardRoute);
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              MouseRegion(
+                onEnter: (_) {
+                  setState(() {
+                    isAddTaskSectionHovered = true;
+                  });
+                },
+                onExit: (_) {
+                  setState(() {
+                    isAddTaskSectionHovered = false;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isAddTaskSectionHovered
+                        ? Colors.white.withOpacity(0.3)
+                        : null,
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  margin: EdgeInsets.all(8.0),
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Container(
+                      child: ListTile(
+                        leading: Icon(Icons.add_task,
+                            color: Colors.white, size: 20.0),
+                        title: Container(
+                          margin: EdgeInsets.only(left: 12.0),
+                          transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                          child: Text(
+                            "Add Task",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context); // Close the drawer
+                          routeState.go(AppRoutes.addTaskRoute);
                         },
                       ),
                     ),

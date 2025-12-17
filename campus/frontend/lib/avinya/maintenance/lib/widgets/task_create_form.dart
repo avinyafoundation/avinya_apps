@@ -6,7 +6,7 @@ import '../data/maintenance_finance.dart';
 import '../data/maintenance_task.dart';
 import '../data/material_cost.dart';
 import '../data/person.dart';
-import '../widgets/common/button.dart';
+//import '../widgets/common/button.dart';
 import '../widgets/common/date_picker.dart';
 import '../widgets/common/drop_down.dart';
 import '../widgets/material_cost_table.dart';
@@ -123,14 +123,8 @@ final List<AcademyLocation> mockLocations = [
   @override
   void initState() {
     super.initState();
-    locationsFuture = Future.delayed(
-      const Duration(milliseconds: 500),
-      () => mockLocations,
-    );
-    personsFuture = Future.delayed(
-      const Duration(milliseconds: 500),
-      () => mockPersons,
-    );
+    locationsFuture = fetchAllAcademyLocations(2);
+    personsFuture = fetchEmployeeListByOrganization(2);
   }
 
 
@@ -407,10 +401,10 @@ final List<AcademyLocation> mockLocations = [
                       
                           return MultiSelectDropdown<Person>(
                             label: "Select Persons",
-                            items: mockPersons,
+                            items: persons,
                             selectedItems: selectedPerson,
                             valueField: (p) => p.id!,
-                            displayField: (p) => p.full_name!,
+                            displayField: (p) => p.preferred_name!,
                             onSelect: (id) {
                               setState(() => selectedPerson.add(id));
                               print(selectedPerson);
