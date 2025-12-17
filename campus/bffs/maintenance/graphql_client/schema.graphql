@@ -825,7 +825,6 @@ input MaintenanceFinance {
   reviewed_date: String
   created: String
   updated: String
-  material_costs: [MaterialCost!]
 }
 
 input MaintenanceTask {
@@ -843,7 +842,6 @@ input MaintenanceTask {
   is_deleted: Boolean
   created: String
   updated: String
-  finance: MaintenanceFinance
   person_id_list: [Int!]
 }
 
@@ -983,7 +981,7 @@ type Mutation {
   saveUserFCMToken(personId: Int!, personFCMToken: PersonFcmToken!): PersonFcmTokenData
   updateUserFCMToken(personId: Int!, personFCMToken: PersonFcmToken!): PersonFcmTokenData
   saveOrganizationLocation(organizationId: Int!, organizationLocation: OrganizationLocation!): OrganizationLocationData
-  createMaintenanceTask(organizationId: Int, maintenanceTask: MaintenanceTask!): MaintenanceTaskData
+  createMaintenanceTask(organizationId: Int, maintenanceTask: MaintenanceTask!, finance: MaintenanceFinance, materialCosts: [MaterialCost!]): MaintenanceTaskData
 }
 
 input Organization {
