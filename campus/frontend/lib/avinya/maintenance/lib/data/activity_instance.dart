@@ -302,3 +302,23 @@ List<ActivityInstance> getMockCompletedActivityInstancesData() {
     return ActivityInstance.fromJson(instance);
   }).toList();
 }
+
+
+//Update activity instance
+Future<ActivityInstance> updateActivityInstance(ActivityInstance activityInstance) async {
+  final response = await http.put(
+    Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/activity_instances/${activityInstance.id}'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+    body: jsonEncode(activityInstance.toJson()),
+  );
+
+  if (response.statusCode == 200) {
+    return ActivityInstance.fromJson(json.decode(response.body));
+  } else {
+    throw Exception('Failed to update Activity Instance');
+  }
+}
