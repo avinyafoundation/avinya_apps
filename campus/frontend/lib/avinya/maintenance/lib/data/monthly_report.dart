@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:gallery/avinya/maintenance/lib/data/dummy_data.dart';
 import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,7 +11,8 @@ class MonthlyReport {
   int? inProgressTasks;
   int? pendingTasks;
   double? totalCost;
-
+  int? totalUpcomingTasks;
+  double? nextMonthlyEstimatedCost;
 
   MonthlyReport({
     this.totalTasks,
@@ -18,6 +20,8 @@ class MonthlyReport {
     this.inProgressTasks,
     this.pendingTasks,
     this.totalCost,
+    this.totalUpcomingTasks,
+    this.nextMonthlyEstimatedCost,
   });
 
 
@@ -29,6 +33,9 @@ class MonthlyReport {
       inProgressTasks: json['inProgressTasks'],
       pendingTasks: json['pendingTasks'],
       totalCost: (json['totalCost'] as num).toDouble(),
+      totalUpcomingTasks: json['totalUpcomingTasks'],
+      nextMonthlyEstimatedCost:
+          (json['nextMonthlyEstimatedCost'] as num).toDouble(),
     );
   }
 
@@ -40,6 +47,8 @@ class MonthlyReport {
     if(inProgressTasks != null) 'inProgressTasks': inProgressTasks,
     if(pendingTasks != null) 'pendingTasks': pendingTasks,
     if(totalCost != null) 'totalCost': totalCost,
+    if(totalUpcomingTasks != null) 'totalUpcomingTasks': totalUpcomingTasks,
+    if(nextMonthlyEstimatedCost != null) 'nextMonthlyEstimatedCost': nextMonthlyEstimatedCost
   };
 }
 
@@ -71,4 +80,10 @@ Future<MonthlyReport> getMonthlyReport({
     throw Exception(
         'Failed to fetch monthly report. Status code: ${response.statusCode}, Body: ${response.body}');
   }
+}
+
+// MOCK APIs. Use these for testing UI without backend integration.
+MonthlyReport getMockDirectorDashboardSummary() {
+  final Map<String, dynamic> decoded = jsonDecode(directorDashboardSummaryJson);
+  return MonthlyReport.fromJson(decoded);
 }

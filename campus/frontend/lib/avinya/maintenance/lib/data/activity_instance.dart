@@ -272,3 +272,33 @@ List<ActivityInstance> getMockOverdueActivityInstancesData() {
     return ActivityInstance.fromJson(instance);
   }).toList();
 }
+
+List<ActivityInstance> getMockUpcomingActivityInstancesData() {
+  final Map<String, dynamic> decoded = jsonDecode(pendingTasksJson);
+  final List<dynamic> tasks = decoded['tasks'];
+
+  return tasks.map((taskItem) {
+    final instance = taskItem['activityInstance'];
+    return ActivityInstance.fromJson(instance);
+  }).toList();
+}
+
+List<ActivityInstance> getMockInProgressActivityInstancesData() {
+  final Map<String, dynamic> decoded = jsonDecode(inProgressTasksJson);
+  final List<dynamic> tasks = decoded['tasks'];
+
+  return tasks.map((taskItem) {
+    final instance = taskItem['activityInstance'];
+    return ActivityInstance.fromJson(instance);
+  }).toList();
+}
+
+List<ActivityInstance> getMockCompletedActivityInstancesData() {
+  final Map<String, dynamic> decoded = jsonDecode(completedTasksJson);
+  final List<dynamic> tasks = decoded['tasks'];
+
+  return tasks.map((taskItem) {
+    final instance = taskItem['activityInstance'];
+    return ActivityInstance.fromJson(instance);
+  }).toList();
+}

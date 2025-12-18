@@ -1,10 +1,11 @@
 import 'dart:convert';
 
+import 'package:gallery/avinya/maintenance/lib/data/dummy_data.dart';
 import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 
 class MonthlyCost {
-  String? month;
+  int? month;
   double? actualCost;
   double? estimatedCost;
 
@@ -60,4 +61,14 @@ Future<List<MonthlyCost>> getMonthlyCostSummary({
     throw Exception(
         'Failed to fetch monthly cost summary. Status code: ${response.statusCode}, body: ${response.body}');
   }
+}
+
+// MOCK APIs. Use these for testing UI without backend integration.
+List<MonthlyCost> getMockMonthlyTaskCostSummary() {
+  final Map<String, dynamic> decoded = jsonDecode(monthlyTaskCostSummaryJson);
+  final List<dynamic> monthlyCostsJson = decoded['monthlyCosts'];
+
+  return monthlyCostsJson.map((monthJson) {
+    return MonthlyCost.fromJson(monthJson);
+  }).toList();
 }

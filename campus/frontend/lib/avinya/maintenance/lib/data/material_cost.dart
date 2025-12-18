@@ -77,7 +77,8 @@ Future<http.Response> deleteMaterialCost(int materialCostId) async {
 enum Unit{
   piece,
   kg,
-  liter
+  liter,
+  meter
 }
 
 
@@ -90,6 +91,8 @@ Unit getUnitFromString(String unitString){
       return Unit.kg; 
     case 'liter':
       return Unit.liter;
+    case 'meter':
+      return Unit.meter;  
     default:
       throw Exception('Unknown unit: $unitString');
   }
@@ -105,6 +108,8 @@ String unitToString(Unit unit){
       return 'kg';
     case Unit.liter:
       return 'liter';
+    case Unit.meter:
+      return 'meter';  
     // default:
     //   throw Exception('Unknown unit: $unit');
   }
