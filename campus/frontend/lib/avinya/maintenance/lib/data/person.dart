@@ -889,6 +889,26 @@ Future<List<Person>> fetchAlumniPersonList(int? parent_organization_id) async {
   }
 }
 
+Future<List<Person>> fetchEmployeeListByOrganization(int? organization_id) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusMaintenanceBffApiUrl}/organizations/$organization_id/persons'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<Person> persons =
+        await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
+    return persons;
+  } else {
+    throw Exception('Failed to get persons Data');
+  }
+}
+
 Future<http.StreamedResponse?> uploadFile(
     Uint8List fileBytes, Map<String, dynamic> documentDetails) async {
   try {

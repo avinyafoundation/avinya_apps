@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:gallery/auth.dart';
 import 'package:gallery/avinya/maintenance/lib/app_routes/app_routes.dart';
-import 'package:gallery/avinya/maintenance/lib/routes.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -35,6 +34,7 @@ class _MaintenanceManagementSystemState
         AppRoutes.addLocationRoute,
         AppRoutes.kanbanBoardRoute,
         AppRoutes.taskDetailsRoute,
+        AppRoutes.addTaskRoute
       ],
       guard: _guard,
       // initialRoute: '/signin',
@@ -112,6 +112,10 @@ class _MaintenanceManagementSystemState
 
     final taskDetailsRoute = ParsedRoute(
         AppRoutes.taskDetailsRoute, AppRoutes.taskDetailsRoute, {}, {});    
+
+    final addTaskRoute = ParsedRoute(
+        AppRoutes.addTaskRoute, AppRoutes.addTaskRoute, {}, {});
+
     if (signedIn && from == maintenanceDashboardRoute) {
       return maintenanceDashboardRoute;
     } else if (signedIn && from == addLocationRoute) {
@@ -121,6 +125,8 @@ class _MaintenanceManagementSystemState
     }
     else if (signedIn && from == taskDetailsRoute) {
       return taskDetailsRoute;
+    } else if (signedIn && from == addTaskRoute) {
+      return addTaskRoute;
     }
     // else if (signedIn && from == studentsRoute) {
     //   return studentsRoute;
