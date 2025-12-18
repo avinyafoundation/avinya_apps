@@ -468,8 +468,8 @@ final List<AcademyLocation> mockLocations = [
                       label: "Estimated Total Cost",
                       controller: estimatedCostController,
                       hintText: "eg: 4000 LKR",
-                      validator: (v) => 
-                        v == null || v.isEmpty ? "Please enter estimated cost" : null,
+                      // validator: (v) => 
+                      //   v == null || v.isEmpty ? "Please enter estimated cost" : null,
                     ),
                     const SizedBox(height: 16),
                     MaterialCostTable(
@@ -485,8 +485,8 @@ final List<AcademyLocation> mockLocations = [
                       label: "Labour Cost",
                       controller: labourCostController,
                       hintText: "eg: 1500 LKR",
-                      validator: (v) => 
-                        v == null || v.isEmpty ? "Please enter labour cost" : null,
+                      // validator: (v) => 
+                      //   v == null || v.isEmpty ? "Please enter labour cost" : null,
                     ),
                 ],
                 ),
