@@ -418,19 +418,8 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
   // ---------------------------------------------------------------------------
 
   // Dialog to show tasks
-  void _showTasksDialog(String title, String filter) async {
-    // Show loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(_primaryText),
-        ),
-      ),
-    );
-
-    // 1. Fetch data ONLY when this function is called (On Tap)
+  void _showTasksDialog(String title, String filter) {
+    // Fetch data based on filter
     List<ActivityInstance> rawData;
 
     switch (filter) {
@@ -469,8 +458,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
       };
     }).toList();
 
-    // 3. Close loading and show the Dialog with the fresh data
-    Navigator.of(context).pop(); // Close loading dialog
+    // Show the Dialog with the data
     showDialog(
       context: context,
       builder: (context) => TasksDialog(
@@ -482,20 +470,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
     );
   }
 
-  void _showCostBreakdownDialog() async {
-    // Show loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(_primaryText),
-        ),
-      ),
-    );
-
-    // Close loading and show the dialog
-    Navigator.of(context).pop();
+  void _showCostBreakdownDialog() {
     showDialog(
       context: context,
       builder: (context) => CostBreakdownDialog(
@@ -511,18 +486,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
     );
   }
 
-  void _showUpcomingTasksDialog() async {
-    // Show loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(_primaryText),
-        ),
-      ),
-    );
-
+  void _showUpcomingTasksDialog() {
     // Mock upcoming tasks data
     List<Map<String, dynamic>> upcomingTasks = [
       {
@@ -557,8 +521,6 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
       },
     ];
 
-    // Close loading and show the dialog
-    Navigator.of(context).pop();
     showDialog(
       context: context,
       builder: (context) => TasksDialog(
@@ -570,20 +532,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
     );
   }
 
-  void _showEstimatedCostDialog() async {
-    // Show loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(_primaryText),
-        ),
-      ),
-    );
-
-    // Close loading and show the dialog
-    Navigator.of(context).pop();
+  void _showEstimatedCostDialog() {
     showDialog(
       context: context,
       builder: (context) => CostBreakdownDialog(
