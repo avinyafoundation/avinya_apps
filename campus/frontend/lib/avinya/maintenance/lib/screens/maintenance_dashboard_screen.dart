@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:maintenance/widgets/maintenance_dashboard.dart';
+import 'package:gallery/avinya/maintenance/lib/widgets/director_dashboard.dart';
 
 class MaintenanceDashboardScreen extends StatefulWidget {
   const MaintenanceDashboardScreen({super.key});
@@ -14,7 +14,7 @@ class _MaintenanceDashboardScreenState
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: MaintenanceDashboard(),
+      child: DirectorDashboardScreen(),
     );
   }
 }

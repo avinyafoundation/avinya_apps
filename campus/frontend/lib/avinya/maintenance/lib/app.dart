@@ -34,7 +34,7 @@ class _MaintenanceManagementSystemState
         AppRoutes.maintenanceDashboardRoute,
         AppRoutes.addLocationRoute,
         AppRoutes.kanbanBoardRoute,
-        AppRoutes.taskDetailsRoute
+        AppRoutes.taskDetailsRoute,
       ],
       guard: _guard,
       // initialRoute: '/signin',
@@ -112,7 +112,6 @@ class _MaintenanceManagementSystemState
 
     final taskDetailsRoute = ParsedRoute(
         AppRoutes.taskDetailsRoute, AppRoutes.taskDetailsRoute, {}, {});    
-
     if (signedIn && from == maintenanceDashboardRoute) {
       return maintenanceDashboardRoute;
     } else if (signedIn && from == addLocationRoute) {

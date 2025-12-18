@@ -17,6 +17,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
   bool isAddLocationSectionHovered = false;
   bool isKanbanBoardSectionHovered = false;
   bool isTaskDetailsSectionHovered = false;
+  bool isDirectorDashboardSectionHovered = false;
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +111,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                           margin: EdgeInsets.only(left: 12.0),
                           transform: Matrix4.translationValues(-25, 0.0, 0.0),
                           child: Text(
-                            "Maintenance Management Dashboard",
+                            "Dashboard",
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 12,
