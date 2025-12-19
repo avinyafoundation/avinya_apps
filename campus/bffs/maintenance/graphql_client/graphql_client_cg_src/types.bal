@@ -12,7 +12,6 @@ public type Activity record {
 };
 
 public type ActivityInstance record {
-    string? task_status?;
     string? notes?;
     string? created?;
     int? weekly_sequence?;
@@ -24,6 +23,7 @@ public type ActivityInstance record {
     int? monthly_sequence?;
     string? start_time?;
     int? organization_id?;
+    string? overall_task_status?;
     int? activity_id?;
     string? name?;
     string? location?;
@@ -45,9 +45,9 @@ public type ActivityInstanceEvaluation record {
 
 public type ActivityParticipant record {
     string? end_date?;
-    string? task_status?;
     string? role?;
     string? notes?;
+    string? participant_task_status?;
     string? created?;
     int? is_attending?;
     string? record_type?;
@@ -367,6 +367,7 @@ public type MaintenanceFinance record {
     string? created?;
     anydata? estimated_cost?;
     string? rejection_reason?;
+    MaterialCost[]? materialCosts?;
     int? id?;
     string? updated?;
     string? record_type?;
@@ -375,6 +376,7 @@ public type MaintenanceFinance record {
 };
 
 public type MaintenanceTask record {
+    boolean? is_active?;
     int? exception_deadline?;
     string? created?;
     int? has_financial_info?;
@@ -383,12 +385,12 @@ public type MaintenanceTask record {
     string? record_type?;
     int? location_id?;
     string? frequency?;
-    boolean? is_deleted?;
     string? modified_by?;
     int[]? person_id_list?;
     int? id?;
     string? task_type?;
     string? updated?;
+    MaintenanceFinance? finance?;
     string? start_date?;
 };
 

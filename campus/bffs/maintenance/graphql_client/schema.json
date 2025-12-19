@@ -4610,7 +4610,7 @@
                             "defaultValue": null
                         },
                         {
-                            "name": "is_deleted",
+                            "name": "is_active",
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "Boolean",
@@ -4650,6 +4650,15 @@
                                         "ofType": null
                                     }
                                 }
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "finance",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "MaintenanceFinance",
+                                "ofType": null
                             },
                             "defaultValue": null
                         }
@@ -10436,7 +10445,7 @@
                             "defaultValue": null
                         },
                         {
-                            "name": "task_status",
+                            "name": "overall_task_status",
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "String",
@@ -10853,7 +10862,7 @@
                             "defaultValue": null
                         },
                         {
-                            "name": "task_status",
+                            "name": "participant_task_status",
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "String",
@@ -11026,7 +11035,7 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "is_deleted",
+                            "name": "is_active",
                             "args": [],
                             "type": {
                                 "kind": "SCALAR",
@@ -11124,6 +11133,17 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "task_id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "notes",
                             "args": [],
                             "type": {
@@ -11180,6 +11200,17 @@
                         },
                         {
                             "name": "end_time",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "overall_task_status",
                             "args": [],
                             "type": {
                                 "kind": "SCALAR",
@@ -12422,6 +12453,23 @@
                                 "ofType": null
                             },
                             "defaultValue": null
+                        },
+                        {
+                            "name": "materialCosts",
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "INPUT_OBJECT",
+                                        "name": "MaterialCost",
+                                        "ofType": null
+                                    }
+                                }
+                            },
+                            "defaultValue": null
                         }
                     ],
                     "interfaces": null,
@@ -13134,6 +13182,17 @@
                         },
                         {
                             "name": "end_date",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "participant_task_status",
                             "args": [],
                             "type": {
                                 "kind": "SCALAR",

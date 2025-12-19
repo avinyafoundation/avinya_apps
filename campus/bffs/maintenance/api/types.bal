@@ -130,6 +130,43 @@ public type Alumni record {
     string? status?;
 };
 
+public type ActivityInstance record {
+    string? notes?;
+    string? created?;
+    int? weekly_sequence?;
+    string? end_time?;
+    string? description?;
+    int? task_id?;
+    int? daily_sequence?;
+    string? record_type?;
+    int? monthly_sequence?;
+    string? start_time?;
+    int? organization_id?;
+    string? overall_task_status?;
+    int? activity_id?;
+    string? name?;
+    string? location?;
+    int? id?;
+    string? updated?;
+    int? place_id?;
+};
+
+public type ActivityParticipant record {
+    string? end_date?;
+    string? role?;
+    string? notes?;
+    string? participant_task_status?;
+    string? created?;
+    int? is_attending?;
+    string? record_type?;
+    int? activity_instance_id?;
+    int? organization_id?;
+    int? id?;
+    string? updated?;
+    int? person_id?;
+    string? start_date?;
+};
+
 public type MaintenanceFinance record {
     int? activity_instance_id?;
     anydata? labour_cost?;
@@ -137,6 +174,7 @@ public type MaintenanceFinance record {
     string? created?;
     anydata? estimated_cost?;
     string? rejection_reason?;
+    MaterialCost[]? materialCosts?;
     int? id?;
     string? updated?;
     string? record_type?;
@@ -145,6 +183,7 @@ public type MaintenanceFinance record {
 };
 
 public type MaintenanceTask record {
+    boolean? is_active?;
     int? exception_deadline?;
     string? created?;
     int? has_financial_info?;
@@ -153,12 +192,12 @@ public type MaintenanceTask record {
     string? record_type?;
     int? location_id?;
     string? frequency?;
-    boolean? is_deleted?;
     string? modified_by?;
     int[]? person_id_list?;
     int? id?;
     string? task_type?;
     string? updated?;
+    MaintenanceFinance? finance?;
     string? start_date?;
 };
 
