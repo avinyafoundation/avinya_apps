@@ -101,4 +101,30 @@ service / on new http:Listener(9097) {
                 ":: Detail: " + getEmployeesByOrganizationResponse.detail().toString());
         }
     }
+
+    //Creates a new maintenance task for the specified organization[bandaragama,etc..]
+    resource function post organizations/[int organizationId]/tasks(@http:Payload MaintenanceTask maintenanceTask) returns MaintenanceTask|ApiErrorResponse|error {
+        
+        MaintenanceFinance? finance = maintenanceTask?.finance ?:();
+        MaterialCost[]? material_costs= ();
+        if(finance is MaintenanceFinance){
+          material_costs = finance?.materialCosts;
+          finance.materialCosts = ();
+        }
+        maintenanceTask.finance = ();
+
+        CreateMaintenanceTaskResponse|graphql:ClientError createMaintenanceTaskResponse = globalDataClient->createMaintenanceTask(organizationId,maintenanceTask,material_costs,finance);
+        if(createMaintenanceTaskResponse is CreateMaintenanceTaskResponse) {
+            MaintenanceTask|error maintenanceTaskRecord = createMaintenanceTaskResponse.createMaintenanceTask.cloneWithType(MaintenanceTask);
+            if(maintenanceTaskRecord is MaintenanceTask) {
+                return maintenanceTaskRecord;
+            } else {
+                log:printError("Error while adding maintenance task record", maintenanceTaskRecord);
+                return <ApiErrorResponse>{body: { message: "Error while adding maintenance task record" }};
+            }
+        } else {
+            log:printError("Error while adding maintenance task record", createMaintenanceTaskResponse);
+            return <ApiErrorResponse>{body: { message: "Error while adding maintenance task record" }};
+        }
+    }
 }

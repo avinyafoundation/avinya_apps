@@ -39,7 +39,7 @@ input ActivityInstance {
   notes: String
   start_time: String
   end_time: String
-  task_status: String
+  overall_task_status: String
   created: String
   updated: String
 }
@@ -50,12 +50,14 @@ type ActivityInstanceData {
   location: String
   description: String
   activity_id: Int
+  task_id: Int
   notes: String
   daily_sequence: Int
   weekly_sequence: Int
   monthly_sequence: Int
   start_time: String
   end_time: String
+  overall_task_status: String
   created: String
   updated: String
   place: PlaceData
@@ -97,7 +99,7 @@ input ActivityParticipant {
   organization_id: Int
   start_date: String
   end_date: String
-  task_status: String
+  participant_task_status: String
   role: String
   notes: String
   is_attending: Int
@@ -163,6 +165,7 @@ type ActivityParticipantData {
   organization: OrganizationData
   start_date: String
   end_date: String
+  participant_task_status: String
   role: String
   notes: String
   is_attending: Int
@@ -825,6 +828,7 @@ input MaintenanceFinance {
   reviewed_date: String
   created: String
   updated: String
+  materialCosts: [MaterialCost!]
 }
 
 input MaintenanceTask {
@@ -839,10 +843,11 @@ input MaintenanceTask {
   exception_deadline: Int
   has_financial_info: Int
   modified_by: String
-  is_deleted: Boolean
+  is_active: Boolean
   created: String
   updated: String
   person_id_list: [Int!]
+  finance: MaintenanceFinance
 }
 
 type MaintenanceTaskData {
@@ -856,7 +861,7 @@ type MaintenanceTaskData {
   exception_deadline: Int
   has_financial_info: Int
   modified_by: String
-  is_deleted: Boolean
+  is_active: Boolean
   created: String
   updated: String
 }
