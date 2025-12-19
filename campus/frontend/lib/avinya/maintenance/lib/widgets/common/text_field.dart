@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class TextFieldForm extends StatelessWidget {
-
   final String? label;
   final TextEditingController controller;
   final String? hintText;
   final double? width;
   final double? height;
   final int? maxLines;
+  final bool? enabled;
   final TextAlignVertical? textAlignVertical;
   final String? Function(String?)? validator;
   final Function(String?)? onSaved;
@@ -21,6 +21,7 @@ class TextFieldForm extends StatelessWidget {
     this.height,
     this.maxLines,
     this.textAlignVertical,
+    this.enabled = true,
     this.validator,
     this.onSaved,
   });
@@ -39,11 +40,12 @@ class TextFieldForm extends StatelessWidget {
         // ),
         const SizedBox(height: 8),
         SizedBox(
-          width: width?? double.infinity,
+          width: width ?? double.infinity,
           height: height,
           child: TextFormField(
             controller: controller,
-            validator: validator,
+            validator: enabled! ? validator : null,
+            enabled: enabled,
             maxLines: maxLines,
             textAlignVertical: textAlignVertical,
             decoration: InputDecoration(

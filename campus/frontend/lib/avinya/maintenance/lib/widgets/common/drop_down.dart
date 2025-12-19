@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import '../data/organization.dart';
+//import 'package:mock_maintenance_web/data/organization.dart';
 
 class DropDown<T> extends StatelessWidget {
   final String? label;
@@ -7,6 +7,7 @@ class DropDown<T> extends StatelessWidget {
   final double? sizedBoxHeight;
   final List<T> items;
   final int? selectedValues;
+  final bool? enabled;
   final int Function(T) valueField;
   final String Function(T) displayField;
   final Function(int?)? onChanged;
@@ -19,6 +20,7 @@ class DropDown<T> extends StatelessWidget {
     this.sizedBoxHeight,
     required this.items,
     this.selectedValues,
+    this.enabled = true,
     required this.valueField,
     required this.displayField,
     this.onChanged,
@@ -48,8 +50,8 @@ class DropDown<T> extends StatelessWidget {
                     child: Text(displayField(item)),
                   ))
               .toList(),
-          onChanged: onChanged,
-          validator: validator,
+          onChanged: enabled! ? onChanged : null,
+          validator: enabled! ? validator : null,
           decoration: InputDecoration(
             // labelText: organizations.isNotEmpty
             //   ? organizations.first.name?.name_en ?? ''
