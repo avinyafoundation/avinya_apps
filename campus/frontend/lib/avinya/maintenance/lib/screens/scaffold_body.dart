@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gallery/avinya/maintenance/lib/app_routes/app_routes.dart';
 import 'package:gallery/avinya/maintenance/lib/data.dart';
 import 'package:gallery/avinya/maintenance/lib/screens/add_location_screen.dart';
+import 'package:gallery/avinya/maintenance/lib/screens/finance_approvals_screen.dart';
 import 'package:gallery/avinya/maintenance/lib/screens/kanban_screen.dart';
 import 'package:gallery/avinya/maintenance/lib/screens/add_task_screen.dart';
 import 'package:gallery/avinya/maintenance/lib/screens/maintenance_dashboard_screen.dart';
@@ -68,6 +69,14 @@ class SMSScaffoldBody extends StatelessWidget {
             key: ValueKey('add_task_screen'),
             child: AddTaskScreen(),
           )
+        else if (currentRoute.pathTemplate
+                .startsWith(AppRoutes.financeApprovalsRoute) &&
+            (campusAppsPortalInstance.isFoundation ||
+                campusAppsPortalInstance.isTeacher))
+          const FadeTransitionPage<void>(
+            key: ValueKey('finance_approvals_screen'),
+            child: FinanceApprovalsScreen(),
+          )  
         // else if (currentRoute.pathTemplate.startsWith(AppRoutes.alumniAdminRoute))
         //   const FadeTransitionPage<void>(
         //     key: ValueKey('alumni_admin'),

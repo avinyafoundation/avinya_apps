@@ -1522,3 +1522,128 @@ const String completedTasksJson = '''
   ]
 }
 ''';
+
+// GET /organizations/{organizationId}/tasks (With financial status pending query parameter)
+const String pendingFinancialTasksJson = '''
+{
+  "tasks": [
+    {
+      "activityInstance": {
+        "id": 1,
+        "start_time": "2025-01-10",
+        "end_time": "2025-01-12",
+        "overallTaskStatus": "Pending",
+        "maintenanceTask": {
+          "id": 1,
+          "title": "Air Conditioner Maintenance",
+          "description": "Routine AC inspection and cleaning",
+          "type": "Recurring",
+          "frequency": "Monthly",
+          "location": {
+            "id": 1,
+            "location_name": "Pod 1"
+          }
+        },
+        "activityParticipants": [
+          {
+            "id": 1,
+            "person": {
+              "id": 1,
+              "preferred_name": "Ashan"
+            },
+            "start_time": "2025-01-10",
+            "end_time": "2025-01-12",
+            "status": "Completed"
+          },
+          {
+            "id": 2,
+            "person": {
+              "id": 2,
+              "preferred_name": "Sunil"
+            },
+            "start_time": "2025-01-10",
+            "end_time": "2025-01-12",
+            "status": "Completed"
+          }
+        ],
+        "financialInformation": {
+          "id": 1,
+          "estimatedCost": 1500,
+          "totalCost": 1400,
+          "materialCosts": [
+            {
+              "id": 1,
+              "item": "Air Filter",
+              "quantity": 5,
+              "unit": "piece",
+              "unitCost": 100
+            },
+            {
+              "id": 2,
+              "item": "Coolant",
+              "quantity": 2,
+              "unit": "liter",
+              "unitCost": 250
+            }
+          ],
+          "labourCost": 500,
+          "status": "Pending",
+          "rejectionReason": null,
+          "reviewedBy": null,
+          "reviewedDate": null
+        }
+      }
+    },
+    {
+      "activityInstance": {
+        "id": 3,
+        "start_time": "2025-02-01",
+        "end_time": "2025-02-05",
+        "overallTaskStatus": "Pending",
+        "maintenanceTask": {
+          "id": 3,
+          "title": "Fix Lights",
+          "description": "Replace the 3 bulbs in the main corridor.",
+          "type": "Recurring",
+          "frequency": "Weekly",
+          "location": {
+            "id": 2,
+            "location_name": "Main Hall"
+          }
+        },
+        "activityParticipants": [
+          {
+            "id": 3,
+            "person": {
+              "id": 3,
+              "preferred_name": "Pradeepa"
+            },
+            "start_time": "2025-02-01",
+            "end_time": "2025-02-05",
+            "status": "Pending"
+          }
+        ],
+        "financialInformation": {
+          "id": 3,
+          "estimatedCost": 500,
+          "totalCost": 0,
+          "materialCosts": [
+            {
+              "id": 3,
+              "item": "LED Bulbs",
+              "quantity": 3,
+              "unit": "piece",
+              "unitCost": 50
+            }
+          ],
+          "labourCost": 350,
+          "status": "Pending",
+          "rejectionReason": null,
+          "reviewedBy": null,
+          "reviewedDate": null
+        }
+      }
+    }
+  ]
+}
+''';  

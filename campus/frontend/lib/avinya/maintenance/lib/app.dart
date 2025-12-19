@@ -34,7 +34,8 @@ class _MaintenanceManagementSystemState
         AppRoutes.addLocationRoute,
         AppRoutes.kanbanBoardRoute,
         AppRoutes.taskDetailsRoute,
-        AppRoutes.addTaskRoute
+        AppRoutes.addTaskRoute,
+        AppRoutes.financeApprovalsRoute,
       ],
       guard: _guard,
       // initialRoute: '/signin',
@@ -116,6 +117,9 @@ class _MaintenanceManagementSystemState
     final addTaskRoute = ParsedRoute(
         AppRoutes.addTaskRoute, AppRoutes.addTaskRoute, {}, {});
 
+    final financeApprovalsRoute = ParsedRoute(
+        AppRoutes.financeApprovalsRoute, AppRoutes.financeApprovalsRoute, {}, {});    
+
     if (signedIn && from == maintenanceDashboardRoute) {
       return maintenanceDashboardRoute;
     } else if (signedIn && from == addLocationRoute) {
@@ -127,6 +131,9 @@ class _MaintenanceManagementSystemState
       return taskDetailsRoute;
     } else if (signedIn && from == addTaskRoute) {
       return addTaskRoute;
+    }
+    else if (signedIn && from == financeApprovalsRoute) {
+      return financeApprovalsRoute;
     }
     // else if (signedIn && from == studentsRoute) {
     //   return studentsRoute;
