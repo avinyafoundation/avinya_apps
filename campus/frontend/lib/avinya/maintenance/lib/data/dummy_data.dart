@@ -146,8 +146,9 @@ const String maintenanceTasksJson = '''
           "description": "Routine AC inspection and cleaning",
           "type": "Recurring",
           "frequency": "Monthly",
+          "exceptionDeadline":2,
           "location": {
-            "id": 1,
+            "id": 12,
             "location_name": "Pod 1"
           }
         },
@@ -172,33 +173,8 @@ const String maintenanceTasksJson = '''
             "end_time": "2025-01-12",
             "status": "Completed"
           }
-        ],
-        "financialInformation": {
-          "id": 1,
-          "estimatedCost": 1500,
-          "totalCost": 1400,
-          "materialCosts": [
-            {
-              "id": 1,
-              "item": "Air Filter",
-              "quantity": 5,
-              "unit": "piece",
-              "unitCost": 100
-            },
-            {
-              "id": 2,
-              "item": "Coolant",
-              "quantity": 2,
-              "unit": "liter",
-              "unitCost": 250
-            }
-          ],
-          "labourCost": 500,
-          "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
-        }
+        ]
+        
       }
     },
     {
@@ -214,7 +190,7 @@ const String maintenanceTasksJson = '''
           "type": "Recurring",
           "frequency": "Monthly",
           "location": {
-            "id": 1,
+            "id": 14,
             "location_name": "Building A - Floor 2"
           }
         },
@@ -271,7 +247,7 @@ const String maintenanceTasksJson = '''
           "type": "Recurring",
           "frequency": "Weekly",
           "location": {
-            "id": 2,
+            "id": 15,
             "location_name": "Main Hall"
           }
         },
@@ -321,7 +297,7 @@ const String maintenanceTasksJson = '''
           "type": "Recurring",
           "frequency": "Weekly",
           "location": {
-            "id": 1,
+            "id": 13,
             "location_name": "IT Lab"
           }
         },
@@ -371,7 +347,7 @@ const String maintenanceTasksJson = '''
           "type": "oneTime",
           "frequency": null,
           "location": {
-            "id": 2,
+            "id": 12,
             "location_name": "Main Hall"
           }
         },
@@ -421,7 +397,7 @@ const String maintenanceTasksJson = '''
           "type": "Recurring",
           "frequency": "Monthly",
           "location": {
-            "id": 1,
+            "id": 15,
             "location_name": "IT Lab"
           }
         },

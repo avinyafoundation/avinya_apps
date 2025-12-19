@@ -343,6 +343,7 @@ final List<AcademyLocation> mockLocations = [
                         selectedValues: selectedStatus,
                         valueField: (v) => v,
                         displayField: (v) => statuses[v]!,
+                        enabled: false,
                         onChanged: (v) => setState(() => selectedStatus = v),
                         validator: (v) => validateDropdown(v),
                       ),
