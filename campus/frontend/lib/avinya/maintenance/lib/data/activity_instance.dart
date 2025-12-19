@@ -303,6 +303,16 @@ List<ActivityInstance> getMockCompletedActivityInstancesData() {
   }).toList();
 }
 
+List<ActivityInstance> getMockPendingFinancialActivityInstancesData() {
+  final Map<String, dynamic> decoded = jsonDecode(pendingFinancialTasksJson);
+  final List<dynamic> tasks = decoded['tasks'];
+
+  return tasks.map((taskItem) {
+    final instance = taskItem['activityInstance'];
+    return ActivityInstance.fromJson(instance);
+  }).toList();
+}
+
 
 //Update activity instance
 Future<ActivityInstance> updateActivityInstance(ActivityInstance activityInstance) async {

@@ -64,7 +64,13 @@ class _SMSNavigatorState extends State<SMSNavigator> {
           FadeTransitionPage<void>(
             key: _scaffoldKey,
             child: SMSScaffold(),
-          ),
+          )
+        else if (routeState.route.pathTemplate ==
+            AppRoutes.financeApprovalsRoute)
+          FadeTransitionPage<void>(
+            key: _scaffoldKey,
+            child: SMSScaffold(),
+          ) 
       ],
     );
   }
