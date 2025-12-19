@@ -37,7 +37,6 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
   }
 
   void _loadData() async {
-
     try {
       List<ActivityInstance> tasks =
           getMockPendingFinancialActivityInstancesData();
@@ -397,8 +396,10 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
     String dateStr = "-";
     if (instance.start_time != null) {
       try {
-        DateTime date = DateTime.parse(instance.start_time!);
-        dateStr = DateFormat('dd MMM yyyy').format(date);
+        dateStr = DateTime.parse(instance.start_time!)
+            .toLocal()
+            .toString()
+            .split(' ')[0];
       } catch (e) {
         dateStr = instance.start_time!;
       }
