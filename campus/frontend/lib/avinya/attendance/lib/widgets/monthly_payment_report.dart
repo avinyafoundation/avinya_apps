@@ -52,7 +52,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
 
   List<Organization> _batchData = [];
   Organization? _selectedOrganizationValue;
-  CalendarMetadata? _calendarMetadata;
+  BatchPaymentPlan? _batchPaymentPlan;
   List<Organization> _fetchedOrganizations = [];
   late Future<List<Organization>> _fetchBatchData;
 
@@ -60,8 +60,10 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   late int _totalSchoolDaysInMonth = 0;
   late String _monthFullName = "";
   late double _dailyAmount = 0.0;
+  List<String> monthDateList = [];
 
   List<String?> classes = [];
+  Set<String> fetchedLeaveDates = {};
 
   void selectedYearAndMonth(int year, int month) async {
     setState(() {
@@ -99,9 +101,9 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
     if (_selectedOrganizationValue != null) {
       int orgId = _selectedOrganizationValue!.id!;
       _fetchedOrganization = await fetchOrganization(orgId);
-      _calendarMetadata =
-          await fetchCalendarMetaDataByOrgId(organization_id, orgId);
-      MonthlyPayment = _calendarMetadata!.monthly_payment_amount ?? 0.0;
+      _batchPaymentPlan = await fetchBatchPaymentPlanByOrgId(organization_id,
+          orgId, DateFormat('yyyy-MM-dd').format(firstDateOfMonth));
+      MonthlyPayment = _batchPaymentPlan!.monthly_payment_amount ?? 0.0;
       _fetchedOrganizations = _fetchedOrganization?.child_organizations ?? [];
       classes = _fetchedOrganizations.map((org) => org.description).toList();
       _fetchLeaveDates(_year, _month);
@@ -125,19 +127,31 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   Future<void> _fetchLeaveDates(int year, int month) async {
     try {
       // Fetch leave dates and payment details for the month
-      List<LeaveDate> fetchedDates = await getLeaveDatesForMonth(
+      List<LeaveDate> leaveDates = await getLeaveDatesForMonth(
           year, month, organization_id, _selectedOrganizationValue!.id!);
 
+      fetchedLeaveDates = leaveDates
+          .map((leaveDate) => leaveDate.date.toIso8601String().split("T")[0])
+          .toSet();
+
       _totalDaysInMonth = DateTime(_year, _month + 1, 0).day;
-      _totalSchoolDaysInMonth = _totalDaysInMonth - fetchedDates.length;
+      _totalSchoolDaysInMonth = _totalDaysInMonth - fetchedLeaveDates.length;
       _monthFullName = DateFormat.MMMM().format(DateTime(0, _month));
 
       setState(() {
-        if (fetchedDates.isNotEmpty) {
-          _dailyAmount = fetchedDates.first.dailyAmount;
+        if (leaveDates.isNotEmpty) {
+          _dailyAmount = leaveDates.first.dailyAmount;
         } else {
           _dailyAmount = 0.00;
         }
+        _data = MyData(
+            _fetchedAttendance,
+            _fetchedOrganization,
+            updateSelected,
+            _dailyAmount,
+            monthDateList,
+            fetchedLeaveDates,
+            _totalSchoolDaysInMonth);
       });
     } catch (e) {
       print("Error fetching leave dates: $e");
@@ -147,8 +161,14 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
-        updateSelected, _dailyAmount);
+    _data = MyData(
+        _fetchedAttendance,
+        _fetchedOrganization,
+        updateSelected,
+        _dailyAmount,
+        monthDateList,
+        fetchedLeaveDates,
+        _totalSchoolDaysInMonth);
   }
 
   void updateSelected(int index, bool value, List<bool> selected) {
@@ -179,6 +199,8 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
       final _rangeStart = DateTime(year, month, 1); // First day of the month
       final _rangeEnd = DateTime(year, month + 1, 0); // Last day of the month
 
+      monthDateList = getDatesOfMonth(year, month);
+
       // Pass the calculated dates to updateDateRange
       updateDateRange(_rangeStart, _rangeEnd);
       setState(() {
@@ -206,10 +228,12 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
         _isFetching = true; // Set _isFetching to true before starting the fetch
       });
       try {
-        _calendarMetadata = await fetchCalendarMetaDataByOrgId(
-            organization_id, _selectedOrganizationValue!.id!);
+        _batchPaymentPlan = await fetchBatchPaymentPlanByOrgId(
+            organization_id,
+            _selectedOrganizationValue!.id!,
+            DateFormat('yyyy-MM-dd').format(_rangeStart));
 
-        MonthlyPayment = _calendarMetadata!.monthly_payment_amount ?? 0.0;
+        MonthlyPayment = _batchPaymentPlan!.monthly_payment_amount ?? 0.0;
 
         _fetchedExcelReportData = await getActivityAttendanceReportByBatch(
             _selectedOrganizationValue!.id!,
@@ -223,7 +247,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
           this._fetchedExcelReportData = _fetchedExcelReportData;
           _fetchedAttendance;
           MonthlyPayment;
-          _calendarMetadata;
+          _batchPaymentPlan;
           _isFetching = false;
         });
       } catch (error) {
@@ -240,8 +264,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
     setState(() {
       _isFetchingClassPaymentData = true;
     });
-    var cols =
-        columnNames.map((label) => DataColumn(label: Text(label!))).toList();
+
     _selectedValue = newValue!;
 
     _fetchedOrganization = await fetchOrganization(newValue.id!);
@@ -253,29 +276,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
             .format(DateFormat('MMM d, yyyy').parse(this.formattedStartDate)),
         DateFormat('yyyy-MM-dd')
             .format(DateFormat('MMM d, yyyy').parse(this.formattedEndDate)));
-    if (_fetchedAttendance.length > 0) {
-      // Add null check here
-      // Process attendance data here
-      columnNames.clear();
-      List<String?> names = _fetchedAttendance
-          .map((attendance) => attendance.sign_in_time?.split(" ")[0])
-          .where((name) => name != null) // Filter out null values
-          .toList();
-      columnNames.addAll(names);
-    } else {
-      columnNames.clear();
-    }
 
-    columnNames = columnNames.toSet().toList();
-    columnNames.sort();
-    columnNames.insert(0, "Name");
-    columnNames.insert(1, "NIC");
-    columnNames.insert(columnNames.length, "Present Count");
-    columnNames.insert(columnNames.length, "Absent Count");
-    columnNames.insert(columnNames.length, "Student Payment Rs.");
-
-    cols = columnNames.map((label) => DataColumn(label: Text(label!))).toList();
-    print(cols.length);
     if (_fetchedAttendance.length == 0)
       _fetchedAttendance = new List.filled(_fetchedOrganization!.people.length,
           new ActivityAttendance(person_id: -1));
@@ -293,16 +294,56 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
       _fetchedOrganization;
       _fetchedAttendance;
       this._isFetchingClassPaymentData = false;
-      _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
-          updateSelected, _dailyAmount);
+      _data = MyData(
+          _fetchedAttendance,
+          _fetchedOrganization,
+          updateSelected,
+          _dailyAmount,
+          monthDateList,
+          fetchedLeaveDates,
+          _totalSchoolDaysInMonth);
     });
+  }
+
+  List<DataColumn> _buildDataColumns() {
+    List<DataColumn> ColumnNames = [];
+
+    ColumnNames.add(DataColumn(
+        label: Text('Name',
+            style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
+    ColumnNames.add(DataColumn(
+        label: Text('NIC',
+            style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
+    ColumnNames.add(DataColumn(
+        label: Text('Present Count',
+            style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
+    ColumnNames.add(DataColumn(
+        label: Text('Absent Count',
+            style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
+    ColumnNames.add(DataColumn(
+        label: Text('Student Payment Rs.',
+            style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
+
+    return ColumnNames;
+  }
+
+  List<String> getDatesOfMonth(int year, int month) {
+    final startDate = DateTime(year, month, 1);
+    final endDate = DateTime(year, month + 1, 0); // last day of month
+
+    List<String> dates = [];
+
+    for (DateTime date = startDate;
+        !date.isAfter(endDate);
+        date = date.add(const Duration(days: 1))) {
+      dates.add(date.toIso8601String().split('T')[0]); // yyyy-MM-dd
+    }
+
+    return dates;
   }
 
   @override
   Widget build(BuildContext context) {
-    var cols =
-        columnNames.map((label) => DataColumn(label: Text(label!))).toList();
-
     return SingleChildScrollView(
       child: campusAppsPortalPersonMetaDataInstance
               .getGroups()
@@ -374,14 +415,19 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                   final _rangeEnd = DateTime(_year, _month + 1,
                                       0); // Last day of the month
 
+                                  monthDateList =
+                                      getDatesOfMonth(_year, _month);
                                   classes = _fetchedOrganizations
                                       .map((org) => org.description)
                                       .toList();
 
-                                  _calendarMetadata =
-                                      await fetchCalendarMetaDataByOrgId(
-                                          organization_id, newValue.id!);
-                                  MonthlyPayment = _calendarMetadata!
+                                  _batchPaymentPlan =
+                                      await fetchBatchPaymentPlanByOrgId(
+                                          organization_id,
+                                          newValue.id!,
+                                          DateFormat('yyyy-MM-dd')
+                                              .format(_rangeStart));
+                                  MonthlyPayment = _batchPaymentPlan!
                                           .monthly_payment_amount ??
                                       0.0;
                                   _fetchLeaveDates(_year, _month);
@@ -401,7 +447,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                     _selectedOrganizationValue = newValue;
                                     _selectedValue;
                                     MonthlyPayment;
-                                    _calendarMetadata;
+                                    _batchPaymentPlan;
                                     this._fetchedStudentList =
                                         fetchedStudentList;
                                     this._fetchedExcelReportData =
@@ -446,6 +492,9 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                             _month + 1,
                                             0); // Last day of the month
 
+                                        monthDateList =
+                                            getDatesOfMonth(_year, _month);
+
                                         _fetchedAttendance =
                                             await getClassActivityAttendanceReportForPayment(
                                                 _fetchedOrganization!.id!,
@@ -454,40 +503,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                                     .format(_rangeStart),
                                                 DateFormat('yyyy-MM-dd')
                                                     .format(_rangeEnd));
-                                        if (_fetchedAttendance.length > 0) {
-                                          // Add null check here
-                                          // Process attendance data here
-                                          columnNames.clear();
-                                          List<String?> names =
-                                              _fetchedAttendance
-                                                  .map((attendance) =>
-                                                      attendance.sign_in_time
-                                                          ?.split(" ")[0])
-                                                  .where((name) =>
-                                                      name !=
-                                                      null) // Filter out null values
-                                                  .toList();
-                                          columnNames.addAll(names);
-                                        } else {
-                                          columnNames.clear();
-                                        }
 
-                                        columnNames =
-                                            columnNames.toSet().toList();
-                                        columnNames.sort();
-                                        columnNames.insert(0, "Name");
-                                        columnNames.insert(1, "NIC");
-                                        columnNames.insert(columnNames.length,
-                                            "Present Count");
-                                        columnNames.insert(
-                                            columnNames.length, "Absent Count");
-                                        columnNames.insert(columnNames.length,
-                                            "Student Payment Rs.");
-                                        cols = columnNames
-                                            .map((label) =>
-                                                DataColumn(label: Text(label!)))
-                                            .toList();
-                                        print(cols.length);
                                         if (_fetchedAttendance.length == 0)
                                           _fetchedAttendance = new List.filled(
                                               _fetchedOrganization!
@@ -516,10 +532,12 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                           _fetchedOrganization;
                                           _data = MyData(
                                               _fetchedAttendance,
-                                              columnNames,
                                               _fetchedOrganization,
                                               updateSelected,
-                                              _dailyAmount);
+                                              _dailyAmount,
+                                              monthDateList,
+                                              fetchedLeaveDates,
+                                              _totalSchoolDaysInMonth);
                                           _isFetchingClassPaymentData = false;
                                         });
                                       },
@@ -544,16 +562,18 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => LeaveDatePicker(
-                                        organizationId: organization_id ??
-                                            0, // Provide a default value if needed
-                                        batchId:
-                                            _selectedOrganizationValue?.id ?? 0,
-                                        year: _selected?.year ??
-                                            _year, // Ensure an `int` value is passed
-                                        month: _selected?.month ?? _month,
-                                        selectedDay:
-                                            _selectedDay ?? DateTime.now(),
-                                      ),
+                                          organizationId: organization_id ??
+                                              0, // Provide a default value if needed
+                                          batchId:
+                                              _selectedOrganizationValue?.id ??
+                                                  0,
+                                          year: _selected?.year ??
+                                              _year, // Ensure an `int` value is passed
+                                          month: _selected?.month ?? _month,
+                                          selectedDay:
+                                              _selectedDay ?? DateTime.now(),
+                                          monthlyPaymentAmount:
+                                              MonthlyPayment ?? 0.0),
                                     )).then((value) {
                                   setState(() {
                                     _isFetchingClassPaymentData = true;
@@ -642,6 +662,41 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                       children: [
                         Container(
                           margin: const EdgeInsets.only(left: 10.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Total School Days:',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  '${_totalSchoolDaysInMonth}',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(left: 10.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -709,7 +764,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                           size: 50, // Customize the size of the indicator
                         ),
                       )
-                    else if (cols.length > 2)
+                    else if (_fetchedAttendance.length > 2)
                       ScrollConfiguration(
                         behavior: ScrollConfiguration.of(context)
                             .copyWith(dragDevices: {
@@ -719,7 +774,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                         child: PaginatedDataTable(
                           showCheckboxColumn: false,
                           source: _data,
-                          columns: cols,
+                          columns: _buildDataColumns(),
                           columnSpacing: 100,
                           horizontalMargin: 60,
                           rowsPerPage: 22,
@@ -739,182 +794,136 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
 }
 
 class MyData extends DataTableSource {
-  MyData(this._fetchedAttendance, this.columnNames, this._fetchedOrganization,
-      this.updateSelected, this.DailyPayment);
+  MyData(
+      this._fetchedAttendance,
+      this._fetchedOrganization,
+      this.updateSelected,
+      this.DailyPayment,
+      this.monthDateList,
+      this.monthLeaveDates,
+      this.totalSchoolDaysInMonth);
 
   final List<ActivityAttendance> _fetchedAttendance;
-  final List<String?> columnNames;
   final Organization? _fetchedOrganization;
   final Function(int, bool, List<bool>) updateSelected;
   final double? DailyPayment;
-
-  List<String> getDatesFromMondayToToday() {
-    DateTime now = DateTime.now();
-    DateTime previousMonday = now.subtract(Duration(days: now.weekday - 1));
-    DateTime currentDate = DateTime(now.year, now.month, now.day);
-
-    List<String> dates = [];
-    for (DateTime date = previousMonday;
-        date.isBefore(currentDate);
-        date = date.add(Duration(days: 1))) {
-      if (date.weekday != DateTime.saturday &&
-          date.weekday != DateTime.sunday) {
-        dates.add(DateFormat('yyyy-MM-dd').format(date));
-      }
-    }
-
-    return dates;
-  }
+  final List<String> monthDateList;
+  final Set<String> monthLeaveDates;
+  final int totalSchoolDaysInMonth;
 
   @override
   DataRow? getRow(int index) {
     if (index == 0) {
-      List<DataCell> cells = new List.filled(
-        columnNames.toSet().toList().length,
-        new DataCell(Container(child: Text("Absent"), color: Colors.red)),
-      );
-      cells[0] = DataCell(Text(''));
-      cells[1] = DataCell(Text(''));
-      cells[columnNames.length - 3] = DataCell(Text(''));
-      cells[columnNames.length - 2] = DataCell(Text(''));
-      cells[columnNames.length - 1] = DataCell(Text(''));
-
-      for (final date in columnNames) {
-        if (columnNames.indexOf(date) == 0 ||
-            columnNames.indexOf(date) == 1 ||
-            columnNames.indexOf(date) == columnNames.length - 3 ||
-            columnNames.indexOf(date) == columnNames.length - 2 ||
-            columnNames.indexOf(date) == columnNames.length - 1) {
-          continue;
-        }
-
-        date == '$date 00:00:00';
-        cells[columnNames.indexOf(date)] = DataCell(Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.all(8),
-          child: Text(DateFormat.EEEE().format(DateTime.parse(date!)),
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 72, 90),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              )),
-        ));
-      }
+      List<DataCell> cells = List<DataCell>.filled(5, DataCell.empty);
       return DataRow(
         cells: cells,
       );
     }
     if (_fetchedOrganization != null &&
-        _fetchedOrganization!.people.isNotEmpty &&
-        columnNames.length > 0) {
+        _fetchedOrganization!.people.isNotEmpty) {
       var person = _fetchedOrganization!
           .people[index - 1]; // to facilitate additional rows
-      List<DataCell> cells = new List.filled(
-        columnNames.toSet().toList().length,
-        new DataCell(Container(
-            alignment: Alignment.center,
-            child: Text("Absent",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                )))),
-      );
-
+      // List<DataCell> cells = new List.filled(
+      //   columnNames.toSet().toList().length,
+      //   new DataCell(Container(
+      //       alignment: Alignment.center,
+      //       child: Text("Absent",
+      //           style: TextStyle(
+      //             fontWeight: FontWeight.bold,
+      //             color: Colors.red,
+      //           )))),
+      // );
+      List<DataCell> cells = List<DataCell>.filled(5, DataCell.empty);
       cells[0] = DataCell(Text(person.preferred_name!));
       cells[1] = DataCell(Text(person.nic_no.toString()));
 
-      int absentCount = 0;
+      // final dateRegex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+      // final dateFormatter = DateFormat('yyyy-MM-dd');
 
-      final dateRegex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
-      final dateFormatter = DateFormat('yyyy-MM-dd');
+      // for (var element in columnNames) {
+      //   if (dateRegex.hasMatch(element!)) {
+      //     try {
+      //       dateFormatter.parseStrict(element);
+      //       absentCount++;
+      //     } catch (e) {
+      //       // Handle the exception or continue to the next element
+      //     }
+      //   }
+      // }
+      // cells[columnNames.length - 3] = DataCell(Container(
+      //     alignment: Alignment.center,
+      //     child: Text(
+      //         style: TextStyle(
+      //           color: Color.fromARGB(255, 14, 72, 90),
+      //           fontSize: 16,
+      //           fontWeight: FontWeight.bold,
+      //         ),
+      //         '0')));
 
-      for (var element in columnNames) {
-        if (dateRegex.hasMatch(element!)) {
-          try {
-            dateFormatter.parseStrict(element);
-            absentCount++;
-          } catch (e) {
-            // Handle the exception or continue to the next element
-          }
-        }
-      }
-      cells[columnNames.length - 3] = DataCell(Container(
-          alignment: Alignment.center,
-          child: Text(
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 72, 90),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              '0')));
+      // cells[columnNames.length - 2] = DataCell(Container(
+      //     alignment: Alignment.center,
+      //     child: Text(
+      //         style: TextStyle(
+      //           color: Color.fromARGB(255, 14, 72, 90),
+      //           fontSize: 16,
+      //           fontWeight: FontWeight.bold,
+      //         ),
+      //         absentCount.toString())));
 
-      cells[columnNames.length - 2] = DataCell(Container(
-          alignment: Alignment.center,
-          child: Text(
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 72, 90),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              absentCount.toString())));
-
-      cells[columnNames.length - 1] = DataCell(Container(
-          alignment: Alignment.center,
-          child: Text(
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 72, 90),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              '0')));
+      // cells[columnNames.length - 1] = DataCell(Container(
+      //     alignment: Alignment.center,
+      //     child: Text(
+      //         style: TextStyle(
+      //           color: Color.fromARGB(255, 14, 72, 90),
+      //           fontSize: 16,
+      //           fontWeight: FontWeight.bold,
+      //         ),
+      //         '0')));
 
       int presentCount = 0;
       for (final attendance in _fetchedAttendance) {
         if (attendance.person_id == person.id) {
-          int newAbsentCount = 0;
-          for (final date in columnNames) {
-            if (attendance.sign_in_time != null &&
-                attendance.sign_in_time!.split(" ")[0] == date) {
-              presentCount++;
-              // print(
-              //     'index ${index} date ${date} person_id ${attendance.person_id} sign_in_time ${attendance.sign_in_time} columnNames length ${columnNames.length} columnNames.indexOf(date) ${columnNames.indexOf(date)}');
-              cells[columnNames.indexOf(date)] = DataCell(Container(
-                  alignment: Alignment.center, child: Text("Present")));
-            }
+          if (monthLeaveDates
+              .contains(attendance.sign_in_time!.split(" ")[0])) {
+            continue;
           }
-
-          newAbsentCount = absentCount - presentCount;
-          cells[columnNames.length - 3] = DataCell(Container(
-              alignment: Alignment.center,
-              child: Text(
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 72, 90),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  presentCount.toString())));
-          cells[columnNames.length - 2] = DataCell(Container(
-              alignment: Alignment.center,
-              child: Text(
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 72, 90),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  newAbsentCount.toString())));
-          double studentPayment = (DailyPayment ?? 0.0) * presentCount;
-          cells[columnNames.length - 1] = DataCell(Container(
-              alignment: Alignment.center,
-              child: Text(
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 72, 90),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  studentPayment.toDouble().toStringAsFixed(2))));
+          if (attendance.sign_in_time != null) {
+            presentCount++;
+            // print(
+            //     'index ${index} date ${date} person_id ${attendance.person_id} sign_in_time ${attendance.sign_in_time} columnNames length ${columnNames.length} columnNames.indexOf(date) ${columnNames.indexOf(date)}');
+            // cells[columnNames.indexOf(date)] = DataCell(Container(
+            //     alignment: Alignment.center, child: Text("Present")));
+          }
         }
       }
-
+      cells[2] = DataCell(Container(
+          alignment: Alignment.center,
+          child: Text(
+              style: TextStyle(
+                color: Color.fromARGB(255, 14, 72, 90),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              presentCount.toString())));
+      cells[3] = DataCell(Container(
+          alignment: Alignment.center,
+          child: Text(
+              style: TextStyle(
+                color: Color.fromARGB(255, 14, 72, 90),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              (totalSchoolDaysInMonth - presentCount).toString())));
+      double studentPayment = (DailyPayment ?? 0.0) * presentCount;
+      cells[4] = DataCell(Container(
+          alignment: Alignment.center,
+          child: Text(
+              style: TextStyle(
+                color: Color.fromARGB(255, 14, 72, 90),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              studentPayment.toDouble().toStringAsFixed(2))));
       int numItems = _fetchedOrganization!.people.length;
       List<bool> selected = List<bool>.generate(numItems, (int index) => false);
       return DataRow(
