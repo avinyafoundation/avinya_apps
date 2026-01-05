@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/src/services/text_formatter.dart';
 
 class TextFieldForm extends StatelessWidget {
-
   final String? label;
   final TextEditingController controller;
   final String? hintText;
   final double? width;
   final double? height;
   final int? maxLines;
+  final bool? enabled;
   final TextAlignVertical? textAlignVertical;
   final String? Function(String?)? validator;
   final Function(String?)? onSaved;
+  final TextInputType? keyboardType;
+  final List<FilteringTextInputFormatter>? inputFormatters;
 
   const TextFieldForm({
     super.key,
@@ -21,8 +24,11 @@ class TextFieldForm extends StatelessWidget {
     this.height,
     this.maxLines,
     this.textAlignVertical,
+    this.enabled = true,
     this.validator,
     this.onSaved,
+    this.keyboardType,
+    this.inputFormatters,
   });
 
   @override
@@ -39,11 +45,12 @@ class TextFieldForm extends StatelessWidget {
         // ),
         const SizedBox(height: 8),
         SizedBox(
-          width: width?? double.infinity,
+          width: width ?? double.infinity,
           height: height,
           child: TextFormField(
             controller: controller,
-            validator: validator,
+            validator: enabled! ? validator : null,
+            enabled: enabled,
             maxLines: maxLines,
             textAlignVertical: textAlignVertical,
             decoration: InputDecoration(

@@ -4,12 +4,14 @@ class CustomDatePicker extends StatefulWidget {
   final String label;
   final String? selectedDateString;
   final Function(String) onDateSelected;
+  final bool enabled; // 👈 NEW
 
   const CustomDatePicker({
     super.key,
     required this.label,
     required this.selectedDateString,
     required this.onDateSelected,
+    this.enabled = true, // 👈 default enabled
   });
 
   @override
@@ -17,7 +19,6 @@ class CustomDatePicker extends StatefulWidget {
 }
 
 class _CustomDatePickerState extends State<CustomDatePicker> {
-
   late TextEditingController _controller;
 
   @override
@@ -26,13 +27,24 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
     _controller = TextEditingController(text: widget.selectedDateString);
   }
 
+  @override
+  void didUpdateWidget(covariant CustomDatePicker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedDateString != widget.selectedDateString) {
+      _controller.text = widget.selectedDateString ?? '';
+    }
+  }
+
   Future<void> _pickDate() async {
+    if (!widget.enabled) return; // 👈 SAFETY GUARD
+
     DateTime now = DateTime.now();
 
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: now,
-      firstDate: DateTime(2000),
+      //firstDate: DateTime(2000),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
 
@@ -49,17 +61,21 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: _pickDate,
+      onTap: widget.enabled ? _pickDate : null, // 👈 DISABLE TAP
       child: AbsorbPointer(
         child: TextFormField(
           controller: _controller,
+          enabled: widget.enabled, // 👈 VISUAL DISABLE
           decoration: InputDecoration(
-            labelText: widget.label,          // ★ FLOATING LABEL
+            labelText: widget.label,
             floatingLabelBehavior: FloatingLabelBehavior.auto,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
             ),
-            suffixIcon: const Icon(Icons.calendar_month),
+            suffixIcon: Icon(
+              Icons.calendar_month,
+              color: widget.enabled ? null : Colors.grey,
+            ),
           ),
         ),
       ),

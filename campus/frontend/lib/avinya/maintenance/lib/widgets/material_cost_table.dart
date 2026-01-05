@@ -40,6 +40,14 @@ class _MaterialCostTableState extends State<MaterialCostTable> {
     widget.onChanged(widget.items);
   }
 
+  String? validatePositiveNumber(String? value) {
+    if (value == null || value.isEmpty) return null;
+    final number = double.tryParse(value);
+    if (number == null) return "Please enter a valid number";
+    if (number < 0) return "Value cannot be negative";
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -120,6 +128,7 @@ class _MaterialCostTableState extends State<MaterialCostTable> {
                         setState(() {});
                         widget.onChanged(widget.items);
                       },
+                      validator: validatePositiveNumber,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -160,6 +169,7 @@ class _MaterialCostTableState extends State<MaterialCostTable> {
                         setState(() {});
                         widget.onChanged(widget.items);
                       },
+                      validator: validatePositiveNumber,
                     ),
                   ),
                   const SizedBox(width: 8),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gallery/avinya/maintenance/lib/widgets/task_edit_form.dart';
 import '../data/activity_instance.dart';
 import '../data/maintenance_finance.dart';
 import '../widgets/common/button.dart';
@@ -11,6 +12,7 @@ import '../widgets/common/pagination_controls.dart';
 import '../widgets/task_details_dialog.dart';
 
 class ReportScreen extends StatefulWidget {
+
   const ReportScreen({super.key});
 
   @override
@@ -489,7 +491,14 @@ class _ReportScreenState extends State<ReportScreen> {
                       IconButton(
                         icon: const Icon(Icons.edit,
                             size: 18, color: Colors.blue),
-                        onPressed: () {},
+                        onPressed: () {
+                          //Open task edit dialog
+                          showDialog(
+                            context: context,
+                            builder: (context) =>
+                                TaskEditForm(activityInstance: instance),
+                          );
+                        },
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete,
