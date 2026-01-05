@@ -208,7 +208,7 @@ public isolated client class GraphqlClient {
         return <GetTotalAttendanceCountByParentOrgResponse> check performDataBinding(graphqlResponse, GetTotalAttendanceCountByParentOrgResponse);
     }
     remote isolated function getDailyAttendanceSummaryReport(string from_date, string to_date, int organization_id, int avinya_type_id) returns GetDailyAttendanceSummaryReportResponse|graphql:ClientError {
-        string query = string `query getDailyAttendanceSummaryReport($organization_id:Int!,$avinya_type_id:Int!,$from_date:String!,$to_date:String!) {daily_attendance_summary_report(organization_id:$organization_id,avinya_type_id:$avinya_type_id,from_date:$from_date,to_date:$to_date) {sign_in_date present_count late_count total_count present_attendance_percentage late_attendance_percentage}}`;
+        string query = string `query getDailyAttendanceSummaryReport($organization_id:Int!,$avinya_type_id:Int!,$from_date:String!,$to_date:String!) {daily_attendance_summary_report(organization_id:$organization_id,avinya_type_id:$avinya_type_id,from_date:$from_date,to_date:$to_date) {sign_in_date present_count absent_count late_count total_count present_attendance_percentage absent_attendance_percentage late_attendance_percentage}}`;
         map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id, "avinya_type_id": avinya_type_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetDailyAttendanceSummaryReportResponse> check performDataBinding(graphqlResponse, GetDailyAttendanceSummaryReportResponse);
@@ -237,10 +237,10 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetMonthlyLeaveDatesRecordByIdResponse> check performDataBinding(graphqlResponse, GetMonthlyLeaveDatesRecordByIdResponse);
     }
-    remote isolated function getCalendarMetadataByOrgId(int batch_id, int organization_id) returns GetCalendarMetadataByOrgIdResponse|graphql:ClientError {
-        string query = string `query getCalendarMetadataByOrgId($organization_id:Int!,$batch_id:Int!) {calendar_metadata_by_org_id(organization_id:$organization_id,batch_id:$batch_id) {id organization_id batch_id monthly_payment_amount}}`;
-        map<anydata> variables = {"batch_id": batch_id, "organization_id": organization_id};
+    remote isolated function getBatchPaymentPlanByOrgId(string selected_month_date, int batch_id, int organization_id) returns GetBatchPaymentPlanByOrgIdResponse|graphql:ClientError {
+        string query = string `query getBatchPaymentPlanByOrgId($organization_id:Int!,$batch_id:Int!,$selected_month_date:String!) {batch_payment_plan_by_org_id(organization_id:$organization_id,batch_id:$batch_id,selected_month_date:$selected_month_date) {id organization_id batch_id monthly_payment_amount}}`;
+        map<anydata> variables = {"selected_month_date": selected_month_date, "batch_id": batch_id, "organization_id": organization_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
-        return <GetCalendarMetadataByOrgIdResponse> check performDataBinding(graphqlResponse, GetCalendarMetadataByOrgIdResponse);
+        return <GetBatchPaymentPlanByOrgIdResponse> check performDataBinding(graphqlResponse, GetBatchPaymentPlanByOrgIdResponse);
     }
 }

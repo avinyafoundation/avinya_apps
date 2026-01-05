@@ -957,21 +957,21 @@ service / on new http:Listener(9091) {
                 ":: Detail: " + getMonthlyLeaveDatesRecordByIdResponse.detail().toString());
         }
     }
-    resource function get calendar_metadata_by_org_id/[int organization_id]/[int batch_id]() returns CalendarMetadata|error {
-        GetCalendarMetadataByOrgIdResponse|graphql:ClientError getCalendarMetadataByOrgIdResponse = globalDataClient->getCalendarMetadataByOrgId(batch_id,organization_id);
-        if (getCalendarMetadataByOrgIdResponse is GetCalendarMetadataByOrgIdResponse) {
-            CalendarMetadata|error calendar_metadata_record = getCalendarMetadataByOrgIdResponse.calendar_metadata_by_org_id.cloneWithType(CalendarMetadata);
-            if (calendar_metadata_record is CalendarMetadata) {
-                return calendar_metadata_record;
+    resource function get batch_payment_plan_by_org_id/[int organization_id]/[int batch_id]/[string selected_month_date]() returns BatchPaymentPlan|error {
+        GetBatchPaymentPlanByOrgIdResponse|graphql:ClientError getBatchPaymentPlanByOrgIdResponse = globalDataClient->getBatchPaymentPlanByOrgId(selected_month_date,batch_id,organization_id);
+        if (getBatchPaymentPlanByOrgIdResponse is GetBatchPaymentPlanByOrgIdResponse) {
+            BatchPaymentPlan|error batch_payment_plan_record = getBatchPaymentPlanByOrgIdResponse.batch_payment_plan_by_org_id.cloneWithType(BatchPaymentPlan);
+            if (batch_payment_plan_record is BatchPaymentPlan) {
+                return batch_payment_plan_record;
             } else {
-                log:printError("Error while processing Application record received", calendar_metadata_record);
-                return error("Error while processing Application record received: " + calendar_metadata_record.message() +
-                    ":: Detail: " + calendar_metadata_record.detail().toString());
+                log:printError("Error while processing Application record received", batch_payment_plan_record);
+                return error("Error while processing Application record received: " + batch_payment_plan_record.message() +
+                    ":: Detail: " + batch_payment_plan_record.detail().toString());
             }
         } else {
-            log:printError("Error while creating application", getCalendarMetadataByOrgIdResponse);
-            return error("Error while creating application: " + getCalendarMetadataByOrgIdResponse.message() +
-                ":: Detail: " + getCalendarMetadataByOrgIdResponse.detail().toString());
+            log:printError("Error while creating application", getBatchPaymentPlanByOrgIdResponse);
+            return error("Error while creating application: " + getBatchPaymentPlanByOrgIdResponse.message() +
+                ":: Detail: " + getBatchPaymentPlanByOrgIdResponse.detail().toString());
         }
     }
 

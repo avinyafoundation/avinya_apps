@@ -30,6 +30,7 @@ class ActivityAttendance {
   double? x;
   String? sign_in_date;
   int? late_count;
+  int? absent_count;
   int? total_count;
   double? present_attendance_percentage;
   double? late_attendance_percentage;
@@ -58,6 +59,7 @@ class ActivityAttendance {
       this.y,
       this.sign_in_date,
       this.late_count,
+      this.absent_count,
       this.total_count,
       this.present_attendance_percentage,
       this.late_attendance_percentage});
@@ -93,6 +95,7 @@ class ActivityAttendance {
         y: json['daily_total']?.toDouble() ?? 0.0,
         sign_in_date: json['sign_in_date'],
         late_count: json['late_count'],
+        absent_count: json['absent_count'],
         total_count: json['total_count'],
         present_attendance_percentage: json['present_attendance_percentage'],
         late_attendance_percentage: json['late_attendance_percentage']);
@@ -156,24 +159,33 @@ Future<ActivityAttendance> createActivityAttendance(
   }
 }
 
-class CalendarMetadata {
+class BatchPaymentPlan {
   int? id;
   int? organization_id;
   int? batch_id;
   double? monthly_payment_amount;
+  String? valid_from;
+  String? valid_to;
+  String? created;
 
-  CalendarMetadata(
+  BatchPaymentPlan(
       {required this.id,
       required this.organization_id,
       required this.batch_id,
-      required this.monthly_payment_amount});
+      required this.monthly_payment_amount,
+      required this.valid_from,
+      required this.valid_to
+      });
 
-  factory CalendarMetadata.fromJson(Map<String, dynamic> json) {
-    return CalendarMetadata(
+  factory BatchPaymentPlan.fromJson(Map<String, dynamic> json) {
+    return BatchPaymentPlan(
         id: json['id'],
         organization_id: json['organization_id'],
         batch_id: json['batch_id'],
-        monthly_payment_amount: json['monthly_payment_amount']);
+        monthly_payment_amount: json['monthly_payment_amount'],
+        valid_from:json['valid_from'],
+        valid_to: json['valid_to']
+        );
   }
 
   Map<String, dynamic> toJson() => {
@@ -182,13 +194,17 @@ class CalendarMetadata {
         if (batch_id != null) 'batch_id': batch_id,
         if (monthly_payment_amount != null)
           'monthly_payment_amount': monthly_payment_amount,
+        if (valid_from != null)
+          'valid_from': valid_from,
+        if (valid_to != null)
+          'valid_to': valid_to
       };
 }
-Future<CalendarMetadata?> fetchCalendarMetaDataByOrgId(
-    int organizationId, int batch_id) async {
+Future<BatchPaymentPlan?> fetchBatchPaymentPlanByOrgId(
+    int organizationId, int batch_id,String selected_month_date) async {
   final response = await http.get(
     Uri.parse(AppConfig.campusAttendanceBffApiUrl +
-        '/calendar_metadata_by_org_id/$organizationId/$batch_id'),
+        '/batch_payment_plan_by_org_id/$organizationId/$batch_id/$selected_month_date'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -197,9 +213,9 @@ Future<CalendarMetadata?> fetchCalendarMetaDataByOrgId(
   );
 
   if (response.statusCode == 200) {
-    CalendarMetadata calendarMetadata =
-        CalendarMetadata.fromJson(json.decode(response.body));
-    return calendarMetadata;
+    BatchPaymentPlan batchPaymentPlan =
+        BatchPaymentPlan.fromJson(json.decode(response.body));
+    return batchPaymentPlan;
   } else {
     return null;
   }
@@ -230,6 +246,7 @@ Future<void> createMonthlyLeaveDates({
   required int organizationId,
   required int batchId,
   required int totalDaysInMonth,
+  required double monthlyPaymentAmount,
   required List<int> leaveDatesList,
 }) async {
   // Prepare the request body
@@ -239,6 +256,7 @@ Future<void> createMonthlyLeaveDates({
     "organization_id": organizationId,
     "batch_id":batchId,
     "total_days_in_month": totalDaysInMonth,
+    "monthly_payment_amount": monthlyPaymentAmount,
     "leave_dates_list": leaveDatesList,
   };
 
@@ -274,6 +292,7 @@ Future<void> updateMonthlyLeaveDates({
   required int organizationId,
   required int batchId,
   required int totalDaysInMonth,
+  required double monthlyPaymentAmount,
   required List<int> leaveDatesList,
 }) async {
   // Prepare the request body
@@ -284,6 +303,7 @@ Future<void> updateMonthlyLeaveDates({
     "organization_id": organizationId,
     "batch_id": batchId,
     "total_days_in_month": totalDaysInMonth,
+    "monthly_payment_amount": monthlyPaymentAmount,
     "leave_dates_list": leaveDatesList,
   };
 
