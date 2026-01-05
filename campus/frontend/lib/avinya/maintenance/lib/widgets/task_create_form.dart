@@ -1,11 +1,13 @@
 import 'dart:convert';
+import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
+import 'package:gallery/avinya/maintenance/lib/data.dart';
+import 'package:gallery/avinya/maintenance/lib/data/person.dart';
 import '../data/academy_location.dart';
 import '../data/maintenance_finance.dart';
 import '../data/maintenance_task.dart';
 import '../data/material_cost.dart';
-import '../data/person.dart';
 //import '../widgets/common/button.dart';
 import '../widgets/common/date_picker.dart';
 import '../widgets/common/drop_down.dart';
@@ -60,34 +62,6 @@ class _TaskCreateFormState extends State<TaskCreateForm> {
     2: "In Progress",
     3: "Completed",
   };
-
-  final List<Person> mockPersons = [
-  Person(
-    id: 1,
-    full_name: "John Doe",
-    email: "john.doe@example.com",
-  ),
-  Person(
-    id: 2,
-    full_name: "Sarah Williams",
-    email: "sarah.w@example.com",
-  ),
-  Person(
-    id: 3,
-    full_name: "Michael Fernando",
-    email: "michael.f@example.com",
-  ),
-  Person(
-    id: 4,
-    full_name: "Nimali Perera",
-    email: "nimali.p@example.com",
-  ),
-  Person(
-    id: 5,
-    full_name: "Kamal Silva",
-    email: "kamal.s@example.com",
-  ),
-];
 
 final List<AcademyLocation> mockLocations = [
   AcademyLocation(
@@ -147,15 +121,17 @@ final List<AcademyLocation> mockLocations = [
         }[selectedFrequency];
 
         // Check if the financial information section is filled
-        bool hasFinancialInfo =
+        bool hasFinancialInfoBool =
             estimatedCostController.text.isNotEmpty ||
             labourCostController.text.isNotEmpty ||
             materialCosts.isNotEmpty;
 
+        int hasFinancialInfo = hasFinancialInfoBool? 1 : 0;
+
         // Build the financial information object
         MaintenanceFinance? financeInfo;
 
-        if (hasFinancialInfo) {
+        if (hasFinancialInfoBool) {
           financeInfo = MaintenanceFinance(
             estimatedCost: estimatedCostController.text.isNotEmpty
                 ? double.parse(estimatedCostController.text)
@@ -179,9 +155,9 @@ final List<AcademyLocation> mockLocations = [
         exceptionDeadline: int.tryParse(exceptionDaysController.text),
         hasFinancialInfo: hasFinancialInfo,
         financialInformation: financeInfo,
-        modifiedBy: "Admin User", 
-        isDeleted: false,
-        statusText: statuses[selectedStatus],
+        modifiedBy: campusAppsPortalInstance.getDigitalId(), 
+        //isActive: 1,
+        //statusText: statuses[selectedStatus],
       );
 
       print(jsonEncode(newTask.toJson())
@@ -262,6 +238,15 @@ final List<AcademyLocation> mockLocations = [
     }
     return null;
   }
+
+  String? validatePositiveNumber(String? value) {
+    if (value == null || value.isEmpty) return null;
+    final number = double.tryParse(value);
+    if (number == null) return "Please enter a valid number";
+    if (number < 0) return "Value cannot be negative";
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -429,7 +414,7 @@ final List<AcademyLocation> mockLocations = [
                         selectedDateString: selectedDate,
                         onDateSelected: (date) {
                           setState(() {
-                            selectedDate = date;
+                            selectedDate = date + " 00:00:00";
                           });
                         },
                       ),
@@ -469,6 +454,13 @@ final List<AcademyLocation> mockLocations = [
                       label: "Estimated Total Cost",
                       controller: estimatedCostController,
                       hintText: "eg: 4000 LKR",
+                      keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d*\.?\d*$')),
+                      ],
+                      validator: validatePositiveNumber,
                       // validator: (v) => 
                       //   v == null || v.isEmpty ? "Please enter estimated cost" : null,
                     ),
@@ -486,6 +478,13 @@ final List<AcademyLocation> mockLocations = [
                       label: "Labour Cost",
                       controller: labourCostController,
                       hintText: "eg: 1500 LKR",
+                      keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d*\.?\d*$')),
+                      ],
+                      validator: validatePositiveNumber,
                       // validator: (v) => 
                       //   v == null || v.isEmpty ? "Please enter labour cost" : null,
                     ),

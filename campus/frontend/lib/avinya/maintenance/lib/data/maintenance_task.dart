@@ -18,13 +18,13 @@ class MaintenanceTask {
   List<int>? personId;
   String? startDate;
   int? exceptionDeadline;
-  bool? hasFinancialInfo;
+  int? hasFinancialInfo;
   String? modifiedBy;
-  bool? isDeleted;
+  int? isActive;
   MaintenanceFinance? financialInformation;
   String? deadline;
   String? statusText;
-  bool? isOverdue;
+  int? isOverdue;
 
 
   MaintenanceTask({
@@ -40,7 +40,7 @@ class MaintenanceTask {
     this.exceptionDeadline,
     this.hasFinancialInfo,
     this.modifiedBy,
-    this.isDeleted,
+    this.isActive,
     this.financialInformation,
     this.deadline,
     this.statusText,
@@ -54,20 +54,20 @@ class MaintenanceTask {
       id: json['id'],
       title: json['title'],
       description: json['description'],
-      type: json['type'] != null ? getMaintenanceTypeFromString(json['type']) : null,
+      type: json['task_type'] != null ? getMaintenanceTypeFromString(json['type']) : null,
       frequency: json['frequency'] != null ? getMaintenanceFrequencyFromString(json['frequency']) : null,
       location: json['location'] != null ? AcademyLocation.fromJson(json['location']) : null,
-      locationId: json['locationId'],
-      personId: json['personId'] != null
-        ? List<int>.from(json['personId'])
+      locationId: json['location_id'],
+      personId: json['person_id_list'] != null
+        ? List<int>.from(json['person_id_list'])
         : null,
-      startDate: json['startDate'],
-      exceptionDeadline: json['exceptionDeadline'],
-      hasFinancialInfo: json['hasFinancialInfo'],
-      modifiedBy: json['modifiedBy'],
-      isDeleted: json['isDeleted'],
-      financialInformation: json['financialInformation'] != null
-        ? MaintenanceFinance.fromJson(json['financialInformation'])
+      startDate: json['start_date'],
+      exceptionDeadline: json['exception_deadline'],
+      hasFinancialInfo: json['has_financial_info'],
+      modifiedBy: json['modified_by'],
+      isActive: json['isActive'],
+      financialInformation: json['finance'] != null
+        ? MaintenanceFinance.fromJson(json['finance'])
         : null,
       deadline: json['deadline'],
       statusText: json['statusText'],
@@ -81,17 +81,17 @@ class MaintenanceTask {
     if(id != null) 'id': id,
     if(title != null) 'title': title,
     if(description != null) 'description': description,
-    if(type != null) 'type': maintenanceTypeToString(type!),
+    if(type != null) 'task_type': maintenanceTypeToString(type!),
     if(frequency != null) 'frequency': maintenanceFrequencyToString(frequency!),
     if(location != null) 'location': location!.toJson(),
-    if(locationId != null) 'locationId': locationId,
-    if(personId != null) 'personId': personId,
-    if(startDate != null) 'startDate': startDate,
-    if(exceptionDeadline != null) 'exceptionDeadline': exceptionDeadline,
-    if(hasFinancialInfo != null) 'hasFinancialInfo': hasFinancialInfo,
-    if(modifiedBy != null) 'modifiedBy': modifiedBy,
-    if(isDeleted != null) 'isDeleted': isDeleted,
-    if(financialInformation != null) 'financialInformation': financialInformation!.toJson(),
+    if(locationId != null) 'location_id': locationId,
+    if(personId != null) 'person_id_list': personId,
+    if(startDate != null) 'start_date': startDate,
+    if(exceptionDeadline != null) 'exception_deadline': exceptionDeadline,
+    if(hasFinancialInfo != null) 'has_financial_info': hasFinancialInfo,
+    if(modifiedBy != null) 'modified_by': modifiedBy,
+    if(isActive != null) 'isActive': isActive,
+    if(financialInformation != null) 'finance': financialInformation!.toJson(),
     if(deadline != null) 'deadline': deadline,
     if(statusText != null) 'statusText': statusText,
     if(isOverdue != null) 'isOverdue': isOverdue,
@@ -108,7 +108,7 @@ class MaintenanceTask {
 Future<http.Response> saveMaintenanceTask(MaintenanceTask task) async {
   
   final response = await http.post(
-    Uri.parse('campusMaintenanceBffApiUrl' + '/tasks'),
+    Uri.parse(AppConfig.campusMaintenanceBffApiUrl + '/organizations/2/tasks'),
     headers: {
         "Content-Type": "application/json",
         "accept": "application/json",

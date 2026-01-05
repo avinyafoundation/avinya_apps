@@ -39,9 +39,9 @@ class MaintenanceFinance {
     return MaintenanceFinance(
       id: json['id'],
       activityInstanceId: json['activityInstanceId'],
-      estimatedCost: (json['estimatedCost'] as num?)?.toDouble(),
+      estimatedCost: (json['estimated_cost'] as num?)?.toDouble(),
       totalCost: (json['totalCost'] as num?)?.toDouble(),
-      labourCost: (json['labourCost'] as num?)?.toDouble(),
+      labourCost: (json['labour_cost'] as num?)?.toDouble(),
       status: getStatusFromString(json['status']),
       rejectionReason: json['rejectionReason'],
       reviewedBy: json['reviewedBy'],
@@ -59,9 +59,9 @@ class MaintenanceFinance {
   Map<String, dynamic> toJson() => {
     if(id != null) 'id': id,
     if(activityInstanceId != null) 'activityInstanceId': activityInstanceId,
-    if(estimatedCost != null) 'estimatedCost': estimatedCost,
+    if(estimatedCost != null) 'estimated_cost': estimatedCost,
     if(totalCost != null) 'totalCost': totalCost,
-    if(labourCost != null) 'labourCost': labourCost,
+    if(labourCost != null) 'labour_cost': labourCost,
     if(status != null) 'status': statusToString(status!),
     if(rejectionReason != null) 'rejectionReason': rejectionReason,
     if(reviewedBy != null) 'reviewedBy': reviewedBy,

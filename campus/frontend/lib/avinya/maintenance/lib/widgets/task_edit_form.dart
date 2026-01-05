@@ -221,14 +221,16 @@ class TaskEditFormState extends State<TaskEditForm> {
         }[selectedFrequency];
 
         // Check if the financial information section is filled
-        bool hasFinancialInfo = estimatedCostController.text.isNotEmpty ||
+        bool hasFinancialInfoBool = estimatedCostController.text.isNotEmpty ||
             labourCostController.text.isNotEmpty ||
             materialCosts.isNotEmpty;
+
+        int hasFinancialInfo = hasFinancialInfoBool? 1 : 0;
 
         // Build the financial information object
         MaintenanceFinance? financeInfo;
 
-        if (hasFinancialInfo) {
+        if (hasFinancialInfoBool) {
           financeInfo = MaintenanceFinance(
             estimatedCost: estimatedCostController.text.isNotEmpty
                 ? double.parse(estimatedCostController.text)
@@ -254,7 +256,7 @@ class TaskEditFormState extends State<TaskEditForm> {
           hasFinancialInfo: hasFinancialInfo,
           //financialInformation: financeInfo,
           modifiedBy: "Admin User",
-          isDeleted: false,
+          isActive: 1,
           //statusText: statuses[selectedStatus],
         );
 
@@ -279,7 +281,7 @@ class TaskEditFormState extends State<TaskEditForm> {
 
         //Create Financial Information Object
         MaintenanceFinance? financialInfo;
-        if (hasFinancialInfo) {
+        if (hasFinancialInfoBool) {
           financialInfo = MaintenanceFinance(
             estimatedCost: estimatedCostController.text.isNotEmpty
                 ? double.parse(estimatedCostController.text)

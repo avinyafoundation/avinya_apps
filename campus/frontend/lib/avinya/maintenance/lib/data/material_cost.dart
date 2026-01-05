@@ -30,7 +30,7 @@ class MaterialCost {
       item: json['item'],
       quantity: (json['quantity'] as num).toDouble(),
       unit: getUnitFromString(json['unit']),
-      unitCost: (json['unitCost'] as num).toDouble(),
+      unitCost: (json['unit_cost'] as num).toDouble(),
     );
   }
 
@@ -42,7 +42,7 @@ class MaterialCost {
     if(item != null) 'item': item,
     if(quantity != null) 'quantity': quantity,
     if(unit != null) 'unit': unitToString(unit!),
-    if(unitCost != null) 'unitCost': unitCost,
+    if(unitCost != null) 'unit_cost': unitCost,
   };
 
 }

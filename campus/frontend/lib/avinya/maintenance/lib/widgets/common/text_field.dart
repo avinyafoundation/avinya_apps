@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/src/services/text_formatter.dart';
 
 class TextFieldForm extends StatelessWidget {
   final String? label;
@@ -11,6 +12,8 @@ class TextFieldForm extends StatelessWidget {
   final TextAlignVertical? textAlignVertical;
   final String? Function(String?)? validator;
   final Function(String?)? onSaved;
+  final TextInputType? keyboardType;
+  final List<FilteringTextInputFormatter>? inputFormatters;
 
   const TextFieldForm({
     super.key,
@@ -24,6 +27,8 @@ class TextFieldForm extends StatelessWidget {
     this.enabled = true,
     this.validator,
     this.onSaved,
+    this.keyboardType,
+    this.inputFormatters,
   });
 
   @override

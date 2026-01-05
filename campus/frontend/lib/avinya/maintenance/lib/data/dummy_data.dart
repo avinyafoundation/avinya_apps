@@ -144,9 +144,9 @@ const String maintenanceTasksJson = '''
           "id": 1,
           "title": "Air Conditioner Maintenance",
           "description": "Routine AC inspection and cleaning",
-          "type": "Recurring",
+          "task_type": "Recurring",
           "frequency": "Monthly",
-          "exceptionDeadline":2,
+          "exception_deadline":2,
           "location": {
             "id": 12,
             "location_name": "Pod 1"
@@ -187,7 +187,7 @@ const String maintenanceTasksJson = '''
           "id": 2,
           "title": "Air Conditioner Repair",
           "description": "Fix temperature control issue",
-          "type": "Recurring",
+          "task_type": "Recurring",
           "frequency": "Monthly",
           "location": {
             "id": 14,
@@ -216,14 +216,14 @@ const String maintenanceTasksJson = '''
               "item": "Air Filter",
               "quantity": 5,
               "unit": "piece",
-              "unitCost": 100
+              "unit_cost": 100
             },
             {
               "id": 2,
               "item": "Coolant",
               "quantity": 2,
               "unit": "liter",
-              "unitCost": 250
+              "unit_cost": 250
             }
           ],
           "labourCost": 500,
@@ -244,7 +244,7 @@ const String maintenanceTasksJson = '''
           "id": 3,
           "title": "Fix Lights",
           "description": "Replace the 3 bulbs in the main corridor.",
-          "type": "Recurring",
+          "task_type": "Recurring",
           "frequency": "Weekly",
           "location": {
             "id": 15,
@@ -273,7 +273,7 @@ const String maintenanceTasksJson = '''
               "item": "LED Bulbs",
               "quantity": 3,
               "unit": "piece",
-              "unitCost": 50
+              "unit_cost": 50
             }
           ],
           "labourCost": 350,
@@ -294,7 +294,7 @@ const String maintenanceTasksJson = '''
           "id": 4,
           "title": "Clean Lab",
           "description": "Deep cleaning of laboratory facilities",
-          "type": "Recurring",
+          "task_type": "Recurring",
           "frequency": "Weekly",
           "location": {
             "id": 13,
@@ -323,7 +323,7 @@ const String maintenanceTasksJson = '''
               "item": "Cleaning Supplies",
               "quantity": 10,
               "unit": "piece",
-              "unitCost": 40
+              "unit_cost": 40
             }
           ],
           "labourCost": 400,
@@ -344,7 +344,7 @@ const String maintenanceTasksJson = '''
           "id": 5,
           "title": "Fix Lights",
           "description": "Replace the 3 bulbs in the main corridor.",
-          "type": "oneTime",
+          "task_type": "oneTime",
           "frequency": null,
           "location": {
             "id": 12,
@@ -373,7 +373,7 @@ const String maintenanceTasksJson = '''
               "item": "Fluorescent Tubes",
               "quantity": 3,
               "unit": "piece",
-              "unitCost": 60
+              "unit_cost": 60
             }
           ],
           "labourCost": 270,
@@ -394,7 +394,7 @@ const String maintenanceTasksJson = '''
           "id": 6,
           "title": "Clean Lab",
           "description": "Regular maintenance cleaning of laboratory spaces",
-          "type": "Recurring",
+          "task_type": "Recurring",
           "frequency": "Monthly",
           "location": {
             "id": 15,
@@ -433,14 +433,14 @@ const String maintenanceTasksJson = '''
               "item": "Disinfectant",
               "quantity": 5,
               "unit": "liter",
-              "unitCost": 80
+              "unit_cost": 80
             },
             {
               "id": 7,
               "item": "Floor Cleaner",
               "quantity": 3,
               "unit": "liter",
-              "unitCost": 50
+              "unit_cost": 50
             }
           ],
           "labourCost": 500,
@@ -461,7 +461,7 @@ const String maintenanceTasksJson = '''
           "id": 7,
           "title": "Clean Lab",
           "description": "Comprehensive cleaning of all lab equipment",
-          "type": "Recurring",
+          "task_type": "Recurring",
           "frequency": "Weekly",
           "location": {
             "id": 1,
@@ -490,7 +490,7 @@ const String maintenanceTasksJson = '''
               "item": "Cleaning Kit",
               "quantity": 2,
               "unit": "piece",
-              "unitCost": 125
+              "unit_cost": 125
             }
           ],
           "labourCost": 400,
@@ -511,7 +511,7 @@ const String maintenanceTasksJson = '''
           "id": 8,
           "title": "Fix Lights",
           "description": "Emergency lighting system repair",
-          "type": "oneTime",
+          "task_type": "oneTime",
           "frequency": null,
           "location": {
             "id": 2,
@@ -550,14 +550,14 @@ const String maintenanceTasksJson = '''
               "item": "Emergency Lights",
               "quantity": 4,
               "unit": "piece",
-              "unitCost": 180
+              "unit_cost": 180
             },
             {
               "id": 10,
               "item": "Wiring",
               "quantity": 50,
               "unit": "piece",
-              "unitCost": 5
+              "unit_cost": 5
             }
           ],
           "labourCost": 630,
@@ -578,7 +578,7 @@ const String maintenanceTasksJson = '''
           "id": 9,
           "title": "Paint Walls",
           "description": "Repaint interior walls with fresh coat",
-          "type": "oneTime",
+          "task_type": "oneTime",
           "frequency": null,
           "location": {
             "id": 1,
@@ -617,14 +617,14 @@ const String maintenanceTasksJson = '''
               "item": "Paint",
               "quantity": 20,
               "unit": "liter",
-              "unitCost": 80
+              "unit_cost": 80
             },
             {
               "id": 12,
               "item": "Primer",
               "quantity": 10,
               "unit": "liter",
-              "unitCost": 60
+              "unit_cost": 60
             }
           ],
           "labourCost": 800,
@@ -645,7 +645,7 @@ const String maintenanceTasksJson = '''
           "id": 10,
           "title": "Paint Walls",
           "description": "Touch up paint work in common areas",
-          "type": "Recurring",
+          "task_type": "Recurring",
           "frequency": "Quarterly",
           "location": {
             "id": 2,
@@ -674,7 +674,7 @@ const String maintenanceTasksJson = '''
               "item": "Wall Paint",
               "quantity": 15,
               "unit": "liter",
-              "unitCost": 85
+              "unit_cost": 85
             }
           ],
           "labourCost": 475,
@@ -940,7 +940,7 @@ const String pendingTasksJson = '''
           "id": 1,
           "title": "Air Conditioner Maintenance",
           "description": "Routine AC inspection and cleaning",
-          "type": "Recurring",
+          "task_type": "Recurring",
           "frequency": "Monthly",
           "location": {
             "id": 1,
@@ -979,14 +979,14 @@ const String pendingTasksJson = '''
               "item": "Air Filter",
               "quantity": 5,
               "unit": "piece",
-              "unitCost": 100
+              "unit_cost": 100
             },
             {
               "id": 2,
               "item": "Coolant",
               "quantity": 2,
               "unit": "liter",
-              "unitCost": 250
+              "unit_cost": 250
             }
           ],
           "labourCost": 500,
@@ -1007,7 +1007,7 @@ const String pendingTasksJson = '''
           "id": 3,
           "title": "Fix Lights",
           "description": "Replace the 3 bulbs in the main corridor.",
-          "type": "Recurring",
+          "task_type": "Recurring",
           "frequency": "Weekly",
           "location": {
             "id": 2,
@@ -1036,7 +1036,7 @@ const String pendingTasksJson = '''
               "item": "LED Bulbs",
               "quantity": 3,
               "unit": "piece",
-              "unitCost": 50
+              "unit_cost": 50
             }
           ],
           "labourCost": 350,
@@ -1057,7 +1057,7 @@ const String pendingTasksJson = '''
           "id": 4,
           "title": "Clean Lab",
           "description": "Deep cleaning of laboratory facilities",
-          "type": "Recurring",
+          "task_type": "Recurring",
           "frequency": "Weekly",
           "location": {
             "id": 1,
@@ -1086,7 +1086,7 @@ const String pendingTasksJson = '''
               "item": "Cleaning Supplies",
               "quantity": 10,
               "unit": "piece",
-              "unitCost": 40
+              "unit_cost": 40
             }
           ],
           "labourCost": 400,
@@ -1107,7 +1107,7 @@ const String pendingTasksJson = '''
           "id": 5,
           "title": "Fix Lights",
           "description": "Replace the 3 bulbs in the main corridor.",
-          "type": "oneTime",
+          "task_type": "oneTime",
           "frequency": null,
           "location": {
             "id": 2,
@@ -1136,7 +1136,7 @@ const String pendingTasksJson = '''
               "item": "Fluorescent Tubes",
               "quantity": 3,
               "unit": "piece",
-              "unitCost": 60
+              "unit_cost": 60
             }
           ],
           "labourCost": 270,
@@ -1157,7 +1157,7 @@ const String pendingTasksJson = '''
           "id": 6,
           "title": "Clean Lab",
           "description": "Regular maintenance cleaning of laboratory spaces",
-          "type": "Recurring",
+          "task_type": "Recurring",
           "frequency": "Monthly",
           "location": {
             "id": 1,
@@ -1196,14 +1196,14 @@ const String pendingTasksJson = '''
               "item": "Disinfectant",
               "quantity": 5,
               "unit": "liter",
-              "unitCost": 80
+              "unit_cost": 80
             },
             {
               "id": 7,
               "item": "Floor Cleaner",
               "quantity": 3,
               "unit": "liter",
-              "unitCost": 50
+              "unit_cost": 50
             }
           ],
           "labourCost": 500,
@@ -1231,7 +1231,7 @@ const String inProgressTasksJson = '''
           "id": 2,
           "title": "Air Conditioner Repair",
           "description": "Fix temperature control issue",
-          "type": "Recurring",
+          "task_type": "Recurring",
           "frequency": "Monthly",
           "location": {
             "id": 1,
@@ -1260,14 +1260,14 @@ const String inProgressTasksJson = '''
               "item": "Air Filter",
               "quantity": 5,
               "unit": "piece",
-              "unitCost": 100
+              "unit_cost": 100
             },
             {
               "id": 2,
               "item": "Coolant",
               "quantity": 2,
               "unit": "liter",
-              "unitCost": 250
+              "unit_cost": 250
             }
           ],
           "labourCost": 500,
@@ -1288,7 +1288,7 @@ const String inProgressTasksJson = '''
           "id": 7,
           "title": "Clean Lab",
           "description": "Comprehensive cleaning of all lab equipment",
-          "type": "Recurring",
+          "task_type": "Recurring",
           "frequency": "Weekly",
           "location": {
             "id": 1,
@@ -1317,7 +1317,7 @@ const String inProgressTasksJson = '''
               "item": "Cleaning Kit",
               "quantity": 2,
               "unit": "piece",
-              "unitCost": 125
+              "unit_cost": 125
             }
           ],
           "labourCost": 400,
@@ -1338,7 +1338,7 @@ const String inProgressTasksJson = '''
           "id": 8,
           "title": "Fix Lights",
           "description": "Emergency lighting system repair",
-          "type": "oneTime",
+          "task_type": "oneTime",
           "frequency": null,
           "location": {
             "id": 2,
@@ -1377,14 +1377,14 @@ const String inProgressTasksJson = '''
               "item": "Emergency Lights",
               "quantity": 4,
               "unit": "piece",
-              "unitCost": 180
+              "unit_cost": 180
             },
             {
               "id": 10,
               "item": "Wiring",
               "quantity": 50,
               "unit": "piece",
-              "unitCost": 5
+              "unit_cost": 5
             }
           ],
           "labourCost": 630,
@@ -1412,7 +1412,7 @@ const String completedTasksJson = '''
           "id": 9,
           "title": "Paint Walls",
           "description": "Repaint interior walls with fresh coat",
-          "type": "oneTime",
+          "task_type": "oneTime",
           "frequency": null,
           "location": {
             "id": 1,
@@ -1451,14 +1451,14 @@ const String completedTasksJson = '''
               "item": "Paint",
               "quantity": 20,
               "unit": "liter",
-              "unitCost": 80
+              "unit_cost": 80
             },
             {
               "id": 12,
               "item": "Primer",
               "quantity": 10,
               "unit": "liter",
-              "unitCost": 60
+              "unit_cost": 60
             }
           ],
           "labourCost": 800,
@@ -1479,7 +1479,7 @@ const String completedTasksJson = '''
           "id": 10,
           "title": "Paint Walls",
           "description": "Touch up paint work in common areas",
-          "type": "Recurring",
+          "task_type": "Recurring",
           "frequency": "Quarterly",
           "location": {
             "id": 2,
@@ -1508,7 +1508,7 @@ const String completedTasksJson = '''
               "item": "Wall Paint",
               "quantity": 15,
               "unit": "liter",
-              "unitCost": 85
+              "unit_cost": 85
             }
           ],
           "labourCost": 475,
