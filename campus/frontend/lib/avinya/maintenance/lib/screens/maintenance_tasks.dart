@@ -12,7 +12,6 @@ import '../widgets/common/pagination_controls.dart';
 import '../widgets/task_details_dialog.dart';
 
 class ReportScreen extends StatefulWidget {
-
   const ReportScreen({super.key});
 
   @override
@@ -316,7 +315,11 @@ class _ReportScreenState extends State<ReportScreen> {
 
   // --- OVERDUE TASKS TABLE (Red Themed) ---
   Widget _buildOverdueTable() {
-    return CustomDataTable(
+    // Count total overdue rows (can be multiple participants per task)
+    int totalRows = _overdueActivityInstances.fold(0,
+        (sum, instance) => sum + (instance.activityParticipants?.length ?? 0));
+
+    final tableWidget = CustomDataTable(
       headingRowColor: const Color(0xFF2C3E50), // Dark Header
       dataRowColor: Colors.red.shade50, // Red Background for rows
       borderColor: Colors.red.shade100,
@@ -369,6 +372,22 @@ class _ReportScreenState extends State<ReportScreen> {
         }).toList();
       }).toList(),
     );
+
+    // If more than 5 rows, make it scrollable with fixed height
+    if (totalRows > 5) {
+      return Container(
+        constraints: const BoxConstraints(maxHeight: 280),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.red.shade100),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: SingleChildScrollView(
+          child: tableWidget,
+        ),
+      );
+    }
+
+    return tableWidget;
   }
 
   // --- ALL TASKS TABLE (Standard Theme) ---
