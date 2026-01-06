@@ -72,8 +72,8 @@ class ActivityInstance {
               .map((item) => ActivityParticipant.fromJson(item))
               .toList()
           : null,
-      financialInformation: json['financialInformation'] != null
-          ? MaintenanceFinance.fromJson(json['financialInformation'])
+      financialInformation: json['finance'] != null
+          ? MaintenanceFinance.fromJson(json['finance'])
           : null,
       maintenanceTask: json['maintenanceTask'] != null
           ? MaintenanceTask.fromJson(json['maintenanceTask'])

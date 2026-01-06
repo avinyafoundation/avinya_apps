@@ -206,9 +206,9 @@ const String maintenanceTasksJson = '''
             "status": "In Progress"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 1,
-          "estimatedCost": 1500,
+          "estimated_cost": 1500,
           "totalCost": 2000,
           "materialCosts": [
             {
@@ -226,7 +226,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 250
             }
           ],
-          "labourCost": 500,
+          "labour_cost": 500,
           "status": "Approved",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -263,9 +263,9 @@ const String maintenanceTasksJson = '''
             "status": "Pending"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 3,
-          "estimatedCost": 500,
+          "estimated_cost": 500,
           "totalCost": 0,
           "materialCosts": [
             {
@@ -276,7 +276,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 50
             }
           ],
-          "labourCost": 350,
+          "labour_cost": 350,
           "status": "Pending",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -313,9 +313,9 @@ const String maintenanceTasksJson = '''
             "status": "Pending"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 4,
-          "estimatedCost": 800,
+          "estimated_cost": 800,
           "totalCost": 0,
           "materialCosts": [
             {
@@ -326,7 +326,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 40
             }
           ],
-          "labourCost": 400,
+          "labour_cost": 400,
           "status": "Pending",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -363,9 +363,9 @@ const String maintenanceTasksJson = '''
             "status": "Pending"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 5,
-          "estimatedCost": 450,
+          "estimated_cost": 450,
           "totalCost": 0,
           "materialCosts": [
             {
@@ -376,7 +376,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 60
             }
           ],
-          "labourCost": 270,
+          "labour_cost": 270,
           "status": "Pending",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -423,9 +423,9 @@ const String maintenanceTasksJson = '''
             "status": "Pending"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 6,
-          "estimatedCost": 950,
+          "estimated_cost": 950,
           "totalCost": 0,
           "materialCosts": [
             {
@@ -443,7 +443,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 50
             }
           ],
-          "labourCost": 500,
+          "labour_cost": 500,
           "status": "Pending",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -480,9 +480,9 @@ const String maintenanceTasksJson = '''
             "status": "In Progress"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 7,
-          "estimatedCost": 700,
+          "estimated_cost": 700,
           "totalCost": 650,
           "materialCosts": [
             {
@@ -493,7 +493,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 125
             }
           ],
-          "labourCost": 400,
+          "labour_cost": 400,
           "status": "Approved",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -540,9 +540,9 @@ const String maintenanceTasksJson = '''
             "status": "In Progress"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 8,
-          "estimatedCost": 1200,
+          "estimated_cost": 1200,
           "totalCost": 1150,
           "materialCosts": [
             {
@@ -560,7 +560,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 5
             }
           ],
-          "labourCost": 630,
+          "labour_cost": 630,
           "status": "Approved",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -607,9 +607,9 @@ const String maintenanceTasksJson = '''
             "status": "Completed"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 9,
-          "estimatedCost": 2500,
+          "estimated_cost": 2500,
           "totalCost": 2400,
           "materialCosts": [
             {
@@ -627,7 +627,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 60
             }
           ],
-          "labourCost": 800,
+          "labour_cost": 800,
           "status": "Approved",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -664,9 +664,9 @@ const String maintenanceTasksJson = '''
             "status": "Completed"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 10,
-          "estimatedCost": 1800,
+          "estimated_cost": 1800,
           "totalCost": 1750,
           "materialCosts": [
             {
@@ -677,7 +677,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 85
             }
           ],
-          "labourCost": 475,
+          "labour_cost": 475,
           "status": "Approved",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -969,9 +969,9 @@ const String pendingTasksJson = '''
             "status": "Completed"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 1,
-          "estimatedCost": 1500,
+          "estimated_cost": 1500,
           "totalCost": 1400,
           "materialCosts": [
             {
@@ -989,7 +989,7 @@ const String pendingTasksJson = '''
               "unit_cost": 250
             }
           ],
-          "labourCost": 500,
+          "labour_cost": 500,
           "status": "Pending",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -1026,9 +1026,9 @@ const String pendingTasksJson = '''
             "status": "Pending"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 3,
-          "estimatedCost": 500,
+          "estimated_cost": 500,
           "totalCost": 0,
           "materialCosts": [
             {
@@ -1039,7 +1039,7 @@ const String pendingTasksJson = '''
               "unit_cost": 50
             }
           ],
-          "labourCost": 350,
+          "labour_cost": 350,
           "status": "Pending",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -1076,9 +1076,9 @@ const String pendingTasksJson = '''
             "status": "Pending"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 4,
-          "estimatedCost": 800,
+          "estimated_cost": 800,
           "totalCost": 0,
           "materialCosts": [
             {
@@ -1089,7 +1089,7 @@ const String pendingTasksJson = '''
               "unit_cost": 40
             }
           ],
-          "labourCost": 400,
+          "labour_cost": 400,
           "status": "Pending",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -1126,9 +1126,9 @@ const String pendingTasksJson = '''
             "status": "Pending"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 5,
-          "estimatedCost": 450,
+          "estimated_cost": 450,
           "totalCost": 0,
           "materialCosts": [
             {
@@ -1139,7 +1139,7 @@ const String pendingTasksJson = '''
               "unit_cost": 60
             }
           ],
-          "labourCost": 270,
+          "labour_cost": 270,
           "status": "Pending",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -1186,9 +1186,9 @@ const String pendingTasksJson = '''
             "status": "Pending"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 6,
-          "estimatedCost": 950,
+          "estimated_cost": 950,
           "totalCost": 0,
           "materialCosts": [
             {
@@ -1206,7 +1206,7 @@ const String pendingTasksJson = '''
               "unit_cost": 50
             }
           ],
-          "labourCost": 500,
+          "labour_cost": 500,
           "status": "Pending",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -1250,9 +1250,9 @@ const String inProgressTasksJson = '''
             "status": "In Progress"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 1,
-          "estimatedCost": 1500,
+          "estimated_cost": 1500,
           "totalCost": 2000,
           "materialCosts": [
             {
@@ -1270,7 +1270,7 @@ const String inProgressTasksJson = '''
               "unit_cost": 250
             }
           ],
-          "labourCost": 500,
+          "labour_cost": 500,
           "status": "Approved",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -1307,9 +1307,9 @@ const String inProgressTasksJson = '''
             "status": "In Progress"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 7,
-          "estimatedCost": 700,
+          "estimated_cost": 700,
           "totalCost": 650,
           "materialCosts": [
             {
@@ -1320,7 +1320,7 @@ const String inProgressTasksJson = '''
               "unit_cost": 125
             }
           ],
-          "labourCost": 400,
+          "labour_cost": 400,
           "status": "Approved",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -1367,9 +1367,9 @@ const String inProgressTasksJson = '''
             "status": "In Progress"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 8,
-          "estimatedCost": 1200,
+          "estimated_cost": 1200,
           "totalCost": 1150,
           "materialCosts": [
             {
@@ -1387,7 +1387,7 @@ const String inProgressTasksJson = '''
               "unit_cost": 5
             }
           ],
-          "labourCost": 630,
+          "labour_cost": 630,
           "status": "Approved",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -1441,9 +1441,9 @@ const String completedTasksJson = '''
             "status": "Completed"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 9,
-          "estimatedCost": 2500,
+          "estimated_cost": 2500,
           "totalCost": 2400,
           "materialCosts": [
             {
@@ -1461,7 +1461,7 @@ const String completedTasksJson = '''
               "unit_cost": 60
             }
           ],
-          "labourCost": 800,
+          "labour_cost": 800,
           "status": "Approved",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -1498,9 +1498,9 @@ const String completedTasksJson = '''
             "status": "Completed"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 10,
-          "estimatedCost": 1800,
+          "estimated_cost": 1800,
           "totalCost": 1750,
           "materialCosts": [
             {
@@ -1511,7 +1511,7 @@ const String completedTasksJson = '''
               "unit_cost": 85
             }
           ],
-          "labourCost": 475,
+          "labour_cost": 475,
           "status": "Approved",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -1566,9 +1566,9 @@ const String pendingFinancialTasksJson = '''
             "status": "Completed"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 1,
-          "estimatedCost": 1500,
+          "estimated_cost": 1500,
           "totalCost": 1400,
           "materialCosts": [
             {
@@ -1576,17 +1576,17 @@ const String pendingFinancialTasksJson = '''
               "item": "Air Filter",
               "quantity": 5,
               "unit": "piece",
-              "unitCost": 100
+              "unit_cost": 100
             },
             {
               "id": 2,
               "item": "Coolant",
               "quantity": 2,
               "unit": "liter",
-              "unitCost": 250
+              "unit_cost": 250
             }
           ],
-          "labourCost": 500,
+          "labour_cost": 500,
           "status": "Pending",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -1623,9 +1623,9 @@ const String pendingFinancialTasksJson = '''
             "status": "Pending"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 3,
-          "estimatedCost": 500,
+          "estimated_cost": 500,
           "totalCost": 0,
           "materialCosts": [
             {
@@ -1633,10 +1633,10 @@ const String pendingFinancialTasksJson = '''
               "item": "LED Bulbs",
               "quantity": 3,
               "unit": "piece",
-              "unitCost": 50
+              "unit_cost": 50
             }
           ],
-          "labourCost": 350,
+          "labour_cost": 350,
           "status": "Pending",
           "rejectionReason": null,
           "reviewedBy": null,
