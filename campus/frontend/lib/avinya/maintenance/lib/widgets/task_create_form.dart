@@ -412,6 +412,7 @@ final List<AcademyLocation> mockLocations = [
                       child: CustomDatePicker(
                         label: "Select Date",
                         selectedDateString: selectedDate,
+                        initialDate: DateTime.now(),
                         onDateSelected: (date) {
                           setState(() {
                             selectedDate = date + " 00:00:00";
