@@ -405,18 +405,19 @@ public type MaterialCost record {
 };
 
 public type MonthlyLeaveDates record {
-    string? leave_dates?;
-    int? month?;
     int[] leave_dates_list?;
     int? year?;
     int? batch_id?;
+    anydata? monthly_payment_amount?;
     string? created?;
+    string? record_type?;
+    string? leave_dates?;
+    int? month?;
     int? total_days_in_month?;
     int? organization_id?;
     int? id?;
     anydata? daily_amount?;
     string? updated?;
-    string? record_type?;
 };
 
 public type Organization record {
@@ -672,4 +673,81 @@ public type CreateMaintenanceTaskResponse record {|
     record {|
         int? id;
     |}? createMaintenanceTask;
+|};
+
+public type MaintenanceTasksResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? start_time;
+        string? end_time;
+        string? overall_task_status;
+        record {|
+            int? id;
+            string? title;
+            string? description;
+            string? task_type;
+            string? frequency;
+            int? exception_deadline;
+            record {|
+                int? id;
+                string? location_name;
+            |}? location;
+        |}? task;
+        record {|
+            int? id;
+            string? participant_task_status;
+            record {|
+                int? id;
+                string? preferred_name;
+            |}? person;
+        |}[]? activity_participants;
+        record {|
+            int? id;
+            anydata? estimated_cost;
+            anydata? labour_cost;
+            record {|
+                int? id;
+                string? item;
+                anydata? quantity;
+                string? unit;
+                anydata? unit_cost;
+            |}[]? material_costs;
+            string? status;
+            string? rejection_reason;
+            string? reviewed_by;
+            string? reviewed_date;
+        |}? finance;
+    |}[]? maintenanceTasks;
+|};
+
+public type GetOverdueMaintenanceTasksResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? task_id;
+        string? start_time;
+        string? end_time;
+        string? overall_task_status;
+        int? overdue_days;
+        record {|
+            int? id;
+            string? title;
+            string? description;
+            string? task_type;
+            string? frequency;
+            record {|
+                int? id;
+                string? location_name;
+            |}? location;
+        |}? task;
+        record {|
+            int? id;
+            string? participant_task_status;
+            record {|
+                int? id;
+                string? preferred_name;
+            |}? person;
+        |}[]? activity_participants;
+    |}[]? overdueMaintenanceTasks;
 |};

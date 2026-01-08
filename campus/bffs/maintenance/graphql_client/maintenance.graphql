@@ -44,3 +44,102 @@ mutation createMaintenanceTask(
     id
   }
 }
+
+query MaintenanceTasks(
+    $organizationId: Int!,
+    $personId: [Int!],
+    $fromDate: String,
+    $toDate: String,
+    $taskStatus: String,
+    $financialStatus: String,
+    $taskType: String,
+    $location: Int,
+    $title: String,
+    $limit: Int!,
+    $offset: Int!
+) {
+    maintenanceTasks(
+        organizationId: $organizationId,
+        personId: $personId,
+        fromDate: $fromDate,
+        toDate: $toDate,
+        taskStatus: $taskStatus,
+        financialStatus: $financialStatus,
+        taskType: $taskType,
+        title: $title,
+        location: $location,
+        limit: $limit,
+        offset: $offset
+    ) {
+        id
+        start_time
+        end_time
+        overall_task_status
+        task {
+            id
+            title
+            description
+            task_type
+            frequency
+            exception_deadline
+            location {
+                id
+                location_name
+            }
+        }
+        activity_participants {
+            id
+            participant_task_status
+            person {
+                id
+                preferred_name
+            }
+        }
+        finance {
+            id
+            estimated_cost
+            labour_cost
+            material_costs {
+                id
+                item
+                quantity
+                unit
+                unit_cost
+            }
+            status
+            rejection_reason
+            reviewed_by
+            reviewed_date
+        }
+    }
+}
+
+query GetOverdueMaintenanceTasks($organizationId: Int!) {
+    overdueMaintenanceTasks(organizationId: $organizationId) {
+        id
+        task_id
+        start_time
+        end_time
+        overall_task_status
+        overdue_days
+        task {
+            id
+            title
+            description
+            task_type
+            frequency
+            location {
+                id
+                location_name
+            }
+        }
+        activity_participants {
+            id
+            participant_task_status
+            person {
+                id
+                preferred_name
+            }
+        }
+    }
+}

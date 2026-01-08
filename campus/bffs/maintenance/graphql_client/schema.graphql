@@ -57,7 +57,10 @@ type ActivityInstanceData {
   monthly_sequence: Int
   start_time: String
   end_time: String
+  task: MaintenanceTaskData
+  finance: MaintenanceFinanceData
   overall_task_status: String
+  overdue_days: Int
   created: String
   updated: String
   place: PlaceData
@@ -429,11 +432,14 @@ type AvinyaTypeData {
   description: String
 }
 
-type CalendarMetaData {
+type BatchPaymentPlanData {
   id: Int
   organization_id: Int
   batch_id: Int
   monthly_payment_amount: Decimal
+  valid_from: String
+  valid_to: String
+  created: String
 }
 
 input City {
@@ -514,9 +520,11 @@ type DailyActivityParticipantAttendanceByParentOrgData {
 type DailyActivityParticipantAttendanceSummaryReportData {
   sign_in_date: String
   present_count: Int
+  absent_count: Int
   late_count: Int
   total_count: Int
   present_attendance_percentage: Decimal
+  absent_attendance_percentage: Decimal
   late_attendance_percentage: Decimal
 }
 
@@ -831,6 +839,20 @@ input MaintenanceFinance {
   materialCosts: [MaterialCost!]
 }
 
+type MaintenanceFinanceData {
+  id: Int
+  activity_instance_id: Int
+  estimated_cost: Decimal
+  labour_cost: Decimal
+  material_costs: [MaterialCostData!]
+  status: String
+  rejection_reason: String
+  reviewed_by: String
+  reviewed_date: String
+  created: String
+  updated: String
+}
+
 input MaintenanceTask {
   record_type: String = "maintenance_task"
   id: Int
@@ -857,6 +879,7 @@ type MaintenanceTaskData {
   task_type: String
   frequency: String
   location_id: Int
+  location: OrganizationLocationData
   start_date: String
   exception_deadline: Int
   has_financial_info: Int
@@ -876,6 +899,15 @@ input MaterialCost {
   unit_cost: Decimal
 }
 
+type MaterialCostData {
+  id: Int
+  financial_id: Int
+  item: String
+  quantity: Decimal
+  unit: String
+  unit_cost: Decimal
+}
+
 input MonthlyLeaveDates {
   record_type: String = "monthly_leave_dates"
   id: Int
@@ -887,6 +919,7 @@ input MonthlyLeaveDates {
   leave_dates_list: [Int!]!
   leave_dates: String
   daily_amount: Decimal
+  monthly_payment_amount: Decimal
   created: String
   updated: String
 }
@@ -1347,7 +1380,7 @@ type Query {
   cities(district_id: Int): [CityData!]
   all_organizations: [OrganizationData!]
   monthly_leave_dates_record_by_id(organization_id: Int!, batch_id: Int!, year: Int!, month: Int!): MonthlyLeaveDatesData
-  calendar_metadata_by_org_id(organization_id: Int!, batch_id: Int!): CalendarMetaData
+  batch_payment_plan_by_org_id(organization_id: Int!, batch_id: Int!, selected_month_date: String!): BatchPaymentPlanData
   alumni_education_qualification_by_id(id: Int): AlumniEducationQualificationData
   alumni_work_experience_by_id(id: Int): AlumniWorkExperienceData
   upcoming_events(person_id: Int): [ActivityInstanceData!]
@@ -1361,6 +1394,8 @@ type Query {
   fetchPersonCV(personId: Int!, driveFileId: String): PersonCvData
   fetchUserFCMToken(personId: Int): PersonFcmTokenData
   locationsByOrganization(organizationId: Int): [OrganizationLocationData!]
+  maintenanceTasks(organizationId: Int!, personId: [Int!], fromDate: String = "", toDate: String = "", taskStatus: String = "", financialStatus: String = "", taskType: String = "", location: Int, title: String = "", limit: Int! = 10, offset: Int! = 0, includeFinance: Boolean! = false): [ActivityInstanceData!]
+  overdueMaintenanceTasks(organizationId: Int!): [ActivityInstanceData!]
 }
 
 input ResourceAllocation {

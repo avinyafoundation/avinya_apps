@@ -36,7 +36,7 @@ class ActivityParticipant {
         organization_id: json['organization_id'],
         start_time: json['start_time'],
         end_time: json['end_time'],
-        status: json['status'] != null ? getProgressStatusFromString(json['status']) : null,
+        status: json['participant_task_status'] != null ? getProgressStatusFromString(json['participant_task_status']) : null,
         active: json['active'],
         is_attending: json['is_attending']);
   }
@@ -49,7 +49,7 @@ class ActivityParticipant {
         if (organization_id != null) 'organization_id': organization_id,
         if (start_time != null) 'start_time': start_time,
         if (end_time != null) 'end_time': end_time,
-        if (status != null) 'status': progressStatusToString(status!),
+        if (status != null) 'participant_task_status': progressStatusToString(status!),
         if (active != null) 'active': active,
         if (is_attending != null) 'is_attending': is_attending
       };
