@@ -140,7 +140,7 @@ service / on new http:Listener(9097) {
         string? title = (),
         int 'limit = 10,
         int offset = 0
-    ) returns json|error {
+    ) returns ActivityInstance[]|error {
         MaintenanceTasksResponse|graphql:ClientError maintenanceTasksResponse = globalDataClient->MaintenanceTasks(
             organizationId,
             offset,
@@ -155,27 +155,26 @@ service / on new http:Listener(9097) {
             taskStatus
         );
         if (maintenanceTasksResponse is MaintenanceTasksResponse) {
+            ActivityInstance[] activityInstances = [];
             var tasks = maintenanceTasksResponse?.maintenanceTasks;
             if (tasks is ()) {
-                return <json>[];
+                return <ActivityInstance[]>[];
             }
-            return tasks.toJson();
-        } else {
-            // GraphQL can return partial data with errors
-            // Try to extract data from error detail if available
-            string errorDetail = maintenanceTasksResponse.detail().toString();
-            if (errorDetail.includes("\"data\":{\"maintenanceTasks\":")) {
-                json|error detailJson = errorDetail.fromJsonString();
-                if (detailJson is json) {
-                    json|error tasksData = detailJson.data.maintenanceTasks;
-                    if (tasksData is json) {
-                        return tasksData;
-                    }
+            foreach var task_record in tasks {
+                ActivityInstance|error activityInstance = task_record.cloneWithType(ActivityInstance);
+                if (activityInstance is ActivityInstance) {
+                    activityInstances.push(activityInstance);
+                } else {
+                    log:printError("Error while getting activity instance record", activityInstance);
+                    return error("Error while getting activity instance record: " + activityInstance.message() +
+                        ":: Detail: " + activityInstance.detail().toString());
                 }
             }
+            return activityInstances;
+        } else {
             log:printError("Error while getting maintenance tasks", maintenanceTasksResponse);
             return error("Error while getting maintenance tasks: " + maintenanceTasksResponse.message() +
-                ":: Detail: " + errorDetail);
+                ":: Detail: " + maintenanceTasksResponse.detail().toString());
         }
     }
 
@@ -183,18 +182,30 @@ service / on new http:Listener(9097) {
     resource function get tasks/[int organizationId]/overdue(
         int 'limit = 10,
         int offset = 0
-    ) returns json|error {
+    ) returns ActivityInstance[]|error {
         GetOverdueMaintenanceTasksResponse|graphql:ClientError overdueTasksResponse = globalDataClient->GetOverdueMaintenanceTasks(organizationId);
         if (overdueTasksResponse is GetOverdueMaintenanceTasksResponse) {
+            ActivityInstance[] activityInstances = [];
             var tasks = overdueTasksResponse?.overdueMaintenanceTasks;
             if (tasks is ()) {
-                return <json>[];
+                return <ActivityInstance[]>[];
             }
-            return tasks.toJson();
+            foreach var task_record in tasks {
+                ActivityInstance|error activityInstance = task_record.cloneWithType(ActivityInstance);
+                if (activityInstance is ActivityInstance) {
+                    activityInstances.push(activityInstance);
+                } else {
+                    log:printError("Error while getting overdue activity instance record", activityInstance);
+                    return error("Error while getting overdue activity instance record: " + activityInstance.message() +
+                        ":: Detail: " + activityInstance.detail().toString());
+                }
+            }
+            return activityInstances;
         } else {
             log:printError("Error while getting overdue maintenance tasks", overdueTasksResponse);
             return error("Error while getting overdue maintenance tasks: " + overdueTasksResponse.message() +
                 ":: Detail: " + overdueTasksResponse.detail().toString());
         }
     }
+
 }
