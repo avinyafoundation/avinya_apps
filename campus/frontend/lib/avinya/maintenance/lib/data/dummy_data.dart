@@ -139,20 +139,20 @@ const String maintenanceTasksJson = '''
         "id": 1,
         "start_time": "2025-01-10",
         "end_time": "2025-01-12",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 1,
           "title": "Air Conditioner Maintenance",
           "description": "Routine AC inspection and cleaning",
           "task_type": "Recurring",
           "frequency": "Monthly",
-          "exception_deadline":2,
+          "exception_deadline": 2,
           "location": {
             "id": 12,
             "location_name": "Pod 1"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 1,
             "person": {
@@ -174,7 +174,6 @@ const String maintenanceTasksJson = '''
             "status": "Completed"
           }
         ]
-        
       }
     },
     {
@@ -182,8 +181,8 @@ const String maintenanceTasksJson = '''
         "id": 2,
         "start_time": "2025-01-15",
         "end_time": "2025-01-20",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 2,
           "title": "Air Conditioner Repair",
           "description": "Fix temperature control issue",
@@ -194,7 +193,7 @@ const String maintenanceTasksJson = '''
             "location_name": "Building A - Floor 2"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 2,
             "person": {
@@ -206,7 +205,6 @@ const String maintenanceTasksJson = '''
             "status": "In Progress"
           }
         ],
-        "finance": {
         "finance": {
           "id": 1,
           "estimated_cost": 1500,
@@ -228,7 +226,6 @@ const String maintenanceTasksJson = '''
             }
           ],
           "labour_cost": 500,
-          "labour_cost": 500,
           "status": "Approved",
           "rejection_reason": null,
           "reviewed_by": null,
@@ -241,8 +238,8 @@ const String maintenanceTasksJson = '''
         "id": 3,
         "start_time": "2025-02-01",
         "end_time": "2025-02-05",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 3,
           "title": "Fix Lights",
           "description": "Replace the 3 bulbs in the main corridor.",
@@ -253,7 +250,7 @@ const String maintenanceTasksJson = '''
             "location_name": "Main Hall"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 3,
             "person": {
@@ -266,12 +263,10 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 3,
           "estimated_cost": 500,
-          "estimated_cost": 500,
-          "totalCost": 0,
-          "materialCosts": [
+          "total_cost": 0,
+          "material_costs": [
             {
               "id": 3,
               "item": "LED Bulbs",
@@ -281,11 +276,10 @@ const String maintenanceTasksJson = '''
             }
           ],
           "labour_cost": 350,
-          "labour_cost": 350,
           "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -294,8 +288,8 @@ const String maintenanceTasksJson = '''
         "id": 4,
         "start_time": "2025-02-10",
         "end_time": "2025-02-12",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 4,
           "title": "Clean Lab",
           "description": "Deep cleaning of laboratory facilities",
@@ -306,7 +300,7 @@ const String maintenanceTasksJson = '''
             "location_name": "IT Lab"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 4,
             "person": {
@@ -319,12 +313,10 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 4,
           "estimated_cost": 800,
-          "estimated_cost": 800,
-          "totalCost": 0,
-          "materialCosts": [
+          "total_cost": 0,
+          "material_costs": [
             {
               "id": 4,
               "item": "Cleaning Supplies",
@@ -334,11 +326,10 @@ const String maintenanceTasksJson = '''
             }
           ],
           "labour_cost": 400,
-          "labour_cost": 400,
           "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -347,8 +338,8 @@ const String maintenanceTasksJson = '''
         "id": 5,
         "start_time": "2025-03-01",
         "end_time": "2025-03-03",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 5,
           "title": "Fix Lights",
           "description": "Replace the 3 bulbs in the main corridor.",
@@ -359,7 +350,7 @@ const String maintenanceTasksJson = '''
             "location_name": "Main Hall"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 5,
             "person": {
@@ -372,12 +363,10 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 5,
           "estimated_cost": 450,
-          "estimated_cost": 450,
-          "totalCost": 0,
-          "materialCosts": [
+          "total_cost": 0,
+          "material_costs": [
             {
               "id": 5,
               "item": "Fluorescent Tubes",
@@ -387,11 +376,10 @@ const String maintenanceTasksJson = '''
             }
           ],
           "labour_cost": 270,
-          "labour_cost": 270,
           "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -400,8 +388,8 @@ const String maintenanceTasksJson = '''
         "id": 6,
         "start_time": "2025-03-15",
         "end_time": "2025-03-18",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 6,
           "title": "Clean Lab",
           "description": "Regular maintenance cleaning of laboratory spaces",
@@ -412,7 +400,7 @@ const String maintenanceTasksJson = '''
             "location_name": "IT Lab"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 6,
             "person": {
@@ -435,12 +423,10 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 6,
           "estimated_cost": 950,
-          "estimated_cost": 950,
-          "totalCost": 0,
-          "materialCosts": [
+          "total_cost": 0,
+          "material_costs": [
             {
               "id": 6,
               "item": "Disinfectant",
@@ -457,11 +443,10 @@ const String maintenanceTasksJson = '''
             }
           ],
           "labour_cost": 500,
-          "labour_cost": 500,
           "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -470,8 +455,8 @@ const String maintenanceTasksJson = '''
         "id": 7,
         "start_time": "2025-04-01",
         "end_time": "2025-04-05",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 7,
           "title": "Clean Lab",
           "description": "Comprehensive cleaning of all lab equipment",
@@ -482,7 +467,7 @@ const String maintenanceTasksJson = '''
             "location_name": "IT Lab"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 8,
             "person": {
@@ -495,12 +480,10 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 7,
           "estimated_cost": 700,
-          "estimated_cost": 700,
-          "totalCost": 650,
-          "materialCosts": [
+          "total_cost": 650,
+          "material_costs": [
             {
               "id": 8,
               "item": "Cleaning Kit",
@@ -510,11 +493,10 @@ const String maintenanceTasksJson = '''
             }
           ],
           "labour_cost": 400,
-          "labour_cost": 400,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -523,8 +505,8 @@ const String maintenanceTasksJson = '''
         "id": 8,
         "start_time": "2025-04-10",
         "end_time": "2025-04-15",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 8,
           "title": "Fix Lights",
           "description": "Emergency lighting system repair",
@@ -535,7 +517,7 @@ const String maintenanceTasksJson = '''
             "location_name": "Main Hall"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 9,
             "person": {
@@ -558,12 +540,10 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 8,
           "estimated_cost": 1200,
-          "estimated_cost": 1200,
-          "totalCost": 1150,
-          "materialCosts": [
+          "total_cost": 1150,
+          "material_costs": [
             {
               "id": 9,
               "item": "Emergency Lights",
@@ -580,11 +560,10 @@ const String maintenanceTasksJson = '''
             }
           ],
           "labour_cost": 630,
-          "labour_cost": 630,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -593,8 +572,8 @@ const String maintenanceTasksJson = '''
         "id": 9,
         "start_time": "2025-05-01",
         "end_time": "2025-05-05",
-        "overallTaskStatus": "Completed",
-        "maintenanceTask": {
+        "overall_task_status": "Completed",
+        "task": {
           "id": 9,
           "title": "Paint Walls",
           "description": "Repaint interior walls with fresh coat",
@@ -605,7 +584,7 @@ const String maintenanceTasksJson = '''
             "location_name": "IT Lab"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 11,
             "person": {
@@ -628,12 +607,10 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 9,
           "estimated_cost": 2500,
-          "estimated_cost": 2500,
-          "totalCost": 2400,
-          "materialCosts": [
+          "total_cost": 2400,
+          "material_costs": [
             {
               "id": 11,
               "item": "Paint",
@@ -650,11 +627,10 @@ const String maintenanceTasksJson = '''
             }
           ],
           "labour_cost": 800,
-          "labour_cost": 800,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -663,8 +639,8 @@ const String maintenanceTasksJson = '''
         "id": 10,
         "start_time": "2025-05-10",
         "end_time": "2025-05-12",
-        "overallTaskStatus": "Completed",
-        "maintenanceTask": {
+        "overall_task_status": "Completed",
+        "task": {
           "id": 10,
           "title": "Paint Walls",
           "description": "Touch up paint work in common areas",
@@ -675,7 +651,7 @@ const String maintenanceTasksJson = '''
             "location_name": "Main Hall"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 13,
             "person": {
@@ -688,12 +664,10 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 10,
           "estimated_cost": 1800,
-          "estimated_cost": 1800,
-          "totalCost": 1750,
-          "materialCosts": [
+          "total_cost": 1750,
+          "material_costs": [
             {
               "id": 13,
               "item": "Wall Paint",
@@ -703,11 +677,10 @@ const String maintenanceTasksJson = '''
             }
           ],
           "labour_cost": 475,
-          "labour_cost": 475,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     }
@@ -723,8 +696,8 @@ const String overdueTasksJson = '''
         "id": 12,
         "start_time": "2025-11-10",
         "end_time": "2025-11-15",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 44,
           "title": "Air Conditioner Maintenance",
           "description": "Perform routine maintenance of air conditioners.",
@@ -733,8 +706,8 @@ const String overdueTasksJson = '''
             "location_name": "Main Building - Floor 2"
           }
         },
-        "overdueDays": 5,
-        "activityParticipants": [
+        "overdue_days": 5,
+        "activity_participants": [
           {
             "id": 7,
             "person": {
@@ -757,8 +730,8 @@ const String overdueTasksJson = '''
         "id": 13,
         "start_time": "2025-11-07",
         "end_time": "2025-11-15",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 44,
           "title": "Fix Lights",
           "description": "Replace faulty lights in the main corridor.",
@@ -767,8 +740,8 @@ const String overdueTasksJson = '''
             "location_name": "Main Building - Floor 2"
           }
         },
-        "overdueDays": 5,
-        "activityParticipants": [
+        "overdue_days": 5,
+        "activity_participants": [
           {
             "id": 7,
             "person": {
@@ -784,8 +757,8 @@ const String overdueTasksJson = '''
         "id": 14,
         "start_time": "2025-11-05",
         "end_time": "2025-11-12",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 45,
           "title": "Clean Lab",
           "description": "Deep cleaning of laboratory facilities",
@@ -794,8 +767,8 @@ const String overdueTasksJson = '''
             "location_name": "IT Lab"
           }
         },
-        "overdueDays": 7,
-        "activityParticipants": [
+        "overdue_days": 7,
+        "activity_participants": [
           {
             "id": 14,
             "person": {
@@ -811,8 +784,8 @@ const String overdueTasksJson = '''
         "id": 15,
         "start_time": "2025-11-08",
         "end_time": "2025-11-14",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 46,
           "title": "Paint Walls",
           "description": "Touch up paint work in common areas",
@@ -821,8 +794,8 @@ const String overdueTasksJson = '''
             "location_name": "Main Hall"
           }
         },
-        "overdueDays": 3,
-        "activityParticipants": [
+        "overdue_days": 3,
+        "activity_participants": [
           {
             "id": 15,
             "person": {
@@ -845,8 +818,8 @@ const String overdueTasksJson = '''
         "id": 16,
         "start_time": "2025-11-03",
         "end_time": "2025-11-10",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 47,
           "title": "Air Conditioner Repair",
           "description": "Fix temperature control issue",
@@ -855,8 +828,8 @@ const String overdueTasksJson = '''
             "location_name": "Building A - Floor 2"
           }
         },
-        "overdueDays": 10,
-        "activityParticipants": [
+        "overdue_days": 10,
+        "activity_participants": [
           {
             "id": 17,
             "person": {
@@ -961,8 +934,8 @@ const String pendingTasksJson = '''
         "id": 1,
         "start_time": "2025-01-10",
         "end_time": "2025-01-12",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 1,
           "title": "Air Conditioner Maintenance",
           "description": "Routine AC inspection and cleaning",
@@ -973,7 +946,7 @@ const String pendingTasksJson = '''
             "location_name": "Pod 1"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 1,
             "person": {
@@ -996,12 +969,10 @@ const String pendingTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 1,
           "estimated_cost": 1500,
-          "estimated_cost": 1500,
-          "totalCost": 1400,
-          "materialCosts": [
+          "total_cost": 1400,
+          "material_costs": [
             {
               "id": 1,
               "item": "Air Filter",
@@ -1018,11 +989,10 @@ const String pendingTasksJson = '''
             }
           ],
           "labour_cost": 500,
-          "labour_cost": 500,
           "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -1031,8 +1001,8 @@ const String pendingTasksJson = '''
         "id": 3,
         "start_time": "2025-02-01",
         "end_time": "2025-02-05",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 3,
           "title": "Fix Lights",
           "description": "Replace the 3 bulbs in the main corridor.",
@@ -1043,7 +1013,7 @@ const String pendingTasksJson = '''
             "location_name": "Main Hall"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 3,
             "person": {
@@ -1056,12 +1026,10 @@ const String pendingTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 3,
           "estimated_cost": 500,
-          "estimated_cost": 500,
-          "totalCost": 0,
-          "materialCosts": [
+          "total_cost": 0,
+          "material_costs": [
             {
               "id": 3,
               "item": "LED Bulbs",
@@ -1071,11 +1039,10 @@ const String pendingTasksJson = '''
             }
           ],
           "labour_cost": 350,
-          "labour_cost": 350,
           "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -1084,8 +1051,8 @@ const String pendingTasksJson = '''
         "id": 4,
         "start_time": "2025-02-10",
         "end_time": "2025-02-12",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 4,
           "title": "Clean Lab",
           "description": "Deep cleaning of laboratory facilities",
@@ -1096,7 +1063,7 @@ const String pendingTasksJson = '''
             "location_name": "IT Lab"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 4,
             "person": {
@@ -1109,12 +1076,10 @@ const String pendingTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 4,
           "estimated_cost": 800,
-          "estimated_cost": 800,
-          "totalCost": 0,
-          "materialCosts": [
+          "total_cost": 0,
+          "material_costs": [
             {
               "id": 4,
               "item": "Cleaning Supplies",
@@ -1124,11 +1089,10 @@ const String pendingTasksJson = '''
             }
           ],
           "labour_cost": 400,
-          "labour_cost": 400,
           "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -1137,8 +1101,8 @@ const String pendingTasksJson = '''
         "id": 5,
         "start_time": "2025-03-01",
         "end_time": "2025-03-03",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 5,
           "title": "Fix Lights",
           "description": "Replace the 3 bulbs in the main corridor.",
@@ -1149,7 +1113,7 @@ const String pendingTasksJson = '''
             "location_name": "Main Hall"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 5,
             "person": {
@@ -1162,12 +1126,10 @@ const String pendingTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 5,
           "estimated_cost": 450,
-          "estimated_cost": 450,
-          "totalCost": 0,
-          "materialCosts": [
+          "total_cost": 0,
+          "material_costs": [
             {
               "id": 5,
               "item": "Fluorescent Tubes",
@@ -1177,11 +1139,10 @@ const String pendingTasksJson = '''
             }
           ],
           "labour_cost": 270,
-          "labour_cost": 270,
           "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -1190,8 +1151,8 @@ const String pendingTasksJson = '''
         "id": 6,
         "start_time": "2025-03-15",
         "end_time": "2025-03-18",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 6,
           "title": "Clean Lab",
           "description": "Regular maintenance cleaning of laboratory spaces",
@@ -1202,7 +1163,7 @@ const String pendingTasksJson = '''
             "location_name": "IT Lab"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 6,
             "person": {
@@ -1225,12 +1186,10 @@ const String pendingTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 6,
           "estimated_cost": 950,
-          "estimated_cost": 950,
-          "totalCost": 0,
-          "materialCosts": [
+          "total_cost": 0,
+          "material_costs": [
             {
               "id": 6,
               "item": "Disinfectant",
@@ -1247,11 +1206,10 @@ const String pendingTasksJson = '''
             }
           ],
           "labour_cost": 500,
-          "labour_cost": 500,
           "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     }
@@ -1267,8 +1225,8 @@ const String inProgressTasksJson = '''
         "id": 2,
         "start_time": "2025-01-15",
         "end_time": "2025-01-20",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 2,
           "title": "Air Conditioner Repair",
           "description": "Fix temperature control issue",
@@ -1279,7 +1237,7 @@ const String inProgressTasksJson = '''
             "location_name": "Building A - Floor 2"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 2,
             "person": {
@@ -1292,12 +1250,10 @@ const String inProgressTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 1,
           "estimated_cost": 1500,
-          "estimated_cost": 1500,
-          "totalCost": 2000,
-          "materialCosts": [
+          "total_cost": 2000,
+          "material_costs": [
             {
               "id": 1,
               "item": "Air Filter",
@@ -1314,11 +1270,10 @@ const String inProgressTasksJson = '''
             }
           ],
           "labour_cost": 500,
-          "labour_cost": 500,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -1327,8 +1282,8 @@ const String inProgressTasksJson = '''
         "id": 7,
         "start_time": "2025-04-01",
         "end_time": "2025-04-05",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 7,
           "title": "Clean Lab",
           "description": "Comprehensive cleaning of all lab equipment",
@@ -1339,7 +1294,7 @@ const String inProgressTasksJson = '''
             "location_name": "IT Lab"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 8,
             "person": {
@@ -1352,12 +1307,10 @@ const String inProgressTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 7,
           "estimated_cost": 700,
-          "estimated_cost": 700,
-          "totalCost": 650,
-          "materialCosts": [
+          "total_cost": 650,
+          "material_costs": [
             {
               "id": 8,
               "item": "Cleaning Kit",
@@ -1367,11 +1320,10 @@ const String inProgressTasksJson = '''
             }
           ],
           "labour_cost": 400,
-          "labour_cost": 400,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -1380,8 +1332,8 @@ const String inProgressTasksJson = '''
         "id": 8,
         "start_time": "2025-04-10",
         "end_time": "2025-04-15",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 8,
           "title": "Fix Lights",
           "description": "Emergency lighting system repair",
@@ -1392,7 +1344,7 @@ const String inProgressTasksJson = '''
             "location_name": "Main Hall"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 9,
             "person": {
@@ -1415,12 +1367,10 @@ const String inProgressTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 8,
           "estimated_cost": 1200,
-          "estimated_cost": 1200,
-          "totalCost": 1150,
-          "materialCosts": [
+          "total_cost": 1150,
+          "material_costs": [
             {
               "id": 9,
               "item": "Emergency Lights",
@@ -1437,11 +1387,10 @@ const String inProgressTasksJson = '''
             }
           ],
           "labour_cost": 630,
-          "labour_cost": 630,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     }
@@ -1457,8 +1406,8 @@ const String completedTasksJson = '''
         "id": 9,
         "start_time": "2025-05-01",
         "end_time": "2025-05-05",
-        "overallTaskStatus": "Completed",
-        "maintenanceTask": {
+        "overall_task_status": "Completed",
+        "task": {
           "id": 9,
           "title": "Paint Walls",
           "description": "Repaint interior walls with fresh coat",
@@ -1469,7 +1418,7 @@ const String completedTasksJson = '''
             "location_name": "IT Lab"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 11,
             "person": {
@@ -1492,12 +1441,10 @@ const String completedTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 9,
           "estimated_cost": 2500,
-          "estimated_cost": 2500,
-          "totalCost": 2400,
-          "materialCosts": [
+          "total_cost": 2400,
+          "material_costs": [
             {
               "id": 11,
               "item": "Paint",
@@ -1514,11 +1461,10 @@ const String completedTasksJson = '''
             }
           ],
           "labour_cost": 800,
-          "labour_cost": 800,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -1527,8 +1473,8 @@ const String completedTasksJson = '''
         "id": 10,
         "start_time": "2025-05-10",
         "end_time": "2025-05-12",
-        "overallTaskStatus": "Completed",
-        "maintenanceTask": {
+        "overall_task_status": "Completed",
+        "task": {
           "id": 10,
           "title": "Paint Walls",
           "description": "Touch up paint work in common areas",
@@ -1539,7 +1485,7 @@ const String completedTasksJson = '''
             "location_name": "Main Hall"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 13,
             "person": {
@@ -1552,12 +1498,10 @@ const String completedTasksJson = '''
           }
         ],
         "finance": {
-        "finance": {
           "id": 10,
           "estimated_cost": 1800,
-          "estimated_cost": 1800,
-          "totalCost": 1750,
-          "materialCosts": [
+          "total_cost": 1750,
+          "material_costs": [
             {
               "id": 13,
               "item": "Wall Paint",
@@ -1567,11 +1511,10 @@ const String completedTasksJson = '''
             }
           ],
           "labour_cost": 475,
-          "labour_cost": 475,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     }
