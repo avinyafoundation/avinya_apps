@@ -412,8 +412,9 @@ class _ReportScreenState extends State<ReportScreen> {
 
   // --- OVERDUE TASKS TABLE (Red Themed) ---
   Widget _buildOverdueTable() {
-    // Each task is one row, not per participant
-    int totalRows = _overdueActivityInstances.length;
+    // Count total overdue rows (can be multiple participants per task)
+    int totalRows = _overdueActivityInstances.fold(0,
+        (sum, instance) => sum + (instance.activityParticipants?.length ?? 0));
 
     final tableWidget = CustomDataTable(
       headingRowColor: const Color(0xFF2C3E50), // Dark Header

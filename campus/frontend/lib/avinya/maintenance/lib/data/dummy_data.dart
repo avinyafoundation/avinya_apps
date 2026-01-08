@@ -207,6 +207,7 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 1,
           "estimated_cost": 1500,
           "total_cost": 2000,
@@ -226,6 +227,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 250
             }
           ],
+          "labour_cost": 500,
           "labour_cost": 500,
           "status": "Approved",
           "rejection_reason": null,
@@ -264,7 +266,9 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 3,
+          "estimated_cost": 500,
           "estimated_cost": 500,
           "totalCost": 0,
           "materialCosts": [
@@ -276,6 +280,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 50
             }
           ],
+          "labour_cost": 350,
           "labour_cost": 350,
           "status": "Pending",
           "rejectionReason": null,
@@ -314,7 +319,9 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 4,
+          "estimated_cost": 800,
           "estimated_cost": 800,
           "totalCost": 0,
           "materialCosts": [
@@ -326,6 +333,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 40
             }
           ],
+          "labour_cost": 400,
           "labour_cost": 400,
           "status": "Pending",
           "rejectionReason": null,
@@ -364,7 +372,9 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 5,
+          "estimated_cost": 450,
           "estimated_cost": 450,
           "totalCost": 0,
           "materialCosts": [
@@ -376,6 +386,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 60
             }
           ],
+          "labour_cost": 270,
           "labour_cost": 270,
           "status": "Pending",
           "rejectionReason": null,
@@ -424,7 +435,9 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 6,
+          "estimated_cost": 950,
           "estimated_cost": 950,
           "totalCost": 0,
           "materialCosts": [
@@ -443,6 +456,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 50
             }
           ],
+          "labour_cost": 500,
           "labour_cost": 500,
           "status": "Pending",
           "rejectionReason": null,
@@ -481,7 +495,9 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 7,
+          "estimated_cost": 700,
           "estimated_cost": 700,
           "totalCost": 650,
           "materialCosts": [
@@ -493,6 +509,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 125
             }
           ],
+          "labour_cost": 400,
           "labour_cost": 400,
           "status": "Approved",
           "rejectionReason": null,
@@ -541,7 +558,9 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 8,
+          "estimated_cost": 1200,
           "estimated_cost": 1200,
           "totalCost": 1150,
           "materialCosts": [
@@ -560,6 +579,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 5
             }
           ],
+          "labour_cost": 630,
           "labour_cost": 630,
           "status": "Approved",
           "rejectionReason": null,
@@ -608,7 +628,9 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 9,
+          "estimated_cost": 2500,
           "estimated_cost": 2500,
           "totalCost": 2400,
           "materialCosts": [
@@ -627,6 +649,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 60
             }
           ],
+          "labour_cost": 800,
           "labour_cost": 800,
           "status": "Approved",
           "rejectionReason": null,
@@ -665,7 +688,9 @@ const String maintenanceTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 10,
+          "estimated_cost": 1800,
           "estimated_cost": 1800,
           "totalCost": 1750,
           "materialCosts": [
@@ -677,6 +702,7 @@ const String maintenanceTasksJson = '''
               "unit_cost": 85
             }
           ],
+          "labour_cost": 475,
           "labour_cost": 475,
           "status": "Approved",
           "rejectionReason": null,
@@ -970,7 +996,9 @@ const String pendingTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 1,
+          "estimated_cost": 1500,
           "estimated_cost": 1500,
           "totalCost": 1400,
           "materialCosts": [
@@ -989,6 +1017,7 @@ const String pendingTasksJson = '''
               "unit_cost": 250
             }
           ],
+          "labour_cost": 500,
           "labour_cost": 500,
           "status": "Pending",
           "rejectionReason": null,
@@ -1027,7 +1056,9 @@ const String pendingTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 3,
+          "estimated_cost": 500,
           "estimated_cost": 500,
           "totalCost": 0,
           "materialCosts": [
@@ -1039,6 +1070,7 @@ const String pendingTasksJson = '''
               "unit_cost": 50
             }
           ],
+          "labour_cost": 350,
           "labour_cost": 350,
           "status": "Pending",
           "rejectionReason": null,
@@ -1077,7 +1109,9 @@ const String pendingTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 4,
+          "estimated_cost": 800,
           "estimated_cost": 800,
           "totalCost": 0,
           "materialCosts": [
@@ -1089,6 +1123,7 @@ const String pendingTasksJson = '''
               "unit_cost": 40
             }
           ],
+          "labour_cost": 400,
           "labour_cost": 400,
           "status": "Pending",
           "rejectionReason": null,
@@ -1127,7 +1162,9 @@ const String pendingTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 5,
+          "estimated_cost": 450,
           "estimated_cost": 450,
           "totalCost": 0,
           "materialCosts": [
@@ -1139,6 +1176,7 @@ const String pendingTasksJson = '''
               "unit_cost": 60
             }
           ],
+          "labour_cost": 270,
           "labour_cost": 270,
           "status": "Pending",
           "rejectionReason": null,
@@ -1187,7 +1225,9 @@ const String pendingTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 6,
+          "estimated_cost": 950,
           "estimated_cost": 950,
           "totalCost": 0,
           "materialCosts": [
@@ -1206,6 +1246,7 @@ const String pendingTasksJson = '''
               "unit_cost": 50
             }
           ],
+          "labour_cost": 500,
           "labour_cost": 500,
           "status": "Pending",
           "rejectionReason": null,
@@ -1251,7 +1292,9 @@ const String inProgressTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 1,
+          "estimated_cost": 1500,
           "estimated_cost": 1500,
           "totalCost": 2000,
           "materialCosts": [
@@ -1270,6 +1313,7 @@ const String inProgressTasksJson = '''
               "unit_cost": 250
             }
           ],
+          "labour_cost": 500,
           "labour_cost": 500,
           "status": "Approved",
           "rejectionReason": null,
@@ -1308,7 +1352,9 @@ const String inProgressTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 7,
+          "estimated_cost": 700,
           "estimated_cost": 700,
           "totalCost": 650,
           "materialCosts": [
@@ -1320,6 +1366,7 @@ const String inProgressTasksJson = '''
               "unit_cost": 125
             }
           ],
+          "labour_cost": 400,
           "labour_cost": 400,
           "status": "Approved",
           "rejectionReason": null,
@@ -1368,7 +1415,9 @@ const String inProgressTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 8,
+          "estimated_cost": 1200,
           "estimated_cost": 1200,
           "totalCost": 1150,
           "materialCosts": [
@@ -1387,6 +1436,7 @@ const String inProgressTasksJson = '''
               "unit_cost": 5
             }
           ],
+          "labour_cost": 630,
           "labour_cost": 630,
           "status": "Approved",
           "rejectionReason": null,
@@ -1442,7 +1492,9 @@ const String completedTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 9,
+          "estimated_cost": 2500,
           "estimated_cost": 2500,
           "totalCost": 2400,
           "materialCosts": [
@@ -1461,6 +1513,7 @@ const String completedTasksJson = '''
               "unit_cost": 60
             }
           ],
+          "labour_cost": 800,
           "labour_cost": 800,
           "status": "Approved",
           "rejectionReason": null,
@@ -1499,7 +1552,9 @@ const String completedTasksJson = '''
           }
         ],
         "finance": {
+        "finance": {
           "id": 10,
+          "estimated_cost": 1800,
           "estimated_cost": 1800,
           "totalCost": 1750,
           "materialCosts": [
@@ -1511,6 +1566,7 @@ const String completedTasksJson = '''
               "unit_cost": 85
             }
           ],
+          "labour_cost": 475,
           "labour_cost": 475,
           "status": "Approved",
           "rejectionReason": null,
