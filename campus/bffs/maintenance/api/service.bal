@@ -165,8 +165,6 @@ service / on new http:Listener(9097) {
             // Try to extract data from error detail if available
             string errorDetail = maintenanceTasksResponse.detail().toString();
             if (errorDetail.includes("\"data\":{\"maintenanceTasks\":")) {
-                log:printWarn("GraphQL returned data with errors (partial success): " + maintenanceTasksResponse.message());
-                // The data is in the error detail, try to parse it
                 json|error detailJson = errorDetail.fromJsonString();
                 if (detailJson is json) {
                     json|error tasksData = detailJson.data.maintenanceTasks;
