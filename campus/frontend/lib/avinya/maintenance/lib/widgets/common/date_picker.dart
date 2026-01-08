@@ -4,14 +4,16 @@ class CustomDatePicker extends StatefulWidget {
   final String label;
   final String? selectedDateString;
   final Function(String) onDateSelected;
-  final bool enabled; // 👈 NEW
+  final bool enabled; 
+  final DateTime? initialDate;
 
   const CustomDatePicker({
     super.key,
     required this.label,
     required this.selectedDateString,
     required this.onDateSelected,
-    this.enabled = true, // 👈 default enabled
+    this.enabled = true, //default enabled
+    this.initialDate,
   });
 
   @override
@@ -36,7 +38,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
   }
 
   Future<void> _pickDate() async {
-    if (!widget.enabled) return; // 👈 SAFETY GUARD
+    if (!widget.enabled) return; 
 
     DateTime now = DateTime.now();
 
@@ -44,7 +46,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
       context: context,
       initialDate: now,
       //firstDate: DateTime(2000),
-      firstDate: DateTime.now(),
+      firstDate: widget.initialDate ?? DateTime(now.year - 5),
       lastDate: DateTime(2100),
     );
 
