@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gallery/avinya/maintenance/lib/data.dart';
-import 'package:intl/intl.dart';
 import '../data/activity_instance.dart';
 import '../data/maintenance_finance.dart';
 import '../widgets/common/data_table.dart';
@@ -37,17 +36,37 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
   }
 
   void _loadData() async {
-    try {
-      List<ActivityInstance> tasks =
-          getMockPendingFinancialActivityInstancesData();
+    setState(() {
+      _isLoading = true;
+    });
 
-      setState(() {
-        _pendingTasks = tasks;
-        _isLoading = false;
-      });
-    } catch (e) {
+    final person = campusAppsPortalInstance.getUserPerson();
+    final organizationId = person.organization?.id ?? 1;
+
+    try {
+      // Fetch tasks with financialStatus=Pending and includeFinance=true
+      final tasks = await getOrganizationTasks(
+        organizationId: organizationId,
+        financialStatus: 'Pending',
+        includeFinance: true,
+        limit: _limit,
+        offset: _offset,
+      );
+
+      if (mounted) {
+        setState(() {
+          _pendingTasks = tasks;
+          _isLoading = false;
+        });
+      }
+    } catch (e, stackTrace) {
       debugPrint("Error loading data: $e");
-      setState(() => _isLoading = false);
+      debugPrint("Stack trace: $stackTrace");
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -279,9 +298,9 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
   }
 
   Widget _buildDataTable() {
-    // Slice data for pagination
-    final paginatedTasks = _pendingTasks.skip(_offset).take(_limit).toList();
-    final hasNext = _pendingTasks.length > (_offset + _limit);
+    // Calculate pagination state based on current data
+    final hasNext = _pendingTasks.length >=
+        _limit; // If we got full page, there might be more
     final hasPrevious = _offset > 0;
 
     return LayoutBuilder(
@@ -335,7 +354,7 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13))),
                   ],
-                  rows: paginatedTasks.map((instance) {
+                  rows: _pendingTasks.map((instance) {
                     return _buildDataRow(instance);
                   }).toList(),
                 ),
@@ -351,17 +370,20 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
                   _offset -= _limit;
                   if (_offset < 0) _offset = 0;
                 });
+                _loadData();
               },
               onNext: () {
                 setState(() {
                   _offset += _limit;
                 });
+                _loadData();
               },
               onLimitChanged: (newLimit) {
                 setState(() {
                   _limit = newLimit;
                   _offset = 0;
                 });
+                _loadData();
               },
             ),
           ],

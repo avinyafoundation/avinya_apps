@@ -209,8 +209,8 @@ const String maintenanceTasksJson = '''
         "finance": {
           "id": 1,
           "estimated_cost": 1500,
-          "totalCost": 2000,
-          "materialCosts": [
+          "total_cost": 2000,
+          "material_costs": [
             {
               "id": 1,
               "item": "Air Filter",
@@ -228,9 +228,9 @@ const String maintenanceTasksJson = '''
           ],
           "labour_cost": 500,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -1646,4 +1646,4 @@ const String pendingFinancialTasksJson = '''
     }
   ]
 }
-''';  
+''';
