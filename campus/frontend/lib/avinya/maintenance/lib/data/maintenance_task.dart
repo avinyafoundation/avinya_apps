@@ -54,7 +54,7 @@ class MaintenanceTask {
       id: json['id'],
       title: json['title'],
       description: json['description'],
-      type: json['task_type'] != null ? getMaintenanceTypeFromString(json['type']) : null,
+      type: json['task_type'] != null ? getMaintenanceTypeFromString(json['task_type']) : null,
       frequency: json['frequency'] != null ? getMaintenanceFrequencyFromString(json['frequency']) : null,
       location: json['location'] != null ? AcademyLocation.fromJson(json['location']) : null,
       locationId: json['location_id'],

@@ -67,19 +67,18 @@ class ActivityInstance {
       weekly_sequence: json['weekly_sequence'],
       monthly_sequence: json['monthly_sequence'],
       place_id: json['place_id'],
-      activityParticipants: json['activityParticipants'] != null
-          ? (json['activityParticipants'] as List)
+      activityParticipants: json['activity_participants'] != null
+          ? (json['activity_participants'] as List)
               .map((item) => ActivityParticipant.fromJson(item))
               .toList()
           : null,
-      financialInformation: json['financialInformation'] != null
-          ? MaintenanceFinance.fromJson(json['financialInformation'])
+      financialInformation: json['finance'] != null
+          ? MaintenanceFinance.fromJson(json['finance'])
           : null,
-      maintenanceTask: json['maintenanceTask'] != null
-          ? MaintenanceTask.fromJson(json['maintenanceTask'])
-          : null,
-      overallTaskStatus: json['overallTaskStatus'],
-      overdueDays: json['overdueDays'],
+      maintenanceTask:
+          json['task'] != null ? MaintenanceTask.fromJson(json['task']) : null,
+      overallTaskStatus: json['overall_task_status'],
+      overdueDays: json['overdue_days'],
     );
   }
 
@@ -99,14 +98,13 @@ class ActivityInstance {
         if (monthly_sequence != null) 'monthly_sequence': monthly_sequence,
         if (place_id != null) 'place_id': place_id,
         if (activityParticipants != null)
-          'activityParticipants':
+          'activity_participants':
               activityParticipants!.map((ap) => ap.toJson()).toList(),
         if (financialInformation != null)
-          'financialInformation': financialInformation!.toJson(),
-        if (maintenanceTask != null)
-          'maintenanceTask': maintenanceTask!.toJson(),
-        if (overallTaskStatus != null) 'overallTaskStatus': overallTaskStatus,
-        if (overdueDays != null) 'overdueDays': overdueDays,
+          'finance': financialInformation!.toJson(),
+        if (maintenanceTask != null) 'task': maintenanceTask!.toJson(),
+        if (overallTaskStatus != null) 'overall_task_status': overallTaskStatus,
+        if (overdueDays != null) 'overdue_days': overdueDays,
       };
 }
 
@@ -142,30 +140,44 @@ Future<List<ActivityInstance>> getOrganizationTasks({
   String? financialStatus,
   String? taskType,
   int? location,
+  String? title,
   int? limit,
   int? offset,
   bool includeFinance = false,
 }) async {
-  // Build query parameters
-  Map<String, String> queryParams = {
-    if (personId != null && personId.isNotEmpty) 'personId': personId.join(','),
+  // Build base URL
+  final baseUrl =
+      '${AppConfig.campusMaintenanceBffApiUrl}/organizations/$organizationId/tasks';
+
+  // Build query parameters - handle multiple personId values
+  final queryParams = <String, dynamic>{
     if (fromDate != null) 'fromDate': fromDate,
     if (toDate != null) 'toDate': toDate,
-    if (overallTaskStatus != null) 'overallTaskStatus': overallTaskStatus,
+    if (overallTaskStatus != null) 'taskStatus': overallTaskStatus,
     if (financialStatus != null) 'financialStatus': financialStatus,
     if (taskType != null) 'taskType': taskType,
     if (location != null) 'location': location.toString(),
+    if (title != null) 'title': title,
     if (limit != null) 'limit': limit.toString(),
     if (offset != null) 'offset': offset.toString(),
     'includeFinance': includeFinance.toString(),
   };
 
-  // Construct URL
-  final uri = Uri.https(
-    AppConfig.campusMaintenanceBffApiUrl,
-    '/organizations/$organizationId/tasks',
-    queryParams,
-  );
+  // Build URI with query parameters
+  var uri = Uri.parse(baseUrl);
+
+  // Add regular query parameters
+  if (queryParams.isNotEmpty) {
+    uri = uri.replace(
+        queryParameters: queryParams.map((k, v) => MapEntry(k, v.toString())));
+  }
+
+  // Add multiple personId parameters manually
+  if (personId != null && personId.isNotEmpty) {
+    final personIdParams = personId.map((id) => 'personId=$id').join('&');
+    final separator = uri.hasQuery ? '&' : '?';
+    uri = Uri.parse('$uri$separator$personIdParams');
+  }
 
   // Send GET request
   final response = await http.get(
@@ -233,7 +245,7 @@ Future<List<ActivityInstance>> fetchOverdueActivityInstance(
     int organizationId) async {
   final response = await http.get(
     Uri.parse(
-        '${AppConfig.campusAttendanceBffApiUrl}/tasks/$organizationId/overdue'),
+        '${AppConfig.campusMaintenanceBffApiUrl}/tasks/$organizationId/overdue'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -303,11 +315,22 @@ List<ActivityInstance> getMockCompletedActivityInstancesData() {
   }).toList();
 }
 
+List<ActivityInstance> getMockPendingFinancialActivityInstancesData() {
+  final Map<String, dynamic> decoded = jsonDecode(pendingFinancialTasksJson);
+  final List<dynamic> tasks = decoded['tasks'];
+
+  return tasks.map((taskItem) {
+    final instance = taskItem['activityInstance'];
+    return ActivityInstance.fromJson(instance);
+  }).toList();
+}
 
 //Update activity instance
-Future<ActivityInstance> updateActivityInstance(ActivityInstance activityInstance) async {
+Future<ActivityInstance> updateActivityInstance(
+    ActivityInstance activityInstance) async {
   final response = await http.put(
-    Uri.parse('${AppConfig.campusAttendanceBffApiUrl}/activity_instances/${activityInstance.id}'),
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/activity_instances/${activityInstance.id}'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',

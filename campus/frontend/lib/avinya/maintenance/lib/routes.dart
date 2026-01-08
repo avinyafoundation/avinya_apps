@@ -6,4 +6,5 @@ const String addLocationRoute = '/add-location';
 const String addTaskRoute = '/add-task';
 const String kanbanBoardRoute = '/board';
 const String taskDetailsRoute = '/tasks';
+const String financeApprovalsRoute = '/approve-tasks';
 // const String DirectorDashboardRoute = '/dashboard';

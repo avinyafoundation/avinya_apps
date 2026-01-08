@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gallery/avinya/maintenance/lib/widgets/task_edit_form.dart';
+import 'package:gallery/data/campus_apps_portal.dart';
+import 'package:intl/intl.dart';
 import '../data/activity_instance.dart';
+import '../data/activity_participant.dart';
 import '../data/maintenance_finance.dart';
+import '../data/person.dart';
 import '../widgets/common/button.dart';
+import '../widgets/common/multi_select_list.dart';
 import '../widgets/common/data_table.dart';
 import '../widgets/common/date_picker.dart';
 import '../widgets/common/drop_down.dart';
@@ -12,7 +17,6 @@ import '../widgets/common/pagination_controls.dart';
 import '../widgets/task_details_dialog.dart';
 
 class ReportScreen extends StatefulWidget {
-
   const ReportScreen({super.key});
 
   @override
@@ -22,13 +26,15 @@ class ReportScreen extends StatefulWidget {
 class _ReportScreenState extends State<ReportScreen> {
   List<ActivityInstance> _allActivityInstances = [];
   List<ActivityInstance> _overdueActivityInstances = [];
+  bool _isLoading = true;
+  List<Person> _personList = [];
 
   // Filter States
-  String? selectedPerson;
+  List<int> selectedPersonIds = [];
   String? selectedStatusFilter;
   String? selectedTitleFilter;
   Map<String, String> taskStatuses = {};
-  String selectedMonth = "October 2025"; // Mock value
+  String selectedMonth = DateFormat('MMMM yyyy').format(DateTime.now());
   DateTime? fromDate;
   DateTime? toDate;
   TextEditingController titleController = TextEditingController();
@@ -47,6 +53,7 @@ class _ReportScreenState extends State<ReportScreen> {
             titleController.text.isEmpty ? null : titleController.text;
       });
     });
+    _loadPersonList();
     _loadData();
   }
 
@@ -56,13 +63,74 @@ class _ReportScreenState extends State<ReportScreen> {
     super.dispose();
   }
 
-  void _loadData() {
-    // 1. Load data using the new functions
-    _allActivityInstances = getMockActivityInstancesData();
+  void _loadPersonList() async {
+    try {
+      final persons = await fetchEmployeeListByOrganization(2);
+      if (mounted) {
+        setState(() {
+          _personList = persons;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading person list: $e');
+    }
+  }
 
-    // 2. Overdue data
-    _overdueActivityInstances = getMockOverdueActivityInstancesData();
-    print("Overdue Activity Instances: $_overdueActivityInstances");
+  void _loadData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final person = campusAppsPortalInstance.getUserPerson();
+    final organizationId = person.organization?.id ?? 1;
+
+    // Parse fromDate and toDate from the selectedMonth if needed
+    String? fromDateStr;
+    String? toDateStr;
+
+    if (fromDate != null) {
+      fromDateStr = DateFormat('yyyy-MM-dd').format(fromDate!);
+    }
+    if (toDate != null) {
+      toDateStr = DateFormat('yyyy-MM-dd').format(toDate!);
+    }
+
+    try {
+      // 1. Load data using the real API
+      print("Fetching tasks for organizationId: $organizationId");
+      final allTasks = await getOrganizationTasks(
+        organizationId: organizationId,
+        personId: selectedPersonIds.isNotEmpty ? selectedPersonIds : null,
+        fromDate: fromDateStr,
+        toDate: toDateStr,
+        overallTaskStatus: selectedStatusFilter,
+        title: selectedTitleFilter,
+        limit: _limit,
+        offset: _offset,
+      );
+      print("All tasks received: ${allTasks.length}");
+
+      // 2. Overdue data
+      final overdueTasks = await fetchOverdueActivityInstance(organizationId);
+      print("Overdue tasks received: ${overdueTasks.length}");
+
+      if (mounted) {
+        setState(() {
+          _allActivityInstances = allTasks;
+          _overdueActivityInstances = overdueTasks;
+          _isLoading = false;
+        });
+      }
+      print("Overdue Activity Instances: $_overdueActivityInstances");
+    } catch (e, stackTrace) {
+      debugPrint("Error fetching data: $e");
+      debugPrint("Stack trace: $stackTrace");
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   Color _getStatusColor(String? status) {
@@ -82,6 +150,15 @@ class _ReportScreenState extends State<ReportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Scrollbar(
@@ -203,78 +280,96 @@ class _ReportScreenState extends State<ReportScreen> {
             ],
           ),
           const SizedBox(height: 15),
-          Wrap(
-            spacing: 15,
-            runSpacing: 15,
-            crossAxisAlignment: WrapCrossAlignment.end,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Left Column - Person Filter
               SizedBox(
-                width: 200,
-                child: DropDown<String>(
+                width: 250,
+                child: MultiSelectDropdown<Person>(
                   label: "Filter by Person",
-                  items: ["Lahiru", "Sakuna", "Basuru"],
-                  selectedValues: ["Lahiru", "Sakuna", "Basuru"]
-                              .indexOf(selectedPerson ?? "") >=
-                          0
-                      ? ["Lahiru", "Sakuna", "Basuru"].indexOf(selectedPerson!)
-                      : null,
-                  valueField: (item) =>
-                      ["Lahiru", "Sakuna", "Basuru"].indexOf(item),
-                  displayField: (item) => item,
-                  onChanged: (index) => setState(() => selectedPerson =
-                      index != null
-                          ? ["Lahiru", "Sakuna", "Basuru"][index]
-                          : null),
+                  items: _personList,
+                  selectedItems: selectedPersonIds,
+                  valueField: (person) => person.id ?? 0,
+                  displayField: (person) => person.preferred_name ?? 'Unknown',
+                  onSelect: (personId) {
+                    setState(() {
+                      selectedPersonIds.add(personId);
+                    });
+                  },
+                  onUnselect: (personId) {
+                    setState(() {
+                      selectedPersonIds.remove(personId);
+                    });
+                  },
                 ),
               ),
-              SizedBox(
-                width: 200,
-                child: CustomDatePicker(
-                  label: "From Date",
-                  selectedDateString:
-                      fromDate?.toLocal().toString().split(' ')[0],
-                  onDateSelected: (dateString) =>
-                      setState(() => fromDate = DateTime.parse(dateString)),
+              const SizedBox(width: 15),
+              // Right Column - Other Filters
+              Expanded(
+                child: Wrap(
+                  spacing: 15,
+                  runSpacing: 15,
+                  crossAxisAlignment: WrapCrossAlignment.end,
+                  children: [
+                    SizedBox(
+                      width: 200,
+                      child: CustomDatePicker(
+                        label: "From Date",
+                        selectedDateString:
+                            fromDate?.toLocal().toString().split(' ')[0],
+                        onDateSelected: (dateString) => setState(
+                            () => fromDate = DateTime.parse(dateString)),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 200,
+                      child: CustomDatePicker(
+                        label: "To Date",
+                        selectedDateString:
+                            toDate?.toLocal().toString().split(' ')[0],
+                        onDateSelected: (dateString) =>
+                            setState(() => toDate = DateTime.parse(dateString)),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 200,
+                      child: DropDown<String>(
+                        label: "Task Status",
+                        items: ["Pending", "In Progress", "Completed"],
+                        selectedValues: ["Pending", "In Progress", "Completed"]
+                                    .indexOf(selectedStatusFilter ?? "") >=
+                                0
+                            ? ["Pending", "In Progress", "Completed"]
+                                .indexOf(selectedStatusFilter!)
+                            : null,
+                        valueField: (item) => [
+                          "Pending",
+                          "In Progress",
+                          "Completed"
+                        ].indexOf(item),
+                        displayField: (item) => item,
+                        onChanged: (index) => setState(() =>
+                            selectedStatusFilter = index != null
+                                ? ["Pending", "In Progress", "Completed"][index]
+                                : null),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 200,
+                      child: TextFieldForm(
+                        label: "Filter by Title",
+                        controller: titleController,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(
-                width: 200,
-                child: CustomDatePicker(
-                  label: "To Date",
-                  selectedDateString:
-                      toDate?.toLocal().toString().split(' ')[0],
-                  onDateSelected: (dateString) =>
-                      setState(() => toDate = DateTime.parse(dateString)),
-                ),
-              ),
-              SizedBox(
-                width: 200,
-                child: DropDown<String>(
-                  label: "Task Status",
-                  items: ["Pending", "In Progress", "Completed"],
-                  selectedValues: ["Pending", "In Progress", "Completed"]
-                              .indexOf(selectedStatusFilter ?? "") >=
-                          0
-                      ? ["Pending", "In Progress", "Completed"]
-                          .indexOf(selectedStatusFilter!)
-                      : null,
-                  valueField: (item) =>
-                      ["Pending", "In Progress", "Completed"].indexOf(item),
-                  displayField: (item) => item,
-                  onChanged: (index) => setState(() => selectedStatusFilter =
-                      index != null
-                          ? ["Pending", "In Progress", "Completed"][index]
-                          : null),
-                ),
-              ),
-              SizedBox(
-                width: 200,
-                child: TextFieldForm(
-                  label: "Filter by Title",
-                  controller: titleController,
-                ),
-              ),
-
+            ],
+          ),
+          const SizedBox(height: 15),
+          Row(
+            children: [
               // Search Button
               Button(
                 label: "Search",
@@ -287,6 +382,7 @@ class _ReportScreenState extends State<ReportScreen> {
                   _loadData();
                 },
               ),
+              const SizedBox(width: 10),
               // Clear Button
               Button(
                 label: "Clear",
@@ -296,7 +392,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 fontSize: 14,
                 onPressed: () {
                   setState(() {
-                    selectedPerson = null;
+                    selectedPersonIds.clear();
                     selectedStatusFilter = null;
                     selectedTitleFilter = null;
                     fromDate = null;
@@ -316,7 +412,11 @@ class _ReportScreenState extends State<ReportScreen> {
 
   // --- OVERDUE TASKS TABLE (Red Themed) ---
   Widget _buildOverdueTable() {
-    return CustomDataTable(
+    // Count total overdue rows (can be multiple participants per task)
+    int totalRows = _overdueActivityInstances.fold(0,
+        (sum, instance) => sum + (instance.activityParticipants?.length ?? 0));
+
+    final tableWidget = CustomDataTable(
       headingRowColor: const Color(0xFF2C3E50), // Dark Header
       dataRowColor: Colors.red.shade50, // Red Background for rows
       borderColor: Colors.red.shade100,
@@ -330,7 +430,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 style: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.bold))),
         DataColumn(
-            label: Text("Assigned To",
+            label: Text("Pending Assignees",
                 style: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.bold))),
         DataColumn(
@@ -342,33 +442,66 @@ class _ReportScreenState extends State<ReportScreen> {
                 style: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.bold))),
       ],
-      rows: _overdueActivityInstances.expand((instance) {
-        return (instance.activityParticipants ?? []).map((participant) {
-          return DataRow(cells: [
-            DataCell(Text(instance.maintenanceTask?.title ?? "",
+      rows: _overdueActivityInstances.map((instance) {
+        // Filter to only show pending participants (not completed)
+        final pendingParticipants = (instance.activityParticipants ?? [])
+            .where((p) => p.status != ProgressStatus.completed)
+            .toList();
+
+        // Join pending participant names with comma
+        final pendingNames = pendingParticipants
+            .map((p) => p.person?.preferred_name ?? '-')
+            .join(', ');
+
+        return DataRow(cells: [
+          DataCell(Text(instance.maintenanceTask?.title ?? "",
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600, color: Colors.red))),
+          DataCell(Text(instance.maintenanceTask?.description ?? "-",
+              style: const TextStyle(color: Colors.red))),
+          DataCell(
+            SizedBox(
+              width: 200,
+              child: Text(
+                pendingNames.isNotEmpty ? pendingNames : "-",
                 style: const TextStyle(
-                    fontWeight: FontWeight.w600, color: Colors.red))),
-            DataCell(Text(instance.maintenanceTask?.description ?? "-",
-                style: const TextStyle(color: Colors.red))),
-            DataCell(Text(participant.person?.preferred_name ?? "-",
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.red))),
-            DataCell(Text(
-              instance.start_time != null
-                  ? DateTime.parse(instance.start_time!)
-                      .toLocal()
-                      .toString()
-                      .split(' ')[0]
-                  : "-",
-              style: const TextStyle(color: Colors.red),
-            )),
-            DataCell(Center(
-                child: Text(instance.overdueDays?.toString() ?? "-",
-                    style: const TextStyle(color: Colors.red)))),
-          ]);
-        }).toList();
+                    fontWeight: FontWeight.bold, color: Colors.red),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+            ),
+          ),
+          DataCell(Text(
+            instance.start_time != null
+                ? DateTime.parse(instance.start_time!)
+                    .toLocal()
+                    .toString()
+                    .split(' ')[0]
+                : "-",
+            style: const TextStyle(color: Colors.red),
+          )),
+          DataCell(Center(
+              child: Text(instance.overdueDays?.toString() ?? "-",
+                  style: const TextStyle(color: Colors.red)))),
+        ]);
       }).toList(),
     );
+
+    // If more than 5 rows, make it scrollable with fixed height
+    if (totalRows > 5) {
+      return Container(
+        constraints: const BoxConstraints(maxHeight: 280),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.red.shade100),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: SingleChildScrollView(
+          child: tableWidget,
+        ),
+      );
+    }
+
+    return tableWidget;
   }
 
   // --- ALL TASKS TABLE (Standard Theme) ---

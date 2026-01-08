@@ -127,4 +127,85 @@ service / on new http:Listener(9097) {
             return <ApiErrorResponse>{body: { message: "Error while adding maintenance task record" }};
         }
     }
+
+    //Getting Maintenance Tasks for the specified organization with optional filters
+    resource function get organizations/[int organizationId]/tasks(
+        int[]? personId = (),
+        string? fromDate = (),
+        string? toDate = (),
+        string? taskStatus = (),
+        string? financialStatus = (),
+        string? taskType = (),
+        int? location = (),
+        string? title = (),
+        int 'limit = 10,
+        int offset = 0
+    ) returns ActivityInstance[]|error {
+        MaintenanceTasksResponse|graphql:ClientError maintenanceTasksResponse = globalDataClient->MaintenanceTasks(
+            organizationId,
+            offset,
+            'limit,
+            fromDate,
+            taskType,
+            toDate,
+            financialStatus,
+            personId,
+            location,
+            title,
+            taskStatus
+        );
+        if (maintenanceTasksResponse is MaintenanceTasksResponse) {
+            ActivityInstance[] activityInstances = [];
+            var tasks = maintenanceTasksResponse?.maintenanceTasks;
+            if (tasks is ()) {
+                return <ActivityInstance[]>[];
+            }
+            foreach var task_record in tasks {
+                ActivityInstance|error activityInstance = task_record.cloneWithType(ActivityInstance);
+                if (activityInstance is ActivityInstance) {
+                    activityInstances.push(activityInstance);
+                } else {
+                    log:printError("Error while getting activity instance record", activityInstance);
+                    return error("Error while getting activity instance record: " + activityInstance.message() +
+                        ":: Detail: " + activityInstance.detail().toString());
+                }
+            }
+            return activityInstances;
+        } else {
+            log:printError("Error while getting maintenance tasks", maintenanceTasksResponse);
+            return error("Error while getting maintenance tasks: " + maintenanceTasksResponse.message() +
+                ":: Detail: " + maintenanceTasksResponse.detail().toString());
+        }
+    }
+
+    //Getting Overdue Maintenance Tasks for the specified organization
+    resource function get tasks/[int organizationId]/overdue(
+        int 'limit = 10,
+        int offset = 0
+    ) returns ActivityInstance[]|error {
+        GetOverdueMaintenanceTasksResponse|graphql:ClientError overdueTasksResponse = globalDataClient->GetOverdueMaintenanceTasks(organizationId);
+        if (overdueTasksResponse is GetOverdueMaintenanceTasksResponse) {
+            ActivityInstance[] activityInstances = [];
+            var tasks = overdueTasksResponse?.overdueMaintenanceTasks;
+            if (tasks is ()) {
+                return <ActivityInstance[]>[];
+            }
+            foreach var task_record in tasks {
+                ActivityInstance|error activityInstance = task_record.cloneWithType(ActivityInstance);
+                if (activityInstance is ActivityInstance) {
+                    activityInstances.push(activityInstance);
+                } else {
+                    log:printError("Error while getting overdue activity instance record", activityInstance);
+                    return error("Error while getting overdue activity instance record: " + activityInstance.message() +
+                        ":: Detail: " + activityInstance.detail().toString());
+                }
+            }
+            return activityInstances;
+        } else {
+            log:printError("Error while getting overdue maintenance tasks", overdueTasksResponse);
+            return error("Error while getting overdue maintenance tasks: " + overdueTasksResponse.message() +
+                ":: Detail: " + overdueTasksResponse.detail().toString());
+        }
+    }
+
 }

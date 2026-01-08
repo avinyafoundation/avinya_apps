@@ -139,20 +139,20 @@ const String maintenanceTasksJson = '''
         "id": 1,
         "start_time": "2025-01-10",
         "end_time": "2025-01-12",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 1,
           "title": "Air Conditioner Maintenance",
           "description": "Routine AC inspection and cleaning",
           "task_type": "Recurring",
           "frequency": "Monthly",
-          "exception_deadline":2,
+          "exception_deadline": 2,
           "location": {
             "id": 12,
             "location_name": "Pod 1"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 1,
             "person": {
@@ -174,7 +174,6 @@ const String maintenanceTasksJson = '''
             "status": "Completed"
           }
         ]
-        
       }
     },
     {
@@ -182,8 +181,8 @@ const String maintenanceTasksJson = '''
         "id": 2,
         "start_time": "2025-01-15",
         "end_time": "2025-01-20",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 2,
           "title": "Air Conditioner Repair",
           "description": "Fix temperature control issue",
@@ -194,7 +193,7 @@ const String maintenanceTasksJson = '''
             "location_name": "Building A - Floor 2"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 2,
             "person": {
@@ -206,11 +205,11 @@ const String maintenanceTasksJson = '''
             "status": "In Progress"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 1,
-          "estimatedCost": 1500,
-          "totalCost": 2000,
-          "materialCosts": [
+          "estimated_cost": 1500,
+          "total_cost": 2000,
+          "material_costs": [
             {
               "id": 1,
               "item": "Air Filter",
@@ -226,11 +225,11 @@ const String maintenanceTasksJson = '''
               "unit_cost": 250
             }
           ],
-          "labourCost": 500,
+          "labour_cost": 500,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -239,8 +238,8 @@ const String maintenanceTasksJson = '''
         "id": 3,
         "start_time": "2025-02-01",
         "end_time": "2025-02-05",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 3,
           "title": "Fix Lights",
           "description": "Replace the 3 bulbs in the main corridor.",
@@ -251,7 +250,7 @@ const String maintenanceTasksJson = '''
             "location_name": "Main Hall"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 3,
             "person": {
@@ -263,11 +262,11 @@ const String maintenanceTasksJson = '''
             "status": "Pending"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 3,
-          "estimatedCost": 500,
-          "totalCost": 0,
-          "materialCosts": [
+          "estimated_cost": 500,
+          "total_cost": 0,
+          "material_costs": [
             {
               "id": 3,
               "item": "LED Bulbs",
@@ -276,11 +275,11 @@ const String maintenanceTasksJson = '''
               "unit_cost": 50
             }
           ],
-          "labourCost": 350,
+          "labour_cost": 350,
           "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -289,8 +288,8 @@ const String maintenanceTasksJson = '''
         "id": 4,
         "start_time": "2025-02-10",
         "end_time": "2025-02-12",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 4,
           "title": "Clean Lab",
           "description": "Deep cleaning of laboratory facilities",
@@ -301,7 +300,7 @@ const String maintenanceTasksJson = '''
             "location_name": "IT Lab"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 4,
             "person": {
@@ -313,11 +312,11 @@ const String maintenanceTasksJson = '''
             "status": "Pending"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 4,
-          "estimatedCost": 800,
-          "totalCost": 0,
-          "materialCosts": [
+          "estimated_cost": 800,
+          "total_cost": 0,
+          "material_costs": [
             {
               "id": 4,
               "item": "Cleaning Supplies",
@@ -326,11 +325,11 @@ const String maintenanceTasksJson = '''
               "unit_cost": 40
             }
           ],
-          "labourCost": 400,
+          "labour_cost": 400,
           "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -339,8 +338,8 @@ const String maintenanceTasksJson = '''
         "id": 5,
         "start_time": "2025-03-01",
         "end_time": "2025-03-03",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 5,
           "title": "Fix Lights",
           "description": "Replace the 3 bulbs in the main corridor.",
@@ -351,7 +350,7 @@ const String maintenanceTasksJson = '''
             "location_name": "Main Hall"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 5,
             "person": {
@@ -363,11 +362,11 @@ const String maintenanceTasksJson = '''
             "status": "Pending"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 5,
-          "estimatedCost": 450,
-          "totalCost": 0,
-          "materialCosts": [
+          "estimated_cost": 450,
+          "total_cost": 0,
+          "material_costs": [
             {
               "id": 5,
               "item": "Fluorescent Tubes",
@@ -376,11 +375,11 @@ const String maintenanceTasksJson = '''
               "unit_cost": 60
             }
           ],
-          "labourCost": 270,
+          "labour_cost": 270,
           "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -389,8 +388,8 @@ const String maintenanceTasksJson = '''
         "id": 6,
         "start_time": "2025-03-15",
         "end_time": "2025-03-18",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 6,
           "title": "Clean Lab",
           "description": "Regular maintenance cleaning of laboratory spaces",
@@ -401,7 +400,7 @@ const String maintenanceTasksJson = '''
             "location_name": "IT Lab"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 6,
             "person": {
@@ -423,11 +422,11 @@ const String maintenanceTasksJson = '''
             "status": "Pending"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 6,
-          "estimatedCost": 950,
-          "totalCost": 0,
-          "materialCosts": [
+          "estimated_cost": 950,
+          "total_cost": 0,
+          "material_costs": [
             {
               "id": 6,
               "item": "Disinfectant",
@@ -443,11 +442,11 @@ const String maintenanceTasksJson = '''
               "unit_cost": 50
             }
           ],
-          "labourCost": 500,
+          "labour_cost": 500,
           "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -456,8 +455,8 @@ const String maintenanceTasksJson = '''
         "id": 7,
         "start_time": "2025-04-01",
         "end_time": "2025-04-05",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 7,
           "title": "Clean Lab",
           "description": "Comprehensive cleaning of all lab equipment",
@@ -468,7 +467,7 @@ const String maintenanceTasksJson = '''
             "location_name": "IT Lab"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 8,
             "person": {
@@ -480,11 +479,11 @@ const String maintenanceTasksJson = '''
             "status": "In Progress"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 7,
-          "estimatedCost": 700,
-          "totalCost": 650,
-          "materialCosts": [
+          "estimated_cost": 700,
+          "total_cost": 650,
+          "material_costs": [
             {
               "id": 8,
               "item": "Cleaning Kit",
@@ -493,11 +492,11 @@ const String maintenanceTasksJson = '''
               "unit_cost": 125
             }
           ],
-          "labourCost": 400,
+          "labour_cost": 400,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -506,8 +505,8 @@ const String maintenanceTasksJson = '''
         "id": 8,
         "start_time": "2025-04-10",
         "end_time": "2025-04-15",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 8,
           "title": "Fix Lights",
           "description": "Emergency lighting system repair",
@@ -518,7 +517,7 @@ const String maintenanceTasksJson = '''
             "location_name": "Main Hall"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 9,
             "person": {
@@ -540,11 +539,11 @@ const String maintenanceTasksJson = '''
             "status": "In Progress"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 8,
-          "estimatedCost": 1200,
-          "totalCost": 1150,
-          "materialCosts": [
+          "estimated_cost": 1200,
+          "total_cost": 1150,
+          "material_costs": [
             {
               "id": 9,
               "item": "Emergency Lights",
@@ -560,11 +559,11 @@ const String maintenanceTasksJson = '''
               "unit_cost": 5
             }
           ],
-          "labourCost": 630,
+          "labour_cost": 630,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -573,8 +572,8 @@ const String maintenanceTasksJson = '''
         "id": 9,
         "start_time": "2025-05-01",
         "end_time": "2025-05-05",
-        "overallTaskStatus": "Completed",
-        "maintenanceTask": {
+        "overall_task_status": "Completed",
+        "task": {
           "id": 9,
           "title": "Paint Walls",
           "description": "Repaint interior walls with fresh coat",
@@ -585,7 +584,7 @@ const String maintenanceTasksJson = '''
             "location_name": "IT Lab"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 11,
             "person": {
@@ -607,11 +606,11 @@ const String maintenanceTasksJson = '''
             "status": "Completed"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 9,
-          "estimatedCost": 2500,
-          "totalCost": 2400,
-          "materialCosts": [
+          "estimated_cost": 2500,
+          "total_cost": 2400,
+          "material_costs": [
             {
               "id": 11,
               "item": "Paint",
@@ -627,11 +626,11 @@ const String maintenanceTasksJson = '''
               "unit_cost": 60
             }
           ],
-          "labourCost": 800,
+          "labour_cost": 800,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     },
@@ -640,8 +639,8 @@ const String maintenanceTasksJson = '''
         "id": 10,
         "start_time": "2025-05-10",
         "end_time": "2025-05-12",
-        "overallTaskStatus": "Completed",
-        "maintenanceTask": {
+        "overall_task_status": "Completed",
+        "task": {
           "id": 10,
           "title": "Paint Walls",
           "description": "Touch up paint work in common areas",
@@ -652,7 +651,7 @@ const String maintenanceTasksJson = '''
             "location_name": "Main Hall"
           }
         },
-        "activityParticipants": [
+        "activity_participants": [
           {
             "id": 13,
             "person": {
@@ -664,11 +663,11 @@ const String maintenanceTasksJson = '''
             "status": "Completed"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 10,
-          "estimatedCost": 1800,
-          "totalCost": 1750,
-          "materialCosts": [
+          "estimated_cost": 1800,
+          "total_cost": 1750,
+          "material_costs": [
             {
               "id": 13,
               "item": "Wall Paint",
@@ -677,11 +676,11 @@ const String maintenanceTasksJson = '''
               "unit_cost": 85
             }
           ],
-          "labourCost": 475,
+          "labour_cost": 475,
           "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
         }
       }
     }
@@ -697,8 +696,8 @@ const String overdueTasksJson = '''
         "id": 12,
         "start_time": "2025-11-10",
         "end_time": "2025-11-15",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 44,
           "title": "Air Conditioner Maintenance",
           "description": "Perform routine maintenance of air conditioners.",
@@ -707,8 +706,8 @@ const String overdueTasksJson = '''
             "location_name": "Main Building - Floor 2"
           }
         },
-        "overdueDays": 5,
-        "activityParticipants": [
+        "overdue_days": 5,
+        "activity_participants": [
           {
             "id": 7,
             "person": {
@@ -731,8 +730,8 @@ const String overdueTasksJson = '''
         "id": 13,
         "start_time": "2025-11-07",
         "end_time": "2025-11-15",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 44,
           "title": "Fix Lights",
           "description": "Replace faulty lights in the main corridor.",
@@ -741,8 +740,8 @@ const String overdueTasksJson = '''
             "location_name": "Main Building - Floor 2"
           }
         },
-        "overdueDays": 5,
-        "activityParticipants": [
+        "overdue_days": 5,
+        "activity_participants": [
           {
             "id": 7,
             "person": {
@@ -758,8 +757,8 @@ const String overdueTasksJson = '''
         "id": 14,
         "start_time": "2025-11-05",
         "end_time": "2025-11-12",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 45,
           "title": "Clean Lab",
           "description": "Deep cleaning of laboratory facilities",
@@ -768,8 +767,8 @@ const String overdueTasksJson = '''
             "location_name": "IT Lab"
           }
         },
-        "overdueDays": 7,
-        "activityParticipants": [
+        "overdue_days": 7,
+        "activity_participants": [
           {
             "id": 14,
             "person": {
@@ -785,8 +784,8 @@ const String overdueTasksJson = '''
         "id": 15,
         "start_time": "2025-11-08",
         "end_time": "2025-11-14",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
+        "overall_task_status": "Pending",
+        "task": {
           "id": 46,
           "title": "Paint Walls",
           "description": "Touch up paint work in common areas",
@@ -795,8 +794,8 @@ const String overdueTasksJson = '''
             "location_name": "Main Hall"
           }
         },
-        "overdueDays": 3,
-        "activityParticipants": [
+        "overdue_days": 3,
+        "activity_participants": [
           {
             "id": 15,
             "person": {
@@ -819,8 +818,8 @@ const String overdueTasksJson = '''
         "id": 16,
         "start_time": "2025-11-03",
         "end_time": "2025-11-10",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
+        "overall_task_status": "In Progress",
+        "task": {
           "id": 47,
           "title": "Air Conditioner Repair",
           "description": "Fix temperature control issue",
@@ -829,8 +828,8 @@ const String overdueTasksJson = '''
             "location_name": "Building A - Floor 2"
           }
         },
-        "overdueDays": 10,
-        "activityParticipants": [
+        "overdue_days": 10,
+        "activity_participants": [
           {
             "id": 17,
             "person": {
@@ -935,12 +934,609 @@ const String pendingTasksJson = '''
         "id": 1,
         "start_time": "2025-01-10",
         "end_time": "2025-01-12",
+        "overall_task_status": "Pending",
+        "task": {
+          "id": 1,
+          "title": "Air Conditioner Maintenance",
+          "description": "Routine AC inspection and cleaning",
+          "task_type": "Recurring",
+          "frequency": "Monthly",
+          "location": {
+            "id": 1,
+            "location_name": "Pod 1"
+          }
+        },
+        "activity_participants": [
+          {
+            "id": 1,
+            "person": {
+              "id": 1,
+              "preferred_name": "Ashan"
+            },
+            "start_time": "2025-01-10",
+            "end_time": "2025-01-12",
+            "status": "Completed"
+          },
+          {
+            "id": 2,
+            "person": {
+              "id": 2,
+              "preferred_name": "Sunil"
+            },
+            "start_time": "2025-01-10",
+            "end_time": "2025-01-12",
+            "status": "Completed"
+          }
+        ],
+        "finance": {
+          "id": 1,
+          "estimated_cost": 1500,
+          "total_cost": 1400,
+          "material_costs": [
+            {
+              "id": 1,
+              "item": "Air Filter",
+              "quantity": 5,
+              "unit": "piece",
+              "unit_cost": 100
+            },
+            {
+              "id": 2,
+              "item": "Coolant",
+              "quantity": 2,
+              "unit": "liter",
+              "unit_cost": 250
+            }
+          ],
+          "labour_cost": 500,
+          "status": "Pending",
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
+        }
+      }
+    },
+    {
+      "activityInstance": {
+        "id": 3,
+        "start_time": "2025-02-01",
+        "end_time": "2025-02-05",
+        "overall_task_status": "Pending",
+        "task": {
+          "id": 3,
+          "title": "Fix Lights",
+          "description": "Replace the 3 bulbs in the main corridor.",
+          "task_type": "Recurring",
+          "frequency": "Weekly",
+          "location": {
+            "id": 2,
+            "location_name": "Main Hall"
+          }
+        },
+        "activity_participants": [
+          {
+            "id": 3,
+            "person": {
+              "id": 3,
+              "preferred_name": "Pradeepa"
+            },
+            "start_time": "2025-02-01",
+            "end_time": "2025-02-05",
+            "status": "Pending"
+          }
+        ],
+        "finance": {
+          "id": 3,
+          "estimated_cost": 500,
+          "total_cost": 0,
+          "material_costs": [
+            {
+              "id": 3,
+              "item": "LED Bulbs",
+              "quantity": 3,
+              "unit": "piece",
+              "unit_cost": 50
+            }
+          ],
+          "labour_cost": 350,
+          "status": "Pending",
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
+        }
+      }
+    },
+    {
+      "activityInstance": {
+        "id": 4,
+        "start_time": "2025-02-10",
+        "end_time": "2025-02-12",
+        "overall_task_status": "Pending",
+        "task": {
+          "id": 4,
+          "title": "Clean Lab",
+          "description": "Deep cleaning of laboratory facilities",
+          "task_type": "Recurring",
+          "frequency": "Weekly",
+          "location": {
+            "id": 1,
+            "location_name": "IT Lab"
+          }
+        },
+        "activity_participants": [
+          {
+            "id": 4,
+            "person": {
+              "id": 4,
+              "preferred_name": "Kamal"
+            },
+            "start_time": "2025-02-10",
+            "end_time": "2025-02-12",
+            "status": "Pending"
+          }
+        ],
+        "finance": {
+          "id": 4,
+          "estimated_cost": 800,
+          "total_cost": 0,
+          "material_costs": [
+            {
+              "id": 4,
+              "item": "Cleaning Supplies",
+              "quantity": 10,
+              "unit": "piece",
+              "unit_cost": 40
+            }
+          ],
+          "labour_cost": 400,
+          "status": "Pending",
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
+        }
+      }
+    },
+    {
+      "activityInstance": {
+        "id": 5,
+        "start_time": "2025-03-01",
+        "end_time": "2025-03-03",
+        "overall_task_status": "Pending",
+        "task": {
+          "id": 5,
+          "title": "Fix Lights",
+          "description": "Replace the 3 bulbs in the main corridor.",
+          "task_type": "oneTime",
+          "frequency": null,
+          "location": {
+            "id": 2,
+            "location_name": "Main Hall"
+          }
+        },
+        "activity_participants": [
+          {
+            "id": 5,
+            "person": {
+              "id": 5,
+              "preferred_name": "Janaka"
+            },
+            "start_time": "2025-03-01",
+            "end_time": "2025-03-03",
+            "status": "Pending"
+          }
+        ],
+        "finance": {
+          "id": 5,
+          "estimated_cost": 450,
+          "total_cost": 0,
+          "material_costs": [
+            {
+              "id": 5,
+              "item": "Fluorescent Tubes",
+              "quantity": 3,
+              "unit": "piece",
+              "unit_cost": 60
+            }
+          ],
+          "labour_cost": 270,
+          "status": "Pending",
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
+        }
+      }
+    },
+    {
+      "activityInstance": {
+        "id": 6,
+        "start_time": "2025-03-15",
+        "end_time": "2025-03-18",
+        "overall_task_status": "Pending",
+        "task": {
+          "id": 6,
+          "title": "Clean Lab",
+          "description": "Regular maintenance cleaning of laboratory spaces",
+          "task_type": "Recurring",
+          "frequency": "Monthly",
+          "location": {
+            "id": 1,
+            "location_name": "IT Lab"
+          }
+        },
+        "activity_participants": [
+          {
+            "id": 6,
+            "person": {
+              "id": 6,
+              "preferred_name": "Iresha"
+            },
+            "start_time": "2025-03-15",
+            "end_time": "2025-03-18",
+            "status": "Pending"
+          },
+          {
+            "id": 7,
+            "person": {
+              "id": 7,
+              "preferred_name": "Sunil"
+            },
+            "start_time": "2025-03-15",
+            "end_time": "2025-03-18",
+            "status": "Pending"
+          }
+        ],
+        "finance": {
+          "id": 6,
+          "estimated_cost": 950,
+          "total_cost": 0,
+          "material_costs": [
+            {
+              "id": 6,
+              "item": "Disinfectant",
+              "quantity": 5,
+              "unit": "liter",
+              "unit_cost": 80
+            },
+            {
+              "id": 7,
+              "item": "Floor Cleaner",
+              "quantity": 3,
+              "unit": "liter",
+              "unit_cost": 50
+            }
+          ],
+          "labour_cost": 500,
+          "status": "Pending",
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
+        }
+      }
+    }
+  ]
+}
+''';
+
+const String inProgressTasksJson = '''
+{
+  "tasks": [
+    {
+      "activityInstance": {
+        "id": 2,
+        "start_time": "2025-01-15",
+        "end_time": "2025-01-20",
+        "overall_task_status": "In Progress",
+        "task": {
+          "id": 2,
+          "title": "Air Conditioner Repair",
+          "description": "Fix temperature control issue",
+          "task_type": "Recurring",
+          "frequency": "Monthly",
+          "location": {
+            "id": 1,
+            "location_name": "Building A - Floor 2"
+          }
+        },
+        "activity_participants": [
+          {
+            "id": 2,
+            "person": {
+              "id": 2,
+              "preferred_name": "Sunil"
+            },
+            "start_time": "2025-01-15",
+            "end_time": "2025-01-20",
+            "status": "In Progress"
+          }
+        ],
+        "finance": {
+          "id": 1,
+          "estimated_cost": 1500,
+          "total_cost": 2000,
+          "material_costs": [
+            {
+              "id": 1,
+              "item": "Air Filter",
+              "quantity": 5,
+              "unit": "piece",
+              "unit_cost": 100
+            },
+            {
+              "id": 2,
+              "item": "Coolant",
+              "quantity": 2,
+              "unit": "liter",
+              "unit_cost": 250
+            }
+          ],
+          "labour_cost": 500,
+          "status": "Approved",
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
+        }
+      }
+    },
+    {
+      "activityInstance": {
+        "id": 7,
+        "start_time": "2025-04-01",
+        "end_time": "2025-04-05",
+        "overall_task_status": "In Progress",
+        "task": {
+          "id": 7,
+          "title": "Clean Lab",
+          "description": "Comprehensive cleaning of all lab equipment",
+          "task_type": "Recurring",
+          "frequency": "Weekly",
+          "location": {
+            "id": 1,
+            "location_name": "IT Lab"
+          }
+        },
+        "activity_participants": [
+          {
+            "id": 8,
+            "person": {
+              "id": 8,
+              "preferred_name": "Nimal Perera"
+            },
+            "start_time": "2025-04-01",
+            "end_time": "2025-04-05",
+            "status": "In Progress"
+          }
+        ],
+        "finance": {
+          "id": 7,
+          "estimated_cost": 700,
+          "total_cost": 650,
+          "material_costs": [
+            {
+              "id": 8,
+              "item": "Cleaning Kit",
+              "quantity": 2,
+              "unit": "piece",
+              "unit_cost": 125
+            }
+          ],
+          "labour_cost": 400,
+          "status": "Approved",
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
+        }
+      }
+    },
+    {
+      "activityInstance": {
+        "id": 8,
+        "start_time": "2025-04-10",
+        "end_time": "2025-04-15",
+        "overall_task_status": "In Progress",
+        "task": {
+          "id": 8,
+          "title": "Fix Lights",
+          "description": "Emergency lighting system repair",
+          "task_type": "oneTime",
+          "frequency": null,
+          "location": {
+            "id": 2,
+            "location_name": "Main Hall"
+          }
+        },
+        "activity_participants": [
+          {
+            "id": 9,
+            "person": {
+              "id": 9,
+              "preferred_name": "Ashan"
+            },
+            "start_time": "2025-04-10",
+            "end_time": "2025-04-15",
+            "status": "In Progress"
+          },
+          {
+            "id": 10,
+            "person": {
+              "id": 10,
+              "preferred_name": "Janaka"
+            },
+            "start_time": "2025-04-10",
+            "end_time": "2025-04-15",
+            "status": "In Progress"
+          }
+        ],
+        "finance": {
+          "id": 8,
+          "estimated_cost": 1200,
+          "total_cost": 1150,
+          "material_costs": [
+            {
+              "id": 9,
+              "item": "Emergency Lights",
+              "quantity": 4,
+              "unit": "piece",
+              "unit_cost": 180
+            },
+            {
+              "id": 10,
+              "item": "Wiring",
+              "quantity": 50,
+              "unit": "piece",
+              "unit_cost": 5
+            }
+          ],
+          "labour_cost": 630,
+          "status": "Approved",
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
+        }
+      }
+    }
+  ]
+}
+''';
+
+const String completedTasksJson = '''
+{
+  "tasks": [
+    {
+      "activityInstance": {
+        "id": 9,
+        "start_time": "2025-05-01",
+        "end_time": "2025-05-05",
+        "overall_task_status": "Completed",
+        "task": {
+          "id": 9,
+          "title": "Paint Walls",
+          "description": "Repaint interior walls with fresh coat",
+          "task_type": "oneTime",
+          "frequency": null,
+          "location": {
+            "id": 1,
+            "location_name": "IT Lab"
+          }
+        },
+        "activity_participants": [
+          {
+            "id": 11,
+            "person": {
+              "id": 11,
+              "preferred_name": "Pradeepa"
+            },
+            "start_time": "2025-05-01",
+            "end_time": "2025-05-05",
+            "status": "Completed"
+          },
+          {
+            "id": 12,
+            "person": {
+              "id": 12,
+              "preferred_name": "Iresha"
+            },
+            "start_time": "2025-05-01",
+            "end_time": "2025-05-05",
+            "status": "Completed"
+          }
+        ],
+        "finance": {
+          "id": 9,
+          "estimated_cost": 2500,
+          "total_cost": 2400,
+          "material_costs": [
+            {
+              "id": 11,
+              "item": "Paint",
+              "quantity": 20,
+              "unit": "liter",
+              "unit_cost": 80
+            },
+            {
+              "id": 12,
+              "item": "Primer",
+              "quantity": 10,
+              "unit": "liter",
+              "unit_cost": 60
+            }
+          ],
+          "labour_cost": 800,
+          "status": "Approved",
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
+        }
+      }
+    },
+    {
+      "activityInstance": {
+        "id": 10,
+        "start_time": "2025-05-10",
+        "end_time": "2025-05-12",
+        "overall_task_status": "Completed",
+        "task": {
+          "id": 10,
+          "title": "Paint Walls",
+          "description": "Touch up paint work in common areas",
+          "task_type": "Recurring",
+          "frequency": "Quarterly",
+          "location": {
+            "id": 2,
+            "location_name": "Main Hall"
+          }
+        },
+        "activity_participants": [
+          {
+            "id": 13,
+            "person": {
+              "id": 13,
+              "preferred_name": "Pradeepa"
+            },
+            "start_time": "2025-05-10",
+            "end_time": "2025-05-12",
+            "status": "Completed"
+          }
+        ],
+        "finance": {
+          "id": 10,
+          "estimated_cost": 1800,
+          "total_cost": 1750,
+          "material_costs": [
+            {
+              "id": 13,
+              "item": "Wall Paint",
+              "quantity": 15,
+              "unit": "liter",
+              "unit_cost": 85
+            }
+          ],
+          "labour_cost": 475,
+          "status": "Approved",
+          "rejection_reason": null,
+          "reviewed_by": null,
+          "reviewed_date": null
+        }
+      }
+    }
+  ]
+}
+''';
+
+// GET /organizations/{organizationId}/tasks (With financial status pending query parameter)
+const String pendingFinancialTasksJson = '''
+{
+  "tasks": [
+    {
+      "activityInstance": {
+        "id": 1,
+        "start_time": "2025-01-10",
+        "end_time": "2025-01-12",
         "overallTaskStatus": "Pending",
         "maintenanceTask": {
           "id": 1,
           "title": "Air Conditioner Maintenance",
           "description": "Routine AC inspection and cleaning",
-          "task_type": "Recurring",
+          "type": "Recurring",
           "frequency": "Monthly",
           "location": {
             "id": 1,
@@ -969,9 +1565,9 @@ const String pendingTasksJson = '''
             "status": "Completed"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 1,
-          "estimatedCost": 1500,
+          "estimated_cost": 1500,
           "totalCost": 1400,
           "materialCosts": [
             {
@@ -989,7 +1585,7 @@ const String pendingTasksJson = '''
               "unit_cost": 250
             }
           ],
-          "labourCost": 500,
+          "labour_cost": 500,
           "status": "Pending",
           "rejectionReason": null,
           "reviewedBy": null,
@@ -1007,7 +1603,7 @@ const String pendingTasksJson = '''
           "id": 3,
           "title": "Fix Lights",
           "description": "Replace the 3 bulbs in the main corridor.",
-          "task_type": "Recurring",
+          "type": "Recurring",
           "frequency": "Weekly",
           "location": {
             "id": 2,
@@ -1026,9 +1622,9 @@ const String pendingTasksJson = '''
             "status": "Pending"
           }
         ],
-        "financialInformation": {
+        "finance": {
           "id": 3,
-          "estimatedCost": 500,
+          "estimated_cost": 500,
           "totalCost": 0,
           "materialCosts": [
             {
@@ -1039,480 +1635,8 @@ const String pendingTasksJson = '''
               "unit_cost": 50
             }
           ],
-          "labourCost": 350,
+          "labour_cost": 350,
           "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
-        }
-      }
-    },
-    {
-      "activityInstance": {
-        "id": 4,
-        "start_time": "2025-02-10",
-        "end_time": "2025-02-12",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
-          "id": 4,
-          "title": "Clean Lab",
-          "description": "Deep cleaning of laboratory facilities",
-          "task_type": "Recurring",
-          "frequency": "Weekly",
-          "location": {
-            "id": 1,
-            "location_name": "IT Lab"
-          }
-        },
-        "activityParticipants": [
-          {
-            "id": 4,
-            "person": {
-              "id": 4,
-              "preferred_name": "Kamal"
-            },
-            "start_time": "2025-02-10",
-            "end_time": "2025-02-12",
-            "status": "Pending"
-          }
-        ],
-        "financialInformation": {
-          "id": 4,
-          "estimatedCost": 800,
-          "totalCost": 0,
-          "materialCosts": [
-            {
-              "id": 4,
-              "item": "Cleaning Supplies",
-              "quantity": 10,
-              "unit": "piece",
-              "unit_cost": 40
-            }
-          ],
-          "labourCost": 400,
-          "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
-        }
-      }
-    },
-    {
-      "activityInstance": {
-        "id": 5,
-        "start_time": "2025-03-01",
-        "end_time": "2025-03-03",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
-          "id": 5,
-          "title": "Fix Lights",
-          "description": "Replace the 3 bulbs in the main corridor.",
-          "task_type": "oneTime",
-          "frequency": null,
-          "location": {
-            "id": 2,
-            "location_name": "Main Hall"
-          }
-        },
-        "activityParticipants": [
-          {
-            "id": 5,
-            "person": {
-              "id": 5,
-              "preferred_name": "Janaka"
-            },
-            "start_time": "2025-03-01",
-            "end_time": "2025-03-03",
-            "status": "Pending"
-          }
-        ],
-        "financialInformation": {
-          "id": 5,
-          "estimatedCost": 450,
-          "totalCost": 0,
-          "materialCosts": [
-            {
-              "id": 5,
-              "item": "Fluorescent Tubes",
-              "quantity": 3,
-              "unit": "piece",
-              "unit_cost": 60
-            }
-          ],
-          "labourCost": 270,
-          "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
-        }
-      }
-    },
-    {
-      "activityInstance": {
-        "id": 6,
-        "start_time": "2025-03-15",
-        "end_time": "2025-03-18",
-        "overallTaskStatus": "Pending",
-        "maintenanceTask": {
-          "id": 6,
-          "title": "Clean Lab",
-          "description": "Regular maintenance cleaning of laboratory spaces",
-          "task_type": "Recurring",
-          "frequency": "Monthly",
-          "location": {
-            "id": 1,
-            "location_name": "IT Lab"
-          }
-        },
-        "activityParticipants": [
-          {
-            "id": 6,
-            "person": {
-              "id": 6,
-              "preferred_name": "Iresha"
-            },
-            "start_time": "2025-03-15",
-            "end_time": "2025-03-18",
-            "status": "Pending"
-          },
-          {
-            "id": 7,
-            "person": {
-              "id": 7,
-              "preferred_name": "Sunil"
-            },
-            "start_time": "2025-03-15",
-            "end_time": "2025-03-18",
-            "status": "Pending"
-          }
-        ],
-        "financialInformation": {
-          "id": 6,
-          "estimatedCost": 950,
-          "totalCost": 0,
-          "materialCosts": [
-            {
-              "id": 6,
-              "item": "Disinfectant",
-              "quantity": 5,
-              "unit": "liter",
-              "unit_cost": 80
-            },
-            {
-              "id": 7,
-              "item": "Floor Cleaner",
-              "quantity": 3,
-              "unit": "liter",
-              "unit_cost": 50
-            }
-          ],
-          "labourCost": 500,
-          "status": "Pending",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
-        }
-      }
-    }
-  ]
-}
-''';
-
-const String inProgressTasksJson = '''
-{
-  "tasks": [
-    {
-      "activityInstance": {
-        "id": 2,
-        "start_time": "2025-01-15",
-        "end_time": "2025-01-20",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
-          "id": 2,
-          "title": "Air Conditioner Repair",
-          "description": "Fix temperature control issue",
-          "task_type": "Recurring",
-          "frequency": "Monthly",
-          "location": {
-            "id": 1,
-            "location_name": "Building A - Floor 2"
-          }
-        },
-        "activityParticipants": [
-          {
-            "id": 2,
-            "person": {
-              "id": 2,
-              "preferred_name": "Sunil"
-            },
-            "start_time": "2025-01-15",
-            "end_time": "2025-01-20",
-            "status": "In Progress"
-          }
-        ],
-        "financialInformation": {
-          "id": 1,
-          "estimatedCost": 1500,
-          "totalCost": 2000,
-          "materialCosts": [
-            {
-              "id": 1,
-              "item": "Air Filter",
-              "quantity": 5,
-              "unit": "piece",
-              "unit_cost": 100
-            },
-            {
-              "id": 2,
-              "item": "Coolant",
-              "quantity": 2,
-              "unit": "liter",
-              "unit_cost": 250
-            }
-          ],
-          "labourCost": 500,
-          "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
-        }
-      }
-    },
-    {
-      "activityInstance": {
-        "id": 7,
-        "start_time": "2025-04-01",
-        "end_time": "2025-04-05",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
-          "id": 7,
-          "title": "Clean Lab",
-          "description": "Comprehensive cleaning of all lab equipment",
-          "task_type": "Recurring",
-          "frequency": "Weekly",
-          "location": {
-            "id": 1,
-            "location_name": "IT Lab"
-          }
-        },
-        "activityParticipants": [
-          {
-            "id": 8,
-            "person": {
-              "id": 8,
-              "preferred_name": "Nimal Perera"
-            },
-            "start_time": "2025-04-01",
-            "end_time": "2025-04-05",
-            "status": "In Progress"
-          }
-        ],
-        "financialInformation": {
-          "id": 7,
-          "estimatedCost": 700,
-          "totalCost": 650,
-          "materialCosts": [
-            {
-              "id": 8,
-              "item": "Cleaning Kit",
-              "quantity": 2,
-              "unit": "piece",
-              "unit_cost": 125
-            }
-          ],
-          "labourCost": 400,
-          "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
-        }
-      }
-    },
-    {
-      "activityInstance": {
-        "id": 8,
-        "start_time": "2025-04-10",
-        "end_time": "2025-04-15",
-        "overallTaskStatus": "In Progress",
-        "maintenanceTask": {
-          "id": 8,
-          "title": "Fix Lights",
-          "description": "Emergency lighting system repair",
-          "task_type": "oneTime",
-          "frequency": null,
-          "location": {
-            "id": 2,
-            "location_name": "Main Hall"
-          }
-        },
-        "activityParticipants": [
-          {
-            "id": 9,
-            "person": {
-              "id": 9,
-              "preferred_name": "Ashan"
-            },
-            "start_time": "2025-04-10",
-            "end_time": "2025-04-15",
-            "status": "In Progress"
-          },
-          {
-            "id": 10,
-            "person": {
-              "id": 10,
-              "preferred_name": "Janaka"
-            },
-            "start_time": "2025-04-10",
-            "end_time": "2025-04-15",
-            "status": "In Progress"
-          }
-        ],
-        "financialInformation": {
-          "id": 8,
-          "estimatedCost": 1200,
-          "totalCost": 1150,
-          "materialCosts": [
-            {
-              "id": 9,
-              "item": "Emergency Lights",
-              "quantity": 4,
-              "unit": "piece",
-              "unit_cost": 180
-            },
-            {
-              "id": 10,
-              "item": "Wiring",
-              "quantity": 50,
-              "unit": "piece",
-              "unit_cost": 5
-            }
-          ],
-          "labourCost": 630,
-          "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
-        }
-      }
-    }
-  ]
-}
-''';
-
-const String completedTasksJson = '''
-{
-  "tasks": [
-    {
-      "activityInstance": {
-        "id": 9,
-        "start_time": "2025-05-01",
-        "end_time": "2025-05-05",
-        "overallTaskStatus": "Completed",
-        "maintenanceTask": {
-          "id": 9,
-          "title": "Paint Walls",
-          "description": "Repaint interior walls with fresh coat",
-          "task_type": "oneTime",
-          "frequency": null,
-          "location": {
-            "id": 1,
-            "location_name": "IT Lab"
-          }
-        },
-        "activityParticipants": [
-          {
-            "id": 11,
-            "person": {
-              "id": 11,
-              "preferred_name": "Pradeepa"
-            },
-            "start_time": "2025-05-01",
-            "end_time": "2025-05-05",
-            "status": "Completed"
-          },
-          {
-            "id": 12,
-            "person": {
-              "id": 12,
-              "preferred_name": "Iresha"
-            },
-            "start_time": "2025-05-01",
-            "end_time": "2025-05-05",
-            "status": "Completed"
-          }
-        ],
-        "financialInformation": {
-          "id": 9,
-          "estimatedCost": 2500,
-          "totalCost": 2400,
-          "materialCosts": [
-            {
-              "id": 11,
-              "item": "Paint",
-              "quantity": 20,
-              "unit": "liter",
-              "unit_cost": 80
-            },
-            {
-              "id": 12,
-              "item": "Primer",
-              "quantity": 10,
-              "unit": "liter",
-              "unit_cost": 60
-            }
-          ],
-          "labourCost": 800,
-          "status": "Approved",
-          "rejectionReason": null,
-          "reviewedBy": null,
-          "reviewedDate": null
-        }
-      }
-    },
-    {
-      "activityInstance": {
-        "id": 10,
-        "start_time": "2025-05-10",
-        "end_time": "2025-05-12",
-        "overallTaskStatus": "Completed",
-        "maintenanceTask": {
-          "id": 10,
-          "title": "Paint Walls",
-          "description": "Touch up paint work in common areas",
-          "task_type": "Recurring",
-          "frequency": "Quarterly",
-          "location": {
-            "id": 2,
-            "location_name": "Main Hall"
-          }
-        },
-        "activityParticipants": [
-          {
-            "id": 13,
-            "person": {
-              "id": 13,
-              "preferred_name": "Pradeepa"
-            },
-            "start_time": "2025-05-10",
-            "end_time": "2025-05-12",
-            "status": "Completed"
-          }
-        ],
-        "financialInformation": {
-          "id": 10,
-          "estimatedCost": 1800,
-          "totalCost": 1750,
-          "materialCosts": [
-            {
-              "id": 13,
-              "item": "Wall Paint",
-              "quantity": 15,
-              "unit": "liter",
-              "unit_cost": 85
-            }
-          ],
-          "labourCost": 475,
-          "status": "Approved",
           "rejectionReason": null,
           "reviewedBy": null,
           "reviewedDate": null

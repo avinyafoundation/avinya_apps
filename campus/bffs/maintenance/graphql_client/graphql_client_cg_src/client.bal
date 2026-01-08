@@ -51,4 +51,16 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <CreateMaintenanceTaskResponse> check performDataBinding(graphqlResponse, CreateMaintenanceTaskResponse);
     }
+    remote isolated function MaintenanceTasks(int organizationId, int offset, int 'limit, string? fromDate = (), string? taskType = (), string? toDate = (), string? financialStatus = (), int[]? personId = (), int? location = (), string? title = (), string? taskStatus = ()) returns MaintenanceTasksResponse|graphql:ClientError {
+        string query = string `query MaintenanceTasks($organizationId:Int!,$personId:[Int!],$fromDate:String,$toDate:String,$taskStatus:String,$financialStatus:String,$taskType:String,$location:Int,$title:String,$limit:Int!,$offset:Int!) {maintenanceTasks(organizationId:$organizationId,personId:$personId,fromDate:$fromDate,toDate:$toDate,taskStatus:$taskStatus,financialStatus:$financialStatus,taskType:$taskType,title:$title,location:$location,limit:$limit,offset:$offset) {id start_time end_time overall_task_status task {id title description task_type frequency exception_deadline location {id location_name}} activity_participants {id participant_task_status person {id preferred_name}} finance {id estimated_cost labour_cost material_costs {id item quantity unit unit_cost} status rejection_reason reviewed_by reviewed_date}}}`;
+        map<anydata> variables = {"organizationId": organizationId, "fromDate": fromDate, "taskType": taskType, "offset": offset, "toDate": toDate, "financialStatus": financialStatus, "limit": 'limit, "personId": personId, "location": location, "title": title, "taskStatus": taskStatus};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <MaintenanceTasksResponse> check performDataBinding(graphqlResponse, MaintenanceTasksResponse);
+    }
+    remote isolated function GetOverdueMaintenanceTasks(int organizationId) returns GetOverdueMaintenanceTasksResponse|graphql:ClientError {
+        string query = string `query GetOverdueMaintenanceTasks($organizationId:Int!) {overdueMaintenanceTasks(organizationId:$organizationId) {id task_id start_time end_time overall_task_status overdue_days task {id title description task_type frequency location {id location_name}} activity_participants {id participant_task_status person {id preferred_name}}}}`;
+        map<anydata> variables = {"organizationId": organizationId};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetOverdueMaintenanceTasksResponse> check performDataBinding(graphqlResponse, GetOverdueMaintenanceTasksResponse);
+    }
 }

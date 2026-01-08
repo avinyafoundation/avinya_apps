@@ -38,16 +38,16 @@ class MaintenanceFinance {
   factory MaintenanceFinance.fromJson(Map<String, dynamic> json){
     return MaintenanceFinance(
       id: json['id'],
-      activityInstanceId: json['activityInstanceId'],
+      activityInstanceId: json['activity_instance_id'],
       estimatedCost: (json['estimated_cost'] as num?)?.toDouble(),
-      totalCost: (json['totalCost'] as num?)?.toDouble(),
+      totalCost: (json['total_cost'] as num?)?.toDouble(),
       labourCost: (json['labour_cost'] as num?)?.toDouble(),
       status: getStatusFromString(json['status']),
-      rejectionReason: json['rejectionReason'],
-      reviewedBy: json['reviewedBy'],
-      reviewedDate: json['reviewedDate'],
-      materialCosts: json['materialCosts'] != null
-        ? (json['materialCosts'] as List)
+      rejectionReason: json['rejection_reason'],
+      reviewedBy: json['reviewed_by'],
+      reviewedDate: json['reviewed_date'],
+      materialCosts: json['material_costs'] != null
+        ? (json['material_costs'] as List)
             .map((item) => MaterialCost.fromJson(item))
             .toList()
         : null,
@@ -58,15 +58,15 @@ class MaintenanceFinance {
   //Create MaintenanceFinance instance to JSON
   Map<String, dynamic> toJson() => {
     if(id != null) 'id': id,
-    if(activityInstanceId != null) 'activityInstanceId': activityInstanceId,
+    if(activityInstanceId != null) 'activity_instance_id': activityInstanceId,
     if(estimatedCost != null) 'estimated_cost': estimatedCost,
-    if(totalCost != null) 'totalCost': totalCost,
+    if(totalCost != null) 'total_cost': totalCost,
     if(labourCost != null) 'labour_cost': labourCost,
     if(status != null) 'status': statusToString(status!),
-    if(rejectionReason != null) 'rejectionReason': rejectionReason,
-    if(reviewedBy != null) 'reviewedBy': reviewedBy,
-    if(reviewedDate != null) 'reviewedDate': reviewedDate,
-    if(materialCosts != null) 'materialCosts': materialCosts!.map((mc) => mc.toJson()).toList(),
+    if(rejectionReason != null) 'rejection_reason': rejectionReason,
+    if(reviewedBy != null) 'reviewed_by': reviewedBy,
+    if(reviewedDate != null) 'reviewed_date': reviewedDate,
+    if(materialCosts != null) 'material_costs': materialCosts!.map((mc) => mc.toJson()).toList(),
   };
 
 }

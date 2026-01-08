@@ -8,6 +8,7 @@ class CustomDataTable extends StatelessWidget {
   final Color? borderColor;
   final bool showCheckboxColumn;
   final double borderRadius;
+  final double? width;
 
   const CustomDataTable({
     super.key,
@@ -18,12 +19,13 @@ class CustomDataTable extends StatelessWidget {
     this.borderColor,
     this.showCheckboxColumn = true,
     this.borderRadius = 4.0,
+    this.width = double.infinity,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: width,
       decoration: BoxDecoration(
         border: Border.all(
           color: borderColor ?? Colors.grey.shade300,
