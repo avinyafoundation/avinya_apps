@@ -23,7 +23,7 @@ class _AnimatedStatusIconState extends State<AnimatedStatusIcon> with SingleTick
 
     if (widget.status == "progress") {
       _controller.repeat(); // Spin forever
-    } else if (widget.status == "Pending") {
+    } else if (widget.status == "pending") {
       _controller.repeat(reverse: true); // Pulse (Fade in/out)
     }
     // Completed is static, no animation needed
@@ -42,7 +42,7 @@ class _AnimatedStatusIconState extends State<AnimatedStatusIcon> with SingleTick
         turns: _controller,
         child: Icon(Icons.sync, color: widget.color, size: 20),
       );
-    } else if (widget.status == "Pending") {
+    } else if (widget.status == "pending") {
       return ScaleTransition(
         scale: Tween(begin: 0.8, end: 1.2).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut)),
         child: Icon(Icons.radio_button_unchecked, color: widget.color, size: 20),
