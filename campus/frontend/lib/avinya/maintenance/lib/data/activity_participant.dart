@@ -128,7 +128,7 @@ ProgressStatus getProgressStatusFromString(String statusString) {
   switch (statusString.toLowerCase()) {
     case 'pending':
       return ProgressStatus.pending;
-    case 'in progress':
+    case 'inprogress':
       return ProgressStatus.inProgress;
     case 'completed':
       return ProgressStatus.completed;

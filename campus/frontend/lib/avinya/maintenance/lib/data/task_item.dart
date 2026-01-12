@@ -8,34 +8,35 @@ class TaskItem extends AppFlowyGroupItem {
   final String title;
   final String? description;
   final AcademyLocation location;
-  final DateTime deadline;
+  final DateTime endDate;
   final String statusText;
-  final bool isOverdue;
-  final String status;
+  final int overdueDays;
 
   TaskItem({
     required this.itemId,
     required this.title,
     this.description,
     required this.location,
-    required this.deadline,
+    required this.endDate,
     required this.statusText,
-    required this.isOverdue,
-    required this.status,
+    required this.overdueDays,
   });
 
   factory TaskItem.fromJson(Map<String, dynamic> json) {
+    // The task details are nested inside a 'task' object
+    final taskData = json['task'] as Map<String, dynamic>;
     return TaskItem(
-      itemId: json['id'],
-      title: json['title'],
-      description: json['description'],
-      location: AcademyLocation.fromJson(json['location']),
-      deadline: DateTime.parse(json['deadline']),
-      statusText: json['statusText'],
-      isOverdue: json['isOverdue'] ?? false,
-      status: json['status'] ?? 'Pending',
+      itemId: json['id'].toString(),
+      title: taskData['title'] ?? '',
+      description: taskData['description'],
+      location: AcademyLocation.fromJson(taskData['location']),
+      endDate: DateTime.parse(json['end_time']),
+      statusText: json['statusText'] ?? '',
+      overdueDays: json['overdue_days'] ?? 0,
     );
   }
+
+  bool get isOverdue => overdueDays > 0;
 
   @override
   String get id => itemId;

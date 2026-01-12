@@ -28,7 +28,7 @@ class _KanbanBoardState extends State<KanbanBoard> {
       onMoveGroup: (_, __, ___, ____) {
         // Revert the column order if changed
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          final expectedIds = ["Pending", "progress", "Completed"];
+          final expectedIds = ["pending", "progress", "completed"];
           for (int i = 0; i < expectedIds.length; i++) {
             final currentIndex =
                 controller.groupDatas.indexWhere((g) => g.id == expectedIds[i]);
@@ -41,9 +41,9 @@ class _KanbanBoardState extends State<KanbanBoard> {
       onMoveGroupItem: (groupId, fromIndex, toIndex) {},
       onMoveGroupItemToGroup: (fromGroupId, fromIndex, toGroupId, toIndex) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          //cannot move Pending to copmleted directly and vice versa
-          if ((fromGroupId == "Pending" && toGroupId == "Completed") ||
-              (fromGroupId == "Completed" && toGroupId == "Pending")) {
+          //cannot move Pending to completed directly and vice versa
+          if ((fromGroupId == "pending" && toGroupId == "completed") ||
+              (fromGroupId == "completed" && toGroupId == "pending")) {
             //Display Alert
             showDialog(
               context: context,
@@ -163,7 +163,7 @@ class _KanbanBoardState extends State<KanbanBoard> {
                         // --- HEADER BUILDER ---
                         headerBuilder: (context, group) {
                           Color color;
-                          if (group.id == "Pending") {
+                          if (group.id == "pending") {
                             color = const Color(0xFFFFA000);
                           } else if (group.id == "progress") {
                             color = const Color(0xFF1E88E5);
@@ -212,20 +212,19 @@ class _KanbanBoardState extends State<KanbanBoard> {
                           TaskItem displayItem = item;
 
                           // Override status text if Completed and not overdue
-                          if (group.id == "Completed" && !item.isOverdue) {
+                          if (group.id == "completed" && !item.isOverdue) {
                             displayItem = TaskItem(
                                 itemId: item.id,
                                 title: item.title,
                                 description: item.description,
                                 location: item.location,
-                                deadline: item.deadline,
+                                endDate: item.endDate,
                                 statusText: "On Schedule",
-                                isOverdue: item.isOverdue,
-                                status: item.status);
+                                overdueDays: item.overdueDays);
                           }
 
                           Color accentColor;
-                          if (group.id == "Pending") {
+                          if (group.id == "pending") {
                             accentColor = const Color(0xFFFFA000);
                           } else if (group.id == "progress") {
                             accentColor = const Color(0xFF1E88E5);
