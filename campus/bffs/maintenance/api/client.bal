@@ -89,7 +89,8 @@ public isolated client class GraphqlClient {
         map<anydata> variables = {"organizationId": organizationId, "overallTaskStatus": overallTaskStatus, "month": month, "offset": offset, "year": year, "limit": 'limit};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <MaintenanceTasksByStatusResponse> check performDataBinding(graphqlResponse, MaintenanceTasksByStatusResponse);
-
+    }
+    
     remote isolated function GetMonthlyCostSummary(int organizationId, int year) returns GetMonthlyCostSummaryResponse|graphql:ClientError {
         string query = string `query GetMonthlyCostSummary($organizationId:Int!,$year:Int!) {monthlyCostSummary(organizationId:$organizationId,year:$year) {year monthly_costs {month estimated_cost actual_cost}}}`;
         map<anydata> variables = {"organizationId": organizationId, "year": year};
