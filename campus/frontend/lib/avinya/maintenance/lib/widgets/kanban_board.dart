@@ -180,8 +180,8 @@ class _KanbanBoardState extends State<KanbanBoard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const PageTitle(
-                        title: "Task Activities",
+                      PageTitle(
+                        title: "${employees.firstWhere((e) => e.id == selectedPersonId, orElse: () => Person()).preferred_name ?? "User"}'s Task Activities",
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
