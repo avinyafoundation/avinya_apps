@@ -330,3 +330,63 @@ public type GetOverdueMaintenanceTasksResponse record {|
         |}[]? activity_participants;
     |}[]? overdueMaintenanceTasks;
 |};
+
+public type SoftDeactivateMaintenanceTaskResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? modified_by;
+    |}? softDeactivateMaintenanceTask;
+|};
+
+public type UpdateMaintenanceFinanceResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? status;
+        string? rejection_reason;
+        string? reviewed_by;
+    |}? updateMaintenanceFinance;
+|};
+
+public type GetMonthlyMaintenanceReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? totalTasks;
+        int? completedTasks;
+        int? inProgressTasks;
+        int? pendingTasks;
+        anydata? totalCosts;
+        int? totalUpcomingTasks;
+        anydata? nextMonthlyEstimatedCost;
+    |} monthlyMaintenanceReport;
+|};
+
+public type MaintenanceTasksByStatusResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? start_time;
+        string? end_time;
+        string? overall_task_status;
+        record {|
+            int? id;
+            string? title;
+            string? description;
+            string? task_type;
+            string? frequency;
+            int? exception_deadline;
+            record {|
+                int? id;
+                string? location_name;
+            |}? location;
+        |}? task;
+        record {|
+            int? id;
+            string? participant_task_status;
+            record {|
+                int? id;
+                string? preferred_name;
+            |}? person;
+        |}[]? activity_participants;
+    |}[]? maintenanceTasksByMonthYearStatus;
+|};
