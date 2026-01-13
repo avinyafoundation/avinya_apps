@@ -208,4 +208,90 @@ service / on new http:Listener(9097) {
         }
     }
 
+    //Deactivate a maintenance task by its ID
+    resource function put tasks/[int taskId](
+        string modifiedBy
+    ) returns MaintenanceTask
+        | ApiErrorResponse | error {
+
+        SoftDeactivateMaintenanceTaskResponse|graphql:ClientError response =
+            globalDataClient->SoftDeactivateMaintenanceTask(modifiedBy, taskId);
+
+        if (response is SoftDeactivateMaintenanceTaskResponse) {
+            var result = response.softDeactivateMaintenanceTask;
+            if (result is ()) {
+                return <ApiErrorResponse>{ body: { message: "Task not found or already deactivated" } };
+            }
+            return result;
+        } else {
+            log:printError("Error soft deactivating maintenance task", response);
+            return <ApiErrorResponse>{ body: { message: response.message() } };
+        }
+    }
+
+    //Update finance status for a task
+    resource function put organizations/[int organizationId]/tasks/finance/[int financeId](
+        @http:Payload MaintenanceFinance maintenanceFinance
+    ) returns MaintenanceFinance
+        | ApiErrorResponse | error {
+
+        UpdateMaintenanceFinanceResponse|graphql:ClientError response =
+            globalDataClient->UpdateMaintenanceFinance(financeId, maintenanceFinance);
+
+        if (response is UpdateMaintenanceFinanceResponse) {
+            var result = response.updateMaintenanceFinance;
+            if (result is ()) {
+                return <ApiErrorResponse>{ body: { message: "No update result returned" } };
+            }
+            return result;
+        } else {
+            log:printError("Error updating maintenance finance", response);
+            return <ApiErrorResponse>{ body: { message: response.message() } };
+        }
+    }
+
+    //Get monthly maintenance task summary
+    resource function get organizations/[int organizationId]/reports/monthly/[int year]/[int month]() returns GetMonthlyMaintenanceReportResponse | error {
+
+        GetMonthlyMaintenanceReportResponse|graphql:ClientError response =
+            globalDataClient->GetMonthlyMaintenanceReport(organizationId, month, year);
+
+        if (response is GetMonthlyMaintenanceReportResponse) {
+            return response;
+        } else {
+            log:printError("Error fetching monthly maintenance report", response);
+            return error(response.message());
+        }
+    }
+
+    //Get tasks by month, year and status
+    resource function get organizations/[int organizationId]/reports/monthly/[int year]/[int month]/tasks(
+        string? overallTaskStatus = (),
+        int 'limit = 10,
+        int offset = 0
+    ) returns ActivityInstance[] | error {
+
+        MaintenanceTasksByStatusResponse|graphql:ClientError response =
+            globalDataClient->MaintenanceTasksByStatus(
+                organizationId,
+                month,
+                offset,
+                year,
+                'limit,
+                overallTaskStatus
+            );
+
+        if (response is MaintenanceTasksByStatusResponse) {
+            var tasks = response.maintenanceTasksByMonthYearStatus;
+            if (tasks is ()) {
+                return [];
+            }
+            return tasks;
+        } else {
+            log:printError("Error fetching maintenance tasks by status", response);
+            return error(response.message());
+        }
+    }
+
+
 }

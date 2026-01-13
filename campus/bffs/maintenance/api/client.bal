@@ -65,5 +65,30 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetOverdueMaintenanceTasksResponse> check performDataBinding(graphqlResponse, GetOverdueMaintenanceTasksResponse);
     }
+
+    remote isolated function SoftDeactivateMaintenanceTask(string modifiedBy, int taskId) returns SoftDeactivateMaintenanceTaskResponse|graphql:ClientError {
+        string query = string `mutation SoftDeactivateMaintenanceTask($taskId:Int!,$modifiedBy:String!) {softDeactivateMaintenanceTask(taskId:$taskId,modifiedBy:$modifiedBy) {id modified_by}}`;
+        map<anydata> variables = {"modifiedBy": modifiedBy, "taskId": taskId};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <SoftDeactivateMaintenanceTaskResponse> check performDataBinding(graphqlResponse, SoftDeactivateMaintenanceTaskResponse);
+    }
+    remote isolated function UpdateMaintenanceFinance(int financeId, MaintenanceFinance maintenanceFinance) returns UpdateMaintenanceFinanceResponse|graphql:ClientError {
+        string query = string `mutation UpdateMaintenanceFinance($financeId:Int!,$maintenanceFinance:MaintenanceFinance!) {updateMaintenanceFinance(financeId:$financeId,maintenanceFinance:$maintenanceFinance) {status rejection_reason reviewed_by}}`;
+        map<anydata> variables = {"financeId": financeId, "maintenanceFinance": maintenanceFinance};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <UpdateMaintenanceFinanceResponse> check performDataBinding(graphqlResponse, UpdateMaintenanceFinanceResponse);
+    }
+    remote isolated function GetMonthlyMaintenanceReport(int organizationId, int month, int year) returns GetMonthlyMaintenanceReportResponse|graphql:ClientError {
+        string query = string `query GetMonthlyMaintenanceReport($organizationId:Int!,$year:Int!,$month:Int!) {monthlyMaintenanceReport(organizationId:$organizationId,year:$year,month:$month) {totalTasks completedTasks inProgressTasks pendingTasks totalCosts totalUpcomingTasks nextMonthlyEstimatedCost}}`;
+        map<anydata> variables = {"organizationId": organizationId, "month": month, "year": year};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetMonthlyMaintenanceReportResponse> check performDataBinding(graphqlResponse, GetMonthlyMaintenanceReportResponse);
+    }
+    remote isolated function MaintenanceTasksByStatus(int organizationId, int month, int offset, int year, int 'limit, string? overallTaskStatus = ()) returns MaintenanceTasksByStatusResponse|graphql:ClientError {
+        string query = string `query MaintenanceTasksByStatus($organizationId:Int!,$month:Int!,$year:Int!,$overallTaskStatus:String,$limit:Int!,$offset:Int!) {maintenanceTasksByMonthYearStatus(organizationId:$organizationId,month:$month,year:$year,overallTaskStatus:$overallTaskStatus,limit:$limit,offset:$offset) {id start_time end_time overall_task_status task {id title description task_type frequency exception_deadline location {id location_name}} activity_participants {id participant_task_status person {id preferred_name}}}}`;
+        map<anydata> variables = {"organizationId": organizationId, "overallTaskStatus": overallTaskStatus, "month": month, "offset": offset, "year": year, "limit": 'limit};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <MaintenanceTasksByStatusResponse> check performDataBinding(graphqlResponse, MaintenanceTasksByStatusResponse);
+    }
     
 }
