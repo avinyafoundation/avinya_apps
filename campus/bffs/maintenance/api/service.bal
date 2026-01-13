@@ -293,5 +293,50 @@ service / on new http:Listener(9097) {
         }
     }
 
+    resource function get organizations/[int organizationId]/getTasksByStatus(
+        int? personId = (),
+        string? fromDate = (),
+        string? toDate = (),
+        string? taskType = (),
+        int? location = ()
+    ) returns ActivityInstance[]|error {
 
+        GetMaintenanceTasksByStatusResponse|graphql:ClientError statusResponse = 
+            globalDataClient->GetMaintenanceTasksByStatus(
+                organizationId, 
+                fromDate, 
+                taskType, 
+                toDate, 
+                personId, 
+                location
+            );
+
+        if (statusResponse is GetMaintenanceTasksByStatusResponse) {
+            ActivityInstance[] activityInstances = [];
+            var dataGroups = statusResponse?.maintenanceTasksByStatus?.groups;
+
+            if (dataGroups.length() == 0) {
+                return <ActivityInstance[]>[];
+            }
+
+            foreach var task_record in dataGroups {
+                ActivityInstance|error activityInstance = task_record.cloneWithType(ActivityInstance);
+                
+                if (activityInstance is ActivityInstance) {
+                    activityInstances.push(activityInstance);
+                } else {
+                    log:printError("Error while binding ActivityInstance record", activityInstance);
+                    return error("Error while binding ActivityInstance record: " + activityInstance.message() +
+                        ":: Detail: " + activityInstance.detail().toString());
+                }
+            }
+
+            return activityInstances;
+
+        } else {
+            log:printError("Error while getting maintenance tasks by status", statusResponse);
+            return error("Error while getting maintenance tasks by status: " + statusResponse.message() +
+                ":: Detail: " + statusResponse.detail().toString());
+        }
+    }
 }

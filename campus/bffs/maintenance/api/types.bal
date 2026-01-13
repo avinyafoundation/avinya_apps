@@ -390,3 +390,38 @@ public type MaintenanceTasksByStatusResponse record {|
         |}[]? activity_participants;
     |}[]? maintenanceTasksByMonthYearStatus;
 |};
+
+public type GetMonthlyCostSummaryResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? year;
+        record {|
+            int? month;
+            anydata? estimated_cost;
+            anydata? actual_cost;
+        |}[]? monthly_costs;
+    |}? monthlyCostSummary;
+|};
+
+public type GetMaintenanceTasksByStatusResponse record {|
+    map<json?> __extensions?;
+    record {|record {|
+            string groupId;
+            string groupName;
+            record {|
+                int? id;
+                string? end_time;
+                string? statusText;
+                int? overdue_days;
+                record {|
+                    int? id;
+                    string? title;
+                    string? description;
+                    record {|
+                        int? id;
+                        string? location_name;
+                    |}? location;
+                |}? task;
+            |}[] tasks;
+        |}[] groups;|} maintenanceTasksByStatus;
+|};

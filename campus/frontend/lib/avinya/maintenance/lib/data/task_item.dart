@@ -1,6 +1,6 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:appflowy_board/appflowy_board.dart';
-import '../data/dummy_data.dart';
 import '../data/academy_location.dart';
 
 class TaskItem extends AppFlowyGroupItem {
@@ -42,20 +42,45 @@ class TaskItem extends AppFlowyGroupItem {
   String get id => itemId;
 }
 
-Future<List<AppFlowyGroupData>> getBoardData() async {
-  // Decode the String
-  final Map<String, dynamic> decodedJson = jsonDecode(kanbanBoardResponse);
-  final List<dynamic> groups = decodedJson['groups'];
+Future<List<AppFlowyGroupData>> getBoardData({
+  int? organizationId,
+  int? personId,
+  String? fromDate,
+  String? toDate,
+  String? taskType,
+  int? location,
+}) async {
+  final String baseUrl = 'http://localhost:9097/organizations/${organizationId ?? 2}/getTasksByStatus';
+  final Map<String, String> queryParams = {};
+  if (personId != null) queryParams['personId'] = personId.toString();
+  if (fromDate != null) queryParams['fromDate'] = fromDate;
+  if (toDate != null) queryParams['toDate'] = toDate;
+  if (taskType != null) queryParams['taskType'] = taskType;
+  if (location != null) queryParams['location'] = location.toString();
 
-  // Map the JSON to AppFlowy Objects
-  return groups.map((group) {
-    return AppFlowyGroupData(
-      id: group['groupId'],
-      name: group['groupName'],
-      items:
-          List<AppFlowyGroupItem>.from((group['tasks'] as List).map((taskJson) {
-        return TaskItem.fromJson(taskJson);
-      })),
-    );
-  }).toList();
+  final Uri uri = Uri.parse(baseUrl).replace(queryParameters: queryParams);
+  const Map<String, String> headers = {'Content-Type': 'application/json'};
+
+  try {
+    final response = await http.get(uri, headers: headers);
+    if (response.statusCode == 200) {
+      final List<dynamic> groups = jsonDecode(response.body);
+
+      // Map the JSON to AppFlowy Objects
+      return groups.map((group) {
+        return AppFlowyGroupData(
+          id: group['groupId'],
+          name: group['groupName'],
+          items: List<AppFlowyGroupItem>.from(
+              (group['tasks'] as List).map((taskJson) {
+            return TaskItem.fromJson(taskJson);
+          })),
+        );
+      }).toList();
+    } else {
+      throw Exception('Failed to load data: ${response.statusCode}');
+    }
+  } catch (e) {
+    throw Exception('Error fetching data: $e');
+  }
 }
