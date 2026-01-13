@@ -6,6 +6,7 @@ import '../widgets/animated_task_card.dart';
 import '../widgets/animated_status_icon.dart';
 import '../widgets/common/drop_down.dart';
 import '../widgets/common/page_title.dart';
+import '../data/person.dart';
 
 class KanbanBoard extends StatefulWidget {
   const KanbanBoard({super.key});
@@ -16,12 +17,13 @@ class KanbanBoard extends StatefulWidget {
 
 class _KanbanBoardState extends State<KanbanBoard> {
   late AppFlowyBoardController controller;
-  String selectedPerson = "Lahiru";
-  int? selectedPersonId = 1;
+  int? selectedPersonId;
+  List<Person> employees = [];
 
   @override
   void initState() {
     super.initState();
+    _fetchEmployees();
 
     // 1. Initialize AppFlowy Controller
     controller = AppFlowyBoardController(
@@ -40,45 +42,108 @@ class _KanbanBoardState extends State<KanbanBoard> {
       },
       onMoveGroupItem: (groupId, fromIndex, toIndex) {},
       onMoveGroupItemToGroup: (fromGroupId, fromIndex, toGroupId, toIndex) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          //cannot move Pending to completed directly and vice versa
-          if ((fromGroupId == "pending" && toGroupId == "completed") ||
-              (fromGroupId == "completed" && toGroupId == "pending")) {
-            //Display Alert
-            showDialog(
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          bool isInvalidMove = false;
+          String errorMessage = "";
+
+          // 1. Validation Logic: Cannot move Pending directly to Completed
+          if (fromGroupId == "pending" && toGroupId == "completed") {
+            isInvalidMove = true;
+            errorMessage =
+                "You cannot move tasks directly between Pending and Completed.";
+          }
+          // 2. Validation Logic: Cannot move OUT of Completed
+          else if (fromGroupId == "completed" &&
+              (toGroupId == "pending" || toGroupId == "progress")) {
+            isInvalidMove = true;
+            errorMessage =
+                "Completed tasks cannot be moved back to Pending or In Progress.";
+          }
+
+          if (isInvalidMove) {
+            _showAlertDialog("Invalid Move", errorMessage);
+            _revertMove(fromGroupId, fromIndex, toGroupId, toIndex);
+            return;
+          }
+
+          // 3. Confirmation Logic: Moving to Completed
+          if (toGroupId == "completed") {
+            bool? confirm = await showDialog<bool>(
               context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text("Invalid Move"),
-                  content: const Text(
-                      "You cannot move tasks directly between Pending and Completed."),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text("OK"),
-                    ),
-                  ],
-                );
-              },
+              builder: (context) => AlertDialog(
+                title: const Text("Confirm Completion"),
+                content: const Text(
+                    "Are you sure you want to mark this task as Completed? This action cannot be undone."),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text("Cancel"),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    style: TextButton.styleFrom(foregroundColor: Colors.green),
+                    child: const Text("Confirm"),
+                  ),
+                ],
+              ),
             );
 
-            // Revert the move
-            final item = controller.groupDatas
-                .firstWhere((g) => g.id == toGroupId)
-                .items[toIndex];
-            controller.removeGroupItem(toGroupId, item.id);
-            controller.insertGroupItem(fromGroupId, fromIndex, item);
+            if (confirm != true) {
+              _revertMove(fromGroupId, fromIndex, toGroupId, toIndex);
+            } else {
+              // Logic to update status in the backend goes here
+            }
           }
         });
       },
     );
+    _fetchEmployees();
+  }
 
-    // 2. Load Data from dummy_data.dart
-    _loadBoardData();
+  void _revertMove(
+    String fromGroupId, int fromIndex, String toGroupId, int toIndex) {
+    final item = controller.groupDatas
+        .firstWhere((g) => g.id == toGroupId)
+        .items[toIndex];
+    controller.removeGroupItem(toGroupId, item.id);
+    controller.insertGroupItem(fromGroupId, fromIndex, item);
+  }
+
+  void _showAlertDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _fetchEmployees() async {
+    employees = await fetchEmployeeListByOrganization(2);
+
+    if (employees.isNotEmpty) {
+      setState(() {
+        selectedPersonId = employees.first.id;
+      });
+      await _loadBoardData();
+    } else {
+      setState(() {});
+    }
   }
 
   Future<void> _loadBoardData() async {
-    final initialData = await getBoardData();
+    for (var group in controller.groupDatas.toList()) {
+      controller.removeGroup(group.id);
+    }
+    final initialData =
+        await getBoardData(personId: selectedPersonId, organizationId: 2);
     for (var group in initialData) {
       controller.addGroup(group);
     }
@@ -115,30 +180,34 @@ class _KanbanBoardState extends State<KanbanBoard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const PageTitle(
-                        title: "Task Activities",
+                      PageTitle(
+                        title: "${employees.firstWhere((e) => e.id == selectedPersonId, orElse: () => Person()).preferred_name ?? "User"}'s Task Activities",
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                       const SizedBox(height: 15),
-                      SizedBox(
-                        width: 200,
-                        child: DropDown<Map<String, dynamic>>(
-                          label: "Select Person",
-                          items: const [
-                            {"id": 1, "name": "Lahiru"},
-                            {"id": 2, "name": "Sakuna"},
-                            {"id": 3, "name": "Basuru"},
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 300),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: DropDown<Person>(
+                                label: "Select Person",
+                                items: employees,
+                                selectedValues: selectedPersonId,
+                                valueField: (item) => item.id ?? 0,
+                                displayField: (item) =>
+                                    item.preferred_name ?? "",
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedPersonId = value;
+                                  });
+                                  _loadBoardData();
+                                },
+                              ),
+                            ),
                           ],
-                          selectedValues: selectedPersonId,
-                          valueField: (item) => item["id"] as int,
-                          displayField: (item) => item["name"] as String,
-                          onChanged: (value) {
-                            setState(() {
-                              selectedPersonId = value;
-                            });
-                          },
                         ),
                       ),
                       const SizedBox(height: 20),

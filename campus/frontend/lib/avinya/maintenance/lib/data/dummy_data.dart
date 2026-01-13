@@ -1,7 +1,6 @@
 // 1. The Raw JSON Response
 const String kanbanBoardResponse = '''
-{
-  "groups": [
+[
     {
       "groupId": "pending",
       "groupName": "Pending",
@@ -140,8 +139,7 @@ const String kanbanBoardResponse = '''
         }
       ]
     }
-  ]
-}
+]
 ''';
 
 // //////////////////////////////////////////////////////////////////
