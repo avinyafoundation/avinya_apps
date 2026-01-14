@@ -863,69 +863,71 @@ const String overdueTasksJson = '''
 
 const String monthlyTaskCostSummaryJson = '''
 {
-  "year": 2025,
-  "monthlyCosts": [
-    {
-      "month": 1,
-      "estimatedCost": 45000,
-      "actualCost": 42000
-    },
-    {
-      "month": 2,
-      "estimatedCost": 52000,
-      "actualCost": 48000
-    },
-    {
-      "month": 3,
-      "estimatedCost": 58000,
-      "actualCost": 55000
-    },
-    {
-      "month": 4,
-      "estimatedCost": 65000,
-      "actualCost": 62000
-    },
-    {
-      "month": 5,
-      "estimatedCost": 72000,
-      "actualCost": 74000
-    },
-    {
-      "month": 6,
-      "estimatedCost": 80000,
-      "actualCost": 83000
-    },
-    {
-      "month": 7,
-      "estimatedCost": 88000,
-      "actualCost": 85000
-    },
-    {
-      "month": 8,
-      "estimatedCost": 92000,
-      "actualCost": 90000
-    },
-    {
-      "month": 9,
-      "estimatedCost": 85000,
-      "actualCost": 82000
-    },
-    {
-      "month": 10,
-      "estimatedCost": 78000,
-      "actualCost": 75000
-    },
-    {
-      "month": 11,
-      "estimatedCost": 70000,
-      "actualCost": 68000
-    },
-    {
-      "month": 12,
-      "estimatedCost": 62000,
-      "actualCost": 59000
-    }
-  ]
+  "monthlyCostSummary": {
+    "year": 2025,
+    "monthly_costs": [
+      {
+        "month": 1,
+        "estimated_cost": 45000,
+        "actual_cost": 42000
+      },
+      {
+        "month": 2,
+        "estimated_cost": 52000,
+        "actual_cost": 48000
+      },
+      {
+        "month": 3,
+        "estimated_cost": 58000,
+        "actual_cost": 55000
+      },
+      {
+        "month": 4,
+        "estimated_cost": 65000,
+        "actual_cost": 62000
+      },
+      {
+        "month": 5,
+        "estimated_cost": 72000,
+        "actual_cost": 74000
+      },
+      {
+        "month": 6,
+        "estimated_cost": 80000,
+        "actual_cost": 83000
+      },
+      {
+        "month": 7,
+        "estimated_cost": 88000,
+        "actual_cost": 85000
+      },
+      {
+        "month": 8,
+        "estimated_cost": 92000,
+        "actual_cost": 90000
+      },
+      {
+        "month": 9,
+        "estimated_cost": 85000,
+        "actual_cost": 82000
+      },
+      {
+        "month": 10,
+        "estimated_cost": 78000,
+        "actual_cost": 75000
+      },
+      {
+        "month": 11,
+        "estimated_cost": 70000,
+        "actual_cost": 68000
+      },
+      {
+        "month": 12,
+        "estimated_cost": 62000,
+        "actual_cost": 59000
+      }
+    ]
+  }
 }
 ''';
 
