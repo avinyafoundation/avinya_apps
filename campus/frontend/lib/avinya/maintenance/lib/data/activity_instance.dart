@@ -217,7 +217,7 @@ Future<List<ActivityInstance>> getMonthlyTasksByStatus({
   };
 
   final uri = Uri.parse(
-          '${AppConfig.campusMaintenanceBffApiUrl}/organizations/$organizationId/reports/monthly/$year/$month/task')
+          '${AppConfig.campusMaintenanceBffApiUrl}/organizations/$organizationId/reports/monthly/$year/$month/tasks')
       .replace(queryParameters: queryParams);
 
   final response = await http.get(
@@ -265,55 +265,6 @@ Future<List<ActivityInstance>> fetchOverdueActivityInstance(
 }
 
 // MOCK APIs. Use these for testing UI without backend integration.
-List<ActivityInstance> getMockActivityInstancesData() {
-  final Map<String, dynamic> decoded = jsonDecode(maintenanceTasksJson);
-  final List<dynamic> tasks = decoded['tasks'];
-
-  return tasks.map((taskItem) {
-    final instance = taskItem['activityInstance'];
-    return ActivityInstance.fromJson(instance);
-  }).toList();
-}
-
-List<ActivityInstance> getMockOverdueActivityInstancesData() {
-  final Map<String, dynamic> decoded = jsonDecode(overdueTasksJson);
-  final List<dynamic> tasks = decoded['overdueTasks'];
-
-  return tasks.map((taskItem) {
-    final instance = taskItem['activityInstance'];
-    return ActivityInstance.fromJson(instance);
-  }).toList();
-}
-
-List<ActivityInstance> getMockUpcomingActivityInstancesData() {
-  final Map<String, dynamic> decoded = jsonDecode(pendingTasksJson);
-  final List<dynamic> tasks = decoded['tasks'];
-
-  return tasks.map((taskItem) {
-    final instance = taskItem['activityInstance'];
-    return ActivityInstance.fromJson(instance);
-  }).toList();
-}
-
-List<ActivityInstance> getMockInProgressActivityInstancesData() {
-  final Map<String, dynamic> decoded = jsonDecode(inProgressTasksJson);
-  final List<dynamic> tasks = decoded['tasks'];
-
-  return tasks.map((taskItem) {
-    final instance = taskItem['activityInstance'];
-    return ActivityInstance.fromJson(instance);
-  }).toList();
-}
-
-List<ActivityInstance> getMockCompletedActivityInstancesData() {
-  final Map<String, dynamic> decoded = jsonDecode(completedTasksJson);
-  final List<dynamic> tasks = decoded['tasks'];
-
-  return tasks.map((taskItem) {
-    final instance = taskItem['activityInstance'];
-    return ActivityInstance.fromJson(instance);
-  }).toList();
-}
 
 List<ActivityInstance> getMockPendingFinancialActivityInstancesData() {
   final Map<String, dynamic> decoded = jsonDecode(pendingFinancialTasksJson);
