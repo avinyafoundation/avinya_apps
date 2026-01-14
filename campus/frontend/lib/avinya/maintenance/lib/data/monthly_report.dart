@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:gallery/avinya/maintenance/lib/data/dummy_data.dart';
 import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 
@@ -32,7 +30,7 @@ class MonthlyReport {
       completedTasks: json['completedTasks'],
       inProgressTasks: json['inProgressTasks'],
       pendingTasks: json['pendingTasks'],
-      totalCost: (json['totalCost'] as num).toDouble(),
+      totalCost: (json['totalCosts'] as num).toDouble(),
       totalUpcomingTasks: json['totalUpcomingTasks'],
       nextMonthlyEstimatedCost:
           (json['nextMonthlyEstimatedCost'] as num).toDouble(),
@@ -72,8 +70,9 @@ Future<MonthlyReport> getMonthlyReport({
   );
 
   if (response.statusCode == 200) {
-    final Map<String, dynamic> jsonData = jsonDecode(response.body);
-    return MonthlyReport.fromJson(jsonData);
+    final Map<String, dynamic> decoded = jsonDecode(response.body);
+    final reportData = decoded['monthlyMaintenanceReport'];
+    return MonthlyReport.fromJson(reportData);
   } else if (response.statusCode == 404) {
     throw Exception('No tasks found for this month.');
   } else {
@@ -82,8 +81,3 @@ Future<MonthlyReport> getMonthlyReport({
   }
 }
 
-// MOCK APIs. Use these for testing UI without backend integration.
-MonthlyReport getMockDirectorDashboardSummary() {
-  final Map<String, dynamic> decoded = jsonDecode(directorDashboardSummaryJson);
-  return MonthlyReport.fromJson(decoded);
-}
