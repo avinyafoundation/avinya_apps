@@ -19,8 +19,8 @@ class MonthlyCost {
   factory MonthlyCost.fromJson(Map<String, dynamic> json){
     return MonthlyCost(
       month: json['month'],
-      actualCost: (json['actualCost'] as num).toDouble(),
-      estimatedCost: (json['estimatedCost'] as num).toDouble(),
+      actualCost: (json['actual_cost'] as num).toDouble(),
+      estimatedCost: (json['estimated_cost'] as num).toDouble(),
     );
   }
 
@@ -28,8 +28,8 @@ class MonthlyCost {
   //Create MonthlyCost instance to JSON
   Map<String, dynamic> toJson() => {
     if(month != null) 'month': month,
-    if(actualCost != null) 'actualCost': actualCost,
-    if(estimatedCost != null) 'estimatedCost': estimatedCost,
+    if(actualCost != null) 'actual_cost': actualCost,
+    if(estimatedCost != null) 'estimated_cost': estimatedCost,
   };
 }
 
@@ -66,9 +66,8 @@ Future<List<MonthlyCost>> getMonthlyCostSummary({
 // MOCK APIs. Use these for testing UI without backend integration.
 List<MonthlyCost> getMockMonthlyTaskCostSummary() {
   final Map<String, dynamic> decoded = jsonDecode(monthlyTaskCostSummaryJson);
-  final List<dynamic> monthlyCostsJson = decoded['monthlyCosts'];
+  final List<dynamic> monthlyCostsJson =
+      decoded['monthlyCostSummary']['monthly_costs'];
 
-  return monthlyCostsJson.map((monthJson) {
-    return MonthlyCost.fromJson(monthJson);
-  }).toList();
+  return monthlyCostsJson.map((json) => MonthlyCost.fromJson(json)).toList();
 }

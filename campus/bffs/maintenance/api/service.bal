@@ -339,4 +339,18 @@ service / on new http:Listener(9097) {
                 ":: Detail: " + statusResponse.detail().toString());
         }
     }
+
+    resource function get tasks/[int organizationId]/monthlyCostSummary/[int year]() 
+        returns GetMonthlyCostSummaryResponse|error {
+
+        GetMonthlyCostSummaryResponse|graphql:ClientError summaryResponse = globalDataClient->GetMonthlyCostSummary(organizationId, year);
+
+        if (summaryResponse is GetMonthlyCostSummaryResponse) {
+            return summaryResponse ;
+        } else {
+            log:printError("Error while getting monthly cost summary", summaryResponse);
+            return error("Error while getting monthly cost summary: " + summaryResponse.message() +
+                ":: Detail: " + summaryResponse.detail().toString());
+        }
+    }
 }
