@@ -136,7 +136,11 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
       "February",
       "January"
     ];
-    final years = ["2025", "2024"];
+    int currentYear = DateTime.now().year;
+    List<String> years = [];
+    for (int y = currentYear; y >= 2024; y--) {
+      years.add(y.toString());
+    }
 
     List<Widget> filters = [
       SizedBox(
