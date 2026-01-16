@@ -341,7 +341,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
         StatCard(
           title: "Total Cost",
           value: "LKR ${_formatCost(_summaryReport?.totalCost ?? 0)}",
-          subtitle: "Completed tasks",
+          subtitle: "Approved tasks",
           accentColor: Colors.transparent,
           width: _calcCardWidth(context, crossAxisCount),
           cardRadius: _cardRadius,
