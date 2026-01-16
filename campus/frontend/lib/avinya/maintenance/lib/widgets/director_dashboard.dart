@@ -946,6 +946,10 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
 
                             if (assignedNames.isEmpty) assignedNames = "-";
 
+                            String dueDate = instance.end_time != null
+                                ? instance.end_time!.split(" ")[0]
+                                : "-";
+
                             return DataRow(cells: [
                               DataCell(Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -961,7 +965,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
                               DataCell(Text(assignedNames,
                                   style: TextStyle(
                                       fontSize: 10, color: _secondaryText))),
-                              DataCell(Text(instance.end_time ?? '',
+                              DataCell(Text(dueDate,
                                   style: TextStyle(
                                       fontSize: 10, color: _secondaryText))),
                               DataCell(
