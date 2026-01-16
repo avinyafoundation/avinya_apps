@@ -216,6 +216,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
           onChanged: (index) {
             setState(
                 () => selectedMonth = index != null ? months[index] : null);
+                selectedMonthIndex = index;
             _loadData();
           },
         ),
