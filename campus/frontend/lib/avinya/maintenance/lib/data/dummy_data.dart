@@ -931,14 +931,17 @@ const String monthlyTaskCostSummaryJson = '''
 }
 ''';
 
-const String directorDashboardSummaryJson = '''{
-  "totalTasks": 10,
-  "completedTasks": 2,
-  "inProgressTasks": 3,
-  "pendingTasks": 5,
-  "totalCost": 175000.5,
-  "totalUpcomingTasks": 5,
-  "nextMonthlyEstimatedCost": 20000.0
+const String directorDashboardSummaryJson = '''
+{
+  "monthlyMaintenanceReport": {
+    "totalTasks": 10,
+    "completedTasks": 2,
+    "inProgressTasks": 3,
+    "pendingTasks": 5,
+    "totalCost": 175000.5,
+    "totalUpcomingTasks": 5,
+    "nextMonthlyEstimatedCost": 20000.0
+  }
 }
 ''';
 

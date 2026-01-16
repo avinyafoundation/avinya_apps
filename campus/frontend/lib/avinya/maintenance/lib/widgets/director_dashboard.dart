@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../data/activity_instance.dart';
 import '../data/monthly_report.dart';
-import '../widgets/common/button.dart';
 import '../widgets/tasks_dialog.dart';
 import '../widgets/cost_breakdown_dialog.dart';
 import '../widgets/common/drop_down.dart';
@@ -24,6 +23,8 @@ class DirectorDashboardScreen extends StatefulWidget {
 class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
   // --- STATE ---
   String? selectedAcademy = "Bandaragama";
+  int? selectedOrganizationId = 2;
+  int? selectedMonthIndex = DateTime.now().month - 1;
   String? selectedMonth = DateFormat.MMMM().format(DateTime.now());
   String? selectedYear = DateFormat.y().format(DateTime.now());
   bool _isLoading = true;
@@ -36,7 +37,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
 
   List<MonthlyCost> _monthlyCosts = [];
   List<ActivityInstance> _overdueTasks = [];
-  late MonthlyReport _summaryReport;
+  MonthlyReport? _summaryReport;
 
   @override
   void initState() {
@@ -47,19 +48,63 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
 
-    setState(() {
-      _monthlyCosts = getMockMonthlyTaskCostSummary();
-      _overdueTasks = getMockOverdueActivityInstancesData();
-      _summaryReport = getMockDirectorDashboardSummary();
-      _isLoading = false;
-    });
+    final months = [
+      "December",
+      "November",
+      "October",
+      "September",
+      "August",
+      "July",
+      "June",
+      "May",
+      "April",
+      "March",
+      "February",
+      "January"
+    ];
+    final monthIndex = months.indexOf(selectedMonth ?? '');
+    final month = monthIndex >= 0 ? 12 - monthIndex : DateTime.now().month;
+
+    try {
+      final year = int.tryParse(selectedYear ?? '') ?? DateTime.now().year;
+
+      _overdueTasks =
+          await fetchOverdueActivityInstance(selectedOrganizationId ?? 2);
+
+      _monthlyCosts = await getMonthlyCostSummary(
+        organizationId: 2,
+        year: year,
+      );
+
+      _summaryReport = await getMonthlyReport(
+        organizationId: 2,
+        year: year,
+        month: month,
+      );
+    } catch (e) {
+      print('Error loading data: $e');
+      _overdueTasks = [];
+      _monthlyCosts = [];
+      _summaryReport = MonthlyReport(
+        totalTasks: 0,
+        completedTasks: 0,
+        inProgressTasks: 0,
+        pendingTasks: 0,
+        totalCost: 0.0,
+        totalUpcomingTasks: 0,
+        nextMonthlyEstimatedCost: 0.0,
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    bool dataNotReady = _isLoading || _summaryReport == null;
     return Scaffold(
       backgroundColor: _bgLight,
-      body: _isLoading
+      body: dataNotReady
           ? Center(
               child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(_primaryText),
@@ -123,20 +168,24 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
     final academies = ["Bandaragama"];
 
     final months = [
-      "December",
-      "November",
-      "October",
-      "September",
-      "August",
-      "July",
-      "June",
-      "May",
-      "April",
-      "March",
+      "January",
       "February",
-      "January"
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
     ];
-    final years = ["2025", "2024"];
+    int currentYear = DateTime.now().year;
+    List<String> years = [];
+    for (int y = currentYear; y >= 2024; y--) {
+      years.add(y.toString());
+    }
 
     List<Widget> filters = [
       SizedBox(
@@ -164,8 +213,12 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
               : null,
           valueField: (item) => months.indexOf(item),
           displayField: (item) => item,
-          onChanged: (index) => setState(
-              () => selectedMonth = index != null ? months[index] : null),
+          onChanged: (index) {
+            setState(
+                () => selectedMonth = index != null ? months[index] : null);
+                selectedMonthIndex = index;
+            _loadData();
+          },
         ),
       ),
       const SizedBox(width: 10),
@@ -176,21 +229,14 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
           items: years,
           selectedValues: years.indexOf(selectedYear ?? "") >= 0
               ? years.indexOf(selectedYear!)
-              : null,
+              : 0,
           valueField: (item) => years.indexOf(item),
           displayField: (item) => item,
-          onChanged: (index) => setState(
-              () => selectedYear = index != null ? years[index] : null),
+          onChanged: (index) {
+            setState(() => selectedYear = index != null ? years[index] : null);
+            _loadData();
+          },
         ),
-      ),
-      const SizedBox(width: 10),
-      Button(
-        label: "Apply",
-        buttonColor: Colors.blue,
-        textColor: Colors.white,
-        height: 40,
-        fontSize: 14,
-        onPressed: _loadData,
       ),
     ];
 
@@ -242,7 +288,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
         // 1. Total Tasks
         StatCard(
           title: "Total Tasks",
-          value: "${_summaryReport.totalTasks}",
+          value: "${_summaryReport?.totalTasks ?? 0}",
           subtitle: "Created in month",
           accentColor: Colors.transparent,
           width: _calcCardWidth(context, crossAxisCount),
@@ -255,7 +301,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
         // 2. Completed
         StatCard(
           title: "Completed",
-          value: "${_summaryReport.completedTasks}",
+          value: "${_summaryReport?.completedTasks ?? 0}",
           subtitle: "Tasks finished",
           accentColor: Colors.transparent,
           width: _calcCardWidth(context, crossAxisCount),
@@ -268,7 +314,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
         // 3. Ongoing
         StatCard(
           title: "Ongoing",
-          value: "${_summaryReport.inProgressTasks}",
+          value: "${_summaryReport?.inProgressTasks ?? 0}",
           subtitle: "In progress",
           accentColor: Colors.transparent,
           width: _calcCardWidth(context, crossAxisCount),
@@ -281,7 +327,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
         // 4. Pending
         StatCard(
           title: "Pending",
-          value: "${_summaryReport.pendingTasks}",
+          value: "${_summaryReport?.pendingTasks ?? 0}",
           subtitle: "Not started",
           accentColor: Colors.transparent,
           width: _calcCardWidth(context, crossAxisCount),
@@ -294,8 +340,8 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
         // 5. Total Cost (Formatted)
         StatCard(
           title: "Total Cost",
-          value: "LKR ${_formatCost(_summaryReport.totalCost ?? 0)}",
-          subtitle: "Completed tasks",
+          value: "LKR ${_formatCost(_summaryReport?.totalCost ?? 0)}",
+          subtitle: "Approved tasks",
           accentColor: Colors.transparent,
           width: _calcCardWidth(context, crossAxisCount),
           cardRadius: _cardRadius,
@@ -381,7 +427,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
         flex: isMobile ? 0 : 1,
         child: StatCard(
           title: "Total Upcoming Tasks",
-          value: _summaryReport.totalUpcomingTasks.toString(),
+          value: "${_summaryReport?.totalUpcomingTasks ?? 0}",
           icon: Icons.calendar_month,
           accentColor: Colors.indigo,
           cardRadius: _cardRadius,
@@ -395,7 +441,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
         flex: isMobile ? 0 : 1,
         child: StatCard(
           title: "Est. Cost (Next Month)",
-          value: "LKR ${_summaryReport.nextMonthlyEstimatedCost ?? 0}",
+          value: "LKR ${_summaryReport?.nextMonthlyEstimatedCost ?? 0}",
           icon: Icons.attach_money,
           accentColor: Colors.teal,
           cardRadius: _cardRadius,
@@ -418,23 +464,38 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
   // ---------------------------------------------------------------------------
 
   // Dialog to show tasks
-  void _showTasksDialog(String title, String filter) {
+  void _showTasksDialog(String title, String filter) async {
     // Fetch data based on filter
     List<ActivityInstance> rawData;
 
     switch (filter) {
       case 'completed':
-        rawData = getMockCompletedActivityInstancesData();
+        rawData = await getMonthlyTasksByStatus(
+            organizationId: selectedOrganizationId!,
+            year: int.parse(selectedYear!),
+            month: selectedMonthIndex! + 1,
+            overallTaskStatus: 'Completed');
         break;
       case 'ongoing':
-        rawData = getMockInProgressActivityInstancesData();
+        rawData = await getMonthlyTasksByStatus(
+            organizationId: selectedOrganizationId!,
+            year: int.parse(selectedYear!),
+            month: selectedMonthIndex! + 1,
+            overallTaskStatus: 'InProgress');
         break;
       case 'pending':
-        rawData = getMockUpcomingActivityInstancesData();
+        rawData = await getMonthlyTasksByStatus(
+            organizationId: selectedOrganizationId!,
+            year: int.parse(selectedYear!),
+            month: selectedMonthIndex! + 1,
+            overallTaskStatus: 'Pending');
         break;
       case 'all':
       default:
-        rawData = getMockActivityInstancesData();
+        rawData = await getMonthlyTasksByStatus(
+            organizationId: selectedOrganizationId!,
+            year: int.parse(selectedYear!),
+            month: selectedMonthIndex! + 1);
         break;
     }
 
@@ -552,9 +613,9 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
 
   // --- 2. PIE CHART ---
   Widget _buildPieChartCard() {
-    int completed = _summaryReport.completedTasks ?? 0;
-    int ongoing = _summaryReport.inProgressTasks ?? 0;
-    int pending = _summaryReport.pendingTasks ?? 0;
+    int completed = _summaryReport?.completedTasks ?? 0;
+    int ongoing = _summaryReport?.inProgressTasks ?? 0;
+    int pending = _summaryReport?.pendingTasks ?? 0;
 
     int total = completed + ongoing + pending;
 
@@ -670,8 +731,9 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
                   decoration: BoxDecoration(
                       color: Colors.blue.shade50,
                       borderRadius: BorderRadius.circular(4)),
-                  child: const Text("2025",
-                      style: TextStyle(
+                  child: Text(
+                      selectedYear ?? DateFormat.y().format(DateTime.now()),
+                      style: const TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,
                           fontSize: 10))),
@@ -845,77 +907,88 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
             ),
           ),
           // Scrollable Table
-          Expanded(
-            child: ClipRRect(
-              borderRadius:
-                  BorderRadius.vertical(bottom: Radius.circular(_cardRadius)),
-              child: SingleChildScrollView(
-                child: SizedBox(
-                  width: double.infinity,
-                  child: DataTable(
-                    headingRowHeight: 36,
-                    dataRowMinHeight: 40,
-                    dataRowMaxHeight: 48,
-                    columnSpacing: 24,
-                    horizontalMargin: 16,
-                    headingTextStyle: TextStyle(
-                        color: _secondaryText,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 11),
-                    columns: const [
-                      DataColumn(label: Text("Task")),
-                      DataColumn(label: Text("Assigned")),
-                      DataColumn(label: Text("Due")),
-                      DataColumn(label: Text("Days")),
-                    ],
-                    rows: _overdueTasks.map((instance) {
-                      // Combine all participant names into one string
-                      String assignedNames =
-                          (instance.activityParticipants ?? [])
-                              .map((p) => p.person?.preferred_name ?? "-")
-                              .join(", ");
-
-                      if (assignedNames.isEmpty) assignedNames = "-";
-
-                      return DataRow(cells: [
-                        DataCell(Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(instance.maintenanceTask?.title ?? '',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    color: _primaryText,
-                                    fontSize: 11)),
+          _overdueTasks.isEmpty
+              ? Expanded(
+                  child: Center(
+                    child: Text("No overdue tasks found",
+                        style: TextStyle(color: _secondaryText, fontSize: 12)),
+                  ),
+                )
+              : Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.vertical(
+                        bottom: Radius.circular(_cardRadius)),
+                    child: SingleChildScrollView(
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: DataTable(
+                          headingRowHeight: 36,
+                          dataRowMinHeight: 40,
+                          dataRowMaxHeight: 48,
+                          columnSpacing: 24,
+                          horizontalMargin: 16,
+                          headingTextStyle: TextStyle(
+                              color: _secondaryText,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 11),
+                          columns: const [
+                            DataColumn(label: Text("Task")),
+                            DataColumn(label: Text("Assigned")),
+                            DataColumn(label: Text("Due")),
+                            DataColumn(label: Text("Days")),
                           ],
-                        )),
-                        DataCell(Text(assignedNames,
-                            style: TextStyle(
-                                fontSize: 10, color: _secondaryText))),
-                        DataCell(Text(instance.end_time ?? '',
-                            style: TextStyle(
-                                fontSize: 10, color: _secondaryText))),
-                        DataCell(
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                                color: Colors.red.shade100,
-                                borderRadius: BorderRadius.circular(4)),
-                            child: Text("${instance.overdueDays}d",
-                                style: TextStyle(
-                                    color: Colors.red.shade900,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 11)),
-                          ),
+                          rows: _overdueTasks.map((instance) {
+                            // Combine all participant names into one string
+                            String assignedNames =
+                                (instance.activityParticipants ?? [])
+                                    .map((p) => p.person?.preferred_name ?? "-")
+                                    .join(", ");
+
+                            if (assignedNames.isEmpty) assignedNames = "-";
+
+                            String dueDate = instance.end_time != null
+                                ? instance.end_time!.split(" ")[0]
+                                : "-";
+
+                            return DataRow(cells: [
+                              DataCell(Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(instance.maintenanceTask?.title ?? '',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: _primaryText,
+                                          fontSize: 11)),
+                                ],
+                              )),
+                              DataCell(Text(assignedNames,
+                                  style: TextStyle(
+                                      fontSize: 10, color: _secondaryText))),
+                              DataCell(Text(dueDate,
+                                  style: TextStyle(
+                                      fontSize: 10, color: _secondaryText))),
+                              DataCell(
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                      color: Colors.red.shade100,
+                                      borderRadius: BorderRadius.circular(4)),
+                                  child: Text("${instance.overdueDays}d",
+                                      style: TextStyle(
+                                          color: Colors.red.shade900,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 11)),
+                                ),
+                              ),
+                            ]);
+                          }).toList(),
                         ),
-                      ]);
-                    }).toList(),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
         ],
       ),
     );

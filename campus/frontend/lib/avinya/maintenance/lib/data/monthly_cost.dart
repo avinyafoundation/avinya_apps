@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:gallery/avinya/maintenance/lib/data/dummy_data.dart';
 import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 
@@ -36,12 +34,13 @@ class MonthlyCost {
 
 
 //Fetch monthly cost summary
+//Fetch monthly cost summary
 Future<List<MonthlyCost>> getMonthlyCostSummary({
   required int organizationId,
   required int year,
 }) async {
   final uri = Uri.parse(
-      '${AppConfig.campusMaintenanceBffApiUrl}/tasks/$organizationId/monthly-cost-summary/$year');
+      '${AppConfig.campusMaintenanceBffApiUrl}/tasks/$organizationId/monthlyCostSummary/$year');
 
   final response = await http.get(
     uri,
@@ -52,8 +51,11 @@ Future<List<MonthlyCost>> getMonthlyCostSummary({
   );
 
   if (response.statusCode == 200) {
-    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    List<MonthlyCost> monthlyCosts = await resultsJson
+    final Map<String, dynamic> responseData = json.decode(response.body);
+    final monthlyCostSummary = responseData['monthlyCostSummary'] as Map<String, dynamic>;
+    final List<dynamic> monthlyCostsJson = monthlyCostSummary['monthly_costs'] as List<dynamic>;
+
+    List<MonthlyCost> monthlyCosts = monthlyCostsJson
         .map<MonthlyCost>((json) => MonthlyCost.fromJson(json))
         .toList();
     return monthlyCosts;
@@ -61,13 +63,4 @@ Future<List<MonthlyCost>> getMonthlyCostSummary({
     throw Exception(
         'Failed to fetch monthly cost summary. Status code: ${response.statusCode}, body: ${response.body}');
   }
-}
-
-// MOCK APIs. Use these for testing UI without backend integration.
-List<MonthlyCost> getMockMonthlyTaskCostSummary() {
-  final Map<String, dynamic> decoded = jsonDecode(monthlyTaskCostSummaryJson);
-  final List<dynamic> monthlyCostsJson =
-      decoded['monthlyCostSummary']['monthly_costs'];
-
-  return monthlyCostsJson.map((json) => MonthlyCost.fromJson(json)).toList();
 }
