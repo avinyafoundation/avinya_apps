@@ -425,3 +425,21 @@ public type GetMaintenanceTasksByStatusResponse record {|
             |}[] tasks;
         |}[] groups;|} maintenanceTasksByStatus;
 |};
+
+public type MonthlyTaskCostReportResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int organizationId;
+        int year;
+        int month;
+        anydata totalActualCost;
+        anydata totalEstimatedCost;
+        record {|
+            int taskId;
+            string taskTitle;
+            anydata actualCost;
+            anydata estimatedCost;
+        |}[] tasks;
+    |} monthlyTaskCostReport;
+|};
+

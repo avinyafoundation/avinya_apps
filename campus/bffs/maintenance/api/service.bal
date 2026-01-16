@@ -353,4 +353,27 @@ service / on new http:Listener(9097) {
                 ":: Detail: " + summaryResponse.detail().toString());
         }
     }
+
+    //Get monthly actual cost and estimated cost for activity instances grouped by maintenance task
+    resource function get organizations/[int organizationId]/reports/monthly/[int year]/[int month]/costs()
+        returns MonthlyTaskCostReportResponse | error {
+
+        MonthlyTaskCostReportResponse|graphql:ClientError response =
+            globalDataClient->MonthlyTaskCostReport(
+                organizationId,
+                month,
+                year
+            );
+
+        if (response is MonthlyTaskCostReportResponse) {
+            return response;
+        } else {
+            log:printError(
+                "Error fetching monthly task cost report",
+                response
+            );
+            return error(response.message());
+        }
+    }
+
 }
