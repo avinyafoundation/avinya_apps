@@ -42,6 +42,9 @@ input ActivityInstance {
   overall_task_status: String
   created: String
   updated: String
+  maintenanceTask: MaintenanceTask
+  financialInformation: MaintenanceFinance
+  activityParticipants: [ActivityParticipant!]
 }
 
 type ActivityInstanceData {
@@ -61,6 +64,7 @@ type ActivityInstanceData {
   finance: MaintenanceFinanceData
   overall_task_status: String
   overdue_days: Int
+  statusText: String
   created: String
   updated: String
   place: PlaceData
@@ -108,6 +112,7 @@ input ActivityParticipant {
   is_attending: Int
   created: String
   updated: String
+  person: Person
 }
 
 input ActivityParticipantAttendance {
@@ -735,6 +740,10 @@ type GeoData {
   address(id: Int!): AddressData!
 }
 
+type GroupedTasks {
+  groups: [TaskGroup!]!
+}
+
 input Inventory {
   record_type: String = "inventory"
   id: Int
@@ -908,6 +917,17 @@ type MaterialCostData {
   unit_cost: Decimal
 }
 
+type MonthlyCostData {
+  month: Int
+  estimated_cost: Decimal
+  actual_cost: Decimal
+}
+
+type MonthlyCostSummaryData {
+  year: Int
+  monthly_costs: [MonthlyCostData!]
+}
+
 input MonthlyLeaveDates {
   record_type: String = "monthly_leave_dates"
   id: Int
@@ -934,6 +954,16 @@ type MonthlyLeaveDatesData {
   daily_amount: Decimal
   created: String
   updated: String
+}
+
+type MonthlyReportData {
+  totalTasks: Int
+  completedTasks: Int
+  pendingTasks: Int
+  inProgressTasks: Int
+  totalCosts: Decimal
+  totalUpcomingTasks: Int
+  nextMonthlyEstimatedCost: Decimal
 }
 
 type Mutation {
@@ -1020,6 +1050,9 @@ type Mutation {
   updateUserFCMToken(personId: Int!, personFCMToken: PersonFcmToken!): PersonFcmTokenData
   saveOrganizationLocation(organizationId: Int!, organizationLocation: OrganizationLocation!): OrganizationLocationData
   createMaintenanceTask(organizationId: Int, maintenanceTask: MaintenanceTask!, finance: MaintenanceFinance, materialCosts: [MaterialCost!]): MaintenanceTaskData
+  updateMaintenanceTask(organizationId: Int!, maintenanceTaskActivityInstance: ActivityInstance!, maintenanceTask: MaintenanceTask!, maintenanceTaskParticipantList: [Int!]!, finance: MaintenanceFinance, materialCosts: [MaterialCost!]): ActivityInstanceData
+  softDeactivateMaintenanceTask(taskId: Int!, modifiedBy: String!): MaintenanceTaskData
+  updateMaintenanceFinance(financeId: Int!, maintenanceFinance: MaintenanceFinance!): MaintenanceFinanceData
 }
 
 input Organization {
@@ -1394,8 +1427,12 @@ type Query {
   fetchPersonCV(personId: Int!, driveFileId: String): PersonCvData
   fetchUserFCMToken(personId: Int): PersonFcmTokenData
   locationsByOrganization(organizationId: Int): [OrganizationLocationData!]
-  maintenanceTasks(organizationId: Int!, personId: [Int!], fromDate: String = "", toDate: String = "", taskStatus: String = "", financialStatus: String = "", taskType: String = "", location: Int, title: String = "", limit: Int! = 10, offset: Int! = 0, includeFinance: Boolean! = false): [ActivityInstanceData!]
+  maintenanceTasks(organizationId: Int!, personId: [Int!], fromDate: String, toDate: String, taskStatus: String, financialStatus: String, taskType: String, location: Int, title: String, limit: Int! = 10, offset: Int! = 0, includeFinance: Boolean! = false): [ActivityInstanceData!]
   overdueMaintenanceTasks(organizationId: Int!): [ActivityInstanceData!]
+  maintenanceTasksByMonthYearStatus(organizationId: Int!, month: Int!, year: Int!, overallTaskStatus: String, limit: Int! = 10, offset: Int! = 0): [ActivityInstanceData!]
+  monthlyMaintenanceReport(organizationId: Int!, year: Int!, month: Int!): MonthlyReportData!
+  monthlyCostSummary(year: Int!, organizationId: Int!): MonthlyCostSummaryData
+  maintenanceTasksByStatus(organizationId: Int!, personId: Int, fromDate: String, toDate: String, taskType: String, location: Int): GroupedTasks!
 }
 
 input ResourceAllocation {
@@ -1500,6 +1537,12 @@ type SupplyData {
   order_amount: Int
   created: String
   updated: String
+}
+
+type TaskGroup {
+  groupId: String!
+  groupName: String!
+  tasks: [ActivityInstanceData!]!
 }
 
 type TotalActivityParticipantAttendanceCountByDateData {

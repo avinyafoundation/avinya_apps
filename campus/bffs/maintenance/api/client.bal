@@ -111,4 +111,11 @@ public isolated client class GraphqlClient {
         return <MonthlyTaskCostReportResponse> check performDataBinding(graphqlResponse, MonthlyTaskCostReportResponse);
     }
     
+    remote isolated function updateMaintenanceTask(int organizationId, int[] maintenanceTaskParticipantList, ActivityInstance maintenanceTaskActivityInstance, MaintenanceTask maintenanceTask, MaterialCost[]? materialCosts = (), MaintenanceFinance? finance = ()) returns UpdateMaintenanceTaskResponse|graphql:ClientError {
+        string query = string `mutation updateMaintenanceTask($organizationId:Int!,$maintenanceTaskActivityInstance:ActivityInstance!,$maintenanceTask:MaintenanceTask!,$maintenanceTaskParticipantList:[Int!]!,$finance:MaintenanceFinance,$materialCosts:[MaterialCost!]) {updateMaintenanceTask(organizationId:$organizationId,maintenanceTaskActivityInstance:$maintenanceTaskActivityInstance,maintenanceTask:$maintenanceTask,maintenanceTaskParticipantList:$maintenanceTaskParticipantList,finance:$finance,materialCosts:$materialCosts) {id start_time end_time overall_task_status task {id title description task_type frequency exception_deadline location {id location_name}} activity_participants {id participant_task_status person {id preferred_name}} finance {id estimated_cost labour_cost material_costs {id item quantity unit unit_cost} status rejection_reason reviewed_by reviewed_date}}}`;
+        map<anydata> variables = {"organizationId": organizationId, "maintenanceTaskParticipantList": maintenanceTaskParticipantList, "maintenanceTaskActivityInstance": maintenanceTaskActivityInstance, "maintenanceTask": maintenanceTask, "materialCosts": materialCosts, "finance": finance};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <UpdateMaintenanceTaskResponse>check performDataBinding(graphqlResponse, UpdateMaintenanceTaskResponse);
+    }
+    
 }
