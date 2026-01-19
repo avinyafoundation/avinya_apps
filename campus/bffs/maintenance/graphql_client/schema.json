@@ -3804,8 +3804,6 @@
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
-<<<<<<< HEAD
-=======
                         },
                         {
                             "name": "monthlyTaskCostReport",
@@ -3861,7 +3859,6 @@
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
->>>>>>> 9e1c164 (Fix:Add generated files in graphql client)
                         }
                     ],
                     "inputFields": null,
@@ -17285,8 +17282,6 @@
                             "deprecationReason": null
                         },
                         {
-<<<<<<< HEAD
-=======
                             "name": "updateTaskProgress",
                             "args": [
                                 {
@@ -17338,7 +17333,6 @@
                             "deprecationReason": null
                         },
                         {
->>>>>>> 9e1c164 (Fix:Add generated files in graphql client)
                             "name": "softDeactivateMaintenanceTask",
                             "args": [
                                 {
