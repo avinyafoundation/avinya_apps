@@ -45,6 +45,9 @@ input ActivityInstance {
   maintenanceTask: MaintenanceTask
   financialInformation: MaintenanceFinance
   activityParticipants: [ActivityParticipant!]
+  maintenanceTask: MaintenanceTask
+  financialInformation: MaintenanceFinance
+  activityParticipants: [ActivityParticipant!]
 }
 
 type ActivityInstanceData {
@@ -862,6 +865,15 @@ type MaintenanceFinanceData {
   updated: String
 }
 
+type MaintenanceMonthlyTaskCostReportData {
+  organizationId: Int!
+  year: Int!
+  month: Int!
+  totalActualCost: Decimal!
+  totalEstimatedCost: Decimal!
+  tasks: [MaintenanceTaskCostSummaryData!]!
+}
+
 input MaintenanceTask {
   record_type: String = "maintenance_task"
   id: Int
@@ -879,6 +891,13 @@ input MaintenanceTask {
   updated: String
   person_id_list: [Int!]
   finance: MaintenanceFinance
+}
+
+type MaintenanceTaskCostSummaryData {
+  taskId: Int!
+  taskTitle: String!
+  actualCost: Decimal!
+  estimatedCost: Decimal!
 }
 
 type MaintenanceTaskData {
@@ -928,6 +947,17 @@ type MonthlyCostSummaryData {
   monthly_costs: [MonthlyCostData!]
 }
 
+type MonthlyCostData {
+  month: Int
+  estimated_cost: Decimal
+  actual_cost: Decimal
+}
+
+type MonthlyCostSummaryData {
+  year: Int
+  monthly_costs: [MonthlyCostData!]
+}
+
 input MonthlyLeaveDates {
   record_type: String = "monthly_leave_dates"
   id: Int
@@ -954,6 +984,16 @@ type MonthlyLeaveDatesData {
   daily_amount: Decimal
   created: String
   updated: String
+}
+
+type MonthlyReportData {
+  totalTasks: Int
+  completedTasks: Int
+  pendingTasks: Int
+  inProgressTasks: Int
+  totalCosts: Decimal
+  totalUpcomingTasks: Int
+  nextMonthlyEstimatedCost: Decimal
 }
 
 type MonthlyReportData {
@@ -1433,6 +1473,7 @@ type Query {
   monthlyMaintenanceReport(organizationId: Int!, year: Int!, month: Int!): MonthlyReportData!
   monthlyCostSummary(year: Int!, organizationId: Int!): MonthlyCostSummaryData
   maintenanceTasksByStatus(organizationId: Int!, personId: Int, fromDate: String, toDate: String, taskType: String, location: Int): GroupedTasks!
+  monthlyTaskCostReport(organizationId: Int!, year: Int!, month: Int!): MaintenanceMonthlyTaskCostReportData!
 }
 
 input ResourceAllocation {
@@ -1537,6 +1578,12 @@ type SupplyData {
   order_amount: Int
   created: String
   updated: String
+}
+
+type TaskGroup {
+  groupId: String!
+  groupName: String!
+  tasks: [ActivityInstanceData!]!
 }
 
 type TaskGroup {

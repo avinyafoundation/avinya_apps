@@ -202,3 +202,97 @@ mutation updateMaintenanceTask(
     }
   }
 }
+mutation SoftDeactivateMaintenanceTask($taskId: Int!, $modifiedBy: String!) {
+  softDeactivateMaintenanceTask(
+    taskId: $taskId,
+    modifiedBy: $modifiedBy
+  ) {
+    id
+    modified_by
+  }
+}
+
+mutation UpdateMaintenanceFinance(
+  $financeId: Int!,
+  $maintenanceFinance: MaintenanceFinance!
+) {
+  updateMaintenanceFinance(
+    financeId: $financeId,
+    maintenanceFinance: $maintenanceFinance
+  ) {
+    status
+    rejection_reason
+    reviewed_by
+  }
+}
+
+query GetMonthlyMaintenanceReport($organizationId: Int!, $year: Int!, $month: Int!) {
+  monthlyMaintenanceReport(organizationId: $organizationId, year: $year, month: $month) {
+    totalTasks
+    completedTasks
+    inProgressTasks
+    pendingTasks
+    totalCosts
+    totalUpcomingTasks
+    nextMonthlyEstimatedCost
+  }
+}
+
+query MaintenanceTasksByStatus(
+    $organizationId: Int!,
+    $month: Int!,
+    $year: Int!,
+    $overallTaskStatus: String,
+    $limit: Int!,
+    $offset: Int!
+) {
+    maintenanceTasksByMonthYearStatus(
+        organizationId: $organizationId,
+        month: $month,
+        year: $year,
+        overallTaskStatus: $overallTaskStatus,
+        limit: $limit,
+        offset: $offset
+    ) {
+        id
+        start_time
+        end_time
+        overall_task_status
+        task {
+            id
+            title
+            description
+            task_type
+            frequency
+            exception_deadline
+            location {
+                id
+                location_name
+            }
+        }
+        activity_participants {
+            id
+            participant_task_status
+            person {
+                id
+                preferred_name
+            }
+        }
+    }
+}
+
+query MonthlyTaskCostReport($organizationId: Int!, $year: Int!, $month: Int!) {
+  monthlyTaskCostReport(organizationId: $organizationId, year: $year, month: $month) {
+    organizationId
+    year
+    month
+    totalActualCost
+    totalEstimatedCost
+    tasks {
+      taskId
+      taskTitle
+      actualCost
+      estimatedCost
+    }
+  }
+}
