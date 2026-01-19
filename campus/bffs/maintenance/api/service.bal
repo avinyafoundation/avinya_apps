@@ -376,4 +376,55 @@ service / on new http:Listener(9097) {
         }
     }
 
+    //Maintenance task edit rest api
+    resource function put organizations/[int organizationId]/tasks(@http:Payload ActivityInstance taskActivityInstance) returns ActivityInstance|error {
+       
+        int[] personIds = [];
+
+        MaintenanceTask maintenanceTask = taskActivityInstance?.maintenanceTask ?: {};
+        MaintenanceFinance? finance = taskActivityInstance?.financialInformation ?:();
+        ActivityParticipant[] taskParticipants = taskActivityInstance?.activityParticipants ?:[];
+        
+        //take and put each person db raw id into the array.
+        if(taskParticipants is ActivityParticipant[]) {
+            foreach var participant in taskParticipants {
+                Person? person = participant?.person;  
+                if person is Person{
+                    personIds.push(person?.id ?: 0);
+                }
+            }
+        }
+        
+        MaterialCost[]? material_costs= ();
+        if(finance is MaintenanceFinance){
+          material_costs = finance?.materialCosts;
+          finance.materialCosts = ();
+        }
+        taskActivityInstance.financialInformation = ();
+        taskActivityInstance.maintenanceTask = ();
+        taskActivityInstance.activityParticipants = ();
+
+        UpdateMaintenanceTaskResponse|graphql:ClientError updateMaintenanceTaskResponse = globalDataClient->
+                                                                                       updateMaintenanceTask(
+                                                                                        organizationId,
+                                                                                        personIds,
+                                                                                        taskActivityInstance,
+                                                                                        maintenanceTask,
+                                                                                        material_costs,
+                                                                                        finance);
+        if (updateMaintenanceTaskResponse is UpdateMaintenanceTaskResponse) {
+            ActivityInstance|error task_record = updateMaintenanceTaskResponse.updateMaintenanceTask.cloneWithType(ActivityInstance);
+            if (task_record is ActivityInstance) {
+                return task_record;
+            }
+            else {
+                return error("Error while updating the task record: " + task_record.message() +
+                    ":: Detail: " + task_record.detail().toString());
+            }
+        } else {
+            log:printError("Error while updating record", updateMaintenanceTaskResponse);
+            return error("Error while updating record: " + updateMaintenanceTaskResponse.message() +
+                ":: Detail: " + updateMaintenanceTaskResponse.detail().toString());
+        }
+    }
 }

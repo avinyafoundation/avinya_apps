@@ -143,3 +143,62 @@ query GetOverdueMaintenanceTasks($organizationId: Int!) {
         }
     }
 }
+
+mutation updateMaintenanceTask(
+  $organizationId: Int!
+  $maintenanceTaskActivityInstance: ActivityInstance!
+  $maintenanceTask: MaintenanceTask!
+  $maintenanceTaskParticipantList: [Int!]!
+  $finance: MaintenanceFinance
+  $materialCosts: [MaterialCost!]
+) {
+  updateMaintenanceTask(
+    organizationId: $organizationId
+    maintenanceTaskActivityInstance: $maintenanceTaskActivityInstance
+    maintenanceTask: $maintenanceTask
+    maintenanceTaskParticipantList: $maintenanceTaskParticipantList
+    finance: $finance
+    materialCosts: $materialCosts
+  ) {
+    id
+    start_time
+    end_time
+    overall_task_status
+    task {
+      id
+      title
+      description
+      task_type
+      frequency
+      exception_deadline
+      location {
+        id
+        location_name
+      }
+    }
+    activity_participants {
+      id
+      participant_task_status
+      person {
+        id
+        preferred_name
+      }
+    }
+    finance {
+      id
+      estimated_cost
+      labour_cost
+      material_costs {
+        id
+        item
+        quantity
+        unit
+        unit_cost
+      }
+      status
+      rejection_reason
+      reviewed_by
+      reviewed_date
+    }
+  }
+}

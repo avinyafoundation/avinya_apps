@@ -13,9 +13,11 @@ public type Activity record {
 
 public type ActivityInstance record {
     string? notes?;
+    MaintenanceFinance? financialInformation?;
     string? created?;
     int? weekly_sequence?;
     string? end_time?;
+    MaintenanceTask? maintenanceTask?;
     string? description?;
     int? task_id?;
     int? daily_sequence?;
@@ -30,6 +32,7 @@ public type ActivityInstance record {
     int? id?;
     string? updated?;
     int? place_id?;
+    ActivityParticipant[]? activityParticipants?;
 };
 
 public type ActivityInstanceEvaluation record {
@@ -52,6 +55,7 @@ public type ActivityParticipant record {
     int? is_attending?;
     string? record_type?;
     int? activity_instance_id?;
+    Person? person?;
     int? organization_id?;
     int? id?;
     string? updated?;
@@ -750,4 +754,50 @@ public type GetOverdueMaintenanceTasksResponse record {|
             |}? person;
         |}[]? activity_participants;
     |}[]? overdueMaintenanceTasks;
+|};
+
+public type UpdateMaintenanceTaskResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? start_time;
+        string? end_time;
+        string? overall_task_status;
+        record {|
+            int? id;
+            string? title;
+            string? description;
+            string? task_type;
+            string? frequency;
+            int? exception_deadline;
+            record {|
+                int? id;
+                string? location_name;
+            |}? location;
+        |}? task;
+        record {|
+            int? id;
+            string? participant_task_status;
+            record {|
+                int? id;
+                string? preferred_name;
+            |}? person;
+        |}[]? activity_participants;
+        record {|
+            int? id;
+            anydata? estimated_cost;
+            anydata? labour_cost;
+            record {|
+                int? id;
+                string? item;
+                anydata? quantity;
+                string? unit;
+                anydata? unit_cost;
+            |}[]? material_costs;
+            string? status;
+            string? rejection_reason;
+            string? reviewed_by;
+            string? reviewed_date;
+        |}? finance;
+    |}? updateMaintenanceTask;
 |};
