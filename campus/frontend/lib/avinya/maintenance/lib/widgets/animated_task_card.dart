@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gallery/avinya/maintenance/lib/services/translation_service.dart';
 import '../data/task_item.dart';
 
 class AnimatedTaskCard extends StatefulWidget {
@@ -117,22 +118,25 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
                     child: Column(
-                      mainAxisSize: MainAxisSize.min, // Shrink to fit content
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Use the static cache directly instead of a widget/Future
                         Text(
-                          widget.item.title,
+                          GeminiTranslator.getCachedTranslation(
+                              widget.item.title),
                           style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF172B4D)),
                         ),
-                        if (widget.item.description != null &&
-                            widget.item.description!.isNotEmpty) ...[
+                        if (widget.item.description != null) ...[
                           const SizedBox(height: 6),
-                          Text(widget.item.description!,
-                              style: const TextStyle(
-                                  fontSize: 14, color: Colors.black87)),
+                          Text(
+                            GeminiTranslator.getCachedTranslation(
+                                widget.item.description!),
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.black87),
+                          ),
                         ],
                         const SizedBox(height: 12),
                         Row(

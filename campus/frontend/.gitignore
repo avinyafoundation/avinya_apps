@@ -6,3 +6,4 @@ generated_plugin_registrant.cc
 generated_plugin_registrant.h
 generated_plugins.cmake
 GeneratedPluginRegistrant.swift
+api_key.dart
