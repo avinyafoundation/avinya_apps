@@ -124,7 +124,11 @@ class _KanbanBoardState extends State<KanbanBoard> {
 
     // Update backend status
     try {
-      String status = toGroupId == 'pending' ? 'Pending' : toGroupId == 'progress' ? 'InProgress' : 'Completed';
+      String status = toGroupId == 'pending'
+          ? 'Pending'
+          : toGroupId == 'progress'
+              ? 'InProgress'
+              : 'Completed';
       await updateTaskStatus(int.parse(item.id), selectedPersonId!, status);
     } catch (e) {
       if (mounted) {
