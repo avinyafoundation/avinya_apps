@@ -427,4 +427,28 @@ service / on new http:Listener(9097) {
                 ":: Detail: " + updateMaintenanceTaskResponse.detail().toString());
         }
     }
+    
+    //update the task participant task progress
+    resource function patch tasks/activity_instances/[int activityInstanceId]/participants/[int personId]
+(@http:Payload ActivityParticipant activityParticipant) returns ActivityParticipant|ApiErrorResponse|error {
+
+        UpdateTaskProgressResponse|graphql:ClientError updateTaskProgressResponse = globalDataClient->updateTaskProgress(personId,activityParticipant,activityInstanceId);
+        
+        if(updateTaskProgressResponse is  UpdateTaskProgressResponse) {
+
+            ActivityParticipant|error activityParticipantRecord = updateTaskProgressResponse.updateTaskProgress.cloneWithType(ActivityParticipant);
+            
+            if(activityParticipantRecord is  ActivityParticipant) {
+
+                return activityParticipantRecord;
+
+            } else {
+                log:printError("Error while updating the task participant task progress",activityParticipantRecord);
+                return <ApiErrorResponse>{body: { message: "Error while updating the participant task progress" }};
+            }
+        } else {
+            log:printError("Error while updating the task participant task progress",updateTaskProgressResponse);
+            return <ApiErrorResponse>{body: { message: "Error while updating the task participant task progress" }};
+        }
+    }
 }

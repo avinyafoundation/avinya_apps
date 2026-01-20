@@ -202,3 +202,22 @@ mutation updateMaintenanceTask(
     }
   }
 }
+
+mutation updateTaskProgress(
+  $activityInstanceId: Int!,
+  $taskParticipantId: Int!,
+  $taskParticipant: ActivityParticipant!
+) {
+  updateTaskProgress(
+    activityInstanceId: $activityInstanceId
+    taskParticipantId: $taskParticipantId
+    taskParticipant: $taskParticipant
+  ) {
+    id
+    activity_instance_id
+    person_id
+    start_date
+    end_date
+    participant_task_status
+  }
+}
