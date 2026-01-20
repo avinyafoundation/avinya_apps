@@ -583,9 +583,7 @@ service / on new http:Listener(9097) {
         Output Format: JSON Array of Objects [{"k": "English", "v": "Sinhala"}].
         Strict Rules: Do NOT translate the key "k". Only translate "v". Do not use any English letter!
         TASK: Translate the following list of maintenance tasks into colloquial, spoken Sinhala (as used in daily conversation).
-        Tone: Informal and direct. Avoid bookish/formal words (e.g., use 'හදන්න' instead of 'ප්‍රතිසංස්කරණය කරන්න'). Give like normal professional commands, For eg instead of using කරනවා use කරන්න
-        Technical Terms: Keep common English terms as-is or transliterate them if they are used locally (e.g., 'AC', 'Generator', 'Washroom', 'Sink', 'Lift'). 
-        Examples: For example use "වොෂ් රූම් එකේ වතුර ලීක් එක හදන්න" for "Fix the leak in the washroom", "කැඩිච්ච සින්ක් එක හදන්න" for "Repair the broken sink", instead of a formal translation.
+        Tone: Informal and direct. Avoid bookish/formal words (e.g., use 'හදන්න' instead of 'ප්‍රතිසංස්කරණය කරන්න'). Give like normal professional commands, not in a rude tone, For eg instead of using කරනවා use කරන්න. And use common English words in sinhala like වොෂ් රූම්.
         Input: ${texts.toJsonString()}
         `;
 
