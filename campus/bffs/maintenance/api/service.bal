@@ -580,7 +580,7 @@ service / on new http:Listener(9097) {
         
         string prompt = string `
         Role: Translator (English to Sinhala).
-        Output Format: Very important! JSON Array of Objects [{"k": "English", "v": "Sinhala"}].
+        Output Format: JSON Array of Objects [{"k": "English", "v": "Sinhala"}].
         Strict Rules: Do NOT translate the key "k". Only translate "v". Do not use any English letter!
         TASK: Translate the following list of maintenance tasks into colloquial, spoken Sinhala (as used in daily conversation).
         Tone: Informal and direct. Avoid bookish/formal words (e.g., use 'හදන්න' instead of 'ප්‍රතිසංස්කරණය කරන්න'). Give like normal professional commands, For eg instead of using කරනවා use කරන්න
