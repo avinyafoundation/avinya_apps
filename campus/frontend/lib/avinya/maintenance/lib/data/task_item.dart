@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:appflowy_board/appflowy_board.dart';
 import '../data/academy_location.dart';
-import '../services/translation_service.dart';
 
 class TaskItem extends AppFlowyGroupItem {
   final String itemId;
@@ -28,13 +27,24 @@ class TaskItem extends AppFlowyGroupItem {
     final taskData = json['task'] as Map<String, dynamic>;
     return TaskItem(
       itemId: json['id'].toString(),
-      title: taskData['title'] ?? '',
-      description: taskData['description'],
+      title: _unescapeUnicode(taskData['title'] ?? '' as String?),
+      description: _unescapeUnicode(taskData['description'] as String?),
       location: AcademyLocation.fromJson(taskData['location']),
       endDate: DateTime.parse(json['end_time']),
       statusText: json['statusText'] ?? '',
       overdueDays: json['overdue_days'] ?? 0,
     );
+  }
+
+  static String _unescapeUnicode(String? input) {
+    if (input == null || !input.contains(r'\u')) return input ?? '';
+    try {
+      // jsonDecode will interpret \uXXXX escapes when fed a quoted JSON string
+      final safe = input.replaceAll('"', r'\"');
+      return jsonDecode('"$safe"') as String;
+    } catch (_) {
+      return input;
+    }
   }
 
   bool get isOverdue => overdueDays > 0;
@@ -52,7 +62,7 @@ Future<List<AppFlowyGroupData>> getBoardData({
   int? location,
 }) async {
   final String baseUrl =
-      'http://localhost:9097/organizations/${organizationId ?? 2}/getTasksByStatus';
+      'http://localhost:9097/organizations/${organizationId ?? 2}/getSinhalaTasks';
   final Map<String, String> queryParams = {};
   if (personId != null) queryParams['personId'] = personId.toString();
   if (fromDate != null) queryParams['fromDate'] = fromDate;
@@ -67,23 +77,6 @@ Future<List<AppFlowyGroupData>> getBoardData({
     final response = await http.get(uri, headers: headers);
     if (response.statusCode == 200) {
       final List<dynamic> groups = jsonDecode(response.body);
-
-      // Collect all texts for batch translation
-      final List<String> textsToTranslate = [];
-      for (var group in groups) {
-        if (group['tasks'] != null) {
-          for (var task in group['tasks']) {
-            if (task['title'] != null) textsToTranslate.add(task['title']);
-            if (task['description'] != null)
-              textsToTranslate.add(task['description']);
-          }
-        }
-      }
-
-      // Pre-fetch translations in one batch
-      if (textsToTranslate.isNotEmpty) {
-        await GeminiTranslator.translateBatch(textsToTranslate);
-      }
 
       // Map the JSON to AppFlowy Objects
       return groups.map((group) {
