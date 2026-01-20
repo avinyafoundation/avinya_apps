@@ -69,4 +69,10 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <UpdateMaintenanceTaskResponse> check performDataBinding(graphqlResponse, UpdateMaintenanceTaskResponse);
     }
+    remote isolated function updateTaskProgress(int taskParticipantId, ActivityParticipant taskParticipant, int activityInstanceId) returns UpdateTaskProgressResponse|graphql:ClientError {
+        string query = string `mutation updateTaskProgress($activityInstanceId:Int!,$taskParticipantId:Int!,$taskParticipant:ActivityParticipant!) {updateTaskProgress(activityInstanceId:$activityInstanceId,taskParticipantId:$taskParticipantId,taskParticipant:$taskParticipant) {id activity_instance_id person_id start_date end_date participant_task_status}}`;
+        map<anydata> variables = {"taskParticipantId": taskParticipantId, "taskParticipant": taskParticipant, "activityInstanceId": activityInstanceId};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <UpdateTaskProgressResponse> check performDataBinding(graphqlResponse, UpdateTaskProgressResponse);
+    }
 }

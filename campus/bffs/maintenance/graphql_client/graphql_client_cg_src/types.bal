@@ -801,3 +801,15 @@ public type UpdateMaintenanceTaskResponse record {|
         |}? finance;
     |}? updateMaintenanceTask;
 |};
+
+public type UpdateTaskProgressResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_instance_id;
+        int? person_id;
+        string? start_date;
+        string? end_date;
+        string? participant_task_status;
+    |}? updateTaskProgress;
+|};

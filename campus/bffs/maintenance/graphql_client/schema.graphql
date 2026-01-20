@@ -862,6 +862,15 @@ type MaintenanceFinanceData {
   updated: String
 }
 
+type MaintenanceMonthlyTaskCostReportData {
+  organizationId: Int!
+  year: Int!
+  month: Int!
+  totalActualCost: Decimal!
+  totalEstimatedCost: Decimal!
+  tasks: [MaintenanceTaskCostSummaryData!]!
+}
+
 input MaintenanceTask {
   record_type: String = "maintenance_task"
   id: Int
@@ -879,6 +888,13 @@ input MaintenanceTask {
   updated: String
   person_id_list: [Int!]
   finance: MaintenanceFinance
+}
+
+type MaintenanceTaskCostSummaryData {
+  taskId: Int!
+  taskTitle: String!
+  actualCost: Decimal!
+  estimatedCost: Decimal!
 }
 
 type MaintenanceTaskData {
@@ -1051,6 +1067,7 @@ type Mutation {
   saveOrganizationLocation(organizationId: Int!, organizationLocation: OrganizationLocation!): OrganizationLocationData
   createMaintenanceTask(organizationId: Int, maintenanceTask: MaintenanceTask!, finance: MaintenanceFinance, materialCosts: [MaterialCost!]): MaintenanceTaskData
   updateMaintenanceTask(organizationId: Int!, maintenanceTaskActivityInstance: ActivityInstance!, maintenanceTask: MaintenanceTask!, maintenanceTaskParticipantList: [Int!]!, finance: MaintenanceFinance, materialCosts: [MaterialCost!]): ActivityInstanceData
+  updateTaskProgress(activityInstanceId: Int!, taskParticipantId: Int!, taskParticipant: ActivityParticipant!): ActivityParticipantData
   softDeactivateMaintenanceTask(taskId: Int!, modifiedBy: String!): MaintenanceTaskData
   updateMaintenanceFinance(financeId: Int!, maintenanceFinance: MaintenanceFinance!): MaintenanceFinanceData
 }
@@ -1433,6 +1450,7 @@ type Query {
   monthlyMaintenanceReport(organizationId: Int!, year: Int!, month: Int!): MonthlyReportData!
   monthlyCostSummary(year: Int!, organizationId: Int!): MonthlyCostSummaryData
   maintenanceTasksByStatus(organizationId: Int!, personId: Int, fromDate: String, toDate: String, taskType: String, location: Int): GroupedTasks!
+  monthlyTaskCostReport(organizationId: Int!, year: Int!, month: Int!): MaintenanceMonthlyTaskCostReportData!
 }
 
 input ResourceAllocation {
