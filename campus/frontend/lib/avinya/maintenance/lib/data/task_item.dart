@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:appflowy_board/appflowy_board.dart';
 import '../data/academy_location.dart';
+import '../services/translation_service.dart';
 
 class TaskItem extends AppFlowyGroupItem {
   final String itemId;
@@ -77,6 +78,23 @@ Future<List<AppFlowyGroupData>> getBoardData({
     final response = await http.get(uri, headers: headers);
     if (response.statusCode == 200) {
       final List<dynamic> groups = jsonDecode(response.body);
+
+      // Collect all texts for batch translation
+      final List<String> textsToTranslate = [];
+      for (var group in groups) {
+        if (group['tasks'] != null) {
+          for (var task in group['tasks']) {
+            if (task['title'] != null) textsToTranslate.add(task['title']);
+            if (task['description'] != null)
+              textsToTranslate.add(task['description']);
+          }
+        }
+      }
+
+      // Pre-fetch translations in one batch
+      if (textsToTranslate.isNotEmpty) {
+        await GeminiTranslator.translateBatch(textsToTranslate);
+      }
 
       // Map the JSON to AppFlowy Objects
       return groups.map((group) {
