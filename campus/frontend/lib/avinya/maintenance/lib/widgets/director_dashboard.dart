@@ -434,7 +434,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
           cardRadius: _cardRadius,
           primaryText: _primaryText,
           secondaryText: _secondaryText,
-          onTap: () => _showUpcomingTasksDialog(),
+          onTap: () => _showTasksDialog("Ongoing Tasks", "nextMonth"),
         ),
       ),
       SizedBox(width: isMobile ? 0 : 20, height: isMobile ? 15 : 0),
@@ -491,6 +491,17 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
             month: selectedMonthIndex! + 1,
             overallTaskStatus: 'Pending');
         break;
+      case 'nextMonth':
+        int currentYear = int.parse(DateTime.now().year.toString());
+        int currentMonth = DateTime.now().month;
+        int nextMonth = currentMonth == 12 ? 1 : currentMonth + 1;
+        int nextYear = currentMonth == 12 ? currentYear + 1 : currentYear;
+
+        rawData = await getMonthlyTasksByStatus(
+            organizationId: selectedOrganizationId!,
+            year: nextYear,
+            month: nextMonth);
+        break;  
       case 'all':
       default:
         rawData = await getMonthlyTasksByStatus(
@@ -563,52 +574,6 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
         SnackBar(content: Text('Failed to load cost breakdown: $e')),
       );
     }
-  }
-
-  void _showUpcomingTasksDialog() {
-    // Mock upcoming tasks data
-    List<Map<String, dynamic>> upcomingTasks = [
-      {
-        "task": "AC Maintenance - Lab",
-        "assigned": "Kamal",
-        "due": "Dec 20",
-        "status": "pending"
-      },
-      {
-        "task": "Roof Repair - Main Building",
-        "assigned": "Sunil",
-        "due": "Dec 22",
-        "status": "pending"
-      },
-      {
-        "task": "Electrical Inspection",
-        "assigned": "Nimal",
-        "due": "Dec 25",
-        "status": "pending"
-      },
-      {
-        "task": "Garden Landscaping",
-        "assigned": "Saman",
-        "due": "Dec 28",
-        "status": "pending"
-      },
-      {
-        "task": "Water Tank Cleaning",
-        "assigned": "Janaka",
-        "due": "Jan 02",
-        "status": "pending"
-      },
-    ];
-
-    showDialog(
-      context: context,
-      builder: (context) => TasksDialog(
-        title: "Upcoming Scheduled Tasks",
-        tasks: upcomingTasks,
-        primaryText: _primaryText,
-        secondaryText: _secondaryText,
-      ),
-    );
   }
 
   void _showEstimatedCostDialog() async {
