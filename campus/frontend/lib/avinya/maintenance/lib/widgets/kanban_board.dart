@@ -122,6 +122,19 @@ class _KanbanBoardState extends State<KanbanBoard> {
       }
     }
 
+    // Update backend status
+    try {
+      String status = toGroupId == 'pending' ? 'Pending' : toGroupId == 'progress' ? 'InProgress' : 'Completed';
+      await updateTaskStatus(int.parse(item.id), selectedPersonId!, status);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update task status: $e')),
+        );
+      }
+      return false; // Revert the move
+    }
+
     return true;
   }
 

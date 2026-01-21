@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:appflowy_board/appflowy_board.dart';
+import 'package:gallery/config/app_config.dart';
 import '../data/academy_location.dart';
 
 class TaskItem extends AppFlowyGroupItem {
@@ -96,3 +97,24 @@ Future<List<AppFlowyGroupData>> getBoardData({
     throw Exception('Error fetching data: $e');
   }
 }
+
+Future<void> updateTaskStatus(
+    int activityInstanceId, int personId, String status) async {
+  final uri = Uri.parse(
+      '${AppConfig.campusMaintenanceBffApiUrl}/tasks/activity_instances/$activityInstanceId/participants/$personId');
+  final response = await http.patch(
+    uri,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode({
+      'person_id': personId,
+      'activity_instance_id': activityInstanceId,
+      'participant_task_status': status,
+    }),
+  );
+  if (response.statusCode != 200) {
+    throw Exception('Failed to update task status: ${response.body}');
+  }
+}
+
