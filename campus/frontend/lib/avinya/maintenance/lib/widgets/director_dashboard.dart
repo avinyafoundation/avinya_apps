@@ -9,6 +9,7 @@ import '../widgets/common/stat_card.dart';
 import '../widgets/common/chart_card.dart';
 import '../widgets/common/page_title.dart';
 import '../data/monthly_cost.dart';
+import '../data/monthly_task_cost_report.dart';
 import 'dart:math';
 import 'package:intl/intl.dart';
 
@@ -531,20 +532,37 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
     );
   }
 
-  void _showCostBreakdownDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => CostBreakdownDialog(
-        primaryText: _primaryText,
-        secondaryText: _secondaryText,
-        costItems: const [
-          {"name": "Library AC Repair", "cost": "LKR 1,200"},
-          {"name": "Generator Servicing", "cost": "LKR 800"},
-          {"name": "Paint Room", "cost": "LKR 1,600"},
-        ],
-        totalCost: "LKR 3,600",
-      ),
-    );
+  void _showCostBreakdownDialog() async {
+    try {
+      final report = await getMonthlyTaskCostReport(
+        organizationId: selectedOrganizationId ?? 2,
+        year: int.parse(selectedYear!),
+        month: selectedMonthIndex! + 1,
+      );
+
+      List<Map<String, String>> costItems = report.tasks
+          .map((task) => {
+                "name": task.taskTitle,
+                "cost": "LKR ${task.actualCost.toStringAsFixed(0)}",
+              })
+          .toList();
+
+      String totalCost = "LKR ${report.totalActualCost.toStringAsFixed(0)}";
+
+      showDialog(
+        context: context,
+        builder: (context) => CostBreakdownDialog(
+          primaryText: _primaryText,
+          secondaryText: _secondaryText,
+          costItems: costItems,
+          totalCost: totalCost,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load cost breakdown: $e')),
+      );
+    }
   }
 
   void _showUpcomingTasksDialog() {
@@ -593,22 +611,56 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
     );
   }
 
-  void _showEstimatedCostDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => CostBreakdownDialog(
-        primaryText: _primaryText,
-        secondaryText: _secondaryText,
-        costItems: const [
-          {"name": "AC Maintenance - Lab", "cost": "LKR 35,000"},
-          {"name": "Roof Repair - Main Building", "cost": "LKR 45,000"},
-          {"name": "Electrical Inspection", "cost": "LKR 20,000"},
-          {"name": "Garden Landscaping", "cost": "LKR 30,000"},
-          {"name": "Water Tank Cleaning", "cost": "LKR 20,000"},
-        ],
-        totalCost: "LKR 150,000",
-      ),
-    );
+  void _showEstimatedCostDialog() async {
+    
+    int currentYear = int.parse(DateTime.now().year.toString());
+    int currentMonth = DateTime.now().month;
+    int nextMonth = currentMonth == 12 ? 1 : currentMonth + 1;
+    int nextYear = currentMonth == 12 ? currentYear + 1 : currentYear;
+    
+    try {
+
+      final report = await getMonthlyTaskCostReport(
+        organizationId: selectedOrganizationId ?? 2,
+        year: nextYear,
+        month: nextMonth,
+      );
+
+      List<Map<String, String>> costItems = report.tasks
+          .map((task) => {
+                "name": task.taskTitle,
+                "cost": "LKR ${task.estimatedCost.toStringAsFixed(0)}",
+              })
+          .toList();
+
+      String totalCost = "LKR ${report.totalEstimatedCost.toStringAsFixed(0)}";
+
+      showDialog(
+        context: context,
+        builder: (context) => CostBreakdownDialog(
+          primaryText: _primaryText,
+          secondaryText: _secondaryText,
+          costItems: costItems,
+          totalCost: totalCost,
+        ),
+      );
+    } catch (e) {
+      String nextMonthName = DateFormat.MMMM().format(DateTime(nextYear, nextMonth));
+      List<Map<String, String>> costItems = [
+        {"name": "No tasks with finance details for $nextMonthName $nextYear", "cost": ""}
+      ];
+      String totalCost = "LKR 0";
+
+      showDialog(
+        context: context,
+        builder: (context) => CostBreakdownDialog(
+          primaryText: _primaryText,
+          secondaryText: _secondaryText,
+          costItems: costItems,
+          totalCost: totalCost,
+        ),
+      );
+    }
   }
 
   // --- 2. PIE CHART ---
