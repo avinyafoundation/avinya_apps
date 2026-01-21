@@ -123,7 +123,7 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                         Text(
                           widget.item.title,
                           style: const TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF172B4D)),
                         ),
@@ -132,7 +132,21 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                           const SizedBox(height: 6),
                           Text(widget.item.description!,
                               style: const TextStyle(
-                                  fontSize: 14, color: Colors.black87)),
+                                  fontSize: 12, color: Colors.black87)),
+                        ],
+                        if (widget.item.location.name != null &&
+                            widget.item.location.name!.isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(Icons.location_on,
+                                  size: 12, color: Colors.grey),
+                              const SizedBox(width: 4),
+                              Text(widget.item.location.name!,
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.grey)),
+                            ],
+                          ),
                         ],
                         const SizedBox(height: 12),
                         Row(
