@@ -45,8 +45,8 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
       if (widget.item.isOverdue) {
         // Red Pulse for Overdue
         targetColor = Colors.red.withOpacity(0.6);
-      } else if (widget.item.statusText != 'On Schedule') {
-        // Amber Pulse for Warning
+      } else if (widget.item.overdueDays >= -2) {
+        // Blue Pulse for Ahead of Schedule
         targetColor = Colors.amber.withOpacity(0.6);
       }
     }
@@ -143,7 +143,7 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                               decoration: BoxDecoration(
                                 color: widget.item.isOverdue
                                     ? Colors.red.shade50
-                                    : (widget.item.statusText == 'On Schedule'
+                                    : (widget.item.overdueDays < -2
                                         ? Colors.blue.shade50
                                         : Colors.amber.shade50),
                                 borderRadius: BorderRadius.circular(3),
@@ -155,7 +155,7 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                                   fontWeight: FontWeight.bold,
                                   color: widget.item.isOverdue
                                       ? Colors.red
-                                      : (widget.item.statusText == 'On Schedule'
+                                      : (widget.item.overdueDays < -2
                                           ? Colors.blue.shade800
                                           : Colors.amber.shade800),
                                 ),
