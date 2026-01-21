@@ -43,6 +43,8 @@ Future<http.Response> createAcademyLocation(
           '${AppConfig.campusMaintenanceBffApiUrl}/organizations/${academyLocation.organizationId}/locations'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'accept': 'application/json',
+        'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
       },
       body: jsonEncode(academyLocation.toJson()),
     );
@@ -65,7 +67,13 @@ Future<List<AcademyLocation>> fetchAllAcademyLocations(
     int organizationId) async {
   try {
     final response = await http.get(Uri.parse(
-        '${AppConfig.campusMaintenanceBffApiUrl}/organizations/$organizationId/locations'));
+        '${AppConfig.campusMaintenanceBffApiUrl}/organizations/$organizationId/locations'),
+        headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'accept': 'application/json',
+        'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      },
+    );
 
     if (response.statusCode == 200) {
       List<dynamic> body = jsonDecode(response.body);

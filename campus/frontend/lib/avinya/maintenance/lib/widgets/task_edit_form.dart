@@ -344,6 +344,14 @@ class TaskEditFormState extends State<TaskEditForm> {
     return null;
   }
 
+  String? validatePositiveNumber(String? value) {
+    if (value == null || value.isEmpty) return null;
+    final number = double.tryParse(value);
+    if (number == null) return "Please enter a valid number";
+    if (number <= 0) return "Value cannot be negative or zero";
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -450,7 +458,16 @@ class TaskEditFormState extends State<TaskEditForm> {
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
-                                    return const CircularProgressIndicator();
+                                    //return const CircularProgressIndicator();
+                                    return const Align(
+                                      alignment: Alignment.center,
+                                      child: SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 3),
+                                      ),
+                                    );
                                   }
           
                                   if (snapshot.hasError) {
@@ -483,7 +500,16 @@ class TaskEditFormState extends State<TaskEditForm> {
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
-                                    return const CircularProgressIndicator();
+                                    //return const CircularProgressIndicator();
+                                    return const Align(
+                                      alignment: Alignment.center,
+                                      child: SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 3),
+                                      ),
+                                    );
                                   }
           
                                   if (snapshot.hasError) {
@@ -565,6 +591,7 @@ class TaskEditFormState extends State<TaskEditForm> {
                             label: "Estimated Total Cost",
                             controller: estimatedCostController,
                             hintText: "eg: 4000 LKR",
+                            validator: validatePositiveNumber,
                             // validator: (v) {
                             //   if (!hasFinancialInfo) return null;
                             //   if (v == null || v.isEmpty) return "Required";
@@ -586,6 +613,7 @@ class TaskEditFormState extends State<TaskEditForm> {
                             label: "Labour Cost",
                             controller: labourCostController,
                             hintText: "eg: 1500 LKR",
+                            validator: validatePositiveNumber,
                             // validator: (v) =>
                             //   v == null || v.isEmpty ? "Please enter labour cost" : null,
                           ),

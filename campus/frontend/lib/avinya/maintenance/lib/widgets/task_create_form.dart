@@ -243,7 +243,7 @@ final List<AcademyLocation> mockLocations = [
     if (value == null || value.isEmpty) return null;
     final number = double.tryParse(value);
     if (number == null) return "Please enter a valid number";
-    if (number < 0) return "Value cannot be negative";
+    if (number <= 0) return "Value cannot be negative or zero";
     return null;
   }
 
@@ -344,7 +344,16 @@ final List<AcademyLocation> mockLocations = [
                         future: locationsFuture,
                         builder: (context, snapshot) {
                           if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
+                            //return const CircularProgressIndicator();
+                            return const Align(
+                              alignment: Alignment.center,
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 3),
+                              ),
+                            );
                           }
                                       
                         if (snapshot.hasError) {
@@ -374,7 +383,16 @@ final List<AcademyLocation> mockLocations = [
                         future: personsFuture,
                         builder: (context, snapshot) {
                           if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
+                            //return const CircularProgressIndicator();
+                            return const Align(
+                              alignment: Alignment.center,
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 3),
+                              ),
+                            );
                           }
                                     
                           if (snapshot.hasError) {
@@ -398,6 +416,12 @@ final List<AcademyLocation> mockLocations = [
                             onUnselect: (id) {
                               setState(() => selectedPerson.remove(id));
                               print(selectedPerson);
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please select at least one person";
+                              }
+                              return null;
                             },
                           );
                         },
