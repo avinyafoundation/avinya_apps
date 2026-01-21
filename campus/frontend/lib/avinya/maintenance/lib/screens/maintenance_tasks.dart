@@ -43,9 +43,15 @@ class _ReportScreenState extends State<ReportScreen> {
   int _offset = 0;
   int _limit = 5;
 
+  // Scroll controllers
+  late ScrollController _verticalController;
+  late ScrollController _horizontalController;
+
   @override
   void initState() {
     super.initState();
+    _verticalController = ScrollController();
+    _horizontalController = ScrollController();
     titleController.text = selectedTitleFilter ?? '';
     titleController.addListener(() {
       setState(() {
@@ -60,6 +66,8 @@ class _ReportScreenState extends State<ReportScreen> {
   @override
   void dispose() {
     titleController.dispose();
+    _verticalController.dispose();
+    _horizontalController.dispose();
     super.dispose();
   }
 
@@ -162,15 +170,19 @@ class _ReportScreenState extends State<ReportScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Scrollbar(
+        controller: _verticalController,
         thumbVisibility: true,
         trackVisibility: true,
         child: SingleChildScrollView(
+          controller: _verticalController,
           scrollDirection: Axis.vertical,
           child: Scrollbar(
+            controller: _horizontalController,
             thumbVisibility: true,
             trackVisibility: true,
             notificationPredicate: (notification) => notification.depth == 1,
             child: SingleChildScrollView(
+              controller: _horizontalController,
               scrollDirection: Axis.horizontal,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
