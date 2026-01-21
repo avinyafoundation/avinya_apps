@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gallery/avinya/maintenance/lib/data/maintenance_task.dart';
 import 'package:gallery/avinya/maintenance/lib/widgets/task_edit_form.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:intl/intl.dart';
@@ -516,6 +517,45 @@ class _ReportScreenState extends State<ReportScreen> {
     return tableWidget;
   }
 
+  void _deactivateTask(ActivityInstance instance) async {
+    bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Confirm Deactivation"),
+        content: const Text("Are you sure you want to deactivate this task?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Confirm"),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await deactivateMaintenanceTask(
+            instance.maintenanceTask!.id!, campusAppsPortalInstance.getDigitalId().toString());
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Task deactivated successfully")),
+          );
+        }
+        _loadData(); // Reload data
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Failed to deactivate task: $e")),
+          );
+        }
+      }
+    }
+  }
+
   // --- ALL TASKS TABLE (Standard Theme) ---
   Widget _buildAllTasksTable() {
     // Slice data for pagination
@@ -648,7 +688,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       IconButton(
                         icon: const Icon(Icons.delete,
                             size: 18, color: Colors.red),
-                        onPressed: () {},
+                        onPressed: () => _deactivateTask(instance),
                       ),
                     ],
                   )),
