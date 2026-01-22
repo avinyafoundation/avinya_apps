@@ -796,12 +796,13 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
                               'Nov',
                               'Dec'
                             ];
-                            if (value >= 0 && value < 12)
+                            if (value >= 0 && value < 12) {
                               return Padding(
                                   padding: const EdgeInsets.only(top: 4.0),
                                   child: Text(months[value.toInt()],
                                       style: TextStyle(
                                           fontSize: 9, color: _secondaryText)));
+                            }
                             return const SizedBox();
                           })),
                   leftTitles: AxisTitles(
@@ -833,6 +834,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
                           (data.month! - 1).toDouble(), data.actualCost!);
                     }).toList(),
                     isCurved: true,
+                    preventCurveOverShooting: true,
                     color: Colors.blue,
                     barWidth: 3,
                     isStrokeCapRound: true,
@@ -857,6 +859,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
                           (data.month! - 1).toDouble(), data.estimatedCost!);
                     }).toList(),
                     isCurved: true,
+                    preventCurveOverShooting: true,
                     color: Colors.orange,
                     barWidth: 3,
                     isStrokeCapRound: true,
