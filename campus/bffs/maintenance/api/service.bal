@@ -1,10 +1,6 @@
 import ballerina/graphql;
 import ballerina/http;
 import ballerina/log;
-import ballerina/regex;
-
-configurable string GEMINI_API_KEY = ?;
-configurable string GEMINI_URL = ?;
 
 public function initClientConfig() returns ConnectionConfig {
     ConnectionConfig _clientConig = {};
@@ -496,7 +492,7 @@ service / on new http:Listener(9097) {
         // 3. Translate
         map<string> translations = {};
         if (textsToTranslate.length() > 0) {
-            translations = check self.translateWithGemini(textsToTranslate);
+            translations = check translateWithGemini(textsToTranslate);
         }
 
         // 4. Construct JSON Response
@@ -513,13 +509,13 @@ service / on new http:Listener(9097) {
                     string? title = task.title;
                     if (title is string) {
                         string rawTitle = translations.hasKey(title) ? translations.get(title) : title;
-                        // FIX: Escape to Unicode (\uXXXX) before sending
-                        translatedTitle = self.escapeUnicode(rawTitle);
+                        // Escape to Unicode (\uXXXX) before sending
+                        translatedTitle = escapeUnicode(rawTitle);
                     }
                     string? desc = task.description;
                     if (desc is string) {
                         string rawDesc = translations.hasKey(desc) ? translations.get(desc) : desc;
-                        translatedDesc = self.escapeUnicode(rawDesc);
+                        translatedDesc = escapeUnicode(rawDesc);
                     }
                 }
                 
@@ -556,125 +552,4 @@ service / on new http:Listener(9097) {
 
         return groupsJson;
     }
-
-    //  NEW HELPER: Converts Sinhala chars to \uXXXX safe strings
-    private function escapeUnicode(string input) returns string {
-        string output = "";
-        foreach var ch in input {
-            int cp = ch.getCodePoint(0);
-            if (cp > 127) {
-                string hex = cp.toHexString();
-                while (hex.length() < 4) {
-                    hex = "0" + hex;
-                }
-                output = output + "\\u" + hex;
-            } else {
-                output = output + ch;
-            }
-        }
-        return output;
-    }
-
-    //  TRANSLATION HELPER (With UTF-8 Byte Reader)
-    private function translateWithGemini(string[] texts) returns map<string>|error {
-        http:Client geminiEndpoint = check new (GEMINI_URL);
-        
-        string prompt = string `
-        Role: Translator (English to Sinhala).
-        Output Format: JSON Array of Objects [{"k": "English", "v": "Sinhala"}].
-        Strict Rules: Do NOT translate the key "k". Only translate "v". Do not use any English letter!
-        TASK: Translate the following list of maintenance tasks into colloquial, spoken Sinhala (as used in daily conversation).
-        Tone: Informal and direct. Avoid bookish/formal words (e.g., use 'හදන්න' instead of 'ප්‍රතිසංස්කරණය කරන්න'). Give like normal professional commands, not in a rude tone, For eg instead of using කරනවා use කරන්න. And use common English words in sinhala like වොෂ් රූම්.
-        Input: ${texts.toJsonString()}
-        `;
-
-        json payload = {
-            "contents": [{
-                "role": "user",
-                "parts": [{ "text": prompt }]
-            }]
-        };
-
-        http:Request req = new;
-        req.setJsonPayload(payload);
-        req.setHeader("Content-Type", "application/json");
-        req.setHeader("x-goog-api-key", GEMINI_API_KEY);
-
-        http:Response response = check geminiEndpoint->post("", req);
-        
-        // Force UTF-8 Decoding
-        byte[] payloadBytes = check response.getBinaryPayload();
-        string responseStr = check string:fromBytes(payloadBytes);
-        json fullGeminiResponse = check responseStr.fromJsonString();
-        map<json> responseMap = <map<json>>fullGeminiResponse;
-
-        // 1. Check if Gemini returned an error
-        if (responseMap.hasKey("error")) {
-            json errorDetails = responseMap.get("error");
-            log:printError("Gemini API Error: " + errorDetails.toString());
-            return {}; 
-        }
-
-        // 2. Safely check for 'candidates'
-        if (!responseMap.hasKey("candidates")) {
-            log:printError("Gemini Response Invalid: Missing 'candidates' key. Full Response: " + responseStr);
-            return {};
-        }
-
-        json candidates = responseMap.get("candidates");
-        string rawInnerJson = "";
-
-        if (candidates is json[] && candidates.length() > 0) {
-            map<json> firstCandidate = <map<json>>candidates[0];
-            
-            // Check for Safety Blocking
-            if (firstCandidate.hasKey("finishReason") && firstCandidate.get("finishReason").toString() == "SAFETY") {
-                log:printError("Gemini blocked content due to safety settings.");
-                return {};
-            }
-
-            if (firstCandidate.hasKey("content")) {
-                map<json> content = <map<json>>firstCandidate.get("content");
-                json parts = content.get("parts");
-                if (parts is json[] && parts.length() > 0) {
-                    map<json> firstPart = <map<json>>parts[0];
-                    if (firstPart.hasKey("text")) {
-                        rawInnerJson = (firstPart.get("text")).toString();
-                    }
-                }
-            }
-        }
-
-        if (rawInnerJson == "") {
-            log:printError("Gemini response content was empty.");
-            return {};
-        }
-
-        string cleanJson = regex:replace(rawInnerJson, "```json", "");
-        cleanJson = regex:replace(cleanJson, "```", "");
-        cleanJson = cleanJson.trim();
-
-        int? startIdx = cleanJson.indexOf("[");
-        int? endIdx = cleanJson.lastIndexOf("]");
-        
-        map<string> translationMap = {};
-
-        if (startIdx is int && endIdx is int) {
-            cleanJson = cleanJson.substring(startIdx, endIdx + 1);
-            json|error parsedList = cleanJson.fromJsonString();
-            
-            if (parsedList is json[]) {
-                foreach json item in parsedList {
-                    map<json> obj = <map<json>>item;
-                    string key = obj.hasKey("k") ? (obj.get("k")).toString() : "";
-                    string val = obj.hasKey("v") ? (obj.get("v")).toString() : "";
-                    if (key != "") {
-                        translationMap[key] = val;
-                    }
-                }
-            }
-        }
-        
-        return translationMap;
-    }
-}
+}    
