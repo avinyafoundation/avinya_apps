@@ -404,7 +404,7 @@ class _ReportScreenState extends State<ReportScreen> {
               const SizedBox(width: 10),
               // Clear Button
               Button(
-                label: "Clear",
+                label: "Reset Filters",
                 buttonColor: Colors.grey[300],
                 textColor: Colors.black87,
                 height: 40,
@@ -414,8 +414,8 @@ class _ReportScreenState extends State<ReportScreen> {
                     selectedPersonIds.clear();
                     selectedStatusFilter = null;
                     selectedTitleFilter = null;
-                    fromDate = null;
-                    toDate = null;
+                    fromDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+                    toDate = DateTime(DateTime.now().year, DateTime.now().month + 1, DateTime.now().day);
                     titleController.clear();
                     _offset = 0; // Reset pagination
                   });
@@ -544,8 +544,8 @@ class _ReportScreenState extends State<ReportScreen> {
 
     if (confirm == true) {
       try {
-        await deactivateMaintenanceTask(
-            instance.maintenanceTask!.id!, campusAppsPortalInstance.getDigitalId().toString());
+        await deactivateMaintenanceTask(instance.maintenanceTask!.id!,
+            campusAppsPortalInstance.getDigitalId().toString());
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Task deactivated successfully")),
@@ -568,6 +568,79 @@ class _ReportScreenState extends State<ReportScreen> {
     final paginatedTasks = _allActivityInstances; // Already paginated from API
     final hasNext = _allActivityInstances.length == _limit;
     final hasPrevious = _offset > 0;
+
+    // No-results placeholder
+    if (paginatedTasks.isEmpty) {
+      return Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              vertical: 28,
+              horizontal: 20,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: Colors.grey.shade200,
+              ),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.inbox_outlined,
+                  color: Colors.grey,
+                  size: 28,
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    'No tasks found for the selected filters',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedPersonIds.clear();
+                      selectedStatusFilter = null;
+                      selectedTitleFilter = null;
+                      fromDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+                      toDate = DateTime(DateTime.now().year, DateTime.now().month + 1, DateTime.now().day);
+                      titleController.clear();
+                      _offset = 0;
+                    });
+                    _loadData();
+                  },
+                  child: const Text('Reset filters'),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          // keep pagination visible but disabled when there are no results
+          PaginationControls(
+            hasPrevious: false,
+            hasNext: false,
+            limit: _limit,
+            onPrevious: () {},
+            onNext: () {},
+            onLimitChanged: (newLimit) async {
+              setState(() {
+                _limit = newLimit;
+                _offset = 0;
+              });
+              _loadData();
+            },
+          ),
+        ],
+      );
+    }
+
 
     return Column(
       children: [
