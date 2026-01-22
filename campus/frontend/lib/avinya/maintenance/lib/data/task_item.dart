@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:appflowy_board/appflowy_board.dart';
+import 'package:gallery/config/app_config.dart';
 import '../data/academy_location.dart';
 
 class TaskItem extends AppFlowyGroupItem {
@@ -27,13 +28,24 @@ class TaskItem extends AppFlowyGroupItem {
     final taskData = json['task'] as Map<String, dynamic>;
     return TaskItem(
       itemId: json['id'].toString(),
-      title: taskData['title'] ?? '',
-      description: taskData['description'],
+      title: _unescapeUnicode(taskData['title'] ?? '' as String?),
+      description: _unescapeUnicode(taskData['description'] as String?),
       location: AcademyLocation.fromJson(taskData['location']),
       endDate: DateTime.parse(json['end_time']),
       statusText: json['statusText'] ?? '',
       overdueDays: json['overdue_days'] ?? 0,
     );
+  }
+
+  static String _unescapeUnicode(String? input) {
+    if (input == null || !input.contains(r'\u')) return input ?? '';
+    try {
+      // jsonDecode will interpret \uXXXX escapes when fed a quoted JSON string
+      final safe = input.replaceAll('"', r'\"');
+      return jsonDecode('"$safe"') as String;
+    } catch (_) {
+      return input;
+    }
   }
 
   bool get isOverdue => overdueDays > 0;
@@ -50,7 +62,8 @@ Future<List<AppFlowyGroupData>> getBoardData({
   String? taskType,
   int? location,
 }) async {
-  final String baseUrl = 'http://localhost:9097/organizations/${organizationId ?? 2}/getTasksByStatus';
+  final String baseUrl =
+      'http://localhost:9097/organizations/${organizationId ?? 2}/getSinhalaTasks';
   final Map<String, String> queryParams = {};
   if (personId != null) queryParams['personId'] = personId.toString();
   if (fromDate != null) queryParams['fromDate'] = fromDate;
@@ -84,3 +97,24 @@ Future<List<AppFlowyGroupData>> getBoardData({
     throw Exception('Error fetching data: $e');
   }
 }
+
+Future<void> updateTaskStatus(
+    int activityInstanceId, int personId, String status) async {
+  final uri = Uri.parse(
+      '${AppConfig.campusMaintenanceBffApiUrl}/tasks/activity_instances/$activityInstanceId/participants/$personId');
+  final response = await http.patch(
+    uri,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode({
+      'person_id': personId,
+      'activity_instance_id': activityInstanceId,
+      'participant_task_status': status,
+    }),
+  );
+  if (response.statusCode != 200) {
+    throw Exception('Failed to update task status: ${response.body}');
+  }
+}
+
