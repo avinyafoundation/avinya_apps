@@ -53,6 +53,12 @@ class _ReportScreenState extends State<ReportScreen> {
     super.initState();
     _verticalController = ScrollController();
     _horizontalController = ScrollController();
+
+    // Default date range: from today to one month ahead
+    final now = DateTime.now();
+    fromDate = DateTime(now.year, now.month, now.day);
+    toDate = DateTime(now.year, now.month + 1, now.day);
+
     titleController.text = selectedTitleFilter ?? '';
     titleController.addListener(() {
       setState(() {
@@ -148,7 +154,7 @@ class _ReportScreenState extends State<ReportScreen> {
     switch (status.toLowerCase()) {
       case 'completed':
         return Colors.green;
-      case 'in progress':
+      case 'inprogress':
         return Colors.blue;
       case 'pending':
         return Colors.orange;
@@ -349,22 +355,22 @@ class _ReportScreenState extends State<ReportScreen> {
                       width: 200,
                       child: DropDown<String>(
                         label: "Task Status",
-                        items: ["Pending", "In Progress", "Completed"],
-                        selectedValues: ["Pending", "In Progress", "Completed"]
+                        items: ["Pending", "InProgress", "Completed"],
+                        selectedValues: ["Pending", "InProgress", "Completed"]
                                     .indexOf(selectedStatusFilter ?? "") >=
                                 0
-                            ? ["Pending", "In Progress", "Completed"]
+                            ? ["Pending", "InProgress", "Completed"]
                                 .indexOf(selectedStatusFilter!)
                             : null,
                         valueField: (item) => [
                           "Pending",
-                          "In Progress",
+                          "InProgress",
                           "Completed"
                         ].indexOf(item),
                         displayField: (item) => item,
                         onChanged: (index) => setState(() =>
                             selectedStatusFilter = index != null
-                                ? ["Pending", "In Progress", "Completed"][index]
+                                ? ["Pending", "InProgress", "Completed"][index]
                                 : null),
                       ),
                     ),
