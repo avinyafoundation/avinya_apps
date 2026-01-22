@@ -41,7 +41,7 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
     });
 
     final person = campusAppsPortalInstance.getUserPerson();
-    final organizationId = person.organization?.id ?? 1;
+    final organizationId = person.organization?.id ?? 2;
 
     try {
       // Fetch tasks with financialStatus=Pending and includeFinance=true
@@ -73,9 +73,31 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
   // --- ACTIONS ---
 
   Future<void> _handleApprove(ActivityInstance instance) async {
-    // 1. Prepare the update object
     if (instance.financialInformation == null) return;
 
+    // Show confirmation dialog
+    bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Confirm Approval"),
+        content: const Text("Are you sure you want to approve this task?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.green),
+            child: const Text("Confirm"),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    // 1. Prepare the update object
     MaintenanceFinance updateData = MaintenanceFinance(
       id: instance.financialInformation!.id,
       status: FinanceStatus.approved,
@@ -100,8 +122,6 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
           SnackBar(
             content: Text(
                 "'${instance.maintenanceTask?.title}' Approved Successfully"),
-            // backgroundColor: _approveGreen,
-            // duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -110,7 +130,6 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Error approving task: $e"),
-            // backgroundColor: _rejectRed,
           ),
         );
       }
@@ -299,8 +318,7 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
 
   Widget _buildDataTable() {
     // Calculate pagination state based on current data
-    final hasNext = _pendingTasks.length >=
-        _limit; // If we got full page, there might be more
+    final hasNext = _pendingTasks.length == _limit;
     final hasPrevious = _offset > 0;
 
     return LayoutBuilder(
@@ -365,20 +383,23 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
               hasPrevious: hasPrevious,
               hasNext: hasNext,
               limit: _limit,
-              onPrevious: () {
+              onPrevious: () async {
+                if (!hasPrevious || _isLoading) return;
                 setState(() {
-                  _offset -= _limit;
+                  _offset = _offset - _limit;
                   if (_offset < 0) _offset = 0;
                 });
                 _loadData();
               },
-              onNext: () {
+              onNext: () async {
+                if (!hasNext || _isLoading) return;
                 setState(() {
-                  _offset += _limit;
+                  _offset = _offset + _limit;
                 });
                 _loadData();
               },
-              onLimitChanged: (newLimit) {
+              onLimitChanged: (newLimit) async {
+                if (_isLoading) return;
                 setState(() {
                   _limit = newLimit;
                   _offset = 0;

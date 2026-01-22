@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gallery/avinya/maintenance/lib/data/maintenance_task.dart';
 import 'package:gallery/avinya/maintenance/lib/widgets/task_edit_form.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:intl/intl.dart';
@@ -43,9 +44,21 @@ class _ReportScreenState extends State<ReportScreen> {
   int _offset = 0;
   int _limit = 5;
 
+  // Scroll controllers
+  late ScrollController _verticalController;
+  late ScrollController _horizontalController;
+
   @override
   void initState() {
     super.initState();
+    _verticalController = ScrollController();
+    _horizontalController = ScrollController();
+
+    // Default date range: from today to one month ahead
+    final now = DateTime.now();
+    fromDate = DateTime(now.year, now.month, now.day);
+    toDate = DateTime(now.year, now.month + 1, now.day);
+
     titleController.text = selectedTitleFilter ?? '';
     titleController.addListener(() {
       setState(() {
@@ -60,6 +73,8 @@ class _ReportScreenState extends State<ReportScreen> {
   @override
   void dispose() {
     titleController.dispose();
+    _verticalController.dispose();
+    _horizontalController.dispose();
     super.dispose();
   }
 
@@ -139,7 +154,7 @@ class _ReportScreenState extends State<ReportScreen> {
     switch (status.toLowerCase()) {
       case 'completed':
         return Colors.green;
-      case 'in progress':
+      case 'inprogress':
         return Colors.blue;
       case 'pending':
         return Colors.orange;
@@ -162,15 +177,19 @@ class _ReportScreenState extends State<ReportScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Scrollbar(
+        controller: _verticalController,
         thumbVisibility: true,
         trackVisibility: true,
         child: SingleChildScrollView(
+          controller: _verticalController,
           scrollDirection: Axis.vertical,
           child: Scrollbar(
+            controller: _horizontalController,
             thumbVisibility: true,
             trackVisibility: true,
             notificationPredicate: (notification) => notification.depth == 1,
             child: SingleChildScrollView(
+              controller: _horizontalController,
               scrollDirection: Axis.horizontal,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
@@ -336,22 +355,22 @@ class _ReportScreenState extends State<ReportScreen> {
                       width: 200,
                       child: DropDown<String>(
                         label: "Task Status",
-                        items: ["Pending", "In Progress", "Completed"],
-                        selectedValues: ["Pending", "In Progress", "Completed"]
+                        items: ["Pending", "InProgress", "Completed"],
+                        selectedValues: ["Pending", "InProgress", "Completed"]
                                     .indexOf(selectedStatusFilter ?? "") >=
                                 0
-                            ? ["Pending", "In Progress", "Completed"]
+                            ? ["Pending", "InProgress", "Completed"]
                                 .indexOf(selectedStatusFilter!)
                             : null,
                         valueField: (item) => [
                           "Pending",
-                          "In Progress",
+                          "InProgress",
                           "Completed"
                         ].indexOf(item),
                         displayField: (item) => item,
                         onChanged: (index) => setState(() =>
                             selectedStatusFilter = index != null
-                                ? ["Pending", "In Progress", "Completed"][index]
+                                ? ["Pending", "InProgress", "Completed"][index]
                                 : null),
                       ),
                     ),
@@ -385,7 +404,7 @@ class _ReportScreenState extends State<ReportScreen> {
               const SizedBox(width: 10),
               // Clear Button
               Button(
-                label: "Clear",
+                label: "Reset Filters",
                 buttonColor: Colors.grey[300],
                 textColor: Colors.black87,
                 height: 40,
@@ -395,8 +414,8 @@ class _ReportScreenState extends State<ReportScreen> {
                     selectedPersonIds.clear();
                     selectedStatusFilter = null;
                     selectedTitleFilter = null;
-                    fromDate = null;
-                    toDate = null;
+                    fromDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+                    toDate = DateTime(DateTime.now().year, DateTime.now().month + 1, DateTime.now().day);
                     titleController.clear();
                     _offset = 0; // Reset pagination
                   });
@@ -504,13 +523,124 @@ class _ReportScreenState extends State<ReportScreen> {
     return tableWidget;
   }
 
+  void _deactivateTask(ActivityInstance instance) async {
+    bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Confirm Deactivation"),
+        content: const Text("Are you sure you want to deactivate this task?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Confirm"),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await deactivateMaintenanceTask(instance.maintenanceTask!.id!,
+            campusAppsPortalInstance.getDigitalId().toString());
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Task deactivated successfully")),
+          );
+        }
+        _loadData(); // Reload data
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Failed to deactivate task: $e")),
+          );
+        }
+      }
+    }
+  }
+
   // --- ALL TASKS TABLE (Standard Theme) ---
   Widget _buildAllTasksTable() {
     // Slice data for pagination
-    final paginatedTasks =
-        _allActivityInstances.skip(_offset).take(_limit).toList();
-    final hasNext = _allActivityInstances.length > (_offset + _limit);
+    final paginatedTasks = _allActivityInstances; // Already paginated from API
+    final hasNext = _allActivityInstances.length == _limit;
     final hasPrevious = _offset > 0;
+
+    // No-results placeholder
+    if (paginatedTasks.isEmpty) {
+      return Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              vertical: 28,
+              horizontal: 20,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: Colors.grey.shade200,
+              ),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.inbox_outlined,
+                  color: Colors.grey,
+                  size: 28,
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    'No tasks found for the selected filters',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedPersonIds.clear();
+                      selectedStatusFilter = null;
+                      selectedTitleFilter = null;
+                      fromDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+                      toDate = DateTime(DateTime.now().year, DateTime.now().month + 1, DateTime.now().day);
+                      titleController.clear();
+                      _offset = 0;
+                    });
+                    _loadData();
+                  },
+                  child: const Text('Reset filters'),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          // keep pagination visible but disabled when there are no results
+          PaginationControls(
+            hasPrevious: false,
+            hasNext: false,
+            limit: _limit,
+            onPrevious: () {},
+            onNext: () {},
+            onLimitChanged: (newLimit) async {
+              setState(() {
+                _limit = newLimit;
+                _offset = 0;
+              });
+              _loadData();
+            },
+          ),
+        ],
+      );
+    }
+
 
     return Column(
       children: [
@@ -636,7 +766,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       IconButton(
                         icon: const Icon(Icons.delete,
                             size: 18, color: Colors.red),
-                        onPressed: () {},
+                        onPressed: () => _deactivateTask(instance),
                       ),
                     ],
                   )),
@@ -648,22 +778,43 @@ class _ReportScreenState extends State<ReportScreen> {
           hasPrevious: hasPrevious,
           hasNext: hasNext,
           limit: _limit,
-          onPrevious: () {
+          onPrevious: () async {
+            if (!hasPrevious || _isLoading) return;
             setState(() {
-              _offset -= _limit;
+              _offset = _offset - _limit;
               if (_offset < 0) _offset = 0;
             });
+            _loadData();
+            if (_verticalController.hasClients) {
+              _verticalController.animateTo(0,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOut);
+            }
           },
-          onNext: () {
+          onNext: () async {
+            if (!hasNext || _isLoading) return;
             setState(() {
-              _offset += _limit;
+              _offset = _offset + _limit;
             });
+            _loadData();
+            if (_verticalController.hasClients) {
+              _verticalController.animateTo(0,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOut);
+            }
           },
-          onLimitChanged: (newLimit) {
+          onLimitChanged: (newLimit) async {
+            if (_isLoading) return;
             setState(() {
               _limit = newLimit;
               _offset = 0;
             });
+            _loadData();
+            if (_verticalController.hasClients) {
+              _verticalController.animateTo(0,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOut);
+            }
           },
         ),
       ],

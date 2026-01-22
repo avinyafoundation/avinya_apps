@@ -77,13 +77,29 @@ class MaintenanceFinance {
 //Update financial status 
 Future<http.Response> updateTaskFinance(
     int organizationId, MaintenanceFinance financeUpdate) async {
-  final response = await http.patch(
-    Uri.parse('${AppConfig.campusMaintenanceBffApiUrl}/organizations/$organizationId/tasks/finance'),
+  if (financeUpdate.id == null) {
+    throw Exception('MaintenanceFinance ID is required for update');
+  }
+
+  final uri = Uri.parse(
+      '${AppConfig.campusMaintenanceBffApiUrl}/organizations/$organizationId/tasks/finance/${financeUpdate.id}');
+
+  Map<String, dynamic> body = {
+    'status': statusToString(financeUpdate.status!),
+    'reviewed_by': financeUpdate.reviewedBy,
+  };
+
+  if (financeUpdate.status == FinanceStatus.rejected) {
+    body['rejection_reason'] = financeUpdate.rejectionReason;
+  }
+
+  final response = await http.put(
+    uri,
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
-    body: jsonEncode(financeUpdate.toJson()),
+    body: jsonEncode(body),
   );
 
   if (response.statusCode >= 200 && response.statusCode < 300) {

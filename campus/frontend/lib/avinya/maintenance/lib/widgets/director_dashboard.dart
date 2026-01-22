@@ -9,6 +9,7 @@ import '../widgets/common/stat_card.dart';
 import '../widgets/common/chart_card.dart';
 import '../widgets/common/page_title.dart';
 import '../data/monthly_cost.dart';
+import '../data/monthly_task_cost_report.dart';
 import 'dart:math';
 import 'package:intl/intl.dart';
 
@@ -433,7 +434,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
           cardRadius: _cardRadius,
           primaryText: _primaryText,
           secondaryText: _secondaryText,
-          onTap: () => _showUpcomingTasksDialog(),
+          onTap: () => _showTasksDialog("Ongoing Tasks", "nextMonth"),
         ),
       ),
       SizedBox(width: isMobile ? 0 : 20, height: isMobile ? 15 : 0),
@@ -490,6 +491,17 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
             month: selectedMonthIndex! + 1,
             overallTaskStatus: 'Pending');
         break;
+      case 'nextMonth':
+        int currentYear = int.parse(DateTime.now().year.toString());
+        int currentMonth = DateTime.now().month;
+        int nextMonth = currentMonth == 12 ? 1 : currentMonth + 1;
+        int nextYear = currentMonth == 12 ? currentYear + 1 : currentYear;
+
+        rawData = await getMonthlyTasksByStatus(
+            organizationId: selectedOrganizationId!,
+            year: nextYear,
+            month: nextMonth);
+        break;  
       case 'all':
       default:
         rawData = await getMonthlyTasksByStatus(
@@ -531,84 +543,89 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
     );
   }
 
-  void _showCostBreakdownDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => CostBreakdownDialog(
-        primaryText: _primaryText,
-        secondaryText: _secondaryText,
-        costItems: const [
-          {"name": "Library AC Repair", "cost": "LKR 1,200"},
-          {"name": "Generator Servicing", "cost": "LKR 800"},
-          {"name": "Paint Room", "cost": "LKR 1,600"},
-        ],
-        totalCost: "LKR 3,600",
-      ),
-    );
+  void _showCostBreakdownDialog() async {
+    try {
+      final report = await getMonthlyTaskCostReport(
+        organizationId: selectedOrganizationId ?? 2,
+        year: int.parse(selectedYear!),
+        month: selectedMonthIndex! + 1,
+      );
+
+      List<Map<String, String>> costItems = report.tasks
+          .map((task) => {
+                "name": task.taskTitle,
+                "cost": "LKR ${task.actualCost.toStringAsFixed(0)}",
+              })
+          .toList();
+
+      String totalCost = "LKR ${report.totalActualCost.toStringAsFixed(0)}";
+
+      showDialog(
+        context: context,
+        builder: (context) => CostBreakdownDialog(
+          primaryText: _primaryText,
+          secondaryText: _secondaryText,
+          costItems: costItems,
+          totalCost: totalCost,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load cost breakdown: $e')),
+      );
+    }
   }
 
-  void _showUpcomingTasksDialog() {
-    // Mock upcoming tasks data
-    List<Map<String, dynamic>> upcomingTasks = [
-      {
-        "task": "AC Maintenance - Lab",
-        "assigned": "Kamal",
-        "due": "Dec 20",
-        "status": "pending"
-      },
-      {
-        "task": "Roof Repair - Main Building",
-        "assigned": "Sunil",
-        "due": "Dec 22",
-        "status": "pending"
-      },
-      {
-        "task": "Electrical Inspection",
-        "assigned": "Nimal",
-        "due": "Dec 25",
-        "status": "pending"
-      },
-      {
-        "task": "Garden Landscaping",
-        "assigned": "Saman",
-        "due": "Dec 28",
-        "status": "pending"
-      },
-      {
-        "task": "Water Tank Cleaning",
-        "assigned": "Janaka",
-        "due": "Jan 02",
-        "status": "pending"
-      },
-    ];
+  void _showEstimatedCostDialog() async {
+    
+    int currentYear = int.parse(DateTime.now().year.toString());
+    int currentMonth = DateTime.now().month;
+    int nextMonth = currentMonth == 12 ? 1 : currentMonth + 1;
+    int nextYear = currentMonth == 12 ? currentYear + 1 : currentYear;
+    
+    try {
 
-    showDialog(
-      context: context,
-      builder: (context) => TasksDialog(
-        title: "Upcoming Scheduled Tasks",
-        tasks: upcomingTasks,
-        primaryText: _primaryText,
-        secondaryText: _secondaryText,
-      ),
-    );
-  }
+      final report = await getMonthlyTaskCostReport(
+        organizationId: selectedOrganizationId ?? 2,
+        year: nextYear,
+        month: nextMonth,
+      );
 
-  void _showEstimatedCostDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => CostBreakdownDialog(
-        primaryText: _primaryText,
-        secondaryText: _secondaryText,
-        costItems: const [
-          {"name": "AC Maintenance - Lab", "cost": "LKR 35,000"},
-          {"name": "Roof Repair - Main Building", "cost": "LKR 45,000"},
-          {"name": "Electrical Inspection", "cost": "LKR 20,000"},
-          {"name": "Garden Landscaping", "cost": "LKR 30,000"},
-          {"name": "Water Tank Cleaning", "cost": "LKR 20,000"},
-        ],
-        totalCost: "LKR 150,000",
-      ),
-    );
+      List<Map<String, String>> costItems = report.tasks
+          .map((task) => {
+                "name": task.taskTitle,
+                "cost": "LKR ${task.estimatedCost.toStringAsFixed(0)}",
+              })
+          .toList();
+
+      String totalCost = "LKR ${report.totalEstimatedCost.toStringAsFixed(0)}";
+
+      showDialog(
+        context: context,
+        builder: (context) => CostBreakdownDialog(
+          primaryText: _primaryText,
+          secondaryText: _secondaryText,
+          costItems: costItems,
+          totalCost: totalCost,
+        ),
+      );
+    } catch (e) {
+      String nextMonthName = DateFormat.MMMM().format(DateTime(nextYear, nextMonth));
+      List<Map<String, String>> costItems = [
+        {"name": "No tasks with finance details for $nextMonthName $nextYear", "cost": ""}
+      ];
+      String totalCost = "LKR 0";
+
+      showDialog(
+        context: context,
+        builder: (context) => CostBreakdownDialog(
+          primaryText: _primaryText,
+          secondaryText: _secondaryText,
+          costItems: costItems,
+          totalCost: totalCost,
+        ),
+      );
+    }
   }
 
   // --- 2. PIE CHART ---
@@ -779,12 +796,13 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
                               'Nov',
                               'Dec'
                             ];
-                            if (value >= 0 && value < 12)
+                            if (value >= 0 && value < 12) {
                               return Padding(
                                   padding: const EdgeInsets.only(top: 4.0),
                                   child: Text(months[value.toInt()],
                                       style: TextStyle(
                                           fontSize: 9, color: _secondaryText)));
+                            }
                             return const SizedBox();
                           })),
                   leftTitles: AxisTitles(
@@ -816,6 +834,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
                           (data.month! - 1).toDouble(), data.actualCost!);
                     }).toList(),
                     isCurved: true,
+                    preventCurveOverShooting: true,
                     color: Colors.blue,
                     barWidth: 3,
                     isStrokeCapRound: true,
@@ -840,6 +859,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
                           (data.month! - 1).toDouble(), data.estimatedCost!);
                     }).toList(),
                     isCurved: true,
+                    preventCurveOverShooting: true,
                     color: Colors.orange,
                     barWidth: 3,
                     isStrokeCapRound: true,

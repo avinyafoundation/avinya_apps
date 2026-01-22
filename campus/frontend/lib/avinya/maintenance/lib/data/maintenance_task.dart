@@ -148,27 +148,24 @@ Future<http.Response> updateMaintenanceTask(int taskId, MaintenanceTask task) as
 
 
 //Soft delete task
-Future<http.Response> deleteMaintenanceTask(int taskId) async {
+Future<http.Response> deactivateMaintenanceTask(
+    int taskId, String modifiedBy) async {
+  final uri = Uri.parse(
+      '${AppConfig.campusMaintenanceBffApiUrl}/tasks/$taskId?modifiedBy=$modifiedBy');
 
-  final body = {
-    "id": taskId,
-    "isDeleted": true
-  };
-
-  final response = await http.patch(
-    Uri.parse('${AppConfig.campusMaintenanceBffApiUrl}/tasks/$taskId/delete'),
+  final response = await http.put(
+    uri,
     headers: {
-        "Content-Type": "application/json",
-        "accept": "application/json",
+      "Content-Type": "application/json",
+      "accept": "application/json",
     },
-    body: jsonEncode(body),
   );
 
-  if(response.statusCode == 200){
+  if (response.statusCode == 200) {
     return response;
-  }
-  else{
-    throw Exception('Failed to delete maintenance task. Status code: ${response.statusCode}');
+  } else {
+    throw Exception(
+        'Failed to delete maintenance task. Status code: ${response.statusCode}');
   }
 }
 
