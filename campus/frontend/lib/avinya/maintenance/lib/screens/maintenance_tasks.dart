@@ -565,9 +565,8 @@ class _ReportScreenState extends State<ReportScreen> {
   // --- ALL TASKS TABLE (Standard Theme) ---
   Widget _buildAllTasksTable() {
     // Slice data for pagination
-    final paginatedTasks =
-        _allActivityInstances.skip(_offset).take(_limit).toList();
-    final hasNext = _allActivityInstances.length > (_offset + _limit);
+    final paginatedTasks = _allActivityInstances; // Already paginated from API
+    final hasNext = _allActivityInstances.length == _limit;
     final hasPrevious = _offset > 0;
 
     return Column(
@@ -706,22 +705,43 @@ class _ReportScreenState extends State<ReportScreen> {
           hasPrevious: hasPrevious,
           hasNext: hasNext,
           limit: _limit,
-          onPrevious: () {
+          onPrevious: () async {
+            if (!hasPrevious || _isLoading) return;
             setState(() {
-              _offset -= _limit;
+              _offset = _offset - _limit;
               if (_offset < 0) _offset = 0;
             });
+            _loadData();
+            if (_verticalController.hasClients) {
+              _verticalController.animateTo(0,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOut);
+            }
           },
-          onNext: () {
+          onNext: () async {
+            if (!hasNext || _isLoading) return;
             setState(() {
-              _offset += _limit;
+              _offset = _offset + _limit;
             });
+            _loadData();
+            if (_verticalController.hasClients) {
+              _verticalController.animateTo(0,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOut);
+            }
           },
-          onLimitChanged: (newLimit) {
+          onLimitChanged: (newLimit) async {
+            if (_isLoading) return;
             setState(() {
               _limit = newLimit;
               _offset = 0;
             });
+            _loadData();
+            if (_verticalController.hasClients) {
+              _verticalController.animateTo(0,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOut);
+            }
           },
         ),
       ],

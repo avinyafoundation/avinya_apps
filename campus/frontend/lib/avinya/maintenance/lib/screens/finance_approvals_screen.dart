@@ -318,8 +318,7 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
 
   Widget _buildDataTable() {
     // Calculate pagination state based on current data
-    final hasNext = _pendingTasks.length >=
-        _limit; // If we got full page, there might be more
+    final hasNext = _pendingTasks.length == _limit;
     final hasPrevious = _offset > 0;
 
     return LayoutBuilder(
@@ -384,20 +383,23 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
               hasPrevious: hasPrevious,
               hasNext: hasNext,
               limit: _limit,
-              onPrevious: () {
+              onPrevious: () async {
+                if (!hasPrevious || _isLoading) return;
                 setState(() {
-                  _offset -= _limit;
+                  _offset = _offset - _limit;
                   if (_offset < 0) _offset = 0;
                 });
                 _loadData();
               },
-              onNext: () {
+              onNext: () async {
+                if (!hasNext || _isLoading) return;
                 setState(() {
-                  _offset += _limit;
+                  _offset = _offset + _limit;
                 });
                 _loadData();
               },
-              onLimitChanged: (newLimit) {
+              onLimitChanged: (newLimit) async {
+                if (_isLoading) return;
                 setState(() {
                   _limit = newLimit;
                   _offset = 0;
