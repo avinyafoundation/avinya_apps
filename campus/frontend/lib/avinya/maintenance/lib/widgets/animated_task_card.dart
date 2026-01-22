@@ -162,7 +162,7 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                                         : Colors.amber.shade50),
                                 borderRadius: BorderRadius.circular(3),
                               ),
-                              child: Text(
+                              child: widget.groupId != 'completed' ? Text(
                                 widget.item.statusText.toUpperCase(),
                                 style: TextStyle(
                                   fontSize: 11,
@@ -173,7 +173,7 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                                           ? Colors.blue.shade800
                                           : Colors.amber.shade800),
                                 ),
-                              ),
+                              ) : null,
                             ),
                             const Spacer(),
                             const Icon(Icons.calendar_today,
