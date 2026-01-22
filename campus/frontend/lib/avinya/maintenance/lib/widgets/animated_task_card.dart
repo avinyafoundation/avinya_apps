@@ -45,8 +45,8 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
       if (widget.item.isOverdue) {
         // Red Pulse for Overdue
         targetColor = Colors.red.withOpacity(0.6);
-      } else if (widget.item.statusText != 'On Schedule') {
-        // Amber Pulse for Warning
+      } else if (widget.item.overdueDays >= -2) {
+        // Blue Pulse for Ahead of Schedule
         targetColor = Colors.amber.withOpacity(0.6);
       }
     }
@@ -123,7 +123,7 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                         Text(
                           widget.item.title,
                           style: const TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF172B4D)),
                         ),
@@ -132,7 +132,21 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                           const SizedBox(height: 6),
                           Text(widget.item.description!,
                               style: const TextStyle(
-                                  fontSize: 14, color: Colors.black87)),
+                                  fontSize: 12, color: Colors.black87)),
+                        ],
+                        if (widget.item.location.name != null &&
+                            widget.item.location.name!.isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(Icons.location_on,
+                                  size: 12, color: Colors.grey),
+                              const SizedBox(width: 4),
+                              Text(widget.item.location.name!,
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.grey)),
+                            ],
+                          ),
                         ],
                         const SizedBox(height: 12),
                         Row(
@@ -143,23 +157,23 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                               decoration: BoxDecoration(
                                 color: widget.item.isOverdue
                                     ? Colors.red.shade50
-                                    : (widget.item.statusText == 'On Schedule'
+                                    : (widget.item.overdueDays < -2
                                         ? Colors.blue.shade50
                                         : Colors.amber.shade50),
                                 borderRadius: BorderRadius.circular(3),
                               ),
-                              child: Text(
+                              child: widget.groupId != 'completed' ? Text(
                                 widget.item.statusText.toUpperCase(),
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   color: widget.item.isOverdue
                                       ? Colors.red
-                                      : (widget.item.statusText == 'On Schedule'
+                                      : (widget.item.overdueDays < -2
                                           ? Colors.blue.shade800
                                           : Colors.amber.shade800),
                                 ),
-                              ),
+                              ) : null,
                             ),
                             const Spacer(),
                             const Icon(Icons.calendar_today,

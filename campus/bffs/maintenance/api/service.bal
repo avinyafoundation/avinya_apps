@@ -2,7 +2,6 @@ import ballerina/graphql;
 import ballerina/http;
 import ballerina/log;
 
-
 public function initClientConfig() returns ConnectionConfig {
     ConnectionConfig _clientConig = {};
     if (GLOBAL_DATA_USE_AUTH) {
@@ -451,4 +450,106 @@ service / on new http:Listener(9097) {
             return <ApiErrorResponse>{body: { message: "Error while updating the task participant task progress" }};
         }
     }
-}
+
+    resource function get organizations/[int organizationId]/getSinhalaTasks(
+        int? personId = (),
+        string? fromDate = (),
+        string? toDate = (),
+        string? taskType = (),
+        int? location = ()
+    ) returns json|error {
+
+        // 1. Fetch raw tasks
+        GetMaintenanceTasksByStatusResponse|graphql:ClientError statusResponse = 
+            globalDataClient->GetMaintenanceTasksByStatus(
+                organizationId, fromDate, taskType, toDate, personId, location
+            );
+
+        if (statusResponse is graphql:ClientError) {
+            return error("GraphQL Error: " + statusResponse.message());
+        }
+
+        var dataGroups = statusResponse.maintenanceTasksByStatus.groups;
+        
+        // 2. Collect text
+        string[] textsToTranslate = [];
+        foreach var group in dataGroups {
+            foreach var taskRecord in group.tasks {
+                var task = taskRecord.task;
+                if (task != ()) {
+                    string? title = task.title;
+                    if (title is string && title != "" && textsToTranslate.indexOf(title) == ()) {
+                        textsToTranslate.push(title);
+                    }
+                    string? desc = task.description;
+                    if (desc is string && desc != "" && textsToTranslate.indexOf(desc) == ()) {
+                        textsToTranslate.push(desc);
+                    }
+                }
+            }
+        }
+
+        // 3. Translate
+        map<string> translations = {};
+        if (textsToTranslate.length() > 0) {
+            translations = check translateWithGemini(textsToTranslate);
+        }
+
+        // 4. Construct JSON Response
+        json[] groupsJson = [];
+        foreach var group in dataGroups {
+            json[] tasksJson = [];
+            foreach var taskRecord in group.tasks {
+                var task = taskRecord.task;
+                
+                string translatedTitle = "";
+                string translatedDesc = "";
+                
+                if (task != ()) {
+                    string? title = task.title;
+                    if (title is string) {
+                        string rawTitle = translations.hasKey(title) ? translations.get(title) : title;
+                        // Escape to Unicode (\uXXXX) before sending
+                        translatedTitle = escapeUnicode(rawTitle);
+                    }
+                    string? desc = task.description;
+                    if (desc is string) {
+                        string rawDesc = translations.hasKey(desc) ? translations.get(desc) : desc;
+                        translatedDesc = escapeUnicode(rawDesc);
+                    }
+                }
+                
+                json taskRefJson = ();
+                if (task != ()) {
+                     var loc = task.location;
+                     taskRefJson = {
+                        "id": task.id,
+                        "title": translatedTitle,
+                        "description": translatedDesc,
+                        "location": loc != () ? {
+                             "id": loc.id,
+                             "location_name": loc.location_name
+                        } : ()
+                     };
+                }
+
+                json taskItem = {
+                    "id": taskRecord.id,
+                    "end_time": taskRecord.end_time,
+                    "statusText": taskRecord.statusText,
+                    "overdue_days": taskRecord.overdue_days,
+                    "task": taskRefJson
+                };
+                tasksJson.push(taskItem);
+            }
+
+            groupsJson.push({
+                "groupId": group.groupId,
+                "groupName": group.groupName,
+                "tasks": tasksJson
+            });
+        }
+
+        return groupsJson;
+    }
+}    
