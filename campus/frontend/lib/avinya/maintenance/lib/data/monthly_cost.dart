@@ -44,9 +44,10 @@ Future<List<MonthlyCost>> getMonthlyCostSummary({
 
   final response = await http.get(
     uri,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 

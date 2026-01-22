@@ -109,9 +109,10 @@ Future<http.Response> saveMaintenanceTask(MaintenanceTask task) async {
   
   final response = await http.post(
     Uri.parse(AppConfig.campusMaintenanceBffApiUrl + '/organizations/2/tasks'),
-    headers: {
-        "Content-Type": "application/json",
-        "accept": "application/json",
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(task.toJson()),
   );
@@ -131,9 +132,10 @@ Future<http.Response> saveMaintenanceTask(MaintenanceTask task) async {
 Future<http.Response> updateMaintenanceTask(int taskId, MaintenanceTask task) async {
   final reponse = await http.put(
     Uri.parse('${AppConfig.campusMaintenanceBffApiUrl}/tasks/$taskId'),
-    headers: {
-        "Content-Type": "application/json",
-        "accept": "application/json",
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(task.toJson()),
   );
@@ -153,11 +155,17 @@ Future<http.Response> deactivateMaintenanceTask(
   final uri = Uri.parse(
       '${AppConfig.campusMaintenanceBffApiUrl}/tasks/$taskId?modifiedBy=$modifiedBy');
 
-  final response = await http.put(
-    uri,
-    headers: {
-      "Content-Type": "application/json",
-      "accept": "application/json",
+  final body = {
+    "id": taskId,
+    "isDeleted": true
+  };
+
+  final response = await http.patch(
+    Uri.parse('${AppConfig.campusMaintenanceBffApiUrl}/tasks/$taskId/delete'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 

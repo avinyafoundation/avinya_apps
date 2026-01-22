@@ -56,9 +56,10 @@ Future<http.Response> deleteMaterialCost(int materialCostId) async {
 
   final response = await http.delete(
     uri,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 

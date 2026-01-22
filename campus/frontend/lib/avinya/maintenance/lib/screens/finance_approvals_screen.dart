@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gallery/avinya/maintenance/lib/data.dart';
+import 'package:gallery/avinya/maintenance/lib/widgets/task_edit_form.dart';
 import '../data/activity_instance.dart';
 import '../data/maintenance_finance.dart';
 import '../widgets/common/data_table.dart';
@@ -504,6 +505,11 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
               icon: const Icon(Icons.edit, size: 18, color: Colors.blue),
               onPressed: () {
                 // Handle edit action
+                showDialog(
+                  context: context,
+                  builder: (context) =>
+                      TaskEditForm(activityInstance: instance),
+                );
               },
             ),
           ],

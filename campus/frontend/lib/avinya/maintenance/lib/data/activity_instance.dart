@@ -1,3 +1,4 @@
+import 'package:gallery/avinya/maintenance/lib/data.dart';
 import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -281,7 +282,7 @@ Future<ActivityInstance> updateActivityInstance(
     ActivityInstance activityInstance) async {
   final response = await http.put(
     Uri.parse(
-        '${AppConfig.campusAttendanceBffApiUrl}/activity_instances/${activityInstance.id}'),
+        '${AppConfig.campusAttendanceBffApiUrl}/organizations/2/tasks'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',

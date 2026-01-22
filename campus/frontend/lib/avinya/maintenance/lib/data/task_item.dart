@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:appflowy_board/appflowy_board.dart';
 import 'package:gallery/config/app_config.dart';
@@ -72,7 +73,11 @@ Future<List<AppFlowyGroupData>> getBoardData({
   if (location != null) queryParams['location'] = location.toString();
 
   final Uri uri = Uri.parse(baseUrl).replace(queryParameters: queryParams);
-  const Map<String, String> headers = {'Content-Type': 'application/json'};
+  Map<String, String> headers = {
+    'Content-Type': 'application/json; charset=UTF-8',
+    'accept': 'application/json',
+    'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+  };
 
   try {
     final response = await http.get(uri, headers: headers);

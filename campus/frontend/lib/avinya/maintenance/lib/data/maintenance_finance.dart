@@ -66,7 +66,7 @@ class MaintenanceFinance {
     if(rejectionReason != null) 'rejection_reason': rejectionReason,
     if(reviewedBy != null) 'reviewed_by': reviewedBy,
     if(reviewedDate != null) 'reviewed_date': reviewedDate,
-    if(materialCosts != null) 'material_costs': materialCosts!.map((mc) => mc.toJson()).toList(),
+    if(materialCosts != null) 'materialCosts': materialCosts!.map((mc) => mc.toJson()).toList(),
   };
 
 }
@@ -98,6 +98,7 @@ Future<http.Response> updateTaskFinance(
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode(body),
   );

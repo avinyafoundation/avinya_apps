@@ -163,6 +163,19 @@ class _ReportScreenState extends State<ReportScreen> {
     }
   }
 
+  void _updateRow(ActivityInstance updated) {
+    setState(() {
+      final index = _allActivityInstances.indexWhere(
+        (e) => e.id == updated.id,
+      );
+
+      if (index != -1) {
+        _allActivityInstances[index] = updated;
+      }
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -754,13 +767,17 @@ class _ReportScreenState extends State<ReportScreen> {
                       IconButton(
                         icon: const Icon(Icons.edit,
                             size: 18, color: Colors.blue),
-                        onPressed: () {
-                          //Open task edit dialog
-                          showDialog(
+                        onPressed: () async {
+                          final updatedInstance =
+                              await showDialog<ActivityInstance>(
                             context: context,
                             builder: (context) =>
                                 TaskEditForm(activityInstance: instance),
                           );
+
+                          if (updatedInstance != null) {
+                            _updateRow(updatedInstance);
+                          }
                         },
                       ),
                       IconButton(

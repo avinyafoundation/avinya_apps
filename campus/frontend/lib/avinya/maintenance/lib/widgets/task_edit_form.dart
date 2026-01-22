@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:gallery/auth.dart';
+import 'package:gallery/avinya/maintenance/lib/data.dart';
 import 'package:gallery/avinya/maintenance/lib/widgets/common/date_picker.dart';
 import '../data/academy_location.dart';
 import '../data/activity_instance.dart';
@@ -227,27 +229,12 @@ class TaskEditFormState extends State<TaskEditForm> {
 
         int hasFinancialInfo = hasFinancialInfoBool? 1 : 0;
 
-        // Build the financial information object
-        MaintenanceFinance? financeInfo;
-
-        if (hasFinancialInfoBool) {
-          financeInfo = MaintenanceFinance(
-            estimatedCost: estimatedCostController.text.isNotEmpty
-                ? double.parse(estimatedCostController.text)
-                : 0,
-            labourCost: labourCostController.text.isNotEmpty
-                ? double.parse(labourCostController.text)
-                : 0,
-            materialCosts: materialCosts,
-          );
-        }
-
         // Create Task Object
         MaintenanceTask newTask = MaintenanceTask(
           id: widget.activityInstance.maintenanceTask!.id,
-          title: titleController.text.trim(),
+          //title: titleController.text.trim(),
           description: descriptionController.text.trim(),
-          type: taskTypeEnum,
+          //type: taskTypeEnum,
           frequency: frequencyEnum,
           locationId: selectedLocation,
           //personId: selectedPerson,
@@ -255,15 +242,23 @@ class TaskEditFormState extends State<TaskEditForm> {
           exceptionDeadline: int.tryParse(exceptionDaysController.text),
           hasFinancialInfo: hasFinancialInfo,
           //financialInformation: financeInfo,
-          modifiedBy: "Admin User",
-          isActive: 1,
+          modifiedBy: campusAppsPortalInstance.user_digital_id,
+          //isActive: 1,
           //statusText: statuses[selectedStatus],
         );
 
         List<ActivityParticipant> participants = selectedPerson.map((personId) {
           return ActivityParticipant(
-            id: participantIdByPersonId[personId],
-            person: Person(id: personId),
+            //id: participantIdByPersonId[personId],
+            person: Person(
+              id: personId,
+              preferred_name: widget.activityInstance.activityParticipants
+                  ?.firstWhere(
+                    (p) => p.person!.id == personId
+                  )
+                  .person
+                  ?.preferred_name,
+            ),
           );
         }).toList();
 
@@ -283,6 +278,7 @@ class TaskEditFormState extends State<TaskEditForm> {
         MaintenanceFinance? financialInfo;
         if (hasFinancialInfoBool) {
           financialInfo = MaintenanceFinance(
+            id: widget.activityInstance.financialInformation?.id,
             estimatedCost: estimatedCostController.text.isNotEmpty
                 ? double.parse(estimatedCostController.text)
                 : 0,
@@ -296,8 +292,6 @@ class TaskEditFormState extends State<TaskEditForm> {
         //Create Avtivity Instance Object
         ActivityInstance activityInstance = ActivityInstance(
           id: widget.activityInstance.id,
-          overallTaskStatus: statuses[selectedStatus],
-          start_time: selectedDate,
           maintenanceTask: newTask,
           activityParticipants: participants,
           financialInformation: financialInfo,
@@ -306,7 +300,7 @@ class TaskEditFormState extends State<TaskEditForm> {
         print(jsonEncode(activityInstance.toJson()));
 
         // Call API
-        final response = await updateActivityInstance(activityInstance);
+        final ActivityInstance response = await updateActivityInstance(activityInstance);
 
         // Show success
         ScaffoldMessenger.of(context).showSnackBar(
@@ -316,7 +310,7 @@ class TaskEditFormState extends State<TaskEditForm> {
           ),
         );
 
-        Navigator.pop(context, true);
+        Navigator.pop(context, response);
       } catch (e) {
         // Show error
         ScaffoldMessenger.of(context).showSnackBar(
@@ -341,6 +335,14 @@ class TaskEditFormState extends State<TaskEditForm> {
     if (value == null) {
       return "Please make a selection";
     }
+    return null;
+  }
+
+  String? validatePositiveNumber(String? value) {
+    if (value == null || value.isEmpty) return null;
+    final number = double.tryParse(value);
+    if (number == null) return "Please enter a valid number";
+    if (number <= 0) return "Value cannot be negative or zero";
     return null;
   }
 
@@ -450,7 +452,16 @@ class TaskEditFormState extends State<TaskEditForm> {
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
-                                    return const CircularProgressIndicator();
+                                    //return const CircularProgressIndicator();
+                                    return const Align(
+                                      alignment: Alignment.center,
+                                      child: SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 3),
+                                      ),
+                                    );
                                   }
           
                                   if (snapshot.hasError) {
@@ -483,7 +494,16 @@ class TaskEditFormState extends State<TaskEditForm> {
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
-                                    return const CircularProgressIndicator();
+                                    //return const CircularProgressIndicator();
+                                    return const Align(
+                                      alignment: Alignment.center,
+                                      child: SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 3),
+                                      ),
+                                    );
                                   }
           
                                   if (snapshot.hasError) {
@@ -565,6 +585,7 @@ class TaskEditFormState extends State<TaskEditForm> {
                             label: "Estimated Total Cost",
                             controller: estimatedCostController,
                             hintText: "eg: 4000 LKR",
+                            validator: validatePositiveNumber,
                             // validator: (v) {
                             //   if (!hasFinancialInfo) return null;
                             //   if (v == null || v.isEmpty) return "Required";
@@ -586,6 +607,7 @@ class TaskEditFormState extends State<TaskEditForm> {
                             label: "Labour Cost",
                             controller: labourCostController,
                             hintText: "eg: 1500 LKR",
+                            validator: validatePositiveNumber,
                             // validator: (v) =>
                             //   v == null || v.isEmpty ? "Please enter labour cost" : null,
                           ),

@@ -44,7 +44,7 @@ class _MaterialCostTableState extends State<MaterialCostTable> {
     if (value == null || value.isEmpty) return null;
     final number = double.tryParse(value);
     if (number == null) return "Please enter a valid number";
-    if (number < 0) return "Value cannot be negative";
+    if (number <= 0) return "Value cannot be negative or zero";
     return null;
   }
 

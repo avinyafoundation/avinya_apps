@@ -74,6 +74,7 @@ Future<List<Group>> getTasksByStatus({
     headers: {
       'Content-Type': 'application/json',
       'accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
   );
 
