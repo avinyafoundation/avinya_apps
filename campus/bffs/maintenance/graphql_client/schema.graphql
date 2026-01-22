@@ -42,9 +42,9 @@ input ActivityInstance {
   overall_task_status: String
   created: String
   updated: String
-  maintenanceTask: MaintenanceTask
-  financialInformation: MaintenanceFinance
-  activityParticipants: [ActivityParticipant!]
+  task: MaintenanceTask
+  finance: MaintenanceFinance
+  activity_participants: [ActivityParticipant!]
 }
 
 type ActivityInstanceData {
