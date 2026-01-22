@@ -381,9 +381,9 @@ service / on new http:Listener(9097) {
        
         int[] personIds = [];
 
-        MaintenanceTask maintenanceTask = taskActivityInstance?.maintenanceTask ?: {};
-        MaintenanceFinance? finance = taskActivityInstance?.financialInformation ?:();
-        ActivityParticipant[] taskParticipants = taskActivityInstance?.activityParticipants ?:[];
+        MaintenanceTask maintenanceTask = taskActivityInstance?.task ?: {};
+        MaintenanceFinance? finance = taskActivityInstance?.finance ?:();
+        ActivityParticipant[] taskParticipants = taskActivityInstance?.activity_participants ?:[];
         
         //take and put each person db raw id into the array.
         if(taskParticipants is ActivityParticipant[]) {
@@ -400,9 +400,9 @@ service / on new http:Listener(9097) {
           material_costs = finance?.materialCosts;
           finance.materialCosts = ();
         }
-        taskActivityInstance.financialInformation = ();
-        taskActivityInstance.maintenanceTask = ();
-        taskActivityInstance.activityParticipants = ();
+        taskActivityInstance.finance = ();
+        taskActivityInstance.task = ();
+        taskActivityInstance.activity_participants = ();
 
         UpdateMaintenanceTaskResponse|graphql:ClientError updateMaintenanceTaskResponse = globalDataClient->
                                                                                        updateMaintenanceTask(

@@ -13,17 +13,17 @@ public type Activity record {
 
 public type ActivityInstance record {
     string? notes?;
-    MaintenanceFinance? financialInformation?;
+    ActivityParticipant[]? activity_participants?;
     string? created?;
     int? weekly_sequence?;
     string? end_time?;
-    MaintenanceTask? maintenanceTask?;
     string? description?;
     int? task_id?;
     int? daily_sequence?;
     string? record_type?;
     int? monthly_sequence?;
     string? start_time?;
+    MaintenanceTask? task?;
     int? organization_id?;
     string? overall_task_status?;
     int? activity_id?;
@@ -32,7 +32,7 @@ public type ActivityInstance record {
     int? id?;
     string? updated?;
     int? place_id?;
-    ActivityParticipant[]? activityParticipants?;
+    MaintenanceFinance? finance?;
 };
 
 public type ActivityInstanceEvaluation record {

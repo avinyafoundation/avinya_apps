@@ -11436,7 +11436,7 @@
                             "defaultValue": null
                         },
                         {
-                            "name": "maintenanceTask",
+                            "name": "task",
                             "type": {
                                 "kind": "INPUT_OBJECT",
                                 "name": "MaintenanceTask",
@@ -11445,7 +11445,7 @@
                             "defaultValue": null
                         },
                         {
-                            "name": "financialInformation",
+                            "name": "finance",
                             "type": {
                                 "kind": "INPUT_OBJECT",
                                 "name": "MaintenanceFinance",
@@ -11454,7 +11454,7 @@
                             "defaultValue": null
                         },
                         {
-                            "name": "activityParticipants",
+                            "name": "activity_participants",
                             "type": {
                                 "kind": "LIST",
                                 "name": null,
