@@ -839,6 +839,7 @@ input MaintenanceFinance {
   activity_instance_id: Int
   estimated_cost: Decimal
   labour_cost: Decimal
+  total_cost: Decimal
   status: String
   rejection_reason: String
   reviewed_by: String
@@ -860,6 +861,7 @@ type MaintenanceFinanceData {
   reviewed_date: String
   created: String
   updated: String
+  total_cost: Decimal!
 }
 
 type MaintenanceMonthlyTaskCostReportData {

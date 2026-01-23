@@ -140,6 +140,21 @@
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
+                        },
+                        {
+                            "name": "total_cost",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Decimal",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
                         }
                     ],
                     "inputFields": null,
@@ -13586,6 +13601,15 @@
                         },
                         {
                             "name": "labour_cost",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Decimal",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "total_cost",
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "Decimal",

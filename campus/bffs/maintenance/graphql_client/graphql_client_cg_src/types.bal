@@ -365,16 +365,17 @@ public type JobPost record {
 };
 
 public type MaintenanceFinance record {
-    int? activity_instance_id?;
     anydata? labour_cost?;
     string? reviewed_by?;
+    anydata? total_cost?;
     string? created?;
+    MaterialCost[]? materialCosts?;
+    string? record_type?;
+    int? activity_instance_id?;
     anydata? estimated_cost?;
     string? rejection_reason?;
-    MaterialCost[]? materialCosts?;
     int? id?;
     string? updated?;
-    string? record_type?;
     string? reviewed_date?;
     string? status?;
 };
@@ -710,6 +711,7 @@ public type MaintenanceTasksResponse record {|
             int? id;
             anydata? estimated_cost;
             anydata? labour_cost;
+            anydata total_cost;
             record {|
                 int? id;
                 string? item;
@@ -812,4 +814,39 @@ public type UpdateTaskProgressResponse record {|
         string? end_date;
         string? participant_task_status;
     |}? updateTaskProgress;
+|};
+
+public type GetMonthlyCostSummaryResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? year;
+        record {|
+            int? month;
+            anydata? estimated_cost;
+            anydata? actual_cost;
+        |}[]? monthly_costs;
+    |}? monthlyCostSummary;
+|};
+
+public type GetMaintenanceTasksByStatusResponse record {|
+    map<json?> __extensions?;
+    record {|record {|
+            string groupId;
+            string groupName;
+            record {|
+                int? id;
+                string? end_time;
+                string? statusText;
+                int? overdue_days;
+                record {|
+                    int? id;
+                    string? title;
+                    string? description;
+                    record {|
+                        int? id;
+                        string? location_name;
+                    |}? location;
+                |}? task;
+            |}[] tasks;
+        |}[] groups;|} maintenanceTasksByStatus;
 |};

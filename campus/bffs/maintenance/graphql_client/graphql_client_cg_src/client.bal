@@ -52,7 +52,7 @@ public isolated client class GraphqlClient {
         return <CreateMaintenanceTaskResponse> check performDataBinding(graphqlResponse, CreateMaintenanceTaskResponse);
     }
     remote isolated function MaintenanceTasks(int organizationId, int offset, int 'limit, string? fromDate = (), string? taskType = (), string? toDate = (), string? financialStatus = (), int[]? personId = (), int? location = (), string? title = (), string? taskStatus = ()) returns MaintenanceTasksResponse|graphql:ClientError {
-        string query = string `query MaintenanceTasks($organizationId:Int!,$personId:[Int!],$fromDate:String,$toDate:String,$taskStatus:String,$financialStatus:String,$taskType:String,$location:Int,$title:String,$limit:Int!,$offset:Int!) {maintenanceTasks(organizationId:$organizationId,personId:$personId,fromDate:$fromDate,toDate:$toDate,taskStatus:$taskStatus,financialStatus:$financialStatus,taskType:$taskType,title:$title,location:$location,limit:$limit,offset:$offset) {id start_time end_time overall_task_status task {id title description task_type frequency exception_deadline location {id location_name}} activity_participants {id participant_task_status person {id preferred_name}} finance {id estimated_cost labour_cost material_costs {id item quantity unit unit_cost} status rejection_reason reviewed_by reviewed_date}}}`;
+        string query = string `query MaintenanceTasks($organizationId:Int!,$personId:[Int!],$fromDate:String,$toDate:String,$taskStatus:String,$financialStatus:String,$taskType:String,$location:Int,$title:String,$limit:Int!,$offset:Int!) {maintenanceTasks(organizationId:$organizationId,personId:$personId,fromDate:$fromDate,toDate:$toDate,taskStatus:$taskStatus,financialStatus:$financialStatus,taskType:$taskType,title:$title,location:$location,limit:$limit,offset:$offset) {id start_time end_time overall_task_status task {id title description task_type frequency exception_deadline location {id location_name}} activity_participants {id participant_task_status person {id preferred_name}} finance {id estimated_cost labour_cost total_cost material_costs {id item quantity unit unit_cost} status rejection_reason reviewed_by reviewed_date}}}`;
         map<anydata> variables = {"organizationId": organizationId, "fromDate": fromDate, "taskType": taskType, "offset": offset, "toDate": toDate, "financialStatus": financialStatus, "limit": 'limit, "personId": personId, "location": location, "title": title, "taskStatus": taskStatus};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <MaintenanceTasksResponse> check performDataBinding(graphqlResponse, MaintenanceTasksResponse);
@@ -74,5 +74,17 @@ public isolated client class GraphqlClient {
         map<anydata> variables = {"taskParticipantId": taskParticipantId, "taskParticipant": taskParticipant, "activityInstanceId": activityInstanceId};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <UpdateTaskProgressResponse> check performDataBinding(graphqlResponse, UpdateTaskProgressResponse);
+    }
+    remote isolated function GetMonthlyCostSummary(int organizationId, int year) returns GetMonthlyCostSummaryResponse|graphql:ClientError {
+        string query = string `query GetMonthlyCostSummary($organizationId:Int!,$year:Int!) {monthlyCostSummary(organizationId:$organizationId,year:$year) {year monthly_costs {month estimated_cost actual_cost}}}`;
+        map<anydata> variables = {"organizationId": organizationId, "year": year};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetMonthlyCostSummaryResponse> check performDataBinding(graphqlResponse, GetMonthlyCostSummaryResponse);
+    }
+    remote isolated function GetMaintenanceTasksByStatus(int organizationId, string? fromDate = (), string? taskType = (), string? toDate = (), int? personId = (), int? location = ()) returns GetMaintenanceTasksByStatusResponse|graphql:ClientError {
+        string query = string `query GetMaintenanceTasksByStatus($organizationId:Int!,$personId:Int,$fromDate:String,$toDate:String,$taskType:String,$location:Int) {maintenanceTasksByStatus(organizationId:$organizationId,personId:$personId,fromDate:$fromDate,toDate:$toDate,taskType:$taskType,location:$location) {groups {groupId groupName tasks {id end_time statusText overdue_days task {id title description location {id location_name}}}}}}`;
+        map<anydata> variables = {"organizationId": organizationId, "fromDate": fromDate, "taskType": taskType, "toDate": toDate, "personId": personId, "location": location};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetMaintenanceTasksByStatusResponse> check performDataBinding(graphqlResponse, GetMaintenanceTasksByStatusResponse);
     }
 }
