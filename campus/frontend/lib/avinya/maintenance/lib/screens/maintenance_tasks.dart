@@ -732,7 +732,7 @@ class _ReportScreenState extends State<ReportScreen> {
                     showDialog(
                       context: context,
                       builder: (context) =>
-                          TaskDetailsDialog(activityInstance: instance),
+                          TaskDetailsDialog(activityInstance: instance, onSave: _loadData),
                     );
                   }
                 },

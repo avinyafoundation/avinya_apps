@@ -4,11 +4,13 @@ import '../data/activity_instance.dart';
 import '../data/activity_participant.dart';
 import 'common/button.dart';
 import 'common/colourful_dropdown.dart';
+import '../data/task_item.dart';
 
 class TaskDetailsDialog extends StatefulWidget {
   final ActivityInstance activityInstance;
+  final VoidCallback? onSave;
 
-  const TaskDetailsDialog({super.key, required this.activityInstance});
+  const TaskDetailsDialog({super.key, required this.activityInstance, this.onSave});
 
   @override
   State<TaskDetailsDialog> createState() => _TaskDetailsDialogState();
@@ -162,10 +164,31 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                           textColor: Colors.white,
                           height: 40,
                           fontSize: 14,
-                          onPressed: () {
-                            // TODO: Call API to update participant statuses
-                            // Example: await apiService.updateParticipantStatuses(widget.activityInstance.id, updatedParticipants);
-                            print("Save clicked - Update participant statuses");
+                          onPressed: () async {
+                            // Call API to update participant statuses
+                            if (widget.activityInstance.activityParticipants !=
+                                null) {
+                              for (var participant in widget
+                                  .activityInstance.activityParticipants!) {
+                                String status = progressStatusToString(participant.status!).replaceAll(' ', '');
+                                try {
+                                  await updateTaskStatus(
+                                    widget.activityInstance.id!,
+                                    participant.person!.id!,
+                                    status,
+                                  );
+                                } catch (e) {
+                                  // Handle error, e.g., show snackbar
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text(
+                                            'Failed to update status for ${participant.person?.preferred_name}: $e')),
+                                  );
+                                  return; // Stop on first error, or continue as needed
+                                }
+                              }
+                            }
+                            widget.onSave?.call();
                             Navigator.of(context).pop();
                           },
                         ),
@@ -268,7 +291,6 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
               } else if (newStatus == "Completed") {
                 participant.status = ProgressStatus.completed;
               }
-              // TODO: Call API to update status in backend
             });
           }
         },
