@@ -50,7 +50,7 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
         organizationId: organizationId,
         financialStatus: 'Pending',
         includeFinance: true,
-        limit: _limit,
+        limit: _limit + 1,
         offset: _offset,
       );
 
@@ -318,9 +318,11 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
   }
 
   Widget _buildDataTable() {
-    // Calculate pagination state based on current data
-    final hasNext = _pendingTasks.length == _limit;
-    final hasPrevious = _offset > 0;
+
+    final bool hasNext = _pendingTasks.length > _limit;
+    final bool hasPrevious = _offset > 0;
+
+    final List<ActivityInstance> displayTasks = hasNext ? _pendingTasks.sublist(0, _limit) : _pendingTasks;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -373,7 +375,8 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13))),
                   ],
-                  rows: _pendingTasks.map((instance) {
+
+                  rows: displayTasks.map((instance) {
                     return _buildDataRow(instance);
                   }).toList(),
                 ),

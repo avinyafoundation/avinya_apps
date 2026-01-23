@@ -173,16 +173,17 @@ public type ActivityParticipant record {
 
 
 public type MaintenanceFinance record {
-    int? activity_instance_id?;
     anydata? labour_cost?;
     string? reviewed_by?;
+    anydata? total_cost?;
     string? created?;
+    MaterialCost[]? materialCosts?;
+    string? record_type?;
+    int? activity_instance_id?;
     anydata? estimated_cost?;
     string? rejection_reason?;
-    MaterialCost[]? materialCosts?;
     int? id?;
     string? updated?;
-    string? record_type?;
     string? reviewed_date?;
     string? status?;
 };
@@ -290,6 +291,7 @@ public type MaintenanceTasksResponse record {|
             int? id;
             anydata? estimated_cost;
             anydata? labour_cost;
+            anydata total_cost;
             record {|
                 int? id;
                 string? item;
