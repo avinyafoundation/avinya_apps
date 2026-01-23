@@ -120,7 +120,7 @@ class _ReportScreenState extends State<ReportScreen> {
         toDate: toDateStr,
         overallTaskStatus: selectedStatusFilter,
         title: selectedTitleFilter,
-        limit: _limit,
+        limit: _limit + 1,
         offset: _offset,
       );
       print("All tasks received: ${allTasks.length}");
@@ -578,12 +578,14 @@ class _ReportScreenState extends State<ReportScreen> {
   // --- ALL TASKS TABLE (Standard Theme) ---
   Widget _buildAllTasksTable() {
     // Slice data for pagination
-    final paginatedTasks = _allActivityInstances; // Already paginated from API
-    final hasNext = _allActivityInstances.length == _limit;
+    bool actuallyHasNextPage = _allActivityInstances.length > _limit;
+    final displayTasks = actuallyHasNextPage
+        ? _allActivityInstances.sublist(0, _limit)
+        : _allActivityInstances;
     final hasPrevious = _offset > 0;
 
     // No-results placeholder
-    if (paginatedTasks.isEmpty) {
+    if (displayTasks.isEmpty) {
       return Column(
         children: [
           Container(
@@ -691,7 +693,7 @@ class _ReportScreenState extends State<ReportScreen> {
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold))),
           ],
-          rows: paginatedTasks.map((instance) {
+          rows: displayTasks.map((instance) {
             // Mocking Data for columns not in TaskItem yet
 
             String financeState = instance.financialInformation != null
@@ -793,7 +795,7 @@ class _ReportScreenState extends State<ReportScreen> {
         const SizedBox(height: 10),
         PaginationControls(
           hasPrevious: hasPrevious,
-          hasNext: hasNext,
+          hasNext: actuallyHasNextPage,
           limit: _limit,
           onPrevious: () async {
             if (!hasPrevious || _isLoading) return;
@@ -809,16 +811,10 @@ class _ReportScreenState extends State<ReportScreen> {
             }
           },
           onNext: () async {
-            if (!hasNext || _isLoading) return;
             setState(() {
               _offset = _offset + _limit;
             });
             _loadData();
-            if (_verticalController.hasClients) {
-              _verticalController.animateTo(0,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOut);
-            }
           },
           onLimitChanged: (newLimit) async {
             if (_isLoading) return;
