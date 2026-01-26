@@ -71,6 +71,18 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
     }
   }
 
+  void _updateRow(ActivityInstance updated) {
+    setState(() {
+      final index = _pendingTasks.indexWhere(
+        (e) => e.id == updated.id,
+      );
+
+      if (index != -1) {
+        _pendingTasks[index] = updated;
+      }
+    });
+  }
+
   // --- ACTIONS ---
 
   Future<void> _handleApprove(ActivityInstance instance) async {
@@ -506,13 +518,16 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
             // Edit Button
             IconButton(
               icon: const Icon(Icons.edit, size: 18, color: Colors.blue),
-              onPressed: () {
-                // Handle edit action
-                showDialog(
+              onPressed: () async {
+                final updatedInstance = await showDialog<ActivityInstance>(
                   context: context,
                   builder: (context) =>
                       TaskEditForm(activityInstance: instance),
                 );
+
+                if (updatedInstance != null) {
+                  _updateRow(updatedInstance);
+                }
               },
             ),
           ],
