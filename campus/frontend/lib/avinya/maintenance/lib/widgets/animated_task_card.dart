@@ -151,30 +151,32 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: widget.item.isOverdue
-                                    ? Colors.red.shade50
-                                    : (widget.item.overdueDays < -2
-                                        ? Colors.blue.shade50
-                                        : Colors.amber.shade50),
-                                borderRadius: BorderRadius.circular(3),
-                              ),
-                              child: widget.groupId != 'completed' ? Text(
-                                widget.item.statusText.toUpperCase(),
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
+                            if (widget.groupId != 'completed' &&
+                                (widget.item.statusText.trim().isNotEmpty))
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
                                   color: widget.item.isOverdue
-                                      ? Colors.red
+                                      ? Colors.red.shade50
                                       : (widget.item.overdueDays < -2
-                                          ? Colors.blue.shade800
-                                          : Colors.amber.shade800),
+                                          ? Colors.blue.shade50
+                                          : Colors.amber.shade50),
+                                  borderRadius: BorderRadius.circular(3),
                                 ),
-                              ) : null,
-                            ),
+                                child: Text(
+                                  widget.item.statusText.toUpperCase(),
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: widget.item.isOverdue
+                                        ? Colors.red
+                                        : (widget.item.overdueDays < -2
+                                            ? Colors.blue.shade800
+                                            : Colors.amber.shade800),
+                                  ),
+                                ),
+                              ),
                             const Spacer(),
                             const Icon(Icons.calendar_today,
                                 size: 12, color: Colors.grey),
