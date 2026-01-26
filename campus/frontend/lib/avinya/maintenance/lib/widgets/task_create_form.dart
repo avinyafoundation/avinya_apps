@@ -442,6 +442,12 @@ final List<AcademyLocation> mockLocations = [
                             selectedDate = date + " 00:00:00";
                           });
                         },
+                        validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please select a date";
+                            }
+                            return null;
+                          },
                       ),
                     ),
                     const SizedBox(width: 16),
