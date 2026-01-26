@@ -50,6 +50,7 @@ class TaskEditFormState extends State<TaskEditForm> {
   String? selectedDate;
   List<MaterialCost> materialCosts = [];
   Map<int, int> participantIdByPersonId = {};
+  Map<int, Person> personById = {};
 
   final taskTypes = {
     1: "Recurring",
@@ -248,19 +249,16 @@ class TaskEditFormState extends State<TaskEditForm> {
         );
 
         List<ActivityParticipant> participants = selectedPerson.map((personId) {
+          final person = personById[personId];
+
           return ActivityParticipant(
-            //id: participantIdByPersonId[personId],
             person: Person(
               id: personId,
-              preferred_name: widget.activityInstance.activityParticipants
-                  ?.firstWhere(
-                    (p) => p.person!.id == personId
-                  )
-                  .person
-                  ?.preferred_name,
+              preferred_name: person?.preferred_name,
             ),
           );
         }).toList();
+
 
 
         //Create Material Cost Object List
@@ -511,6 +509,11 @@ class TaskEditFormState extends State<TaskEditForm> {
                                   }
           
                                   final persons = snapshot.data!;
+
+                                  
+                                  personById = {
+                                    for (final p in persons) p.id!: p,
+                                  };
           
                                   final personNames = persons
                                       .map((p) => "${p.full_name}")

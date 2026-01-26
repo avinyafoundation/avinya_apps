@@ -282,7 +282,7 @@ Future<ActivityInstance> updateActivityInstance(
     ActivityInstance activityInstance) async {
   final response = await http.put(
     Uri.parse(
-        '${AppConfig.campusAttendanceBffApiUrl}/organizations/2/tasks'),
+        '${AppConfig.campusMaintenanceBffApiUrl}/organizations/2/tasks'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
