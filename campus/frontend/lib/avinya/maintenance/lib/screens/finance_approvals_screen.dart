@@ -5,7 +5,7 @@ import '../data/activity_instance.dart';
 import '../data/maintenance_finance.dart';
 import '../widgets/common/data_table.dart';
 import '../widgets/common/page_title.dart';
-import '../widgets/task_details_dialog.dart';
+import '../widgets/finance_task_details_dialog.dart';
 import '../widgets/common/pagination_controls.dart';
 import '../widgets/common/button.dart';
 
@@ -476,7 +476,7 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
         if (selected != null) {
           showDialog(
             context: context,
-            builder: (context) => TaskDetailsDialog(activityInstance: instance),
+            builder: (context) => FinanceTaskDetailsDialog(activityInstance: instance),
           );
         }
       },
