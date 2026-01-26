@@ -1,0 +1,7 @@
+{
+    "admissionsApplicationBffApiUrl": "",
+    "campusMaintenanceBffApiUrl":"",
+    "choreo_sts_endpoint" : "https://sts.choreo.dev/oauth2/token",
+    "asgardeo_token_endpoint" : "https://api.asgardeo.io/t/avinyaacademy/oauth2/token",
+    "logout_url" : "https://api.asgardeo.io/t/avinyaacademy/oidc/logout"
+}
