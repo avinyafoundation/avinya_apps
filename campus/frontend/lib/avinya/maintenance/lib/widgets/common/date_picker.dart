@@ -6,6 +6,7 @@ class CustomDatePicker extends StatefulWidget {
   final Function(String) onDateSelected;
   final bool enabled; 
   final DateTime? initialDate;
+  final String? Function(String?)? validator;
 
   const CustomDatePicker({
     super.key,
@@ -14,6 +15,7 @@ class CustomDatePicker extends StatefulWidget {
     required this.onDateSelected,
     this.enabled = true, //default enabled
     this.initialDate,
+    this.validator,
   });
 
   @override
@@ -63,11 +65,12 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.enabled ? _pickDate : null, // 👈 DISABLE TAP
+      onTap: widget.enabled ? _pickDate : null, // DISABLE TAP
       child: AbsorbPointer(
         child: TextFormField(
           controller: _controller,
-          enabled: widget.enabled, // 👈 VISUAL DISABLE
+          enabled: widget.enabled, // VISUAL DISABLE
+          validator: widget.validator,
           decoration: InputDecoration(
             labelText: widget.label,
             floatingLabelBehavior: FloatingLabelBehavior.auto,
