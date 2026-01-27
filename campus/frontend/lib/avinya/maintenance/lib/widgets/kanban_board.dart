@@ -123,6 +123,23 @@ class _KanbanBoardState extends State<KanbanBoard> {
       }
     }
 
+    // Update backend status
+    try {
+      String status = toGroupId == 'pending'
+          ? 'Pending'
+          : toGroupId == 'progress'
+              ? 'InProgress'
+              : 'Completed';
+      await updateTaskStatus(int.parse(item.id), selectedPersonId!, status);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update task status: $e')),
+        );
+      }
+      return false; // Revert the move
+    }
+
     return true;
   }
 
@@ -205,6 +222,19 @@ class _KanbanBoardState extends State<KanbanBoard> {
     }
   }
 
+  // Helper for Whole Page Scroll height
+  double _calculateBoardHeight() {
+    int maxItems = 0;
+    // Check if controller has data to prevent errors
+    if (controller.groupDatas.isEmpty) return 500;
+
+    for (var group in controller.groupDatas) {
+      maxItems = max(maxItems, group.items.length);
+    }
+    // Header + Footer + (Items * Height) + Buffer
+    return 100.0 + (maxItems * 180.0) + 150.0;
+  }
+
   // Helper to translate group names to Sinhala
   String _getGroupDisplayName(String groupId) {
     switch (groupId) {
@@ -234,19 +264,6 @@ class _KanbanBoardState extends State<KanbanBoard> {
       // On track
       return "නියමිත කාලසටහනට අනුව";
     }
-  }
-
-  // Helper for Whole Page Scroll height
-  double _calculateBoardHeight() {
-    int maxItems = 0;
-    // Check if controller has data to prevent errors
-    if (controller.groupDatas.isEmpty) return 500;
-
-    for (var group in controller.groupDatas) {
-      maxItems = max(maxItems, group.items.length);
-    }
-    // Header + Footer + (Items * Height) + Buffer
-    return 100.0 + (maxItems * 180.0) + 150.0;
   }
 
   @override
@@ -385,8 +402,12 @@ class _KanbanBoardState extends State<KanbanBoard> {
                               // Always use Sinhala status text
                               final displayItem = TaskItem(
                                   itemId: item.id,
-                                  title: item.title,
-                                  description: item.description,
+                                  title: GeminiTranslator.getCachedTranslation(
+                                      item.title),
+                                  description: item.description != null
+                                      ? GeminiTranslator.getCachedTranslation(
+                                          item.description!)
+                                      : null,
                                   location: item.location,
                                   endDate: item.endDate,
                                   statusText:
