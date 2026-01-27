@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/task_item.dart';
+import 'package:gallery/avinya/maintenance/lib/services/translation_service.dart';
 
 class AnimatedTaskCard extends StatefulWidget {
   final TaskItem item;
@@ -121,18 +122,21 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.item.title,
+                          GeminiTranslator.getCachedTranslation(
+                              widget.item.title),
                           style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF172B4D)),
                         ),
-                        if (widget.item.description != null &&
-                            widget.item.description!.isNotEmpty) ...[
+                        if (widget.item.description != null) ...[
                           const SizedBox(height: 6),
-                          Text(widget.item.description!,
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.black87)),
+                          Text(
+                            GeminiTranslator.getCachedTranslation(
+                                widget.item.description!),
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.black87),
+                          ),
                         ],
                         if (widget.item.location.name != null &&
                             widget.item.location.name!.isNotEmpty) ...[
