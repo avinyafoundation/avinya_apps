@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/kanban_board.dart';
 
 class KanbanScreen extends StatelessWidget {
   const KanbanScreen({super.key});
@@ -7,9 +8,7 @@ class KanbanScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Scaffold(
-        body: Text("Kanban board"),
-      ),
+      body: KanbanBoard(),
     );
   }
 }
