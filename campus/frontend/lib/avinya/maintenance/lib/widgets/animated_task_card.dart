@@ -125,7 +125,7 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                           GeminiTranslator.getCachedTranslation(
                               widget.item.title),
                           style: const TextStyle(
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF172B4D)),
                         ),
@@ -135,7 +135,7 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                             GeminiTranslator.getCachedTranslation(
                                 widget.item.description!),
                             style: const TextStyle(
-                                fontSize: 14, color: Colors.black87),
+                                fontSize: 12, color: Colors.black87),
                           ),
                         ],
                         if (widget.item.location.name != null &&
