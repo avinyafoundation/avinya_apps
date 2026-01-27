@@ -587,7 +587,7 @@ class TaskEditFormState extends State<TaskEditForm> {
                           TextFieldForm(
                             label: "Estimated Total Cost",
                             controller: estimatedCostController,
-                            hintText: "eg: 4000 LKR",
+                            hintText: "eg: 4000",
                             validator: validatePositiveNumber,
                             // validator: (v) {
                             //   if (!hasFinancialInfo) return null;
@@ -609,7 +609,7 @@ class TaskEditFormState extends State<TaskEditForm> {
                           TextFieldForm(
                             label: "Labour Cost",
                             controller: labourCostController,
-                            hintText: "eg: 1500 LKR",
+                            hintText: "eg: 1500",
                             validator: validatePositiveNumber,
                             // validator: (v) =>
                             //   v == null || v.isEmpty ? "Please enter labour cost" : null,

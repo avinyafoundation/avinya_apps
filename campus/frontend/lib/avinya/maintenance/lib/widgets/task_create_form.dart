@@ -63,31 +63,6 @@ class _TaskCreateFormState extends State<TaskCreateForm> {
     3: "Completed",
   };
 
-final List<AcademyLocation> mockLocations = [
-  AcademyLocation(
-    id: 1,
-    name: "Main Building",
-  ),
-  AcademyLocation(
-    id: 2,
-    name: "Sports Complex",
-  ),
-  AcademyLocation(
-    id: 3,
-    name: "Library Block",
-  ),
-  AcademyLocation(
-    id: 4,
-    name: "Science Lab",
-  ),
-  AcademyLocation(
-    id: 5,
-    name: "Auditorium",
-  ),
-];
-
-
-
   Future<List<AcademyLocation>>? locationsFuture;
   Future<List<Person>>? personsFuture;
   //List<String> selectedPeople = [];
@@ -484,7 +459,7 @@ final List<AcademyLocation> mockLocations = [
                     TextFieldForm(
                       label: "Estimated Total Cost",
                       controller: estimatedCostController,
-                      hintText: "eg: 4000 LKR",
+                      hintText: "eg: 4000",
                       keyboardType:
                             TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [
@@ -508,7 +483,7 @@ final List<AcademyLocation> mockLocations = [
                     TextFieldForm(
                       label: "Labour Cost",
                       controller: labourCostController,
-                      hintText: "eg: 1500 LKR",
+                      hintText: "eg: 1500",
                       keyboardType:
                             TextInputType.numberWithOptions(decimal: true),
                       inputFormatters: [
