@@ -172,7 +172,7 @@ class _KanbanBoardState extends State<KanbanBoard> {
     }
   }
 
-  Future<void> _loadBoardData() async {
+  Future<void> _loadBoardData({bool forceRefresh = false}) async {
     setState(() {
       _isLoading = true; // Start loading
     });
@@ -202,6 +202,9 @@ class _KanbanBoardState extends State<KanbanBoard> {
       // 4. Call Gemini ONCE to translate the entire board's content.
       // This fills the GeminiTranslator._cache, so cards load instantly.
       if (stringsToTranslate.isNotEmpty) {
+        if (forceRefresh) {
+          GeminiTranslator.clearCache();
+        }
         await GeminiTranslator.translateBatch(stringsToTranslate);
       }
 
@@ -327,7 +330,7 @@ class _KanbanBoardState extends State<KanbanBoard> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.refresh),
-                            onPressed: _loadBoardData,
+                            onPressed: () => _loadBoardData(forceRefresh: true),
                             tooltip: 'Refresh',
                           ),
                         ],

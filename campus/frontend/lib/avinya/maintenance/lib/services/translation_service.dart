@@ -93,4 +93,8 @@ class GeminiTranslator {
   static String getCachedTranslation(String text) {
     return _cache[text] ?? text;
   }
+
+  static void clearCache() {
+    _cache.clear();
+  }
 }
