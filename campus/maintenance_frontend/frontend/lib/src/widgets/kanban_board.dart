@@ -1,5 +1,6 @@
 import 'package:appflowy_board/appflowy_board.dart';
 import 'package:flutter/material.dart';
+import 'dart:async'; // Added for Timer
 import '../services/translation_service.dart';
 import '../data/task_item.dart';
 import 'dart:math';
@@ -7,6 +8,7 @@ import '../widgets/animated_task_card.dart';
 import '../widgets/animated_status_icon.dart';
 import '../widgets/common/drop_down.dart';
 import '../widgets/common/page_title.dart';
+import '../widgets/common/pin_code_dialog.dart';
 import '../data/person.dart';
 
 class KanbanBoard extends StatefulWidget {
@@ -22,10 +24,24 @@ class _KanbanBoardState extends State<KanbanBoard> {
   List<Person> employees = [];
   bool _isLoading = false;
 
+  // Session Management Variables
+  Timer? _sessionTimer;
+  DateTime? _sessionLoginTime;
+  DateTime? _sessionEndTime;
+  int? _sessionPersonId;
+  static const int _pin = 2568;
+  static const int _sessionDurationMinutes = 5;
+
+  @override
+  void dispose() {
+    _sessionTimer?.cancel();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
-    _fetchEmployees();
+    // Removed redundant _fetchEmployees(); call
 
     // 1. Initialize AppFlowy Controller
     controller = AppFlowyBoardController(
@@ -71,9 +87,81 @@ class _KanbanBoardState extends State<KanbanBoard> {
     controller.insertGroupItem(fromGroupId, fromIndex, item);
   }
 
+  // --- Session Management ---
+
+  void _startSession(int personId) {
+    setState(() {
+      _sessionPersonId = personId;
+      _sessionLoginTime = DateTime.now();
+      _sessionEndTime =
+          _sessionLoginTime!.add(const Duration(minutes: _sessionDurationMinutes));
+    });
+    
+    _sessionTimer?.cancel();
+    _sessionTimer = Timer(const Duration(minutes: _sessionDurationMinutes), _endSession);
+    
+    // Also set the correct person ID for the view
+    setState(() {
+        selectedPersonId = personId;
+    });
+    _loadBoardData();
+  }
+
+  void _endSession() {
+    if (_sessionPersonId == null) return; // Already ended
+    _sessionTimer?.cancel();
+    setState(() {
+      _sessionPersonId = null;
+      _sessionLoginTime = null;
+      _sessionEndTime = null;
+      selectedPersonId = null;
+      // Clear board data
+      for (var group in controller.groupDatas.toList()) {
+        controller.removeGroup(group.id);
+      }
+    });
+    _promptInitialPin(); // Prompt again
+  }
+
+  bool _checkSessionValidity() {
+    if (_sessionPersonId != null && _sessionEndTime != null) {
+       if (DateTime.now().isAfter(_sessionEndTime!)) {
+          _endSession();
+          return false;
+       }
+       return true;
+    }
+    return false;
+  }
+
+  Future<void> _promptInitialPin() async {
+    String? pin = await _showPinDialog();
+    if (pin == _pin.toString()) {
+      // Hardcode selection to 327 as requested
+      // If the list is already loaded, we find the name; otherwise, we just set the ID.
+      setState(() {
+        selectedPersonId = 327;
+      });
+      _startSession(327);
+    } else if (pin != null) {
+      await _showAlertDialog("වැරදි PIN අංකයකි", "කරුණාකර නැවත උත්සාහ කරන්න.");
+      _promptInitialPin(); // Recursive call to try again
+    }
+  }
+
+  Future<String?> _showPinDialog() async {
+    return showDialog<String>(
+      context: context,
+      barrierDismissible: false, // Force entry
+      builder: (context) => const PinCodeDialog(),
+    );
+  }
+
   // Handle task move with validation and confirmation
   Future<bool> _handleTaskMove(
       String fromGroupId, String toGroupId, AppFlowyGroupItem item) async {
+    if (!_checkSessionValidity()) return false;
+
     bool isInvalidMove = false;
     String errorMessage = "";
 
@@ -143,8 +231,8 @@ class _KanbanBoardState extends State<KanbanBoard> {
     return true;
   }
 
-  void _showAlertDialog(String title, String message) {
-    showDialog(
+  Future<void> _showAlertDialog(String title, String message) async {
+    await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(title),
@@ -163,16 +251,19 @@ class _KanbanBoardState extends State<KanbanBoard> {
     employees = await fetchEmployeeListByOrganization(2);
 
     if (employees.isNotEmpty) {
-      setState(() {
-        selectedPersonId = employees.first.id;
+      // Don't auto-select. Wait for PIN.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_sessionPersonId == null) {
+              _promptInitialPin();
+          }
       });
-      await _loadBoardData();
-    } else {
-      setState(() {});
     }
+    setState(() {});
   }
 
   Future<void> _loadBoardData({bool forceRefresh = false}) async {
+    if (!_checkSessionValidity()) return;
+
     setState(() {
       _isLoading = true; // Start loading
     });
@@ -313,11 +404,16 @@ class _KanbanBoardState extends State<KanbanBoard> {
                                           valueField: (item) => item.id ?? 0,
                                           displayField: (item) =>
                                               item.preferred_name ?? "",
-                                          onChanged: (value) {
-                                            setState(() {
-                                              selectedPersonId = value;
-                                            });
-                                            _loadBoardData();
+                                          onChanged: (value) async {
+                                            if (value == null || value == selectedPersonId) return;
+
+                                            // Prompt for PIN when changing person
+                                            String? pin = await _showPinDialog();
+                                            if (pin == _pin.toString()) {
+                                                _startSession(value);
+                                            } else if (pin != null) {
+                                                _showAlertDialog("වැරදි PIN අංකයකි", "කරුණාකර නැවත උත්සාහ කරන්න.");
+                                            }
                                           },
                                         ),
                                       ),
@@ -328,10 +424,20 @@ class _KanbanBoardState extends State<KanbanBoard> {
                               ],
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.refresh),
-                            onPressed: () => _loadBoardData(forceRefresh: true),
-                            tooltip: 'Refresh',
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.refresh),
+                                onPressed: () => _loadBoardData(forceRefresh: true),
+                                tooltip: 'Refresh',
+                              ),
+                              const SizedBox(width: 8),
+                              IconButton(
+                                icon: const Icon(Icons.logout),
+                                onPressed: _endSession,
+                                tooltip: 'Logout',
+                              ),
+                            ],
                           ),
                         ],
                       ),
