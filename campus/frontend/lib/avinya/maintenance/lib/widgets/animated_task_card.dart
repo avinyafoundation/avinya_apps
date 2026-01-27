@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/task_item.dart';
+import 'package:gallery/avinya/maintenance/lib/services/translation_service.dart';
 
 class AnimatedTaskCard extends StatefulWidget {
   final TaskItem item;
@@ -121,18 +122,21 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.item.title,
+                          GeminiTranslator.getCachedTranslation(
+                              widget.item.title),
                           style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF172B4D)),
                         ),
-                        if (widget.item.description != null &&
-                            widget.item.description!.isNotEmpty) ...[
+                        if (widget.item.description != null) ...[
                           const SizedBox(height: 6),
-                          Text(widget.item.description!,
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.black87)),
+                          Text(
+                            GeminiTranslator.getCachedTranslation(
+                                widget.item.description!),
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.black87),
+                          ),
                         ],
                         if (widget.item.location.name != null &&
                             widget.item.location.name!.isNotEmpty) ...[
@@ -151,30 +155,32 @@ class _AnimatedTaskCardState extends State<AnimatedTaskCard>
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: widget.item.isOverdue
-                                    ? Colors.red.shade50
-                                    : (widget.item.overdueDays < -2
-                                        ? Colors.blue.shade50
-                                        : Colors.amber.shade50),
-                                borderRadius: BorderRadius.circular(3),
-                              ),
-                              child: widget.groupId != 'completed' ? Text(
-                                widget.item.statusText.toUpperCase(),
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
+                            if (widget.groupId != 'completed' &&
+                                (widget.item.statusText.trim().isNotEmpty))
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
                                   color: widget.item.isOverdue
-                                      ? Colors.red
+                                      ? Colors.red.shade50
                                       : (widget.item.overdueDays < -2
-                                          ? Colors.blue.shade800
-                                          : Colors.amber.shade800),
+                                          ? Colors.blue.shade50
+                                          : Colors.amber.shade50),
+                                  borderRadius: BorderRadius.circular(3),
                                 ),
-                              ) : null,
-                            ),
+                                child: Text(
+                                  widget.item.statusText.toUpperCase(),
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: widget.item.isOverdue
+                                        ? Colors.red
+                                        : (widget.item.overdueDays < -2
+                                            ? Colors.blue.shade800
+                                            : Colors.amber.shade800),
+                                  ),
+                                ),
+                              ),
                             const Spacer(),
                             const Icon(Icons.calendar_today,
                                 size: 12, color: Colors.grey),

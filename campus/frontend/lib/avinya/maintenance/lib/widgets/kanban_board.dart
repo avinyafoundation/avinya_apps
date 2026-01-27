@@ -1,5 +1,6 @@
 import 'package:appflowy_board/appflowy_board.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery/avinya/maintenance/lib/services/translation_service.dart';
 import '../data/task_item.dart';
 import 'dart:math';
 import '../widgets/animated_task_card.dart';
@@ -122,19 +123,6 @@ class _KanbanBoardState extends State<KanbanBoard> {
       }
     }
 
-    // Update backend status
-    try {
-      String status = toGroupId == 'pending' ? 'Pending' : toGroupId == 'progress' ? 'InProgress' : 'Completed';
-      await updateTaskStatus(int.parse(item.id), selectedPersonId!, status);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update task status: $e')),
-        );
-      }
-      return false; // Revert the move
-    }
-
     return true;
   }
 
@@ -168,45 +156,53 @@ class _KanbanBoardState extends State<KanbanBoard> {
   }
 
   Future<void> _loadBoardData() async {
-    // Prevent concurrent loads
-    if (_isLoading) return;
+    setState(() {
+      _isLoading = true; // Start loading
+    });
 
-    setState(() => _isLoading = true);
+    // 1. Clear existing groups to avoid duplication during refresh
+    for (var group in controller.groupDatas.toList()) {
+      controller.removeGroup(group.id);
+    }
+
     try {
-      // Clear existing groups first so the UI shows an empty board while loading
-      for (var group in controller.groupDatas.toList()) {
-        controller.removeGroup(group.id);
-      }
-
+      // 2. Fetch the raw task data from your database/backend
       final initialData =
           await getBoardData(personId: selectedPersonId, organizationId: 2);
 
+      // 3. Collect all strings that need translation (Titles and Descriptions)
+      List<String> stringsToTranslate = [];
+      for (var group in initialData) {
+        for (var item in group.items) {
+          final task = item as TaskItem;
+          if (task.title.isNotEmpty) stringsToTranslate.add(task.title);
+          if (task.description != null && task.description!.isNotEmpty) {
+            stringsToTranslate.add(task.description!);
+          }
+        }
+      }
+
+      // 4. Call Gemini ONCE to translate the entire board's content.
+      // This fills the GeminiTranslator._cache, so cards load instantly.
+      if (stringsToTranslate.isNotEmpty) {
+        await GeminiTranslator.translateBatch(stringsToTranslate);
+      }
+
+      // 5. Add the translated/prepared groups back to the controller
       for (var group in initialData) {
         controller.addGroup(group);
       }
-    } catch (e, st) {
-      print('Failed to load board data: $e\n$st');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Board load failed — check your connection.'),
-        ));
-      }
+    } catch (e) {
+      print("Error loading board data: $e");
+      _showAlertDialog("Sync Error", "Failed to load tasks. Please try again.");
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      // 6. Trigger a UI refresh
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
-  }
-
-  // Helper for Whole Page Scroll height
-  double _calculateBoardHeight() {
-    int maxItems = 0;
-    // Check if controller has data to prevent errors
-    if (controller.groupDatas.isEmpty) return 500;
-
-    for (var group in controller.groupDatas) {
-      maxItems = max(maxItems, group.items.length);
-    }
-    // Header + Footer + (Items * Height) + Buffer
-    return 100.0 + (maxItems * 180.0) + 150.0;
   }
 
   // Helper to translate group names to Sinhala
@@ -238,6 +234,19 @@ class _KanbanBoardState extends State<KanbanBoard> {
       // On track
       return "නියමිත කාලසටහනට අනුව";
     }
+  }
+
+  // Helper for Whole Page Scroll height
+  double _calculateBoardHeight() {
+    int maxItems = 0;
+    // Check if controller has data to prevent errors
+    if (controller.groupDatas.isEmpty) return 500;
+
+    for (var group in controller.groupDatas) {
+      maxItems = max(maxItems, group.items.length);
+    }
+    // Header + Footer + (Items * Height) + Buffer
+    return 100.0 + (maxItems * 180.0) + 150.0;
   }
 
   @override
