@@ -53,7 +53,7 @@ Future<List<AppFlowyGroupData>> getBoardData({
   int? location,
 }) async {
   final String baseUrl =
-      'http://localhost:9097/organizations/${organizationId ?? 2}/getTasksByStatus';
+      '${AppConfig.campusMaintenanceBffApiUrl}/${organizationId ?? 2}/getTasksByStatus';
   final Map<String, String> queryParams = {};
   if (personId != null) queryParams['personId'] = personId.toString();
   if (fromDate != null) queryParams['fromDate'] = fromDate;
