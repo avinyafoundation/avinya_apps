@@ -152,13 +152,6 @@ Future<http.Response> updateMaintenanceTask(int taskId, MaintenanceTask task) as
 //Soft delete task
 Future<http.Response> deactivateMaintenanceTask(
     int taskId, String modifiedBy) async {
-  final uri = Uri.parse(
-      '${AppConfig.campusMaintenanceBffApiUrl}/tasks/$taskId?modifiedBy=$modifiedBy');
-
-  final body = {
-    "id": taskId,
-    "isDeleted": true
-  };
 
   final response = await http.patch(
     Uri.parse('${AppConfig.campusMaintenanceBffApiUrl}/tasks/$taskId/delete'),
@@ -215,7 +208,7 @@ enum MaintenanceFrequency {
   biWeekly,
   monthly,
   quarterly,
-  yearly,
+  biAnnually,
   annually,
 }
 
@@ -233,8 +226,8 @@ String maintenanceFrequencyToString(MaintenanceFrequency frequency) {
       return 'monthly';
     case MaintenanceFrequency.quarterly:
       return 'quarterly';
-    case MaintenanceFrequency.yearly:
-      return 'yearly';
+    case MaintenanceFrequency.biAnnually:
+      return 'biAnnually';
     case MaintenanceFrequency.annually:
       return 'annually';
   }
@@ -253,8 +246,8 @@ MaintenanceFrequency getMaintenanceFrequencyFromString(String frequencyString) {
       return MaintenanceFrequency.monthly;
     case 'quarterly':
       return MaintenanceFrequency.quarterly;
-    case 'yearly':
-      return MaintenanceFrequency.yearly;
+    case 'biannually':
+      return MaintenanceFrequency.biAnnually;
     case 'annually':
       return MaintenanceFrequency.annually;
     default:

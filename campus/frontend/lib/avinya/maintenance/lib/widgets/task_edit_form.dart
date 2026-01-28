@@ -63,7 +63,7 @@ class TaskEditFormState extends State<TaskEditForm> {
     3: "Bi-Weekly",
     4: "Monthly",
     5: "Quarterly",
-    6: "Yearly",
+    6: "Bi-Annually",
     7: "Annually",
   };
 
@@ -72,57 +72,6 @@ class TaskEditFormState extends State<TaskEditForm> {
     2: "In Progress",
     3: "Completed",
   };
-
-  final List<Person> mockPersons = [
-    Person(
-      id: 1,
-      full_name: "John Doe",
-      email: "john.doe@example.com",
-    ),
-    Person(
-      id: 2,
-      full_name: "Sarah Williams",
-      email: "sarah.w@example.com",
-    ),
-    Person(
-      id: 3,
-      full_name: "Michael Fernando",
-      email: "michael.f@example.com",
-    ),
-    Person(
-      id: 4,
-      full_name: "Nimali Perera",
-      email: "nimali.p@example.com",
-    ),
-    Person(
-      id: 5,
-      full_name: "Kamal Silva",
-      email: "kamal.s@example.com",
-    ),
-  ];
-
-  final List<AcademyLocation> mockLocations = [
-    AcademyLocation(
-      id: 1,
-      name: "Main Building",
-    ),
-    AcademyLocation(
-      id: 2,
-      name: "Sports Complex",
-    ),
-    AcademyLocation(
-      id: 3,
-      name: "Library Block",
-    ),
-    AcademyLocation(
-      id: 4,
-      name: "Science Lab",
-    ),
-    AcademyLocation(
-      id: 5,
-      name: "Auditorium",
-    ),
-  ];
 
   Future<List<AcademyLocation>>? locationsFuture;
   Future<List<Person>>? personsFuture;
@@ -158,7 +107,7 @@ class TaskEditFormState extends State<TaskEditForm> {
       MaintenanceFrequency.biWeekly: 3,
       MaintenanceFrequency.monthly: 4,
       MaintenanceFrequency.quarterly: 5,
-      MaintenanceFrequency.yearly: 6,
+      MaintenanceFrequency.biAnnually: 6,
       MaintenanceFrequency.annually: 7,
     }[activity.maintenanceTask!.frequency];
 
@@ -219,7 +168,7 @@ class TaskEditFormState extends State<TaskEditForm> {
           3: MaintenanceFrequency.biWeekly,
           4: MaintenanceFrequency.monthly,
           5: MaintenanceFrequency.quarterly,
-          6: MaintenanceFrequency.yearly,
+          6: MaintenanceFrequency.biAnnually,
           7: MaintenanceFrequency.annually,
         }[selectedFrequency];
 

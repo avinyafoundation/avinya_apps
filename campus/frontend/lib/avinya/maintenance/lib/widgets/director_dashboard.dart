@@ -427,7 +427,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
       Expanded(
         flex: isMobile ? 0 : 1,
         child: StatCard(
-          title: "Total Upcoming Tasks",
+          title: "Total Upcoming Tasks (Next Month)",
           value: "${_summaryReport?.totalUpcomingTasks ?? 0}",
           icon: Icons.calendar_month,
           accentColor: Colors.indigo,

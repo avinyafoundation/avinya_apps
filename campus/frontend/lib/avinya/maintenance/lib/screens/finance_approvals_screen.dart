@@ -330,11 +330,11 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
   }
 
   Widget _buildDataTable() {
-
     final bool hasNext = _pendingTasks.length > _limit;
     final bool hasPrevious = _offset > 0;
 
-    final List<ActivityInstance> displayTasks = hasNext ? _pendingTasks.sublist(0, _limit) : _pendingTasks;
+    final List<ActivityInstance> displayTasks =
+        hasNext ? _pendingTasks.sublist(0, _limit) : _pendingTasks;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -387,7 +387,6 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13))),
                   ],
-
                   rows: displayTasks.map((instance) {
                     return _buildDataRow(instance);
                   }).toList(),
@@ -476,7 +475,12 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
         if (selected != null) {
           showDialog(
             context: context,
-            builder: (context) => FinanceTaskDetailsDialog(activityInstance: instance),
+            builder: (context) => FinanceTaskDetailsDialog(
+              activityInstance: instance,
+              onApprove: () => setState(() {
+                _pendingTasks.removeWhere((task) => task.id == instance.id);
+              }),
+            ),
           );
         }
       },
