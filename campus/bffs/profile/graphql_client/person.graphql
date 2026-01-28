@@ -266,3 +266,10 @@ query getStudentByParentOrg($parent_organization_id: Int,$batch_id:Int) {
     }
   }
 }
+
+query validatePin($pin: String!) {
+  validatePin(pin: $pin) {
+    id
+    preferred_name
+  }
+}

@@ -27,6 +27,7 @@ input ActivityInstance {
   record_type: String = "activity_instance"
   id: Int
   activity_id: Int
+  task_id: Int
   name: String
   place_id: Int
   location: String
@@ -38,8 +39,12 @@ input ActivityInstance {
   notes: String
   start_time: String
   end_time: String
+  overall_task_status: String
   created: String
   updated: String
+  task: MaintenanceTask
+  finance: MaintenanceFinance
+  activity_participants: [ActivityParticipant!]
 }
 
 type ActivityInstanceData {
@@ -48,12 +53,18 @@ type ActivityInstanceData {
   location: String
   description: String
   activity_id: Int
+  task_id: Int
   notes: String
   daily_sequence: Int
   weekly_sequence: Int
   monthly_sequence: Int
   start_time: String
   end_time: String
+  task: MaintenanceTaskData
+  finance: MaintenanceFinanceData
+  overall_task_status: String
+  overdue_days: Int
+  statusText: String
   created: String
   updated: String
   place: PlaceData
@@ -95,11 +106,13 @@ input ActivityParticipant {
   organization_id: Int
   start_date: String
   end_date: String
+  participant_task_status: String
   role: String
   notes: String
   is_attending: Int
   created: String
   updated: String
+  person: Person
 }
 
 input ActivityParticipantAttendance {
@@ -160,6 +173,7 @@ type ActivityParticipantData {
   organization: OrganizationData
   start_date: String
   end_date: String
+  participant_task_status: String
   role: String
   notes: String
   is_attending: Int
@@ -216,6 +230,7 @@ input Alumni {
   facebook_id: String
   instagram_id: String
   tiktok_id: String
+  canva_cv_url: String
   updated_by: String
   person_count: Int
   created: String
@@ -231,6 +246,7 @@ type AlumniData {
   facebook_id: String
   instagram_id: String
   tiktok_id: String
+  canva_cv_url: String
   updated_by: String
   created: String
   updated: String
@@ -421,11 +437,14 @@ type AvinyaTypeData {
   description: String
 }
 
-type CalendarMetaData {
+type BatchPaymentPlanData {
   id: Int
   organization_id: Int
   batch_id: Int
   monthly_payment_amount: Decimal
+  valid_from: String
+  valid_to: String
+  created: String
 }
 
 input City {
@@ -476,6 +495,25 @@ type ConsumableData {
   updated: String
 }
 
+input CvRequest {
+  record_type: String = "cv_request"
+  id: Int
+  person_id: Int
+  phone: Int
+  status: String
+  created: String
+  updated: String
+}
+
+type CvRequestData {
+  id: Int
+  person_id: Int
+  phone: Int
+  status: String
+  created: String
+  updated: String
+}
+
 type DailyActivityParticipantAttendanceByParentOrgData {
   description: String
   present_count: Int
@@ -487,9 +525,11 @@ type DailyActivityParticipantAttendanceByParentOrgData {
 type DailyActivityParticipantAttendanceSummaryReportData {
   sign_in_date: String
   present_count: Int
+  absent_count: Int
   late_count: Int
   total_count: Int
   present_attendance_percentage: Decimal
+  absent_attendance_percentage: Decimal
   late_attendance_percentage: Decimal
 }
 
@@ -700,6 +740,10 @@ type GeoData {
   address(id: Int!): AddressData!
 }
 
+type GroupedTasks {
+  groups: [TaskGroup!]!
+}
+
 input Inventory {
   record_type: String = "inventory"
   id: Int
@@ -746,10 +790,160 @@ type InventoryData {
   updated: String
 }
 
+type JobCategoryData {
+  id: Int
+  name: String
+  description: String
+}
+
+input JobPost {
+  record_type: String = "job_post"
+  id: Int
+  job_type: String
+  job_text: String
+  job_link: String
+  job_image_drive_id: String
+  job_post_image: String
+  current_date_time: String
+  job_category: String
+  job_category_id: Int
+  application_deadline: String
+  uploaded_by: String
+  created: String
+  updated: String
+}
+
+type JobPostData {
+  id: Int
+  job_type: String
+  job_text: String
+  job_link: String
+  job_image_drive_id: String
+  job_category_id: Int
+  application_deadline: String
+  uploaded_by: String
+  job_post_image: String
+  created: String
+  updated: String
+}
+
 type LocalizedName {
   name_en: String
   name_ta: String
   name_si: String
+}
+
+input MaintenanceFinance {
+  record_type: String = "maintenance_finance"
+  id: Int
+  activity_instance_id: Int
+  estimated_cost: Decimal
+  labour_cost: Decimal
+  total_cost: Decimal
+  status: String
+  rejection_reason: String
+  reviewed_by: String
+  reviewed_date: String
+  created: String
+  updated: String
+  materialCosts: [MaterialCost!]
+}
+
+type MaintenanceFinanceData {
+  id: Int
+  activity_instance_id: Int
+  estimated_cost: Decimal
+  labour_cost: Decimal
+  material_costs: [MaterialCostData!]
+  status: String
+  rejection_reason: String
+  reviewed_by: String
+  reviewed_date: String
+  created: String
+  updated: String
+  total_cost: Decimal!
+}
+
+type MaintenanceMonthlyTaskCostReportData {
+  organizationId: Int!
+  year: Int!
+  month: Int!
+  totalActualCost: Decimal!
+  totalEstimatedCost: Decimal!
+  tasks: [MaintenanceTaskCostSummaryData!]!
+}
+
+input MaintenanceTask {
+  record_type: String = "maintenance_task"
+  id: Int
+  title: String
+  description: String
+  task_type: String
+  frequency: String
+  location_id: Int
+  start_date: String
+  exception_deadline: Int
+  has_financial_info: Int
+  modified_by: String
+  is_active: Boolean
+  created: String
+  updated: String
+  person_id_list: [Int!]
+  finance: MaintenanceFinance
+}
+
+type MaintenanceTaskCostSummaryData {
+  taskId: Int!
+  taskTitle: String!
+  actualCost: Decimal!
+  estimatedCost: Decimal!
+}
+
+type MaintenanceTaskData {
+  id: Int
+  title: String
+  description: String
+  task_type: String
+  frequency: String
+  location_id: Int
+  location: OrganizationLocationData
+  start_date: String
+  exception_deadline: Int
+  has_financial_info: Int
+  modified_by: String
+  is_active: Boolean
+  created: String
+  updated: String
+}
+
+input MaterialCost {
+  record_type: String = "material_cost"
+  id: Int
+  financial_id: Int
+  item: String
+  quantity: Decimal
+  unit: String
+  unit_cost: Decimal
+}
+
+type MaterialCostData {
+  id: Int
+  financial_id: Int
+  item: String
+  quantity: Decimal
+  unit: String
+  unit_cost: Decimal
+}
+
+type MonthlyCostData {
+  month: Int
+  estimated_cost: Decimal
+  actual_cost: Decimal
+}
+
+type MonthlyCostSummaryData {
+  year: Int
+  monthly_costs: [MonthlyCostData!]
 }
 
 input MonthlyLeaveDates {
@@ -763,6 +957,7 @@ input MonthlyLeaveDates {
   leave_dates_list: [Int!]!
   leave_dates: String
   daily_amount: Decimal
+  monthly_payment_amount: Decimal
   created: String
   updated: String
 }
@@ -777,6 +972,16 @@ type MonthlyLeaveDatesData {
   daily_amount: Decimal
   created: String
   updated: String
+}
+
+type MonthlyReportData {
+  totalTasks: Int
+  completedTasks: Int
+  pendingTasks: Int
+  inProgressTasks: Int
+  totalCosts: Decimal
+  totalUpcomingTasks: Int
+  nextMonthlyEstimatedCost: Decimal
 }
 
 type Mutation {
@@ -837,7 +1042,7 @@ type Mutation {
   consumable_depletion(person_id: Int!, organization_id: Int!, date: String!, inventories: [Inventory!]!): [InventoryData!]
   update_consumable_replenishment(inventories: [Inventory!]!): [InventoryData!]
   update_consumable_depletion(inventories: [Inventory!]!): [InventoryData!]
-  update_person(person: Person!, permanent_address: Address, permanent_address_city: City, mailing_address: Address, mailing_address_city: City): PersonData
+  update_person(person: Person!, mailing_address: Address, mailing_address_city: City): PersonData
   insert_person(person: Person!, mailing_address: Address, mailing_address_city: City): PersonData
   upload_document(user_document: UserDocument!): DocumentsData
   add_monthly_leave_dates(monthly_leave_dates: MonthlyLeaveDates!): MonthlyLeaveDatesData
@@ -854,6 +1059,19 @@ type Mutation {
   delete_person_profile_picture_by_id(id: Int!): Int
   create_activity_participant(activity_participant: ActivityParticipant!): ActivityParticipantData
   create_activity_instance_evaluation(activity_instance_evaluation: ActivityInstanceEvaluation!): ActivityInstanceEvaluationData
+  create_job_post(job_post: JobPost!): JobPostData
+  update_job_post(job_post: JobPost!): JobPostData
+  delete_job_post(job_post: JobPost!): Int
+  addCvRequest(personId: Int!, cvRequest: CvRequest!): CvRequestData
+  uploadCV(personId: Int!, personCv: PersonCv!): PersonCvData
+  saveUserFCMToken(personId: Int!, personFCMToken: PersonFcmToken!): PersonFcmTokenData
+  updateUserFCMToken(personId: Int!, personFCMToken: PersonFcmToken!): PersonFcmTokenData
+  saveOrganizationLocation(organizationId: Int!, organizationLocation: OrganizationLocation!): OrganizationLocationData
+  createMaintenanceTask(organizationId: Int, maintenanceTask: MaintenanceTask!, finance: MaintenanceFinance, materialCosts: [MaterialCost!]): MaintenanceTaskData
+  updateMaintenanceTask(organizationId: Int!, maintenanceTaskActivityInstance: ActivityInstance!, maintenanceTask: MaintenanceTask!, maintenanceTaskParticipantList: [Int!]!, finance: MaintenanceFinance, materialCosts: [MaterialCost!]): ActivityInstanceData
+  updateTaskProgress(activityInstanceId: Int!, taskParticipantId: Int!, taskParticipant: ActivityParticipant!): ActivityParticipantData
+  softDeactivateMaintenanceTask(taskId: Int!, modifiedBy: String!): MaintenanceTaskData
+  updateMaintenanceFinance(financeId: Int!, maintenanceFinance: MaintenanceFinance!): MaintenanceFinanceData
 }
 
 input Organization {
@@ -888,6 +1106,21 @@ type OrganizationData {
   vacancies: [VacancyData!]
   organization_metadata: [OrganizationMetaData!]
   active: Int
+}
+
+input OrganizationLocation {
+  record_type: String = "organization_location"
+  id: Int
+  organization_id: Int
+  location_name: String
+  description: String
+}
+
+type OrganizationLocationData {
+  id: Int
+  organization_id: Int
+  location_name: String
+  description: String
 }
 
 type OrganizationMetaData {
@@ -948,6 +1181,28 @@ input Person {
   profile_picture_folder_id: String
 }
 
+input PersonCv {
+  record_type: String = "person_cv"
+  id: Int
+  person_id: Int
+  file_content: String
+  nic_no: String
+  drive_file_id: String
+  uploaded_by: String
+  created: String
+  updated: String
+}
+
+type PersonCvData {
+  id: Int
+  person_id: Int
+  drive_file_id: String
+  file_content: String
+  uploaded_by: String
+  created: String
+  updated: String
+}
+
 type PersonData {
   id: Int
   preferred_name: String
@@ -994,6 +1249,23 @@ type PersonData {
   alumni_work_experience: [AlumniWorkExperienceData!]
   profile_picture: PersonProfilePictureData
   profile_picture_folder_id: String
+}
+
+input PersonFcmToken {
+  record_type: String = "person_fcm_token"
+  id: Int
+  person_id: Int
+  fcm_token: String
+  created: String
+  updated: String
+}
+
+type PersonFcmTokenData {
+  id: Int
+  person_id: Int
+  fcm_token: String
+  created: String
+  updated: String
 }
 
 input PersonProfilePicture {
@@ -1084,10 +1356,11 @@ type Query {
   organization_structure(name: String, id: Int): OrganizationStructureData
   organizations(level: Int!): OrganizationStructureData
   organization(name: String, id: Int): OrganizationData
-  organizations_by_avinya_type(avinya_type: Int, active: Int): [OrganizationData!]
+  organizations_by_avinya_type_and_status(avinya_type: Int, active: Int): [OrganizationData!]
   student_list_by_parent(parent_organization_id: Int, batch_id: Int): [PersonData!]
   person(name: String, id: Int): PersonData
   person_by_digital_id(id: String): PersonData
+  validatePin(pin: String): PersonData
   prospect(email: String, phone: Int): ProspectData
   applicant_consent(email: String, phone: Int): ApplicantConsentData
   application(person_id: Int!): ApplicationData
@@ -1160,13 +1433,27 @@ type Query {
   cities(district_id: Int): [CityData!]
   all_organizations: [OrganizationData!]
   monthly_leave_dates_record_by_id(organization_id: Int!, batch_id: Int!, year: Int!, month: Int!): MonthlyLeaveDatesData
-  calendar_metadata_by_org_id(organization_id: Int!, batch_id: Int!): CalendarMetaData
+  batch_payment_plan_by_org_id(organization_id: Int!, batch_id: Int!, selected_month_date: String!): BatchPaymentPlanData
   alumni_education_qualification_by_id(id: Int): AlumniEducationQualificationData
   alumni_work_experience_by_id(id: Int): AlumniWorkExperienceData
   upcoming_events(person_id: Int): [ActivityInstanceData!]
   completed_events(person_id: Int): [ActivityInstanceData!]
   alumni_persons(parent_organization_id: Int): [PersonData!]
   alumni_summary(alumni_batch_id: Int): [AlumniData!]
+  job_post(id: Int): JobPostData
+  job_posts(result_limit: Int! = 4, offset: Int! = 0): [JobPostData!]
+  job_categories: [JobCategoryData!]
+  fetchLatestCvRequest(personId: Int!): CvRequestData
+  fetchPersonCV(personId: Int!, driveFileId: String): PersonCvData
+  fetchUserFCMToken(personId: Int): PersonFcmTokenData
+  locationsByOrganization(organizationId: Int): [OrganizationLocationData!]
+  maintenanceTasks(organizationId: Int!, personId: [Int!], fromDate: String, toDate: String, taskStatus: String, financialStatus: String, taskType: String, location: Int, title: String, limit: Int! = 10, offset: Int! = 0, includeFinance: Boolean! = false): [ActivityInstanceData!]
+  overdueMaintenanceTasks(organizationId: Int!): [ActivityInstanceData!]
+  maintenanceTasksByMonthYearStatus(organizationId: Int!, month: Int!, year: Int!, overallTaskStatus: String, limit: Int! = 10, offset: Int! = 0): [ActivityInstanceData!]
+  monthlyMaintenanceReport(organizationId: Int!, year: Int!, month: Int!): MonthlyReportData!
+  monthlyCostSummary(year: Int!, organizationId: Int!): MonthlyCostSummaryData
+  maintenanceTasksByStatus(organizationId: Int!, personId: Int, fromDate: String, toDate: String, taskType: String, location: Int): GroupedTasks!
+  monthlyTaskCostReport(organizationId: Int!, year: Int!, month: Int!): MaintenanceMonthlyTaskCostReportData!
 }
 
 input ResourceAllocation {
@@ -1271,6 +1558,12 @@ type SupplyData {
   order_amount: Int
   created: String
   updated: String
+}
+
+type TaskGroup {
+  groupId: String!
+  groupName: String!
+  tasks: [ActivityInstanceData!]!
 }
 
 type TotalActivityParticipantAttendanceCountByDateData {
