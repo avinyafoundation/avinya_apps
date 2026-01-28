@@ -97,6 +97,20 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                           : "No Financial Info",
                       isStatus: true,
                     ),
+                    if (widget.activityInstance.financialInformation != null &&
+                        widget.activityInstance.financialInformation!
+                                .status ==
+                            FinanceStatus.rejected &&
+                        widget.activityInstance.financialInformation!
+                                .rejectionReason !=
+                            null)
+                      _buildDetailRow(
+                          Icons.error_outline,
+                          "Rejection Reason",
+                          widget.activityInstance.financialInformation!
+                              .rejectionReason!,
+                          isStatus: false,
+                          color: Colors.red),
                     if (widget.activityInstance.financialInformation != null)
                       Column(
                         children: [
@@ -216,7 +230,7 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
 
   // Helper Widget for Rows
   Widget _buildDetailRow(IconData icon, String label, String value,
-      {bool isStatus = false}) {
+      {bool isStatus = false, Color? color,}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -234,16 +248,12 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
             child: Text(
               value,
               style: TextStyle(
-                color: isStatus
-                    ? (value == "Approved"
+                color: color ??
+                    (isStatus
                         ? Colors.black
-                        : value == "Rejected"
-                            ? Colors.black
-                            : value == "Pending"
-                                ? Colors.black
-                                : Colors.black)
-                    : Colors.black87,
-                fontWeight: isStatus ? FontWeight.bold : FontWeight.normal,
+                        : Colors.black87),
+                fontWeight:
+                    isStatus ? FontWeight.bold : FontWeight.normal,
               ),
             ),
           ),
@@ -282,6 +292,27 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
         ],
         onChanged: (newStatus) {
           if (newStatus != null) {
+            // Check financial status
+            final financialStatus =
+                widget.activityInstance.financialInformation?.status;
+            if (financialStatus == FinanceStatus.pending ||
+                financialStatus == FinanceStatus.rejected) {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("Cannot Update Status"),
+                  content: const Text(
+                      "Financial details are not approved for this task."),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text("OK"),
+                    ),
+                  ],
+                ),
+              );
+              return;
+            }
             setState(() {
               // Update participant status
               if (newStatus == "Pending") {

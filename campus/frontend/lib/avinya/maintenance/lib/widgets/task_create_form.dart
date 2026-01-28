@@ -53,7 +53,7 @@ class _TaskCreateFormState extends State<TaskCreateForm> {
     3: "Bi-Weekly",
     4: "Monthly",
     5: "Quarterly",
-    6: "Yearly",
+    6: "Bi-Annually",
     7: "Annually",
   };
 
@@ -91,7 +91,7 @@ class _TaskCreateFormState extends State<TaskCreateForm> {
           3: MaintenanceFrequency.biWeekly,
           4: MaintenanceFrequency.monthly,
           5: MaintenanceFrequency.quarterly,
-          6: MaintenanceFrequency.yearly,
+          6: MaintenanceFrequency.biAnnually,
           7: MaintenanceFrequency.annually,
         }[selectedFrequency];
 

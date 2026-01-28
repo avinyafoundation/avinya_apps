@@ -116,7 +116,7 @@ class TasksDialog extends StatelessWidget {
       case 'completed':
         return Colors.green;
       case 'ongoing':
-      case 'in progress':
+      case 'inprogress':
         return Colors.blue;
       case 'pending':
         return Colors.orange;

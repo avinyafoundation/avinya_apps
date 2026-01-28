@@ -7,8 +7,10 @@ import 'package:gallery/data/campus_apps_portal.dart';
 
 class FinanceTaskDetailsDialog extends StatefulWidget {
   final ActivityInstance activityInstance;
+  final VoidCallback? onApprove;
 
-  const FinanceTaskDetailsDialog({super.key, required this.activityInstance});
+  const FinanceTaskDetailsDialog(
+      {super.key, required this.activityInstance, this.onApprove});
 
   @override
   State<FinanceTaskDetailsDialog> createState() =>
@@ -82,18 +84,20 @@ class _FinanceTaskDetailsDialogState extends State<FinanceTaskDetailsDialog> {
                         widget.activityInstance.maintenanceTask?.location
                                 ?.name ??
                             "-"),
-                    _buildDetailRow(Icons.calendar_today, "Start Date",
+                    _buildDetailRow(
+                        Icons.calendar_today,
+                        "Start Date",
                         DateTime.parse(widget.activityInstance.start_time!)
-                                .toLocal()
-                                .toString()
-                                .split(' ')[0]),
+                            .toLocal()
+                            .toString()
+                            .split(' ')[0]),
                     _buildDetailRow(
                         Icons.calendar_today,
                         "End Date",
                         DateTime.parse(widget.activityInstance.end_time!)
                             .toLocal()
                             .toString()
-                            .split(' ')[0]),            
+                            .split(' ')[0]),
                     _buildDetailRow(Icons.attach_money, "Estimated Cost",
                         "Rs. ${financialInfo?.estimatedCost?.toStringAsFixed(2) ?? '0.00'}"),
                     _buildDetailRow(Icons.calculate_outlined, "Labour Cost",
@@ -246,7 +250,10 @@ class _FinanceTaskDetailsDialogState extends State<FinanceTaskDetailsDialog> {
           instance.maintenanceTask?.location?.organizationId ?? 1;
       await updateTaskFinance(organizationId, updateData);
 
-      // 3. Show Feedback
+      // 3. Notify parent to update UI
+      widget.onApprove?.call();
+
+      // 4. Show Feedback
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

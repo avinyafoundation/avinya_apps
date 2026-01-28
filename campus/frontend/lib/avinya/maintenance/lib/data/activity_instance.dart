@@ -1,4 +1,3 @@
-import 'package:gallery/avinya/maintenance/lib/data.dart';
 import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
