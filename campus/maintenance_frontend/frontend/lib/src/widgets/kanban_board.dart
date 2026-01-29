@@ -10,6 +10,7 @@ import '../widgets/common/drop_down.dart';
 import '../widgets/common/page_title.dart';
 import '../widgets/common/pin_code_dialog.dart';
 import '../data/person.dart';
+import '../data/person_pin.dart';
 
 class KanbanBoard extends StatefulWidget {
   const KanbanBoard({super.key});
@@ -29,8 +30,7 @@ class _KanbanBoardState extends State<KanbanBoard> {
   DateTime? _sessionLoginTime;
   DateTime? _sessionEndTime;
   int? _sessionPersonId;
-  static const int _pin = 2568;
-  static const int _sessionDurationMinutes = 5;
+  static const int _sessionDurationMinutes = 1;
 
   @override
   void dispose() {
@@ -90,20 +90,23 @@ class _KanbanBoardState extends State<KanbanBoard> {
   // --- Session Management ---
 
   void _startSession(int personId) {
+    if (!mounted) return;
+
+    _sessionTimer?.cancel();
+
     setState(() {
       _sessionPersonId = personId;
+      selectedPersonId = personId;
       _sessionLoginTime = DateTime.now();
-      _sessionEndTime =
-          _sessionLoginTime!.add(const Duration(minutes: _sessionDurationMinutes));
+      _sessionEndTime = _sessionLoginTime!
+          .add(const Duration(minutes: _sessionDurationMinutes));
     });
-    
-    _sessionTimer?.cancel();
-    _sessionTimer = Timer(const Duration(minutes: _sessionDurationMinutes), _endSession);
-    
-    // Also set the correct person ID for the view
-    setState(() {
-        selectedPersonId = personId;
-    });
+
+    _sessionTimer = Timer(
+      const Duration(minutes: _sessionDurationMinutes),
+      _endSession,
+    );
+
     _loadBoardData();
   }
 
@@ -135,17 +138,26 @@ class _KanbanBoardState extends State<KanbanBoard> {
   }
 
   Future<void> _promptInitialPin() async {
-    String? pin = await _showPinDialog();
-    if (pin == _pin.toString()) {
-      // Hardcode selection to 327 as requested
-      // If the list is already loaded, we find the name; otherwise, we just set the ID.
-      setState(() {
-        selectedPersonId = 327;
-      });
-      _startSession(327);
-    } else if (pin != null) {
-      await _showAlertDialog("වැරදි PIN අංකයකි", "කරුණාකර නැවත උත්සාහ කරන්න.");
-      _promptInitialPin(); // Recursive call to try again
+    final pin = await _showPinDialog();
+    if (!mounted || pin == null) return;
+
+    try {
+      final user = await PersonPin.validatePin(pin);
+
+      if (!mounted) return;
+
+      if (user == null) {
+        await _showAlertDialog("වැරදි PIN අංකයකි", "කරුණාකර නැවත උත්සාහ කරන්න.");
+        _promptInitialPin();
+        return;
+      }
+
+      final int userId = int.parse(user['id'].toString());
+      _startSession(userId);
+      
+    } catch (e) {
+      await _showAlertDialog("සන්නිවේදන දෝෂයකි", "නැවත උත්සාහ කරන්න.");
+      _promptInitialPin();
     }
   }
 
@@ -407,12 +419,23 @@ class _KanbanBoardState extends State<KanbanBoard> {
                                           onChanged: (value) async {
                                             if (value == null || value == selectedPersonId) return;
 
-                                            // Prompt for PIN when changing person
                                             String? pin = await _showPinDialog();
-                                            if (pin == _pin.toString()) {
-                                                _startSession(value);
-                                            } else if (pin != null) {
-                                                _showAlertDialog("වැරදි PIN අංකයකි", "කරුණාකර නැවත උත්සාහ කරන්න.");
+                                            if (pin != null) {
+                                              try {
+                                                final user = await PersonPin.validatePin(pin);
+                                                // Ensure the PIN belongs to the user they actually selected
+                                                if (user != null && int.parse(user['id'].toString()) == value) {
+                                                  _startSession(value);
+                                                } else {
+                                                  await _showAlertDialog("වැරදි PIN අංකයකි", "මෙම පරිශීලකයා සඳහා PIN අංකය වැරදිය.");
+                                                  setState(() {});
+                                                }
+                                              } catch (e) {
+                                                await _showAlertDialog("Error", "Failed to validate PIN.");
+                                                setState(() {});
+                                              }
+                                            } else {
+                                              setState(() {});
                                             }
                                           },
                                         ),
