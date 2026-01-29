@@ -43,6 +43,7 @@ class DropDown<T> extends StatelessWidget {
           height: sizedBoxHeight ?? 6,
         ),
         DropdownButtonFormField<int>(
+          key: key,
           value: selectedValues,
           items: items
               .map((item) => DropdownMenuItem(
