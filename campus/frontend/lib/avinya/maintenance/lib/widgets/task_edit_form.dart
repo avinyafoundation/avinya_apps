@@ -48,6 +48,7 @@ class TaskEditFormState extends State<TaskEditForm> {
   String? selectedLocationName;
   List<int> selectedPerson = [];
   String? selectedDate;
+  String? displayDate;
   List<MaterialCost> materialCosts = [];
   Map<int, int> participantIdByPersonId = {};
   Map<int, Person> personById = {};
@@ -135,21 +136,17 @@ class TaskEditFormState extends State<TaskEditForm> {
       }
     }
 
-
     selectedDate = activity.start_time;
+    displayDate = selectedDate?.split(' ')[0];
 
     print("Finance Info:  ${activity.financialInformation?.toJson()}");
     if (activity.financialInformation != null) {
-      estimatedCostController.text = activity
-              .financialInformation!.estimatedCost
-              ?.toString() ??
-          '';
-      labourCostController.text = activity
-              .financialInformation!.labourCost
-              ?.toString() ??
-          '';
-      materialCosts = List.from(
-          activity.financialInformation!.materialCosts ?? []);
+      estimatedCostController.text =
+          activity.financialInformation!.estimatedCost?.toString() ?? '';
+      labourCostController.text =
+          activity.financialInformation!.labourCost?.toString() ?? '';
+      materialCosts =
+          List.from(activity.financialInformation!.materialCosts ?? []);
     }
   }
 
@@ -177,7 +174,7 @@ class TaskEditFormState extends State<TaskEditForm> {
             labourCostController.text.isNotEmpty ||
             materialCosts.isNotEmpty;
 
-        int hasFinancialInfo = hasFinancialInfoBool? 1 : 0;
+        int hasFinancialInfo = hasFinancialInfoBool ? 1 : 0;
 
         // Create Task Object
         MaintenanceTask newTask = MaintenanceTask(
@@ -207,8 +204,6 @@ class TaskEditFormState extends State<TaskEditForm> {
             ),
           );
         }).toList();
-
-
 
         //Create Material Cost Object List
         List<MaterialCost> materialCostList = materialCosts.map((material) {
@@ -247,7 +242,8 @@ class TaskEditFormState extends State<TaskEditForm> {
         print(jsonEncode(activityInstance.toJson()));
 
         // Call API
-        final ActivityInstance response = await updateActivityInstance(activityInstance);
+        final ActivityInstance response =
+            await updateActivityInstance(activityInstance);
 
         // Show success
         ScaffoldMessenger.of(context).showSnackBar(
@@ -349,7 +345,7 @@ class TaskEditFormState extends State<TaskEditForm> {
                               displayField: (v) => taskTypes[v]!,
                               onChanged: (v) => setState(() {
                                 selectedTaskType = v;
-          
+
                                 if (selectedTaskType == 2) {
                                   selectedFrequency = null;
                                 }
@@ -410,20 +406,20 @@ class TaskEditFormState extends State<TaskEditForm> {
                                       ),
                                     );
                                   }
-          
+
                                   if (snapshot.hasError) {
-                                    return const Text("Error loading locations");
+                                    return const Text(
+                                        "Error loading locations");
                                   }
-          
+
                                   final locations = snapshot.data!;
 
-          
                                   return DropDown<AcademyLocation>(
                                     label: "Select Location",
                                     items: locations,
                                     selectedValues: selectedLocation,
                                     valueField: (loc) => loc.id!,
-                                    displayField: (loc) => loc.name?? '',
+                                    displayField: (loc) => loc.name ?? '',
                                     onChanged: (value) {
                                       setState(() => selectedLocation = value);
                                     },
@@ -452,22 +448,21 @@ class TaskEditFormState extends State<TaskEditForm> {
                                       ),
                                     );
                                   }
-          
+
                                   if (snapshot.hasError) {
                                     return const Text("Error loading persons");
                                   }
-          
+
                                   final persons = snapshot.data!;
 
-                                  
                                   personById = {
                                     for (final p in persons) p.id!: p,
                                   };
-          
+
                                   final personNames = persons
                                       .map((p) => "${p.full_name}")
                                       .toList();
-          
+
                                   return MultiSelectDropdown<Person>(
                                     label: "Select Persons",
                                     items: persons,
@@ -492,11 +487,12 @@ class TaskEditFormState extends State<TaskEditForm> {
                         children: [
                           Expanded(
                             child: CustomDatePicker(
-                              label: "Select Date",
-                              selectedDateString: selectedDate,
+                              label: "Start Date",
+                              selectedDateString: displayDate,
                               onDateSelected: (date) {
                                 setState(() {
-                                  selectedDate = date;
+                                  selectedDate = date + " 00:00:00";
+                                  displayDate = date;
                                 });
                               },
                               enabled: false,
@@ -550,8 +546,9 @@ class TaskEditFormState extends State<TaskEditForm> {
                             caption: "Material Costs",
                             onChanged: (updatedList) {
                               setState(() => materialCosts = updatedList);
-                              print(
-                                  materialCosts.map((e) => e.toJson()).toList());
+                              print(materialCosts
+                                  .map((e) => e.toJson())
+                                  .toList());
                             },
                           ),
                           const SizedBox(height: 16),
