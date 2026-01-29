@@ -30,7 +30,7 @@ class _KanbanBoardState extends State<KanbanBoard> {
   DateTime? _sessionLoginTime;
   DateTime? _sessionEndTime;
   int? _sessionPersonId;
-  static const int _sessionDurationMinutes = 1;
+  static const int _sessionDurationMinutes = 5;
 
   @override
   void dispose() {
