@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 class AppConfig {
   static String apiUrl = '';
   static String campusMaintenanceBffApiUrl = '';
+  static String campusProfileBffApiUrl = '';
   static String maintenanceAppBffApiKey = '';
   static String refreshToken = '';
   static String choreoSTSEndpoint = "";
@@ -34,6 +35,7 @@ class AppConfig {
     // decode our json
     final json = jsonDecode(contents);
     campusMaintenanceBffApiUrl = json['campusMaintenanceBffApiUrl'];
+    campusProfileBffApiUrl = json['campusProfileBffApiUrl'];
     choreoSTSEndpoint = json['choreo_sts_endpoint'];
     asgardeoTokenEndpoint = json['asgardeo_token_endpoint'];
     asgardeoLogoutUrl = json['logout_url'];
