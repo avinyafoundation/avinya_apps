@@ -557,8 +557,9 @@ class _ReportScreenState extends State<ReportScreen> {
 
     if (confirm == true) {
       try {
-        await deactivateMaintenanceTask(instance.maintenanceTask!.id!,
-            campusAppsPortalInstance.getDigitalId().toString());
+        print("Deactivating task id: ${instance.maintenanceTask!.id}");
+        print("Modified by digital id: ${campusAppsPortalInstance.getDigitalId().toString()}");
+        await deactivateMaintenanceTask(instance.maintenanceTask!.id!, campusAppsPortalInstance.getDigitalId().toString());
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Task deactivated successfully")),

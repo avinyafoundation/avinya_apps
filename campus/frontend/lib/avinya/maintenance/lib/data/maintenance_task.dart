@@ -153,8 +153,8 @@ Future<http.Response> updateMaintenanceTask(int taskId, MaintenanceTask task) as
 Future<http.Response> deactivateMaintenanceTask(
     int taskId, String modifiedBy) async {
 
-  final response = await http.patch(
-    Uri.parse('${AppConfig.campusMaintenanceBffApiUrl}/tasks/$taskId/delete'),
+  final response = await http.put(
+    Uri.parse('${AppConfig.campusMaintenanceBffApiUrl}/tasks/$taskId/deactivate?modifiedBy=$modifiedBy'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
