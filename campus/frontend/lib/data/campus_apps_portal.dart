@@ -235,7 +235,8 @@ class CampusAppsPortal {
               isFoundation ||
               isStudent ||
               isFinance ||
-              isOperations) {
+              isOperations ||
+              isJanitor) {
             isGroupFetched = true;
           }
 
