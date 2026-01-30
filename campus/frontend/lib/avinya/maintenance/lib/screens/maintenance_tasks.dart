@@ -804,7 +804,7 @@ class _ReportScreenState extends State<ReportScreen> {
                           color: financeColor, fontWeight: FontWeight.bold))),
                   DataCell(Row(
                     children: [
-                      instance.overallTaskStatus != 'Completed' ?
+                      instance.overallTaskStatus == 'Completed' ?
                         IconButton(
                           icon: const Icon(Icons.edit,
                               size: 18, color: Colors.grey),
