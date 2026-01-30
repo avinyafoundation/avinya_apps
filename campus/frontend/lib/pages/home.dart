@@ -55,7 +55,7 @@ class HomePage extends StatelessWidget {
           child: _CarouselCard(
             demo: studyDemos['attendanceApp'],
             asset: const AssetImage(
-              'assets/images/attendance_.png',
+              'assets/images/new_attendance.png',
               //package: 'flutter_gallery_assets',
             ),
             assetColor: const Color(0xFFFFFFFF),
@@ -77,7 +77,7 @@ class HomePage extends StatelessWidget {
             //2023-03-09 lahiru added for campus_pcti
             demo: studyDemos['enrollmentApp'],
             asset: const AssetImage(
-              'assets/images/pcti_notes.png',
+              'assets/images/new_enrollments.png',
               // package: 'flutter_gallery_assets',
             ),
             assetColor: const Color(0xFFFFFFFF),
@@ -99,7 +99,7 @@ class HomePage extends StatelessWidget {
             //2023-03-09 lahiru added for campus_pcti
             demo: studyDemos['maintenance'],
             asset: const AssetImage(
-              'assets/images/maintenance.png',
+              'assets/images/new_maintenance.png',
               // package: 'flutter_gallery_assets',
             ),
             assetColor: const Color(0xFFFFFFFF),
@@ -176,7 +176,7 @@ class HomePage extends StatelessWidget {
           child: _CarouselCard(
             demo: studyDemos['assetadminApp'],
             asset: const AssetImage(
-              'assets/images/pcti_admin.png',
+              'assets/images/new_asset.png',
               // package: 'flutter_gallery_assets',
             ),
             assetColor: const Color(0xFFFFFFFF),
@@ -238,7 +238,7 @@ class HomePage extends StatelessWidget {
         child: _CarouselCard(
           demo: studyDemos['alumni'],
           asset: const AssetImage(
-            'assets/images/consumable.png',
+            'assets/images/new_alumina.png',
             // package: 'flutter_gallery_assets',
           ),
           assetColor: const Color(0xFFFFFFFF),
@@ -1040,8 +1040,9 @@ class _CarouselCard extends StatelessWidget {
                       color: assetColor,
                     ),
                     child: Ink.image(
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      height: MediaQuery.of(context).size.height * 0.2,
+                      // width: MediaQuery.of(context).size.width * 0.4,
+                      // height: MediaQuery.of(context).size.height * 0.2,
+                      fit: BoxFit.scaleDown,
                       image: asset,
                     ),
                   ),
