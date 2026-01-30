@@ -208,7 +208,7 @@ service / on new http:Listener(9097) {
     }
 
     //Deactivate a maintenance task by its ID
-    resource function put tasks/[int taskId](
+    resource function put tasks/[int taskId]/deactivate(
         string modifiedBy
     ) returns MaintenanceTask
         | ApiErrorResponse | error {

@@ -280,6 +280,11 @@ class _FinanceApprovalsScreenState extends State<FinanceApprovalsScreen> {
                     ),
                   ],
                 ),
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: _loadData,
+                  tooltip: 'Refresh',
+                ),
               ],
             ),
             const SizedBox(height: 30),

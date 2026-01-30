@@ -90,7 +90,9 @@ class HomePage extends StatelessWidget {
             studyRoute: enrollment_routes.enrollmentRoute,
           ),
         ),
-      if (!campusAppsPortalInstance.isStudent)
+      if (campusAppsPortalInstance.isFoundation ||
+          campusAppsPortalInstance.isFinance ||
+          campusAppsPortalInstance.isOperations)
         Padding(
           padding: const EdgeInsets.all(10.0),
           child: _CarouselCard(

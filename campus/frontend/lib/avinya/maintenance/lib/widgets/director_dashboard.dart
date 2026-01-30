@@ -290,7 +290,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
         StatCard(
           title: "Total Tasks",
           value: "${_summaryReport?.totalTasks ?? 0}",
-          subtitle: "Created in month",
+          subtitle: "In this month",
           accentColor: Colors.transparent,
           width: _calcCardWidth(context, crossAxisCount),
           cardRadius: _cardRadius,

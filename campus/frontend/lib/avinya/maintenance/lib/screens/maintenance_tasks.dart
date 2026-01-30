@@ -486,36 +486,73 @@ class _ReportScreenState extends State<ReportScreen> {
             .join(', ');
 
         return DataRow(cells: [
-          DataCell(Text(instance.maintenanceTask?.title ?? "",
-              style: const TextStyle(
-                  fontWeight: FontWeight.w600, color: Colors.red))),
-          DataCell(Text(instance.maintenanceTask?.description ?? "-",
-              style: const TextStyle(color: Colors.red))),
           DataCell(
             SizedBox(
-              width: 200,
+              width: 260,
               child: Text(
-                pendingNames.isNotEmpty ? pendingNames : "-",
+                instance.maintenanceTask?.title ?? "",
                 style: const TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.red),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.red,
+                ),
+                softWrap: true,
+                maxLines: 3,
+                overflow: TextOverflow.visible,
               ),
             ),
           ),
-          DataCell(Text(
-            instance.start_time != null
-                ? DateTime.parse(instance.start_time!)
-                    .toLocal()
-                    .toString()
-                    .split(' ')[0]
-                : "-",
-            style: const TextStyle(color: Colors.red),
-          )),
-          DataCell(Center(
-              child: Text(instance.overdueDays?.toString() ?? "-",
-                  style: const TextStyle(color: Colors.red)))),
+          DataCell(
+            SizedBox(
+              width: 240,
+              child: Text(
+                instance.maintenanceTask?.description ?? "-",
+                style: const TextStyle(color: Colors.red),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          DataCell(
+            SizedBox(
+              width: 220,
+              child: Text(
+                pendingNames.isNotEmpty ? pendingNames : "-",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          DataCell(
+            SizedBox(
+              width: 120,
+              child: Text(
+                instance.start_time != null
+                    ? DateTime.parse(instance.start_time!)
+                        .toLocal()
+                        .toString()
+                        .split(' ')[0]
+                    : "-",
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
+          ),
+          DataCell(
+            SizedBox(
+              width: 90,
+              child: Center(
+                child: Text(
+                  instance.overdueDays?.toString() ?? "-",
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ),
+          ),
         ]);
+
       }).toList(),
     );
 
@@ -557,8 +594,9 @@ class _ReportScreenState extends State<ReportScreen> {
 
     if (confirm == true) {
       try {
-        await deactivateMaintenanceTask(instance.maintenanceTask!.id!,
-            campusAppsPortalInstance.getDigitalId().toString());
+        print("Deactivating task id: ${instance.maintenanceTask!.id}");
+        print("Modified by digital id: ${campusAppsPortalInstance.getDigitalId().toString()}");
+        await deactivateMaintenanceTask(instance.maintenanceTask!.id!, campusAppsPortalInstance.getDigitalId().toString());
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Task deactivated successfully")),
@@ -766,22 +804,28 @@ class _ReportScreenState extends State<ReportScreen> {
                           color: financeColor, fontWeight: FontWeight.bold))),
                   DataCell(Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit,
-                            size: 18, color: Colors.blue),
-                        onPressed: () async {
-                          final updatedInstance =
-                              await showDialog<ActivityInstance>(
-                            context: context,
-                            builder: (context) =>
-                                TaskEditForm(activityInstance: instance),
-                          );
+                      instance.overallTaskStatus != 'Completed' ?
+                        IconButton(
+                          icon: const Icon(Icons.edit,
+                              size: 18, color: Colors.grey),
+                          onPressed: () {},
+                        ) : 
+                        IconButton(
+                          icon: const Icon(Icons.edit,
+                              size: 18, color: Colors.blue),
+                          onPressed: () async {
+                            final updatedInstance =
+                                await showDialog<ActivityInstance>(
+                              context: context,
+                              builder: (context) =>
+                                  TaskEditForm(activityInstance: instance),
+                            );
 
-                          if (updatedInstance != null) {
-                            _updateRow(updatedInstance);
-                          }
-                        },
-                      ),
+                            if (updatedInstance != null) {
+                              _updateRow(updatedInstance);
+                            }
+                          },
+                        ),
                       IconButton(
                         icon: const Icon(Icons.delete,
                             size: 18, color: Colors.red),

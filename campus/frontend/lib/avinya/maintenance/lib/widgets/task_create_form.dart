@@ -40,6 +40,7 @@ class _TaskCreateFormState extends State<TaskCreateForm> {
   int? selectedStatus = 1;
   List<int> selectedPerson = [];
   String? selectedDate;
+  String? displayDate;
   List<MaterialCost> materialCosts = [];
 
   final taskTypes = {
@@ -187,6 +188,7 @@ class _TaskCreateFormState extends State<TaskCreateForm> {
 
     // Reset date
     selectedDate = null;
+    displayDate = null;
 
     // Reset material costs
     materialCosts = [];
@@ -409,12 +411,13 @@ class _TaskCreateFormState extends State<TaskCreateForm> {
                   children: [
                     Expanded(
                       child: CustomDatePicker(
-                        label: "Select Date",
-                        selectedDateString: selectedDate,
+                        label: "Start Date",
+                        selectedDateString: displayDate,
                         initialDate: DateTime.now(),
                         onDateSelected: (date) {
                           setState(() {
                             selectedDate = date + " 00:00:00";
+                            displayDate = date;
                           });
                         },
                         validator: (value) {

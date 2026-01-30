@@ -24,6 +24,7 @@ class _KanbanBoardState extends State<KanbanBoard> {
   int? selectedPersonId;
   List<Person> employees = [];
   bool _isLoading = false;
+  Key _dropdownKey = UniqueKey();
 
   // Session Management Variables
   Timer? _sessionTimer;
@@ -410,6 +411,7 @@ class _KanbanBoardState extends State<KanbanBoard> {
                                     children: [
                                       Expanded(
                                         child: DropDown<Person>(
+                                          key: _dropdownKey,
                                           label: "නම තෝරන්න",
                                           items: employees,
                                           selectedValues: selectedPersonId,
@@ -419,24 +421,28 @@ class _KanbanBoardState extends State<KanbanBoard> {
                                           onChanged: (value) async {
                                             if (value == null || value == selectedPersonId) return;
 
-                                            String? pin = await _showPinDialog();
+                                            final pin = await _showPinDialog();
                                             if (pin != null) {
                                               try {
                                                 final user = await PersonPin.validatePin(pin);
-                                                // Ensure the PIN belongs to the user they actually selected
-                                                if (user != null && int.parse(user['id'].toString()) == value) {
+                                                final int validatedId = int.parse(user?['id'].toString() ?? "0");
+
+                                                if (user != null && validatedId == value) {
+                                                  // SUCCESS: Update the session
                                                   _startSession(value);
                                                 } else {
+                                                  // FAILURE: Wrong PIN
                                                   await _showAlertDialog("වැරදි PIN අංකයකි", "මෙම පරිශීලකයා සඳහා PIN අංකය වැරදිය.");
-                                                  setState(() {});
                                                 }
                                               } catch (e) {
-                                                await _showAlertDialog("Error", "Failed to validate PIN.");
-                                                setState(() {});
+                                                // ERROR: Communication error
+                                                await _showAlertDialog("සන්නිවේදන දෝෂයකි", "නැවත උත්සාහ කරන්න.");
                                               }
-                                            } else {
-                                              setState(() {});
                                             }
+                                            
+                                            setState(() {
+                                              _dropdownKey = UniqueKey();
+                                            });
                                           },
                                         ),
                                       ),
