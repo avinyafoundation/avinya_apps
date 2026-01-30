@@ -488,20 +488,22 @@ class _ReportScreenState extends State<ReportScreen> {
         return DataRow(cells: [
           DataCell(
             SizedBox(
-              width: 180,
+              width: 260,
               child: Text(
                 instance.maintenanceTask?.title ?? "",
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   color: Colors.red,
                 ),
-                overflow: TextOverflow.ellipsis,
+                softWrap: true,
+                maxLines: 3,
+                overflow: TextOverflow.visible,
               ),
             ),
           ),
           DataCell(
             SizedBox(
-              width: 260,
+              width: 240,
               child: Text(
                 instance.maintenanceTask?.description ?? "-",
                 style: const TextStyle(color: Colors.red),
@@ -540,7 +542,7 @@ class _ReportScreenState extends State<ReportScreen> {
           ),
           DataCell(
             SizedBox(
-              width: 100,
+              width: 90,
               child: Center(
                 child: Text(
                   instance.overdueDays?.toString() ?? "-",
@@ -550,6 +552,7 @@ class _ReportScreenState extends State<ReportScreen> {
             ),
           ),
         ]);
+
       }).toList(),
     );
 
