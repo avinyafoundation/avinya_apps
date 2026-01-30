@@ -30,49 +30,37 @@ class SMSScaffoldBody extends StatelessWidget {
       key: navigatorKey,
       pages: [
         if (currentRoute.pathTemplate
-                .startsWith(AppRoutes.maintenanceDashboardRoute) &&
-            (campusAppsPortalInstance.isFoundation ||
-                campusAppsPortalInstance.isTeacher))
-          const FadeTransitionPage<void>(
+                .startsWith(AppRoutes.maintenanceDashboardRoute))
+          FadeTransitionPage<void>(
             key: ValueKey('maintenance_dashboard_Screen'),
-            child: MaintenanceDashboardScreen(),
+            child: getDashboardScreenForRole(),
           )
         else if (currentRoute.pathTemplate
-                .startsWith(AppRoutes.addLocationRoute) &&
-            (campusAppsPortalInstance.isFoundation ||
-                campusAppsPortalInstance.isTeacher))
+                .startsWith(AppRoutes.addLocationRoute))
           const FadeTransitionPage<void>(
             key: ValueKey('add_location_screen'),
             child: AddLocationScreen(),
           )
         else if (currentRoute.pathTemplate
-                .startsWith(AppRoutes.kanbanBoardRoute) &&
-            (campusAppsPortalInstance.isFoundation ||
-                campusAppsPortalInstance.isTeacher))
+                .startsWith(AppRoutes.kanbanBoardRoute))
           const FadeTransitionPage<void>(
             key: ValueKey('kanban_board_screen'),
             child: KanbanScreen(),
           )
         else if (currentRoute.pathTemplate
-                .startsWith(AppRoutes.taskDetailsRoute) &&
-            (campusAppsPortalInstance.isFoundation ||
-                campusAppsPortalInstance.isTeacher))
+                .startsWith(AppRoutes.taskDetailsRoute))
           const FadeTransitionPage<void>(
             key: ValueKey('task_details_screen'),
             child: ReportScreen(),
           ) 
         else if (currentRoute.pathTemplate
-                .startsWith(AppRoutes.addTaskRoute) &&
-            (campusAppsPortalInstance.isFoundation ||
-                campusAppsPortalInstance.isTeacher))
+                .startsWith(AppRoutes.addTaskRoute))
           const FadeTransitionPage<void>(
             key: ValueKey('add_task_screen'),
             child: AddTaskScreen(),
           )
         else if (currentRoute.pathTemplate
-                .startsWith(AppRoutes.financeApprovalsRoute) &&
-            (campusAppsPortalInstance.isFoundation ||
-                campusAppsPortalInstance.isTeacher))
+                .startsWith(AppRoutes.financeApprovalsRoute) )
           const FadeTransitionPage<void>(
             key: ValueKey('finance_approvals_screen'),
             child: FinanceApprovalsScreen(),
@@ -96,4 +84,15 @@ class SMSScaffoldBody extends StatelessWidget {
       ],
     );
   }
+}
+
+Widget getDashboardScreenForRole() {
+  if (campusAppsPortalInstance.isFoundation || campusAppsPortalInstance.isFinance) {
+    return MaintenanceDashboardScreen();
+  }
+
+  if (campusAppsPortalInstance.isOperations) {
+    return ReportScreen();
+  }
+  return SizedBox();
 }
