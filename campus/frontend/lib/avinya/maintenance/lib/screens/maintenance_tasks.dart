@@ -486,35 +486,69 @@ class _ReportScreenState extends State<ReportScreen> {
             .join(', ');
 
         return DataRow(cells: [
-          DataCell(Text(instance.maintenanceTask?.title ?? "",
-              style: const TextStyle(
-                  fontWeight: FontWeight.w600, color: Colors.red))),
-          DataCell(Text(instance.maintenanceTask?.description ?? "-",
-              style: const TextStyle(color: Colors.red))),
           DataCell(
             SizedBox(
-              width: 200,
+              width: 180,
               child: Text(
-                pendingNames.isNotEmpty ? pendingNames : "-",
+                instance.maintenanceTask?.title ?? "",
                 style: const TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.red),
+                  fontWeight: FontWeight.w600,
+                  color: Colors.red,
+                ),
                 overflow: TextOverflow.ellipsis,
-                maxLines: 2,
               ),
             ),
           ),
-          DataCell(Text(
-            instance.start_time != null
-                ? DateTime.parse(instance.start_time!)
-                    .toLocal()
-                    .toString()
-                    .split(' ')[0]
-                : "-",
-            style: const TextStyle(color: Colors.red),
-          )),
-          DataCell(Center(
-              child: Text(instance.overdueDays?.toString() ?? "-",
-                  style: const TextStyle(color: Colors.red)))),
+          DataCell(
+            SizedBox(
+              width: 260,
+              child: Text(
+                instance.maintenanceTask?.description ?? "-",
+                style: const TextStyle(color: Colors.red),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          DataCell(
+            SizedBox(
+              width: 220,
+              child: Text(
+                pendingNames.isNotEmpty ? pendingNames : "-",
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          DataCell(
+            SizedBox(
+              width: 120,
+              child: Text(
+                instance.start_time != null
+                    ? DateTime.parse(instance.start_time!)
+                        .toLocal()
+                        .toString()
+                        .split(' ')[0]
+                    : "-",
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
+          ),
+          DataCell(
+            SizedBox(
+              width: 100,
+              child: Center(
+                child: Text(
+                  instance.overdueDays?.toString() ?? "-",
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ),
+          ),
         ]);
       }).toList(),
     );
