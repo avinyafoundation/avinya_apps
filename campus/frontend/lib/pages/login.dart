@@ -52,99 +52,229 @@ class _LogInScreenState extends State<LoginPage> {
       _clientId = AppConfig.asgardeoClientId;
     }
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text("Sign in"),
-      // ),
-      body: Container(
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/dark.jpg'),
-            fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
-          ),
-        ),
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Center(
-                child: SingleChildScrollView(
+      backgroundColor: const Color(0xFFF3FAF6), // very light quiet green
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // If width is greater than 800 -> show row layout
+          if (constraints.maxWidth > 800) {
+            return Row(
+              children: [
+                // LEFT SIDE - IMAGE
+                Expanded(
+                  flex: 6,
                   child: Container(
-                    //width: 400,
-                   // margin: EdgeInsets.only(left:400.0),
-                    alignment: Alignment.center,
-                    child: Wrap(children: [
-                      Column(children: [
-                        Text(
-                          "Avinya Academy Apps Portal",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: "Google Sans",
-                          ),
-                        ),
-                        SizedBox(height: 20.0),
-                        Text(
-                          """To proceed to the Apps Portal, please sign in.""",
-                          style: TextStyle(
-                            fontFamily: "Google Sans",
-                            color: Colors.black,
-                          ),
-                        ),
-                        SizedBox(height: 10.0),
-                        Text(
-                          "Once you sign in, you will be directed to the Apps Portal",
-                          style: TextStyle(
-                            fontFamily: "Google Sans",
-                            color: Colors.black,
-                          ),
-                        ),
-                        SizedBox(height: 10.0),
-                      ]),
-                    ]),
+                    padding: const EdgeInsets.all(40),
+                    child: Image.asset(
+                      'assets/images/education_students.png',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
-              ),
-              Container(
-              //  margin: EdgeInsets.only(top: 20.0,left: 380.0),
-                margin: EdgeInsets.only(top: 20.0),
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.yellowAccent),
-                    shadowColor: MaterialStateProperty.all(Colors.lightBlue),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/login.png',
-                        fit: BoxFit.contain,
-                        width: 40,
-                      ),
-                      Text(
-                        "Login with Asgardeo",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "Google Sans",
+
+                // RIGHT SIDE - CONTENT
+                Expanded(
+                  flex: 4,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 60),
+                    color: Colors.white,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // LOGO AND NAME
+                        SizedBox(
+                          width: double.infinity,
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 40,
+                                child: Image.asset(
+                                  'assets/images/avinya_logo.png',
+                                  width: 80,
+                                  height: 80,
+                                ),
+                              ),
+                              const SizedBox(width: 15),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text(
+                                    'Avinya',
+                                    style: TextStyle(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                      height: 0.9,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Foundation',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+
+                        const SizedBox(height: 20),
+
+                        // CAPTION
+                        const Text(
+                          'A non-profit philanthropic organization dedicated to assisting underprivileged students',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black54,
+                          ),
+                        ),
+
+                        const SizedBox(height: 40),
+
+                        // LOGIN BUTTON
+                        SizedBox(
+                          width: 200,
+                          height: 48,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              await authenticate(
+                                  Uri.parse(_issuerUrl), _clientId, _scopes);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF388E3C),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              elevation: 3,
+                            ),
+                            child: const Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  onPressed: () async {
-                    await authenticate(
-                        Uri.parse(_issuerUrl), _clientId, _scopes);
-                  },
                 ),
+              ],
+            );
+          } else {
+            // MOBILE / NARROW SCREEN - STACKED COLUMN
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  // IMAGE
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    child: Image.asset(
+                      'assets/images/education_students.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                  // CONTENT
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    color: Colors.white,
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // LOGO AND NAME
+                        SizedBox(
+                          width: double.infinity,
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 40,
+                                child: Image.asset(
+                                  'assets/images/avinya_logo.png',
+                                  width: 80,
+                                  height: 80,
+                                ),
+                              ),
+                              const SizedBox(width: 15),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text(
+                                    'Avinya',
+                                    style: TextStyle(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                      height: 0.9,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Foundation',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // CAPTION
+                        const Text(
+                          'A non-profit philanthropic organization dedicated to assisting underprivileged students',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black54,
+                          ),
+                        ),
+
+                        const SizedBox(height: 40),
+
+                        // LOGIN BUTTON
+                        SizedBox(
+                          width: 200,
+                          height: 48,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              await authenticate(
+                                  Uri.parse(_issuerUrl), _clientId, _scopes);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF388E3C),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              elevation: 3,
+                            ),
+                            child: const Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            );
+          }
+        },
       ),
     );
   }
