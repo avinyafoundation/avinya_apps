@@ -5,6 +5,7 @@ import '../data/activity_participant.dart';
 import 'common/button.dart';
 import 'common/colourful_dropdown.dart';
 import '../data/task_item.dart';
+import 'package:gallery/avinya/maintenance/lib/data.dart';
 
 class TaskDetailsDialog extends StatefulWidget {
   final ActivityInstance activityInstance;
@@ -111,7 +112,8 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                               .rejectionReason!,
                           isStatus: false,
                           color: Colors.red),
-                    if (widget.activityInstance.financialInformation != null)
+                    if ((widget.activityInstance.financialInformation != null && campusAppsPortalInstance.isFinance) || 
+                        (widget.activityInstance.financialInformation != null && campusAppsPortalInstance.isOperations && widget.activityInstance.financialInformation!.status != FinanceStatus.pending))
                       Column(
                         children: [
                           _buildDetailRow(

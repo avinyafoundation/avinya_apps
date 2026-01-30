@@ -804,22 +804,28 @@ class _ReportScreenState extends State<ReportScreen> {
                           color: financeColor, fontWeight: FontWeight.bold))),
                   DataCell(Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit,
-                            size: 18, color: Colors.blue),
-                        onPressed: () async {
-                          final updatedInstance =
-                              await showDialog<ActivityInstance>(
-                            context: context,
-                            builder: (context) =>
-                                TaskEditForm(activityInstance: instance),
-                          );
+                      instance.overallTaskStatus != 'Completed' ?
+                        IconButton(
+                          icon: const Icon(Icons.edit,
+                              size: 18, color: Colors.grey),
+                          onPressed: () {},
+                        ) : 
+                        IconButton(
+                          icon: const Icon(Icons.edit,
+                              size: 18, color: Colors.blue),
+                          onPressed: () async {
+                            final updatedInstance =
+                                await showDialog<ActivityInstance>(
+                              context: context,
+                              builder: (context) =>
+                                  TaskEditForm(activityInstance: instance),
+                            );
 
-                          if (updatedInstance != null) {
-                            _updateRow(updatedInstance);
-                          }
-                        },
-                      ),
+                            if (updatedInstance != null) {
+                              _updateRow(updatedInstance);
+                            }
+                          },
+                        ),
                       IconButton(
                         icon: const Icon(Icons.delete,
                             size: 18, color: Colors.red),
