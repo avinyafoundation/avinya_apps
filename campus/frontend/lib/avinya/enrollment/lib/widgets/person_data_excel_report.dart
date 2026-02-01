@@ -56,7 +56,7 @@ class _PersonDataExcelReportState extends State<PersonDataExcelReport> {
       // Styling for organization header
       final organizationHeaderStyle = CellStyle(
         bold: true,
-        backgroundColorHex: '#807f7d',
+        backgroundColorHex: ExcelColor.fromHexString('#807f7d'),
         horizontalAlign: HorizontalAlign.Center,
       );
 
@@ -76,7 +76,7 @@ class _PersonDataExcelReportState extends State<PersonDataExcelReport> {
       final subHeaderStyle = CellStyle(
         bold: true,
         horizontalAlign: HorizontalAlign.Center,
-        backgroundColorHex: '#a3a3a2',
+        backgroundColorHex: ExcelColor.fromHexString('#a3a3a2'),
         textWrapping: TextWrapping.WrapText,
       );
 
@@ -87,23 +87,23 @@ class _PersonDataExcelReportState extends State<PersonDataExcelReport> {
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: colIndex, rowIndex: 1))
-            .value = columnNamesWithoutDates[colIndex];
+            .value =TextCellValue(columnNamesWithoutDates[colIndex]??'');
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: colIndex, rowIndex: 1))
             .cellStyle = subHeaderStyle;
       }
-      sheet.setColWidth(0, 10);
-      sheet.setColWidth(1, 25);
-      sheet.setColWidth(2, 26);
-      sheet.setColWidth(3, 20);
-      sheet.setColWidth(4, 25);
-      sheet.setColWidth(5, 26);
+      sheet.setColumnWidth(0, 10);
+      sheet.setColumnWidth(1, 25);
+      sheet.setColumnWidth(2, 26);
+      sheet.setColumnWidth(3, 20);
+      sheet.setColumnWidth(4, 25);
+      sheet.setColumnWidth(5, 26);
 
       sheet
               .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0))
               .value =
-          "Avinya Foundation Student Enrollment Records for ${widget.selectedAvinyaTypeId}";
+        TextCellValue("Avinya Foundation Student Enrollment Records for ${widget.selectedAvinyaTypeId}");
       sheet
           .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0))
           .cellStyle = organizationHeaderStyle;
@@ -116,34 +116,35 @@ class _PersonDataExcelReportState extends State<PersonDataExcelReport> {
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 0, rowIndex: index + 2))
-              .value = personData.preferred_name?.toString() ?? '';
+              .value = TextCellValue(personData.preferred_name?.toString() ?? '');
 
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 1, rowIndex: index + 2))
-              .value = personData.nic_no?.toString() ?? '';
+              .value =TextCellValue(personData.nic_no?.toString() ?? '');
 
           sheet
                   .cell(CellIndex.indexByColumnRow(
                       columnIndex: 2, rowIndex: index + 2))
                   .value =
-              (personData.phone?.toString() ?? '') +
-                  " "; // update bank branch name
+              TextCellValue((personData.phone?.toString() ?? '') +
+                  " "); // update bank branch name
 
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 3, rowIndex: index + 2))
-              .value = personData.digital_id?.toString() ?? '';
+              .value =TextCellValue(personData.digital_id?.toString() ?? '');
 
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 4, rowIndex: index + 2))
-              .value = (personData.date_of_birth?.toString() ?? '') + " ";
+              .value =
+              TextCellValue((personData.date_of_birth?.toString() ?? '') + " ");
 
           sheet
               .cell(CellIndex.indexByColumnRow(
                   columnIndex: 5, rowIndex: index + 2))
-              .value = personData.organization?.description?.toString() ?? '';
+              .value = TextCellValue(personData.organization?.description?.toString() ?? '');
         }
       }
 

@@ -162,9 +162,9 @@ class Demos {
         category: GalleryDemoCategory.study,
         studyId: 'crane',
       ),
-      'fortnightly': GalleryDemo(
-        title: 'Fortnightly',
-        subtitle: localizations.fortnightlyDescription,
+      'maintenance': GalleryDemo(
+        title: 'Maintenance Management',
+        subtitle: "Avinya Maintenance Management App",
         category: GalleryDemoCategory.study,
         studyId: 'fortnightly',
       ),

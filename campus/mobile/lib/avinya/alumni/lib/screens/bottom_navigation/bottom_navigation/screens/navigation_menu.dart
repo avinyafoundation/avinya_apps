@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:alumni/screens/bottom_navigation/bottom_navigation/controllers/bottom_navigation_controller.dart';
+import 'package:mobile/avinya/alumni/lib/screens/bottom_navigation/bottom_navigation/controllers/bottom_navigation_controller.dart';
 
 class NavigationMenu extends StatelessWidget {
   NavigationMenu({super.key});
@@ -21,6 +21,8 @@ class NavigationMenu extends StatelessWidget {
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
               BottomNavigationBarItem(
                   icon: Icon(Icons.card_travel), label: 'Job Portal'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.description), label: 'CV'),
               BottomNavigationBarItem(
                   icon: Icon(Icons.notifications), label: 'Notification'),
               BottomNavigationBarItem(

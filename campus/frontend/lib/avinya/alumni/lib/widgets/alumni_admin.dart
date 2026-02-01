@@ -4,8 +4,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gallery/avinya/alumni/lib/screens/admin_edit_alumni_profile.dart';
 import 'package:gallery/avinya/alumni/lib/screens/alumni_info_view.dart';
 // import 'package:gallery/avinya/alumni/lib/data/organization.dart';
-import 'package:gallery/data/person.dart';
 import 'package:gallery/avinya/enrollment/lib/screens/student_create_screen.dart';
+import 'package:gallery/data/person.dart';
 
 class AlumniAdmin extends StatefulWidget {
   const AlumniAdmin({super.key});
@@ -30,7 +30,7 @@ class _AlumniAdminState extends State<AlumniAdmin> {
   }
 
   Future<List<Organization>> _loadBranchData() async {
-    return await fetchOrganizationsByAvinyaType(2);
+    return await fetchOrganizationsByAvinyaTypeAndStatus(2,null);
   }
 
   @override

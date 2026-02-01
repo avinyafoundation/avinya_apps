@@ -58,7 +58,7 @@ class _BackdropState extends State<Backdrop>
   @override
   void initState() {
     super.initState();
-    _homePage = const Center(child: CircularProgressIndicator());
+    _homePage = Center(child: CircularProgressIndicator(color: Colors.blue));
     _completer = Completer<void>();
     _settingsPanelController = AnimationController(
       vsync: this,
@@ -292,21 +292,21 @@ class _BackdropState extends State<Backdrop>
           ],
           if (isDesktop && signedIn) ...[
             Semantics(sortKey: const OrdinalSortKey(2), child: homePage),
-            ValueListenableBuilder<bool>(
-              valueListenable: _isSettingsOpenNotifier,
-              builder: (context, isSettingsOpen, child) {
-                if (isSettingsOpen) {
-                  return ExcludeSemantics(
-                    child: Listener(
-                      onPointerDown: (_) => _toggleSettings(),
-                      child: const ModalBarrier(dismissible: false),
-                    ),
-                  );
-                } else {
-                  return Container();
-                }
-              },
-            ),
+            // ValueListenableBuilder<bool>(
+            //   valueListenable: _isSettingsOpenNotifier,
+            //   builder: (context, isSettingsOpen, child) {
+            //     if (isSettingsOpen) {
+            //       return ExcludeSemantics(
+            //         child: Listener(
+            //           onPointerDown: (_) => _toggleSettings(),
+            //           child: const ModalBarrier(dismissible: false),
+            //         ),
+            //       );
+            //     } else {
+            //       return Container();
+            //     }
+            //   },
+            // ),
             // Semantics(
             //   sortKey: const OrdinalSortKey(3),
             //   child: ScaleTransition(
@@ -363,21 +363,21 @@ class _BackdropState extends State<Backdrop>
           ],
           if (!isDesktop && signedIn) ...[
             Semantics(sortKey: const OrdinalSortKey(2), child: homePage),
-            ValueListenableBuilder<bool>(
-              valueListenable: _isSettingsOpenNotifier,
-              builder: (context, isSettingsOpen, child) {
-                if (isSettingsOpen) {
-                  return ExcludeSemantics(
-                    child: Listener(
-                      onPointerDown: (_) => _toggleSettings(),
-                      child: const ModalBarrier(dismissible: false),
-                    ),
-                  );
-                } else {
-                  return Container();
-                }
-              },
-            ),
+            // ValueListenableBuilder<bool>(
+            //   valueListenable: _isSettingsOpenNotifier,
+            //   builder: (context, isSettingsOpen, child) {
+            //     if (isSettingsOpen) {
+            //       return ExcludeSemantics(
+            //         child: Listener(
+            //           onPointerDown: (_) => _toggleSettings(),
+            //           child: const ModalBarrier(dismissible: false),
+            //         ),
+            //       );
+            //     } else {
+            //       return Container();
+            //     }
+            //   },
+            // ),
             // Semantics(
             //   sortKey: const OrdinalSortKey(3),
             //   child: ScaleTransition(
@@ -428,21 +428,21 @@ class _BackdropState extends State<Backdrop>
           ],
           if (isDesktop && !signedIn) ...[
             Semantics(sortKey: const OrdinalSortKey(2), child: loginPage),
-            ValueListenableBuilder<bool>(
-              valueListenable: _isSettingsOpenNotifier,
-              builder: (context, isSettingsOpen, child) {
-                if (isSettingsOpen) {
-                  return ExcludeSemantics(
-                    child: Listener(
-                      onPointerDown: (_) => _toggleSettings(),
-                      child: const ModalBarrier(dismissible: false),
-                    ),
-                  );
-                } else {
-                  return Container();
-                }
-              },
-            ),
+            // ValueListenableBuilder<bool>(
+            //   valueListenable: _isSettingsOpenNotifier,
+            //   builder: (context, isSettingsOpen, child) {
+            //     if (isSettingsOpen) {
+            //       return ExcludeSemantics(
+            //         child: Listener(
+            //           onPointerDown: (_) => _toggleSettings(),
+            //           child: const ModalBarrier(dismissible: false),
+            //         ),
+            //       );
+            //     } else {
+            //       return Container();
+            //     }
+            //   },
+            // ),
             // Semantics(
             //   sortKey: const OrdinalSortKey(3),
             //   child: ScaleTransition(
@@ -481,21 +481,21 @@ class _BackdropState extends State<Backdrop>
           ],
           if (!isDesktop && !signedIn) ...[
             Semantics(sortKey: const OrdinalSortKey(2), child: loginPage),
-            ValueListenableBuilder<bool>(
-              valueListenable: _isSettingsOpenNotifier,
-              builder: (context, isSettingsOpen, child) {
-                if (isSettingsOpen) {
-                  return ExcludeSemantics(
-                    child: Listener(
-                      onPointerDown: (_) => _toggleSettings(),
-                      child: const ModalBarrier(dismissible: false),
-                    ),
-                  );
-                } else {
-                  return Container();
-                }
-              },
-            ),
+            // ValueListenableBuilder<bool>(
+            //   valueListenable: _isSettingsOpenNotifier,
+            //   builder: (context, isSettingsOpen, child) {
+            //     if (isSettingsOpen) {
+            //       return ExcludeSemantics(
+            //         child: Listener(
+            //           onPointerDown: (_) => _toggleSettings(),
+            //           child: const ModalBarrier(dismissible: false),
+            //         ),
+            //       );
+            //     } else {
+            //       return Container();
+            //     }
+            //   },
+            // ),
             // Semantics(
             //   sortKey: const OrdinalSortKey(3),
             //   child: ScaleTransition(

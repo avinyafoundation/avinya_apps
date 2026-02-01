@@ -1,6 +1,7 @@
 // import 'package:attendance/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance/data/activity_attendance.dart';
+import 'package:gallery/avinya/attendance/lib/screens/dashboard/components/attendance_bar_chart.dart';
 import 'package:gallery/avinya/attendance/lib/screens/dashboard/components/my_fields.dart';
 import 'package:gallery/avinya/attendance/lib/screens/responsive.dart';
 import './constants.dart';
@@ -25,6 +26,7 @@ class AttendanceDashboardScreen extends StatefulWidget {
 class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
   List<DashboardData> _fetchedDashboardData = [];
   List<ActivityAttendance> _fetchedAttendanceData = [];
+  List<ActivityAttendance> _fetchedWeeklyAttendanceSummaryData = [];
   List<ActivityAttendance> _fetchedPieChartData = [];
   List<ActivityAttendance> _fetchedLineChartData = [];
   Organization? _fetchedOrganization;
@@ -68,7 +70,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
   }
 
   Future<List<Organization>> _loadBatchData() async {
-    _batchData = await fetchOrganizationsByAvinyaType(86);
+    //_batchData = await fetchOrganizationsByAvinyaType(86);
+    _batchData = await fetchOrganizationsByAvinyaTypeAndStatus(86, null);
     _selectedOrganizationValue = _batchData.isNotEmpty ? _batchData.last : null;
     batchStartDate = DateFormat('MMM d, yyyy').format(DateTime.parse(
         _selectedOrganizationValue!.organization_metadata[0].value.toString()));
@@ -163,9 +166,20 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
             parentOrgId,
             DateFormat('yyyy-MM-dd').format(thirtyDaysAgo),
             endDate);
+        _fetchedWeeklyAttendanceSummaryData =
+            await getDailyAttendanceSummaryReport(
+          _selectedOrganizationValue!.id!,
+          37,
+          DateFormat('yyyy-MM-dd')
+              .format(DateTime.parse(endDate).subtract(Duration(days: 6))),
+          endDate,
+        );
       } else {
         _fetchedLineChartData = await getTotalAttendanceCountByParentOrg(
             parentOrgId, startDate, endDate);
+        _fetchedWeeklyAttendanceSummaryData =
+            await getDailyAttendanceSummaryReport(
+                _selectedOrganizationValue!.id!, 37, startDate, endDate);
       }
 
       if (_fetchedOrganization != null) {
@@ -350,7 +364,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   ElevatedButton(
-                    onPressed: () => showDateRangePickerDialog(
+                    onPressed: () => showDateRangePickerDialogWithOffset(
                         context: context,
                         builder: datePickerBuilder,
                         offset: Offset(20, 155)),
@@ -704,7 +718,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                   Row(
                     children: [
                       ElevatedButton(
-                        onPressed: () => showDateRangePickerDialog(
+                        onPressed: () => showDateRangePickerDialogWithOffset(
                             context: context,
                             builder: datePickerBuilderMobile,
                             offset: Offset(5, 220)),
@@ -761,10 +775,47 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                           ),
                           SizedBox(height: defaultPadding),
                           if (Responsive.isMobile(context))
-                            SizedBox(height: defaultPadding),
+                            Column(
+                              children: [
+                                // Text("Daily Attendance Trends",
+                                //     style:
+                                //         Theme.of(context).textTheme.headlineMedium),
+                                //LineChartWidget(_fetchedLineChartData),
+                                Text("Weekly Attendance Summary Report",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _ColorIndicator(Colors.green, "Present"),
+                                    SizedBox(width: 10),
+                                    _ColorIndicator(Colors.red, "Absent")
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                AttendanceBarChart(
+                                    _fetchedWeeklyAttendanceSummaryData,
+                                    startDate,
+                                    endDate),
+                                Text(
+                                  "Date Range: " +
+                                      this.formattedStartDate +
+                                      " - " +
+                                      this.formattedEndDate,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                // AttendanceMissedBySecurity(
+                                //     fetchedAttendanceData: _fetchedAttendanceData),
+                              ],
+                            ),
                           if (Responsive.isMobile(context))
-                            LineChartWidget(_fetchedLineChartData),
-                          SizedBox(height: defaultPadding),
+                            // LineChartWidget(_fetchedLineChartData),
+                            SizedBox(height: defaultPadding),
                           if (Responsive.isMobile(context))
                             SizedBox(height: defaultPadding),
                           if (Responsive.isMobile(context))
@@ -784,10 +835,28 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                         flex: 3,
                         child: Column(
                           children: [
-                            Text("Daily Attendance Trends",
+                            // Text("Daily Attendance Trends",
+                            //     style:
+                            //         Theme.of(context).textTheme.headlineMedium),
+                            //LineChartWidget(_fetchedLineChartData),
+                            Text("Weekly Attendance Summary Report",
                                 style:
                                     Theme.of(context).textTheme.headlineMedium),
-                            LineChartWidget(_fetchedLineChartData),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _ColorIndicator(Colors.green, "Present"),
+                                SizedBox(width: 10),
+                                _ColorIndicator(Colors.red, "Absent")
+                              ],
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            AttendanceBarChart(
+                                _fetchedWeeklyAttendanceSummaryData,
+                                startDate,
+                                endDate),
                             Text(
                               "Date Range: " +
                                   this.formattedStartDate +
@@ -798,8 +867,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                               ),
                             ),
                             SizedBox(height: defaultPadding),
-                            AttendanceMissedBySecurity(
-                                fetchedAttendanceData: _fetchedAttendanceData),
+                            // AttendanceMissedBySecurity(
+                            //     fetchedAttendanceData: _fetchedAttendanceData),
                           ],
                         ),
                       ),
@@ -823,4 +892,27 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
       ),
     );
   }
+}
+
+Widget _ColorIndicator(Color color, String text) {
+  return Row(
+    children: [
+      Container(
+        width: 14,
+        height: 14,
+        decoration:
+            BoxDecoration(color: color, borderRadius: BorderRadius.circular(3)),
+      ),
+      const SizedBox(
+        width: 6,
+      ),
+      Text(
+        text,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    ],
+  );
 }

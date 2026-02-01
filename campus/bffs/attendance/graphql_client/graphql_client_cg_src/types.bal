@@ -17,28 +17,44 @@ public type ActivityInstance record {
     int? weekly_sequence?;
     string? end_time?;
     string? description?;
+    int? task_id?;
     int? daily_sequence?;
     string? record_type?;
     int? monthly_sequence?;
     string? start_time?;
     int? organization_id?;
+    string? overall_task_status?;
     int? activity_id?;
     string? name?;
+    string? location?;
     int? id?;
     string? updated?;
     int? place_id?;
 };
 
-public type ActivityParticipant record {
-    string? end_date?;
+public type ActivityInstanceEvaluation record {
+    string? feedback?;
     int? activity_instance_id?;
-    string? role?;
-    string? notes?;
     string? created?;
-    int? organization_id?;
+    int? evaluator_id?;
+    int? rating?;
     int? id?;
     string? updated?;
     string? record_type?;
+};
+
+public type ActivityParticipant record {
+    string? end_date?;
+    string? role?;
+    string? notes?;
+    string? participant_task_status?;
+    string? created?;
+    int? is_attending?;
+    string? record_type?;
+    int? activity_instance_id?;
+    int? organization_id?;
+    int? id?;
+    string? updated?;
     int? person_id?;
     string? start_date?;
 };
@@ -75,6 +91,49 @@ public type Address record {
     int? id?;
     string? record_type?;
     int? city_id?;
+};
+
+public type Alumni record {
+    string? created?;
+    string? linkedin_id?;
+    string? record_type?;
+    string? facebook_id?;
+    string? instagram_id?;
+    string? canva_cv_url?;
+    string? company_name?;
+    string? tiktok_id?;
+    string? updated_by?;
+    int? id?;
+    string? job_title?;
+    int? person_count?;
+    string? updated?;
+    string? status?;
+};
+
+public type AlumniEducationQualification record {
+    string? end_date?;
+    string? course_name?;
+    string? created?;
+    int? is_currently_studying?;
+    int? id?;
+    string? university_name?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+    string? start_date?;
+};
+
+public type AlumniWorkExperience record {
+    string? end_date?;
+    string? created?;
+    string? company_name?;
+    int? id?;
+    string? job_title?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+    int? currently_working?;
+    string? start_date?;
 };
 
 public type ApplicantConsent record {
@@ -162,6 +221,16 @@ public type Consumable record {
     string? updated?;
     string? record_type?;
     string? manufacturer?;
+};
+
+public type CvRequest record {
+    int? phone?;
+    string? created?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+    string? status?;
 };
 
 public type DutyParticipant record {
@@ -274,19 +343,81 @@ public type Inventory record {
     int? person_id?;
 };
 
+public type JobPost record {
+    string? job_type?;
+    string? job_link?;
+    string? created?;
+    string? application_deadline?;
+    string? job_image_drive_id?;
+    string? record_type?;
+    string? uploaded_by?;
+    string? job_text?;
+    int? id?;
+    int? job_category_id?;
+    string? job_post_image?;
+    string? job_category?;
+    string? updated?;
+    string? current_date_time?;
+};
+
+public type MaintenanceFinance record {
+    int? activity_instance_id?;
+    anydata? labour_cost?;
+    string? reviewed_by?;
+    string? created?;
+    anydata? estimated_cost?;
+    string? rejection_reason?;
+    MaterialCost[]? materialCosts?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    string? reviewed_date?;
+    string? status?;
+};
+
+public type MaintenanceTask record {
+    boolean? is_active?;
+    int? exception_deadline?;
+    string? created?;
+    int? has_financial_info?;
+    string? description?;
+    string? title?;
+    string? record_type?;
+    int? location_id?;
+    string? frequency?;
+    string? modified_by?;
+    int[]? person_id_list?;
+    int? id?;
+    string? task_type?;
+    string? updated?;
+    MaintenanceFinance? finance?;
+    string? start_date?;
+};
+
+public type MaterialCost record {
+    string? item?;
+    string? unit?;
+    int? financial_id?;
+    anydata? quantity?;
+    anydata? unit_cost?;
+    int? id?;
+    string? record_type?;
+};
+
 public type MonthlyLeaveDates record {
-    string? leave_dates?;
-    int? month?;
     int[] leave_dates_list?;
     int? year?;
     int? batch_id?;
+    anydata? monthly_payment_amount?;
     string? created?;
+    string? record_type?;
+    string? leave_dates?;
+    int? month?;
     int? total_days_in_month?;
     int? organization_id?;
     int? id?;
     anydata? daily_amount?;
     string? updated?;
-    string? record_type?;
 };
 
 public type Organization record {
@@ -306,6 +437,14 @@ public type Organization record {
     string? name_en?;
 };
 
+public type OrganizationLocation record {
+    string? location_name?;
+    int? organization_id?;
+    string? description?;
+    int? id?;
+    string? record_type?;
+};
+
 public type Person record {
     int? permanent_address_id?;
     string? street_address?;
@@ -317,10 +456,14 @@ public type Person record {
     int? parent_organization_id?;
     int? avinya_type_id?;
     Address? permanent_address?;
+    boolean? is_graduated?;
     int? mailing_address_id?;
+    Alumni? alumni?;
+    string? profile_picture_folder_id?;
     string? id_no?;
     string? jwt_email?;
     string? bank_name?;
+    int? alumni_id?;
     int? id?;
     string? email?;
     string? created?;
@@ -347,6 +490,39 @@ public type Person record {
     string? preferred_name?;
     string? jwt_sub_id?;
     int? academy_org_id?;
+};
+
+public type PersonCv record {
+    string? file_content?;
+    string? uploaded_by?;
+    string? nic_no?;
+    string? drive_file_id?;
+    string? created?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+};
+
+public type PersonFcmToken record {
+    string? created?;
+    string? fcm_token?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+};
+
+public type PersonProfilePicture record {
+    string? uploaded_by?;
+    string? nic_no?;
+    string? created?;
+    string? profile_picture_drive_id?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    string? picture?;
+    int? person_id?;
 };
 
 public type Prospect record {
@@ -933,14 +1109,16 @@ public type GetDailyAttendanceSummaryReportResponse record {|
     record {|
         string? sign_in_date;
         int? present_count;
+        int? absent_count;
         int? late_count;
         int? total_count;
         anydata? present_attendance_percentage;
+        anydata? absent_attendance_percentage;
         anydata? late_attendance_percentage;
     |}[]? daily_attendance_summary_report;
 |};
 
-public type GetOrganizationsByAvinyaTypeResponse record {|
+public type GetOrganizationsByAvinyaTypeAndStatusResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
@@ -952,7 +1130,7 @@ public type GetOrganizationsByAvinyaTypeResponse record {|
             string? key_name;
             string? value;
         |}[]? organization_metadata;
-    |}[]? organizations_by_avinya_type;
+    |}[]? organizations_by_avinya_type_and_status;
 |};
 
 public type CreateMonthlyLeaveDatesResponse record {|
@@ -1000,28 +1178,12 @@ public type GetMonthlyLeaveDatesRecordByIdResponse record {|
     |}? monthly_leave_dates_record_by_id;
 |};
 
-public type GetOrganizationsByAvinyaTypeWithActiveStatusResponse record {|
-    map<json?> __extensions?;
-    record {|
-        int? id;
-        record {|
-            string? name_en;
-        |} name;
-        string? description;
-        record {|
-            string? key_name;
-            string? value;
-        |}[]? organization_metadata;
-        int? active;
-    |}[]? organizations_by_avinya_type;
-|};
-
-public type GetCalendarMetadataByOrgIdResponse record {|
+public type GetBatchPaymentPlanByOrgIdResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
         int? organization_id;
         int? batch_id;
         anydata? monthly_payment_amount;
-    |}? calendar_metadata_by_org_id;
+    |}? batch_payment_plan_by_org_id;
 |};

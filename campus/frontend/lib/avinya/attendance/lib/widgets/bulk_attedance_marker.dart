@@ -31,6 +31,8 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
   List<Organization> _fetchedOrganizations = [];
   String batchStartDate = "";
   String batchEndDate = "";
+  List<Person> _filteredStudents = [];
+
 
   @override
   void initState() {
@@ -46,7 +48,8 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
   }
 
   Future<List<Organization>> _loadBatchData() async {
-    _batchData = await fetchActiveOrganizationsByAvinyaType(86);
+    //_batchData = await fetchActiveOrganizationsByAvinyaType();
+    _batchData = await fetchOrganizationsByAvinyaTypeAndStatus(null, 1);
     _selectedOrganizationValue = _batchData.isNotEmpty ? _batchData.last : null;
     batchStartDate = DateFormat('MMM d, yyyy').format(DateTime.parse(
         _selectedOrganizationValue!.organization_metadata[0].value.toString()));
@@ -135,7 +138,7 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
           .getCheckinActivityInstance(activityId);
     }
     int index = -1;
-
+    
     if (sign_in)
       index = _fetchedAttendance.indexWhere((attendance) =>
           attendance.person_id == person_id && attendance.sign_in_time != null);
@@ -199,6 +202,33 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
       _fetchedAttendance[index] = activityAttendance;
     }
   }
+
+  void searchStudents(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        _filteredStudents =_fetchedOrganization!.people;
+        print('Query is empty:');
+      } else {
+        final lowerCaseQuery = query.toLowerCase();
+
+        _filteredStudents = _fetchedOrganization!.people.where((student) {
+          print('Searching for: $query');
+          print('Present count: ${student.preferred_name}');
+          print('NIC number: ${student.nic_no}');
+
+          // Ensure preferred_name is not null and trimmed
+          final presentCountString =
+              student.preferred_name?.trim().toLowerCase() ?? '';
+          final attendancePercentageString = student.nic_no?.toString() ?? '';
+
+          // Check for matching query
+          return presentCountString.contains(lowerCaseQuery) ||
+              attendancePercentageString.contains(lowerCaseQuery);
+        }).toList();
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -300,6 +330,8 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                                         _fetchedOrganization =
                                             await fetchOrganization(
                                                 newValue.id!);
+                                        
+                                        _filteredStudents =_fetchedOrganization!.people;
 
                                         _fetchedAttendance =
                                             await getClassActivityAttendanceToday(
@@ -417,6 +449,27 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                               ]),
                         ],
                       ),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              width: 250,
+                              child: TextField(
+                                decoration: InputDecoration(
+                                  labelText: 'Search by Name or NIC',
+                                  border: OutlineInputBorder(),
+                                  prefixIcon: Icon(Icons.search),
+                                ),
+                                onChanged: (query) {
+                                  searchStudents(query);
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                   SizedBox(height: 16.0),
@@ -434,8 +487,11 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                         TableCell(
                             child: Text("Name",
                                 style: TextStyle(fontWeight: FontWeight.bold))),
+                        // TableCell(
+                        //     child: Text("Digital ID",
+                        //         style: TextStyle(fontWeight: FontWeight.bold))),
                         TableCell(
-                            child: Text("Digital ID",
+                            child: Text("NIC",
                                 style: TextStyle(fontWeight: FontWeight.bold))),
                         TableCell(
                             child: Text("Sign in",
@@ -454,10 +510,11 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
                       ]),
                       if (_fetchedOrganization != null)
                         if (_fetchedOrganization!.people.length > 0)
-                          ..._fetchedOrganization!.people.map((person) {
+                          ..._filteredStudents.map((person) {
                             return TableRow(children: [
                               TableCell(child: Text(person.preferred_name!)),
-                              TableCell(child: Text(person.digital_id!)),
+                              //TableCell(child: Text(person.digital_id!)),
+                              TableCell(child: Text(person.nic_no!)),
                               // sign in
                               if (_fetchedAttendance.length > 0)
                                 if (_fetchedAttendance

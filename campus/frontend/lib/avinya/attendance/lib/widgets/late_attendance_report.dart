@@ -84,7 +84,8 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
   }
 
   Future<List<Organization>> _loadBatchData() async {
-    _batchData = await fetchActiveOrganizationsByAvinyaType(86);
+    // _batchData = await fetchActiveOrganizationsByAvinyaType();
+    _batchData = await fetchOrganizationsByAvinyaTypeAndStatus(null, 1);
     _selectedOrganizationValue = _batchData.isNotEmpty ? _batchData.last : null;
 
     if (_selectedOrganizationValue != null) {
@@ -150,7 +151,7 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
     _selectedValue = newValue ?? null;
 
     if (_selectedValue == null) {
-      _fetchedStudentList = await fetchOrganizationForAll(parentOrgId!);
+      //_fetchedStudentList = await fetchOrganizationForAll(parentOrgId!);
       if (_fetchedOrganization != null) {
         _fetchedOrganization!.people = _fetchedStudentList;
         _fetchedOrganization!.id = parentOrgId;
@@ -161,13 +162,14 @@ class _LateAttendanceReportState extends State<LateAttendanceReport> {
         _fetchedOrganization!.id = parentOrgId;
         _fetchedOrganization!.description = "Select All";
       }
-      _fetchedAttendance = await getLateAttendanceReportByParentOrg(
-          parentOrgId,
-          activityId,
-          DateFormat('yyyy-MM-dd')
-              .format(DateFormat('MMM d, yyyy').parse(this.formattedStartDate)),
-          DateFormat('yyyy-MM-dd')
-              .format(DateFormat('MMM d, yyyy').parse(this.formattedEndDate)));
+      // print("Parent Org Id:${parentOrgId}");
+      // _fetchedAttendance = await getLateAttendanceReportByParentOrg(
+      //     parentOrgId,
+      //     activityId,
+      //     DateFormat('yyyy-MM-dd')
+      //         .format(DateFormat('MMM d, yyyy').parse(this.formattedStartDate)),
+      //     DateFormat('yyyy-MM-dd')
+      //         .format(DateFormat('MMM d, yyyy').parse(this.formattedEndDate)));
     } else {
       _fetchedOrganization = await fetchOrganization(newValue!.id!);
       _fetchedAttendance = await getLateAttendanceReportByDate(

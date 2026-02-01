@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -9,14 +7,17 @@ class ConsumableWeeklyReportScreen extends StatefulWidget {
   const ConsumableWeeklyReportScreen({super.key});
 
   @override
-  State<ConsumableWeeklyReportScreen> createState() => _ConsumableWeeklyReportScreenState();
+  State<ConsumableWeeklyReportScreen> createState() =>
+      _ConsumableWeeklyReportScreenState();
 }
 
-class _ConsumableWeeklyReportScreenState extends State<ConsumableWeeklyReportScreen> {
+class _ConsumableWeeklyReportScreenState
+    extends State<ConsumableWeeklyReportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.yellow[600],
         automaticallyImplyLeading: false,
         title: Text("Consumable Weekly Report"),
       ),

@@ -6,21 +6,16 @@ import 'package:intl/intl.dart';
 import 'package:mobile/data/campus_apps_portal.dart';
 import '../routing.dart';
 
-List<DateTime> getWeekdaysFromDate(DateTime fromDate, int numberOfWeekdays) {
-  List<DateTime> weekdaysList = [];
-  // Loop until we have the required number of weekdays
-  while (weekdaysList.length < numberOfWeekdays) {
-    // Move to the next day
-    fromDate = fromDate.add(Duration(days: 1));
 
-    // Check if the current day is a weekday
-    if (fromDate.weekday >= 1 && fromDate.weekday <= 5) {
-      weekdaysList.add(fromDate);
+  List<DateTime> getPastDaysIncludingToday(int numberOfDays){
+    List<DateTime> daysList = [];
+    DateTime date = DateTime.now();
+    for(int i =0;i < numberOfDays;i++){
+      daysList.insert(i,date);
+      date = date.subtract(Duration(days: 1));
     }
+    return daysList;
   }
-
-  return weekdaysList;
-}
 
 class PersonAttendanceMarkerReport extends StatefulWidget {
   const PersonAttendanceMarkerReport({super.key});
@@ -33,18 +28,18 @@ class PersonAttendanceMarkerReport extends StatefulWidget {
 class _PersonAttendanceMarkerReportState
     extends State<PersonAttendanceMarkerReport> {
   List<ActivityAttendance> _personAttendanceReport = [];
-  var result_limit = 10;
-  DateTime fourteenDaysAgoDate = DateTime.now().subtract(Duration(days: 14));
-  List<DataColumn> _weekdaysColumns = [];
+  var result_limit = 20;
+  List<DataColumn> _daysColumns = [];
   List<String?> stringDateTimeList = [];
-  List<DateTime> weekdaysList = [];
+  List<DateTime> daysList = [];
   bool isAttendanceMarkerPathTemplate = false;
 
   @override
   void initState() {
     super.initState();
-    _generateWeekdaysColumns();
+    _generateDaysColumns();
   }
+
 
   List<DataColumn> _buildDataColumns(bool isAttendanceMarkerPathTemplate) {
     List<DataColumn> ColumnNames = [];
@@ -68,11 +63,11 @@ class _PersonAttendanceMarkerReportState
     return ColumnNames;
   }
 
-  void _generateWeekdaysColumns() {
-    weekdaysList = getWeekdaysFromDate(fourteenDaysAgoDate, 10);
+  void _generateDaysColumns() {
+    daysList = getPastDaysIncludingToday(10);
     // Generate the DataColumn list
-    for (DateTime date in weekdaysList) {
-      _weekdaysColumns.add(DataColumn(
+    for (DateTime date in daysList) {
+      _daysColumns.add(DataColumn(
         label: Text('${date.toString().split(" ")[0]}'),
       ));
     }
@@ -107,7 +102,7 @@ class _PersonAttendanceMarkerReportState
       future: refreshPersonActivityAttendanceReport(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
-          stringDateTimeList = weekdaysList.map((datetime) {
+          stringDateTimeList = daysList.map((datetime) {
             return datetime.toString().split(" ")[0];
           }).toList();
           return SingleChildScrollView(
@@ -115,10 +110,9 @@ class _PersonAttendanceMarkerReportState
               columns: _buildDataColumns(isAttendanceMarkerPathTemplate),
               source: _PersonAttendanceMarkerReportDataSource(snapshot.data,
                   stringDateTimeList, isAttendanceMarkerPathTemplate),
-              rowsPerPage: 11,
-              dataRowHeight: 40.0,
-              columnSpacing: 100,
-              horizontalMargin: 60,
+              rowsPerPage: 7,
+              columnSpacing: 30,
+              horizontalMargin: 15,
             ),
           );
         } // } else if (snapshot.hasError) {

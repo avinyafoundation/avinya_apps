@@ -1,8 +1,5 @@
 import 'dart:developer';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:gallery/auth.dart';
-import 'package:gallery/avinya/enrollment/lib/screens/sign_in.dart';
 import '../data.dart';
 import '../routing.dart';
 import '../widgets/fade_transition_page.dart';

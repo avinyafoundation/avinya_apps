@@ -2,7 +2,6 @@ import ballerina/http;
 import ballerina/graphql;
 import ballerina/log;
 
-
 public function initClientConfig() returns ConnectionConfig{
     ConnectionConfig _clientConig = {};
     if (GLOBAL_DATA_USE_AUTH) {
@@ -881,11 +880,11 @@ service / on new http:Listener(9091) {
         }
     }
 
-    resource function get organizations_by_avinya_type/[int avinya_type_id]() returns Organization[]|error {
-        GetOrganizationsByAvinyaTypeResponse|graphql:ClientError getOrganizationsByAvinyaTypeResponse = globalDataClient->getOrganizationsByAvinyaType(avinya_type_id);
-        if(getOrganizationsByAvinyaTypeResponse is GetOrganizationsByAvinyaTypeResponse) {
+    resource function get organizations_by_avinya_type_and_status(int? avinya_type,int? active) returns Organization[]|error {
+        GetOrganizationsByAvinyaTypeAndStatusResponse|graphql:ClientError getOrganizationsByAvinyaTypeAndStatusResponse = globalDataClient->getOrganizationsByAvinyaTypeAndStatus(avinya_type,active);
+        if(getOrganizationsByAvinyaTypeAndStatusResponse is GetOrganizationsByAvinyaTypeAndStatusResponse) {
             Organization[] organizations = [];
-            foreach var organization_record in getOrganizationsByAvinyaTypeResponse.organizations_by_avinya_type {
+            foreach var organization_record in getOrganizationsByAvinyaTypeAndStatusResponse.organizations_by_avinya_type_and_status {
                 Organization|error organization = organization_record.cloneWithType(Organization);
                 if(organization is Organization) {
                     organizations.push(organization);
@@ -899,9 +898,9 @@ service / on new http:Listener(9091) {
             return organizations;
             
         } else {
-            log:printError("Error while creating application", getOrganizationsByAvinyaTypeResponse);
-            return error("Error while creating application: " + getOrganizationsByAvinyaTypeResponse.message() + 
-                ":: Detail: " + getOrganizationsByAvinyaTypeResponse.detail().toString());
+            log:printError("Error while creating application", getOrganizationsByAvinyaTypeAndStatusResponse);
+            return error("Error while creating application: " + getOrganizationsByAvinyaTypeAndStatusResponse.message() + 
+                ":: Detail: " + getOrganizationsByAvinyaTypeAndStatusResponse.detail().toString());
         }
     }
 
@@ -958,46 +957,21 @@ service / on new http:Listener(9091) {
                 ":: Detail: " + getMonthlyLeaveDatesRecordByIdResponse.detail().toString());
         }
     }
-
-    resource function get organizations_by_avinya_type_with_active_status/[int avinya_type_id]/[int active]() returns Organization[]|error {
-        GetOrganizationsByAvinyaTypeWithActiveStatusResponse|graphql:ClientError getOrganizationsByAvinyaTypeWithActiveStatusResponse = globalDataClient->getOrganizationsByAvinyaTypeWithActiveStatus(avinya_type_id,active);
-        if(getOrganizationsByAvinyaTypeWithActiveStatusResponse is GetOrganizationsByAvinyaTypeWithActiveStatusResponse) {
-            Organization[] organizations = [];
-            foreach var organization_record in getOrganizationsByAvinyaTypeWithActiveStatusResponse.organizations_by_avinya_type {
-                Organization|error organization = organization_record.cloneWithType(Organization);
-                if(organization is Organization) {
-                    organizations.push(organization);
-                } else {
-                    log:printError("Error while processing Application record received", organization);
-                    return error("Error while processing Application record received: " + organization.message() + 
-                        ":: Detail: " + organization.detail().toString());
-                }
-            }
-
-            return organizations;
-            
-        } else {
-            log:printError("Error while creating application", getOrganizationsByAvinyaTypeWithActiveStatusResponse);
-            return error("Error while creating application: " + getOrganizationsByAvinyaTypeWithActiveStatusResponse.message() + 
-                ":: Detail: " + getOrganizationsByAvinyaTypeWithActiveStatusResponse.detail().toString());
-        }
-    }
-
-    resource function get calendar_metadata_by_org_id/[int organization_id]/[int batch_id]() returns CalendarMetadata|error {
-        GetCalendarMetadataByOrgIdResponse|graphql:ClientError getCalendarMetadataByOrgIdResponse = globalDataClient->getCalendarMetadataByOrgId(batch_id,organization_id);
-        if (getCalendarMetadataByOrgIdResponse is GetCalendarMetadataByOrgIdResponse) {
-            CalendarMetadata|error calendar_metadata_record = getCalendarMetadataByOrgIdResponse.calendar_metadata_by_org_id.cloneWithType(CalendarMetadata);
-            if (calendar_metadata_record is CalendarMetadata) {
-                return calendar_metadata_record;
+    resource function get batch_payment_plan_by_org_id/[int organization_id]/[int batch_id]/[string selected_month_date]() returns BatchPaymentPlan|error {
+        GetBatchPaymentPlanByOrgIdResponse|graphql:ClientError getBatchPaymentPlanByOrgIdResponse = globalDataClient->getBatchPaymentPlanByOrgId(selected_month_date,batch_id,organization_id);
+        if (getBatchPaymentPlanByOrgIdResponse is GetBatchPaymentPlanByOrgIdResponse) {
+            BatchPaymentPlan|error batch_payment_plan_record = getBatchPaymentPlanByOrgIdResponse.batch_payment_plan_by_org_id.cloneWithType(BatchPaymentPlan);
+            if (batch_payment_plan_record is BatchPaymentPlan) {
+                return batch_payment_plan_record;
             } else {
-                log:printError("Error while processing Application record received", calendar_metadata_record);
-                return error("Error while processing Application record received: " + calendar_metadata_record.message() +
-                    ":: Detail: " + calendar_metadata_record.detail().toString());
+                log:printError("Error while processing Application record received", batch_payment_plan_record);
+                return error("Error while processing Application record received: " + batch_payment_plan_record.message() +
+                    ":: Detail: " + batch_payment_plan_record.detail().toString());
             }
         } else {
-            log:printError("Error while creating application", getCalendarMetadataByOrgIdResponse);
-            return error("Error while creating application: " + getCalendarMetadataByOrgIdResponse.message() +
-                ":: Detail: " + getCalendarMetadataByOrgIdResponse.detail().toString());
+            log:printError("Error while creating application", getBatchPaymentPlanByOrgIdResponse);
+            return error("Error while creating application: " + getBatchPaymentPlanByOrgIdResponse.message() +
+                ":: Detail: " + getBatchPaymentPlanByOrgIdResponse.detail().toString());
         }
     }
 

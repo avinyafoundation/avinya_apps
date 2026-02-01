@@ -138,6 +138,7 @@ class Alumni {
   String? facebook_id;
   String? instagram_id;
   String? tiktok_id;
+  String? canva_cv_url;
   String? updated_by;
 
   Alumni(
@@ -149,6 +150,7 @@ class Alumni {
       this.facebook_id,
       this.instagram_id,
       this.tiktok_id,
+      this.canva_cv_url,
       this.updated_by});
 
   factory Alumni.fromJson(Map<String, dynamic> json) {
@@ -161,6 +163,7 @@ class Alumni {
       facebook_id: json['facebook_id'],
       instagram_id: json['instagram_id'],
       tiktok_id: json['tiktok_id'],
+      canva_cv_url: json['canva_cv_url'],
       updated_by: json['updated_by'],
     );
   }
@@ -174,6 +177,7 @@ class Alumni {
         if (facebook_id != null) 'facebook_id': facebook_id,
         if (instagram_id != null) 'instagram_id': instagram_id,
         if (tiktok_id != null) 'tiktok_id': tiktok_id,
+        if (canva_cv_url != null) 'canva_cv_url':canva_cv_url,
         if (updated_by != null) 'updated_by': updated_by,
       };
 }

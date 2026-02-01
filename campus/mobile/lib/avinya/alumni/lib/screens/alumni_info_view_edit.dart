@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -10,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/data/campus_apps_portal.dart';
 import 'package:mobile/data/person.dart';
 import 'package:mobile/data/profile_picture.dart';
-import 'package:alumni/screens/bottom_navigation/bottom_navigation/controllers/bottom_navigation_controller.dart';
+import 'package:mobile/avinya/alumni/lib/screens/bottom_navigation/bottom_navigation/controllers/bottom_navigation_controller.dart';
 import 'package:alumni/screens/bottom_navigation/home/screens/my_alumni_dashboard.dart';
 import 'package:alumni/widgets/time_line_widget.dart';
 import 'package:sizer/sizer.dart';
@@ -242,7 +241,7 @@ class _MyAlumniInfoViweScreenState extends State<MyAlumniInfoViweScreen> {
     }
   }
 
-  void _deleteProfilePicture() async {
+  void _deleteProfilePicture(BuildContext dialogContext) async {
     if (AlumniUserPerson.alumni_profile_picture != null) {
       try {
         var result = await deleteProfilePictureById(
@@ -253,24 +252,24 @@ class _MyAlumniInfoViweScreenState extends State<MyAlumniInfoViweScreen> {
           setState(() {
             AlumniUserPerson.alumni_profile_picture = null;
           });
-          Navigator.pop(context, true);
+          Navigator.pop(dialogContext, true);
         } else {
-          Navigator.pop(context, false);
+          Navigator.pop(dialogContext, false);
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(dialogContext).showSnackBar(
           SnackBar(content: Text('Failed To Delete Profile Picture: $e')),
         );
-        Navigator.pop(context, false);
+        Navigator.pop(dialogContext, false);
       }
     }
   }
 
   @override
-  Widget build(BuildContexcosdantext) {
+  Widget build(BuildContext context) {
     String imagePath = AlumniUserPerson.sex == 'Male'
         ? 'assets/images/student_profile_male.jpg' // Replace with the male profile image path
-        : 'assets/images/student_profile.jpeg'; // Default or female profile image
+        : 'assets/images/student_profile.jpg'; // Default or female profile image
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -325,464 +324,330 @@ class _MyAlumniInfoViweScreenState extends State<MyAlumniInfoViweScreen> {
         ),
       ),
       backgroundColor: Colors.transparent,
-      body: SingleChildScrollView(
-        child: Container(
-          //margin: EdgeInsets.only(top: 25.0),
-          decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? kDarkModeSurfaceColor
-                : kOtherColor,
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          child: Column(
-            children: [
-              Container(
-                width: 100.w,
-                height: SizerUtil.deviceType == DeviceType.tablet ? 36.h : 32.h,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? kDarkModeSurfaceColor
-                      : kOtherColor,
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    ClipPath(
-                      clipper: CurvedBottomClipper(),
-                      child: Container(
-                        height: 15.h,
-                        width: 100.w,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              turquoiseBlue,
-                              secondColor
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned.fill(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          SizedBox(
-                            height: 2.h,
-                          ),
-                          Center(
-                            child: Stack(
-                              children: [
-                                CircleAvatar(
-                                  radius:
-                                      SizerUtil.deviceType == DeviceType.tablet
-                                          ? 13.w
-                                          : 14.w,
-                                  backgroundColor: kSecondaryColor,
-                                  backgroundImage:
-                                      _selectedProfilePictureImage != null
-                                          ? MemoryImage(
-                                              _selectedProfilePictureImage!)
-                                          : AlumniUserPerson
-                                                      .alumni_profile_picture
-                                                      ?.picture !=
-                                                  null
-                                              ? MemoryImage(base64Decode(
-                                                  AlumniUserPerson
-                                                      .alumni_profile_picture!
-                                                      .picture!))
-                                              : AssetImage(imagePath)
-                                                  as ImageProvider,
-                                ),
-                                Positioned(
-                                    bottom: 0,
-                                    right: 0,
-                                    child: InkWell(
-                                      onTap: _isUploadingProfilePicture
-                                          ? null
-                                          : _submitProfilePicture,
-                                      child: CircleAvatar(
-                                        radius: 16,
-                                        backgroundColor: turquoiseBlue,
-                                        child:const  Icon(Icons.camera_alt,
-                                            color: Colors.white, size: 18),
-                                      ),
-                                    )),
-                                if (_selectedProfilePictureImage != null ||
-                                    AlumniUserPerson
-                                            .alumni_profile_picture?.picture !=
-                                        null)
-                                  Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: InkWell(
-                                        onTap: () async {
-                                          final confirm =
-                                              await showDialog<bool>(
-                                                  context: context,
-                                                  builder:
-                                                      (context) => AlertDialog(
-                                                            title: Text(
-                                                              'Remove Picture?',
-                                                              style: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .bodyMedium!
-                                                                  .copyWith(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                    color:
-                                                                        kTextBlackColor,
-                                                                    fontSize: SizerUtil.deviceType ==
-                                                                            DeviceType
-                                                                                .mobile
-                                                                        ? 14.sp
-                                                                        : SizerUtil.deviceType ==
-                                                                                DeviceType.tablet
-                                                                            ? 16.sp
-                                                                            : SizerUtil.deviceType == DeviceType.web
-                                                                                ? 14.sp
-                                                                                : 14.sp,
-                                                                  ),
-                                                            ),
-                                                            actions: [
-                                                              TextButton(
-                                                                onPressed: () =>
-                                                                    Navigator.pop(
-                                                                        context,
-                                                                        false),
-                                                                child: Text(
-                                                                  'Cancel',
-                                                                  style: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .titleSmall!
-                                                                      .copyWith(
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                        fontStyle:
-                                                                            FontStyle.normal,
-                                                                        color:
-                                                                            kTextBlackColor,
-                                                                        fontSize: SizerUtil.deviceType ==
-                                                                                DeviceType.mobile
-                                                                            ? 12.sp
-                                                                            : SizerUtil.deviceType == DeviceType.tablet
-                                                                                ? 14.sp
-                                                                                : SizerUtil.deviceType == DeviceType.web
-                                                                                    ? 08.sp
-                                                                                    : 10.sp,
-                                                                      ),
-                                                                ),
-                                                              ),
-                                                              TextButton(
-                                                                onPressed:
-                                                                    _deleteProfilePicture,
-                                                                child: Text(
-                                                                  'Remove',
-                                                                  style: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .titleSmall!
-                                                                      .copyWith(
-                                                                        fontWeight:
-                                                                            FontWeight.bold,
-                                                                        fontStyle:
-                                                                            FontStyle.normal,
-                                                                        color:
-                                                                            kTextBlackColor,
-                                                                        fontSize: SizerUtil.deviceType ==
-                                                                                DeviceType.mobile
-                                                                            ? 12.sp
-                                                                            : SizerUtil.deviceType == DeviceType.tablet
-                                                                                ? 14.sp
-                                                                                : SizerUtil.deviceType == DeviceType.web
-                                                                                    ? 08.sp
-                                                                                    : 10.sp,
-                                                                      ),
-                                                                ),
-                                                              )
-                                                            ],
-                                                          ));
-                                          if (confirm == true) {
-                                            setState(() {
-                                              _selectedProfilePictureImage =
-                                                  null;
-                                            });
-                                          }
-                                        },
-                                        child: CircleAvatar(
-                                          radius: 12,
-                                          backgroundColor: Colors.red,
-                                          child: Icon(Icons.close,
-                                              size: 16, color: Colors.white),
-                                        ),
-                                      )),
-                              ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            //margin: EdgeInsets.only(top: 25.0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? kDarkModeSurfaceColor
+                  : kOtherColor,
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: 100.w,
+                  height:
+                      SizerUtil.deviceType == DeviceType.tablet ? 36.h : 32.h,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? kDarkModeSurfaceColor
+                        : kOtherColor,
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      ClipPath(
+                        clipper: CurvedBottomClipper(),
+                        child: Container(
+                          height: 15.h,
+                          width: 100.w,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [turquoiseBlue, secondColor],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
                           ),
-                          Column(
-                            children: [
-                              Text(
-                                '${AlumniUserPerson.full_name ?? 'N/A'}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium!
-                                    .copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: kTextBlackColor,
-                                      fontSize: SizerUtil.deviceType ==
-                                              DeviceType.mobile
-                                          ? 16.sp
-                                          : SizerUtil.deviceType ==
-                                                  DeviceType.tablet
-                                              ? 18.sp
-                                              : SizerUtil.deviceType ==
-                                                      DeviceType.web
-                                                  ? 12.sp
-                                                  : 14.sp,
-                                    ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              SizedBox(
-                                height: 1.h,
-                              ),
-                              Text(
-                                '${AlumniUserPerson.email ?? 'N/A'}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium!
-                                    .copyWith(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.grey.shade700
-                                          : Colors.grey.shade800,
-                                      fontSize: SizerUtil.deviceType ==
-                                              DeviceType.mobile
-                                          ? 14.sp
-                                          : SizerUtil.deviceType ==
-                                                  DeviceType.tablet
-                                              ? 17.sp
-                                              : SizerUtil.deviceType ==
-                                                      DeviceType.web
-                                                  ? 12.sp
-                                                  : 14.sp,
-                                    ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              // SizedBox(
-                              //   height: 5.h,
-                              // ),
-                            ],
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                    // Align(
-                    //   alignment: Alignment.topLeft,
-                    //   child: IconButton(
-                    //     icon: Icon(
-                    //       Icons.arrow_back,
-                    //       size: SizerUtil.deviceType == DeviceType.tablet
-                    //           ? 6.w
-                    //           : 5.w,
-                    //     ),
-                    //     onPressed: () {
-                    //       Navigator.pop(context);
-                    //     },
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ),
-              // SizedBox(
-              //   height: 1.h,
-              // ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 2.h,
-                  ),
-                  Expanded(
-                    child: Divider(
-                      color: Colors.grey.shade300,
-                      thickness: 1,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 2.h,
-                  ),
-                ],
-              ),
-              // SizedBox(
-              //   height: 1.h,
-              // ),
-              Form(
-                key: _formKey,
-                child: Column(
-                  //crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    //   children: [
-                    //     ProfileDetailRow(
-                    //         title: 'Academic Year',
-                    //         value:
-                    //             '${UserPerson.updated == null ? 'N/A' : '${DateFormat('yyyy').format(DateTime.parse(UserPerson.updated!))} - ${DateFormat('yyyy').format(DateTime.parse(UserPerson.updated!).add(Duration(days: 365)))} '}'),
-                    //   ],
-                    // ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    //   children: [
-                    //     ProfileDetailRow(
-                    //       title: 'Programme',
-                    //       value: '${UserPerson.avinya_type?.focus ?? 'N/A'}',
-                    //     ),
-                    //     ProfileDetailRow(
-                    //         title: 'Class',
-                    //         value:
-                    //             '${UserPerson.organization!.description ?? 'N/A'}'),
-                    //   ],
-                    // ),
-                    Text(
-                      'Contact Information',
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            color: kTextBlackColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: SizerUtil.deviceType == DeviceType.mobile
-                                ? 15.sp
-                                : SizerUtil.deviceType == DeviceType.tablet
-                                    ? 16.sp
-                                    : SizerUtil.deviceType == DeviceType.web
-                                        ? 14.sp
-                                        : 15.sp,
-                          ),
-                    ),
-                    sizedBox,
-                    // sizedBox,
-                    ProfileDetailColumn(
-                      title: 'Phone Number',
-                      value: '${AlumniUserPerson.phone ?? 'N/A'}',
-                      onChanged: (newValue) {
-                       // setState(() {
-                          AlumniUserPerson.phone = int.tryParse(newValue);
-                      //  });
-                      },
-                      maxLines: 1,
-                      isRequired: true,
-                      validator: _validatePhone,
-                    ),
-                    SizedBox(height: 10),
-                    ProfileDetailColumn(
-                      title: 'Email',
-                      value: '${AlumniUserPerson.email ?? 'N/A'}',
-                      onChanged: (newValue) {
-                       // setState(() {
-                          AlumniUserPerson.email = newValue;
-                       // });
-                      },
-                      maxLines: 1,
-                      isRequired: true,
-                      validator: _validateEmail,
-                    ),
-                    SizedBox(height: 10),
-                    ProfileDetailColumn(
-                      title: 'Address',
-                      value:
-                          '${AlumniUserPerson.mailing_address?.street_address ?? 'N/A'}',
-                      onChanged: (newValue) {
-                        // setState(() {
-                        //   AlumniUserPerson.mailing_address?.street_address =
-                        //       newValue;
-                        // });
-                        if (AlumniUserPerson.mailing_address == null) {
-                          AlumniUserPerson.mailing_address =
-                              Address(street_address: newValue);
-                        } else {
-                          AlumniUserPerson.mailing_address!.street_address =
-                              newValue;
-                        }
-                      },
-                      maxLines: 3,
-                      isRequired: true,
-                      validator: _validateAddress,
-                    ),
-                    FutureBuilder<List<District>>(
-                        future: fetchDistrictList(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Container(
-                              margin: EdgeInsets.only(top: 10),
-                              child: SpinKitCircle(
-                                color: (Colors.blueGrey[400]),
-                                size: 70,
-                              ),
-                            );
-                          } else if (snapshot.hasError) {
-                            return const Center(
-                              child: Text('Something went wrong...'),
-                            );
-                          } else if (!snapshot.hasData) {
-                            return const Center(
-                              child: Text('No districts found'),
-                            );
-                          } else if (snapshot.connectionState ==
-                                  ConnectionState.done &&
-                              snapshot.hasData) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (!isDistrictsDataLoaded) {
-                                setState(() {
-                                  isDistrictsDataLoaded = true;
-                                  print(
-                                      "isDistrictsDataLoaded:${isDistrictsDataLoaded}");
-                                });
-                              }
-                            });
-                            districts = snapshot.data!;
-                            int? districtId = getDistrictIdByCityId(
-                                selectedCityId, districts);
-                            ;
-                            selectedDistrictId =
-                                districtId ?? selectedDistrictId;
-                            return Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
+                      Positioned.fill(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            Center(
+                              child: Stack(
                                 children: [
-                                  _buildDistrictField(),
-                                  _buildCityField(),
+                                  CircleAvatar(
+                                    radius: SizerUtil.deviceType ==
+                                            DeviceType.tablet
+                                        ? 13.w
+                                        : 14.w,
+                                    backgroundColor: kSecondaryColor,
+                                    backgroundImage:
+                                        _selectedProfilePictureImage != null
+                                            ? MemoryImage(
+                                                _selectedProfilePictureImage!)
+                                            : AlumniUserPerson
+                                                        .alumni_profile_picture
+                                                        ?.picture !=
+                                                    null
+                                                ? MemoryImage(base64Decode(
+                                                    AlumniUserPerson
+                                                        .alumni_profile_picture!
+                                                        .picture!))
+                                                : AssetImage(imagePath)
+                                                    as ImageProvider,
+                                  ),
+                                  Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child: InkWell(
+                                        onTap: _isUploadingProfilePicture
+                                            ? null
+                                            : _submitProfilePicture,
+                                        child: CircleAvatar(
+                                          radius: 16,
+                                          backgroundColor: turquoiseBlue,
+                                          child: const Icon(Icons.camera_alt,
+                                              color: Colors.white, size: 18),
+                                        ),
+                                      )),
+                                  if (_selectedProfilePictureImage != null ||
+                                      AlumniUserPerson.alumni_profile_picture
+                                              ?.picture !=
+                                          null)
+                                    Positioned(
+                                        top: 0,
+                                        right: 0,
+                                        child: InkWell(
+                                          onTap: () async {
+                                            final confirm =
+                                                await showDialog<bool>(
+                                                    context: context,
+                                                    builder:
+                                                        (context) =>
+                                                            AlertDialog(
+                                                              title: Text(
+                                                                'Remove Picture?',
+                                                                style: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodyMedium!
+                                                                    .copyWith(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      color:
+                                                                          kTextBlackColor,
+                                                                      fontSize: SizerUtil.deviceType ==
+                                                                              DeviceType.mobile
+                                                                          ? 14.sp
+                                                                          : SizerUtil.deviceType == DeviceType.tablet
+                                                                              ? 16.sp
+                                                                              : SizerUtil.deviceType == DeviceType.web
+                                                                                  ? 14.sp
+                                                                                  : 14.sp,
+                                                                    ),
+                                                              ),
+                                                              actions: [
+                                                                TextButton(
+                                                                  onPressed: () =>
+                                                                      Navigator.pop(
+                                                                          context,
+                                                                          false),
+                                                                  child: Text(
+                                                                    'Cancel',
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .titleSmall!
+                                                                        .copyWith(
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          fontStyle:
+                                                                              FontStyle.normal,
+                                                                          color:
+                                                                              kTextBlackColor,
+                                                                          fontSize: SizerUtil.deviceType == DeviceType.mobile
+                                                                              ? 12.sp
+                                                                              : SizerUtil.deviceType == DeviceType.tablet
+                                                                                  ? 14.sp
+                                                                                  : SizerUtil.deviceType == DeviceType.web
+                                                                                      ? 08.sp
+                                                                                      : 10.sp,
+                                                                        ),
+                                                                  ),
+                                                                ),
+                                                                TextButton(
+                                                                  onPressed: () =>
+                                                                      _deleteProfilePicture(
+                                                                          context),
+                                                                  child: Text(
+                                                                    'Remove',
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .titleSmall!
+                                                                        .copyWith(
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          fontStyle:
+                                                                              FontStyle.normal,
+                                                                          color:
+                                                                              kTextBlackColor,
+                                                                          fontSize: SizerUtil.deviceType == DeviceType.mobile
+                                                                              ? 12.sp
+                                                                              : SizerUtil.deviceType == DeviceType.tablet
+                                                                                  ? 14.sp
+                                                                                  : SizerUtil.deviceType == DeviceType.web
+                                                                                      ? 08.sp
+                                                                                      : 10.sp,
+                                                                        ),
+                                                                  ),
+                                                                )
+                                                              ],
+                                                            ));
+                                            if (confirm == true) {
+                                              setState(() {
+                                                _selectedProfilePictureImage =
+                                                    null;
+                                              });
+                                            }
+                                          },
+                                          child: CircleAvatar(
+                                            radius: 12,
+                                            backgroundColor: Colors.red,
+                                            child: Icon(Icons.close,
+                                                size: 16, color: Colors.white),
+                                          ),
+                                        )),
                                 ],
                               ),
-                            );
-                          }
-                          return SizedBox();
-                        }),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: 2.h,
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  '${AlumniUserPerson.full_name ?? 'N/A'}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: kTextBlackColor,
+                                        fontSize: SizerUtil.deviceType ==
+                                                DeviceType.mobile
+                                            ? 16.sp
+                                            : SizerUtil.deviceType ==
+                                                    DeviceType.tablet
+                                                ? 18.sp
+                                                : SizerUtil.deviceType ==
+                                                        DeviceType.web
+                                                    ? 12.sp
+                                                    : 14.sp,
+                                      ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                SizedBox(
+                                  height: 1.h,
+                                ),
+                                Text(
+                                  '${AlumniUserPerson.email ?? 'N/A'}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.grey.shade700
+                                            : Colors.grey.shade800,
+                                        fontSize: SizerUtil.deviceType ==
+                                                DeviceType.mobile
+                                            ? 14.sp
+                                            : SizerUtil.deviceType ==
+                                                    DeviceType.tablet
+                                                ? 17.sp
+                                                : SizerUtil.deviceType ==
+                                                        DeviceType.web
+                                                    ? 12.sp
+                                                    : 14.sp,
+                                      ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                // SizedBox(
+                                //   height: 5.h,
+                                // ),
+                              ],
+                            ),
+                          ],
                         ),
-                        Expanded(
-                          child: Divider(
-                            color: Colors.grey.shade300,
-                            thickness: 1,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 2.h,
-                        ),
-                      ],
+                      ),
+                      // Align(
+                      //   alignment: Alignment.topLeft,
+                      //   child: IconButton(
+                      //     icon: Icon(
+                      //       Icons.arrow_back,
+                      //       size: SizerUtil.deviceType == DeviceType.tablet
+                      //           ? 6.w
+                      //           : 5.w,
+                      //     ),
+                      //     onPressed: () {
+                      //       Navigator.pop(context);
+                      //     },
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                ),
+                // SizedBox(
+                //   height: 1.h,
+                // ),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 2.h,
                     ),
-                    SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        'Social Media Profiles',
+                    Expanded(
+                      child: Divider(
+                        color: Colors.grey.shade300,
+                        thickness: 1,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 2.h,
+                    ),
+                  ],
+                ),
+                // SizedBox(
+                //   height: 1.h,
+                // ),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    //crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      //   children: [
+                      //     ProfileDetailRow(
+                      //         title: 'Academic Year',
+                      //         value:
+                      //             '${UserPerson.updated == null ? 'N/A' : '${DateFormat('yyyy').format(DateTime.parse(UserPerson.updated!))} - ${DateFormat('yyyy').format(DateTime.parse(UserPerson.updated!).add(Duration(days: 365)))} '}'),
+                      //   ],
+                      // ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      //   children: [
+                      //     ProfileDetailRow(
+                      //       title: 'Programme',
+                      //       value: '${UserPerson.avinya_type?.focus ?? 'N/A'}',
+                      //     ),
+                      //     ProfileDetailRow(
+                      //         title: 'Class',
+                      //         value:
+                      //             '${UserPerson.organization!.description ?? 'N/A'}'),
+                      //   ],
+                      // ),
+                      Text(
+                        'Contact Information',
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium!
@@ -799,219 +664,363 @@ class _MyAlumniInfoViweScreenState extends State<MyAlumniInfoViweScreen> {
                                           : 15.sp,
                             ),
                       ),
-                    ),
-                    SizedBox(height: 10),
-                    ProfileDetailColumn(
-                      title: 'LinkedIn Profile Link',
-                      value: '${AlumniUserPerson.alumni?.linkedin_id ?? 'N/A'}',
-                      onChanged: (newValue) {
-                        //setState(() {
+                      sizedBox,
+                      // sizedBox,
+                      ProfileDetailColumn(
+                        title: 'Phone Number',
+                        value: '${AlumniUserPerson.phone ?? 'N/A'}',
+                        onChanged: (newValue) {
+                          // setState(() {
+                          AlumniUserPerson.phone = int.tryParse(newValue);
+                          //  });
+                        },
+                        maxLines: 1,
+                        isRequired: true,
+                        validator: _validatePhone,
+                      ),
+                      SizedBox(height: 10),
+                      ProfileDetailColumn(
+                        title: 'Email',
+                        value: '${AlumniUserPerson.email ?? 'N/A'}',
+                        onChanged: (newValue) {
+                          // setState(() {
+                          AlumniUserPerson.email = newValue;
+                          // });
+                        },
+                        maxLines: 1,
+                        isRequired: true,
+                        validator: _validateEmail,
+                      ),
+                      SizedBox(height: 10),
+                      ProfileDetailColumn(
+                        title: 'Address',
+                        value:
+                            '${AlumniUserPerson.mailing_address?.street_address ?? 'N/A'}',
+                        onChanged: (newValue) {
+                          // setState(() {
+                          //   AlumniUserPerson.mailing_address?.street_address =
+                          //       newValue;
+                          // });
+                          if (AlumniUserPerson.mailing_address == null) {
+                            AlumniUserPerson.mailing_address =
+                                Address(street_address: newValue);
+                          } else {
+                            AlumniUserPerson.mailing_address!.street_address =
+                                newValue;
+                          }
+                        },
+                        maxLines: 3,
+                        isRequired: true,
+                        validator: _validateAddress,
+                      ),
+                      FutureBuilder<List<District>>(
+                          future: fetchDistrictList(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Container(
+                                margin: EdgeInsets.only(top: 10),
+                                child: SpinKitCircle(
+                                  color: (Colors.blueGrey[400]),
+                                  size: 70,
+                                ),
+                              );
+                            } else if (snapshot.hasError) {
+                              return const Center(
+                                child: Text('Something went wrong...'),
+                              );
+                            } else if (!snapshot.hasData) {
+                              return const Center(
+                                child: Text('No districts found'),
+                              );
+                            } else if (snapshot.connectionState ==
+                                    ConnectionState.done &&
+                                snapshot.hasData) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (!isDistrictsDataLoaded) {
+                                  setState(() {
+                                    isDistrictsDataLoaded = true;
+                                    print(
+                                        "isDistrictsDataLoaded:${isDistrictsDataLoaded}");
+                                  });
+                                }
+                              });
+                              districts = snapshot.data!;
+                              int? districtId = getDistrictIdByCityId(
+                                  selectedCityId, districts);
+                              ;
+                              selectedDistrictId =
+                                  districtId ?? selectedDistrictId;
+                              return Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  children: [
+                                    _buildDistrictField(),
+                                    _buildCityField(),
+                                  ],
+                                ),
+                              );
+                            }
+                            return SizedBox();
+                          }),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 2.h,
+                          ),
+                          Expanded(
+                            child: Divider(
+                              color: Colors.grey.shade300,
+                              thickness: 1,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 2.h,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          'Social Media Profiles',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(
+                                color: kTextBlackColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: SizerUtil.deviceType ==
+                                        DeviceType.mobile
+                                    ? 15.sp
+                                    : SizerUtil.deviceType == DeviceType.tablet
+                                        ? 16.sp
+                                        : SizerUtil.deviceType == DeviceType.web
+                                            ? 14.sp
+                                            : 15.sp,
+                              ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      ProfileDetailColumn(
+                        title: 'LinkedIn Profile Link',
+                        value:
+                            '${AlumniUserPerson.alumni?.linkedin_id ?? 'N/A'}',
+                        onChanged: (newValue) {
+                          //setState(() {
                           AlumniUserPerson.alumni?.linkedin_id = newValue;
-                       // });
-                      },
-                      maxLines: 1,
-                      isRequired: false,
-                    ),
-                    SizedBox(height: 10),
-                    ProfileDetailColumn(
-                      title: 'Facebook Profile Link',
-                      value: '${AlumniUserPerson.alumni?.facebook_id ?? 'N/A'}',
-                      onChanged: (newValue) {
-                        //setState(() {
+                          // });
+                        },
+                        maxLines: 1,
+                        isRequired: false,
+                      ),
+                      SizedBox(height: 10),
+                      ProfileDetailColumn(
+                        title: 'Facebook Profile Link',
+                        value:
+                            '${AlumniUserPerson.alumni?.facebook_id ?? 'N/A'}',
+                        onChanged: (newValue) {
+                          //setState(() {
                           AlumniUserPerson.alumni?.facebook_id = newValue;
-                        //});
-                      },
-                      maxLines: 1,
-                      isRequired: true,
-                    ),
-                    SizedBox(height: 10),
-                    ProfileDetailColumn(
-                      title: 'Instagram Profile Link',
-                      value:
-                          '${AlumniUserPerson.alumni?.instagram_id ?? 'N/A'}',
-                      onChanged: (newValue) {
-                       // setState(() {
+                          //});
+                        },
+                        maxLines: 1,
+                        isRequired: true,
+                      ),
+                      SizedBox(height: 10),
+                      ProfileDetailColumn(
+                        title: 'Instagram Profile Link',
+                        value:
+                            '${AlumniUserPerson.alumni?.instagram_id ?? 'N/A'}',
+                        onChanged: (newValue) {
+                          // setState(() {
                           AlumniUserPerson.alumni?.instagram_id = newValue;
-                       // });
-                      },
-                      maxLines: 1,
-                      isRequired: false,
-                    ),
-                    SizedBox(height: 10),
-                    ProfileDetailColumn(
-                      title: 'TikTok Profile Link',
-                      value: '${AlumniUserPerson.alumni?.tiktok_id ?? 'N/A'}',
-                      onChanged: (newValue) {
-                       // setState(() {
+                          // });
+                        },
+                        maxLines: 1,
+                        isRequired: false,
+                      ),
+                      SizedBox(height: 10),
+                      ProfileDetailColumn(
+                        title: 'TikTok Profile Link',
+                        value: '${AlumniUserPerson.alumni?.tiktok_id ?? 'N/A'}',
+                        onChanged: (newValue) {
+                          // setState(() {
                           AlumniUserPerson.alumni?.tiktok_id = newValue;
-                      //  });
-                      },
-                      maxLines: 1,
-                      isRequired: true,
-                    ),
-                    SizedBox(height: 10),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: DropdownButtonFormField<String>(
-                        dropdownColor:
-                            Theme.of(context).brightness == Brightness.dark
-                                ? kDarkModeSurfaceColor
-                                : kOtherColor,
-                        value: AlumniUserPerson.alumni?.status,
-                        decoration: InputDecoration(
-                          labelText: "Employment Status",
-                          labelStyle: Theme.of(context)
+                          //  });
+                        },
+                        maxLines: 1,
+                        isRequired: true,
+                      ),
+                      SizedBox(height: 10),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: DropdownButtonFormField<String>(
+                          dropdownColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? kDarkModeSurfaceColor
+                                  : kOtherColor,
+                          value: AlumniUserPerson.alumni?.status,
+                          decoration: InputDecoration(
+                            labelText: "Employment Status",
+                            labelStyle: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  fontSize:
+                                      SizerUtil.deviceType == DeviceType.mobile
+                                          ? 14.sp
+                                          : SizerUtil.deviceType ==
+                                                  DeviceType.tablet
+                                              ? 16.sp
+                                              : SizerUtil.deviceType ==
+                                                      DeviceType.web
+                                                  ? 12.sp
+                                                  : 14.sp,
+                                  color: kTextBlackColor,
+                                ),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0)),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                  color: Colors.grey.shade800, width: 1.5),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12.0, vertical: 14.0),
+                            errorStyle: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.redAccent,
+                                    fontSize: SizerUtil.deviceType ==
+                                            DeviceType.mobile
+                                        ? 12.sp
+                                        : SizerUtil.deviceType ==
+                                                DeviceType.tablet
+                                            ? 14.sp
+                                            : SizerUtil.deviceType ==
+                                                    DeviceType.web
+                                                ? 12.sp
+                                                : 12.sp),
+                          ),
+                          items: statusOptions.map((String status) {
+                            return DropdownMenuItem<String>(
+                              value: status,
+                              child: Text(status),
+                            );
+                          }).toList(),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select an employment status';
+                            }
+                            return null;
+                          },
+                          onChanged: (newValue) {
+                            setState(() {
+                              AlumniUserPerson.alumni?.status = newValue;
+                            });
+                          },
+                          style: Theme.of(context)
                               .textTheme
                               .bodyMedium!
                               .copyWith(
                                 fontSize: SizerUtil.deviceType ==
                                         DeviceType.mobile
-                                    ? 14.sp
+                                    ? 16.sp
                                     : SizerUtil.deviceType == DeviceType.tablet
-                                        ? 16.sp
+                                        ? 18.sp
                                         : SizerUtil.deviceType == DeviceType.web
-                                            ? 12.sp
+                                            ? 14.sp
                                             : 14.sp,
                                 color: kTextBlackColor,
                               ),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0)),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide: BorderSide(
-                                color: Colors.grey.shade800, width: 1.5),
-                          ),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 12.0, vertical: 14.0),
-                          errorStyle: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
-                              .copyWith(
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.redAccent,
-                                  fontSize:
-                                      SizerUtil.deviceType == DeviceType.mobile
-                                          ? 12.sp
-                                          : SizerUtil.deviceType ==
-                                                  DeviceType.tablet
-                                              ? 14.sp
-                                              : SizerUtil.deviceType ==
-                                                      DeviceType.web
-                                                  ? 12.sp
-                                                  : 12.sp),
                         ),
-                        items: statusOptions.map((String status) {
-                          return DropdownMenuItem<String>(
-                            value: status,
-                            child: Text(status),
-                          );
-                        }).toList(),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select an employment status';
-                          }
-                          return null;
-                        },
-                        onChanged: (newValue) {
-                          setState(() {
-                            AlumniUserPerson.alumni?.status = newValue;
-                          });
-                        },
-                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                              fontSize: SizerUtil.deviceType ==
-                                      DeviceType.mobile
-                                  ? 16.sp
-                                  : SizerUtil.deviceType == DeviceType.tablet
-                                      ? 18.sp
-                                      : SizerUtil.deviceType == DeviceType.web
-                                          ? 14.sp
-                                          : 14.sp,
-                              color: kTextBlackColor,
-                            ),
                       ),
-                    ),
-                    SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
-                      child: ElevatedButton(
-                        onPressed: _isSubmitting
-                            ? null
-                            : () {
-                                if (_formKey.currentState!.validate()) {
-                                  _formKey.currentState!.save();
-                                  _submitAlumniData(AlumniUserPerson,
-                                      UserPerson.id, selectedDistrictId);
-                                }
-                              },
-                        child: Text(
-                          "Save Changes",
-                          style: TextStyle(
-                            fontSize: 16.sp, // Responsive font size
-                            fontWeight: FontWeight.w600,
+                      SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: ElevatedButton(
+                          onPressed: _isSubmitting
+                              ? null
+                              : () {
+                                  if (_formKey.currentState!.validate()) {
+                                    _formKey.currentState!.save();
+                                    _submitAlumniData(AlumniUserPerson,
+                                        UserPerson.id, selectedDistrictId);
+                                  }
+                                },
+                          child: Text(
+                            "Save Changes",
+                            style: TextStyle(
+                              fontSize: 16.sp, // Responsive font size
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
+                          style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 14.0, horizontal: 24.0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(10.0), // Curved edges
+                              ),
+                              backgroundColor: turquoiseBlue,
+                              foregroundColor: kPrimaryColor,
+                              elevation: 3),
                         ),
-                        style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 14.0, horizontal: 24.0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(10.0), // Curved edges
-                            ),
-                            backgroundColor: turquoiseBlue,
-                            foregroundColor: kPrimaryColor,
-                            elevation: 3),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    _buildWorkSection(UserPerson.id),
-                    SizedBox(height: 20),
-                    _buildStudySection(UserPerson.id),
-                    SizedBox(height: 10),
-                    SizedBox(height: 10),
-                    TimelineWidget(
-                      personName: UserPerson.preferred_name!,
-                      workTimeline: AlumniUserPerson.alumni_work_experience !=
-                              null
-                          ? AlumniUserPerson.alumni_work_experience!
-                              .map((workExperience) {
-                              return {
-                                "title": workExperience.jobTitle ?? '',
-                                "id": workExperience.id ?? '',
-                                "company": workExperience.companyName ?? '',
-                                "duration": workExperience.currentlyWorking ==
-                                        true
-                                    ? "${workExperience.startDate} - Present"
-                                    : "${workExperience.startDate} - ${workExperience.endDate ?? ''}",
-                              };
-                            }).toList()
-                          : [],
-                      educationTimeline: AlumniUserPerson
-                                  .alumni_education_qualifications !=
-                              null
-                          ? AlumniUserPerson.alumni_education_qualifications!
-                              .map((EduQualifications) {
-                              return {
-                                "university":
-                                    EduQualifications.universityName ?? '',
-                                "id": EduQualifications.id ?? '',
-                                "course": EduQualifications.courseName ?? '',
-                                "duration": EduQualifications
-                                            .isCurrentlyStudying ==
-                                        true
-                                    ? "${EduQualifications.startDate} - Present"
-                                    : "${EduQualifications.startDate} - ${EduQualifications.endDate ?? ''}",
-                              };
-                            }).toList()
-                          : [],
-                      onItemTap: (item, type) {
-                        _showEditModal(context, item, type);
-                      },
-                    ),
-                    SizedBox(height: 80),
-                  ],
+                      SizedBox(height: 20),
+                      _buildWorkSection(UserPerson.id),
+                      SizedBox(height: 20),
+                      _buildStudySection(UserPerson.id),
+                      SizedBox(height: 10),
+                      SizedBox(height: 10),
+                      TimelineWidget(
+                        personName: UserPerson.preferred_name!,
+                        workTimeline: AlumniUserPerson.alumni_work_experience !=
+                                null
+                            ? AlumniUserPerson.alumni_work_experience!
+                                .map((workExperience) {
+                                return {
+                                  "title": workExperience.jobTitle ?? '',
+                                  "id": workExperience.id ?? '',
+                                  "company": workExperience.companyName ?? '',
+                                  "duration": workExperience.currentlyWorking ==
+                                          true
+                                      ? "${workExperience.startDate} - Present"
+                                      : "${workExperience.startDate} - ${workExperience.endDate ?? ''}",
+                                };
+                              }).toList()
+                            : [],
+                        educationTimeline: AlumniUserPerson
+                                    .alumni_education_qualifications !=
+                                null
+                            ? AlumniUserPerson.alumni_education_qualifications!
+                                .map((EduQualifications) {
+                                return {
+                                  "university":
+                                      EduQualifications.universityName ?? '',
+                                  "id": EduQualifications.id ?? '',
+                                  "course": EduQualifications.courseName ?? '',
+                                  "duration": EduQualifications
+                                              .isCurrentlyStudying ==
+                                          true
+                                      ? "${EduQualifications.startDate} - Present"
+                                      : "${EduQualifications.startDate} - ${EduQualifications.endDate ?? ''}",
+                                };
+                              }).toList()
+                            : [],
+                        onItemTap: (item, type) {
+                          _showEditModal(context, item, type);
+                        },
+                      ),
+                      SizedBox(height: 80),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -1117,22 +1126,20 @@ class _MyAlumniInfoViweScreenState extends State<MyAlumniInfoViweScreen> {
               onChanged: (value) async {
                 await _loadCities(value, null);
                 //setState(() {
-                  selectedDistrictId = value;
-                  if (AlumniUserPerson.mailing_address == null &&
-                      AlumniUserPerson.mailing_address!.city == null) {
-                    AlumniUserPerson.mailing_address?.city?.district = District(
-                      id: value, // Use named parameter for city_id
-                    );
-                    AlumniUserPerson.mailing_address?.city?.district?.id =
-                        value;
-                  } else {
-                    AlumniUserPerson.mailing_address!.city?.district = District(
-                      id: value, // Use named parameter for city_id
-                    );
-                    AlumniUserPerson.mailing_address?.city?.district?.id =
-                        value;
-                  }
-               // });
+                selectedDistrictId = value;
+                if (AlumniUserPerson.mailing_address == null &&
+                    AlumniUserPerson.mailing_address!.city == null) {
+                  AlumniUserPerson.mailing_address?.city?.district = District(
+                    id: value, // Use named parameter for city_id
+                  );
+                  AlumniUserPerson.mailing_address?.city?.district?.id = value;
+                } else {
+                  AlumniUserPerson.mailing_address!.city?.district = District(
+                    id: value, // Use named parameter for city_id
+                  );
+                  AlumniUserPerson.mailing_address?.city?.district?.id = value;
+                }
+                // });
               },
               decoration: InputDecoration(
                 labelText: 'Select District',
@@ -1215,26 +1222,26 @@ class _MyAlumniInfoViweScreenState extends State<MyAlumniInfoViweScreen> {
           return null;
         },
         onChanged: (value) {
-         // setState(() {
-            selectedCityId = value;
+          // setState(() {
+          selectedCityId = value;
 
-            if (AlumniUserPerson.mailing_address == null) {
-              // Create a new Address object with city_id set to value
-              AlumniUserPerson.mailing_address = Address(
-                  city_id: value, // Use named parameter for city_id
-                  id: null);
-              AlumniUserPerson.mailing_address!.city = City(
-                id: value, // Use named parameter for city_id
-              );
-            } else {
-              AlumniUserPerson.mailing_address!.city = City(
-                id: value, // Use named parameter for city_id
-              );
-            }
+          if (AlumniUserPerson.mailing_address == null) {
+            // Create a new Address object with city_id set to value
+            AlumniUserPerson.mailing_address = Address(
+                city_id: value, // Use named parameter for city_id
+                id: null);
+            AlumniUserPerson.mailing_address!.city = City(
+              id: value, // Use named parameter for city_id
+            );
+          } else {
+            AlumniUserPerson.mailing_address!.city = City(
+              id: value, // Use named parameter for city_id
+            );
+          }
 
-            // Debugging: print selected city
-            print("Selected City ID: $selectedCityId");
-         // });
+          // Debugging: print selected city
+          print("Selected City ID: $selectedCityId");
+          // });
         },
         decoration: InputDecoration(
           labelText: 'Select City',
@@ -1248,15 +1255,12 @@ class _MyAlumniInfoViweScreenState extends State<MyAlumniInfoViweScreen> {
                             : 14.sp,
                 color: kTextBlackColor,
               ),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
-            borderSide:
-                BorderSide(color: Colors.grey.shade800, width: 1.5),
+            borderSide: BorderSide(color: Colors.grey.shade800, width: 1.5),
           ),
-          contentPadding:
-              EdgeInsets.symmetric(horizontal: 5.0, vertical: 14.0),
+          contentPadding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 14.0),
           errorStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
               fontWeight: FontWeight.normal,
               color: Colors.redAccent,

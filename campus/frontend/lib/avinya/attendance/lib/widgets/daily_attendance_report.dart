@@ -53,6 +53,9 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
   List<Organization> _fetchedOrganizations = [];
   late Future<List<Organization>> _fetchBatchData;
 
+  List<Person> filteredStudents = [];
+  List<Person> _fetchedOrganizationStudents = [];
+
   void selectWeek(DateTime today, activityId) async {
     // Update the variables to select the week
     final formatter = DateFormat('MMM d, yyyy');
@@ -73,7 +76,8 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
   }
 
   Future<List<Organization>> _loadBatchData() async {
-    _batchData = await fetchActiveOrganizationsByAvinyaType(86);
+    // _batchData = await fetchActiveOrganizationsByAvinyaType();
+    _batchData = await fetchOrganizationsByAvinyaTypeAndStatus(null, 1);
     _selectedOrganizationValue = _batchData.isNotEmpty ? _batchData.last : null;
 
     if (_selectedOrganizationValue != null) {
@@ -91,8 +95,8 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _data = MyData(
-        _fetchedAttendance, columnNames, _fetchedOrganization, updateSelected);
+    _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
+        updateSelected, false);
     DateRangePicker(updateDateRange, formattedStartDate);
   }
 
@@ -176,7 +180,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
       columnNames = columnNames.toSet().toList();
       columnNames.sort();
       columnNames.insert(0, "Name");
-      columnNames.insert(1, "Digital ID");
+      columnNames.insert(1, "NIC");
       cols =
           columnNames.map((label) => DataColumn(label: Text(label!))).toList();
       print(cols.length);
@@ -204,7 +208,38 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
       _fetchedOrganization;
       this._isFetching = false;
       _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
-          updateSelected);
+          updateSelected, false);
+    });
+  }
+
+  void searchStudents(String query) {
+    bool isFiltering = true;
+    setState(() {
+      if (query.isEmpty) {
+        _fetchedOrganization!.people = _fetchedOrganizationStudents;
+        isFiltering = false;
+      } else {
+        final lowerCaseQuery = query.toLowerCase();
+
+        filteredStudents = _fetchedOrganization!.people.where((student) {
+          print('Searching for: $query');
+          print('Present count: ${student.preferred_name}');
+          print('NIC number: ${student.nic_no}');
+
+          // Ensure preferred_name is not null and trimmed
+          final presentCountString =
+              student.preferred_name?.trim().toLowerCase() ?? '';
+          final attendancePercentageString = student.nic_no?.toString() ?? '';
+
+          // Check for matching query
+          return presentCountString.contains(lowerCaseQuery) ||
+              attendancePercentageString.contains(lowerCaseQuery);
+        }).toList();
+        _fetchedOrganization!.people = filteredStudents;
+        isFiltering = true;
+      }
+      _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
+          updateSelected, isFiltering);
     });
   }
 
@@ -320,7 +355,8 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                                               _fetchedOrganization =
                                                   await fetchOrganization(
                                                       newValue.id!);
-
+                                              _fetchedOrganizationStudents =
+                                                  _fetchedOrganization!.people;
                                               _fetchedAttendance =
                                                   await getClassActivityAttendanceReportForPayment(
                                                       _fetchedOrganization!.id!,
@@ -360,8 +396,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                                                   columnNames.toSet().toList();
                                               columnNames.sort();
                                               columnNames.insert(0, "Name");
-                                              columnNames.insert(
-                                                  1, "Digital ID");
+                                              columnNames.insert(1, "NIC");
                                               cols = columnNames
                                                   .map((label) => DataColumn(
                                                       label: Text(label!)))
@@ -402,7 +437,8 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                                                     _fetchedAttendance,
                                                     columnNames,
                                                     _fetchedOrganization,
-                                                    updateSelected);
+                                                    updateSelected,
+                                                    false);
                                               });
                                               _isDisplayErrorMessage = false;
                                             },
@@ -488,6 +524,27 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
                                   ]),
                                 ),
                             ]),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SizedBox(
+                                width: 250,
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                    labelText: 'Search by Name or NIC',
+                                    border: OutlineInputBorder(),
+                                    prefixIcon: Icon(Icons.search),
+                                  ),
+                                  onChanged: (query) {
+                                    searchStudents(query);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -558,7 +615,7 @@ class _DailyAttendanceReportState extends State<DailyAttendanceReport> {
 
 class MyData extends DataTableSource {
   MyData(this._fetchedAttendance, this.columnNames, this._fetchedOrganization,
-      this.updateSelected) {
+      this.updateSelected, this.isFiltering) {
     columnNames.sort((a, b) => b!.compareTo(a!));
   }
 
@@ -566,6 +623,7 @@ class MyData extends DataTableSource {
   final List<String?> columnNames;
   final Organization? _fetchedOrganization;
   final Function(int, bool, List<bool>) updateSelected;
+  final bool isFiltering;
 
   @override
   DataRow? getRow(int index) {
@@ -615,12 +673,15 @@ class MyData extends DataTableSource {
               columnNames.indexOf(date) == 1) {
             continue;
           }
-          for (final attendance in _fetchedAttendance) {
-            if (attendance.sign_in_time != null &&
-                attendance.sign_in_time!.split(" ")[0] == date) {
-              presentCount++;
+          if (!isFiltering) {
+            for (final attendance in _fetchedAttendance) {
+              if (attendance.sign_in_time != null &&
+                  attendance.sign_in_time!.split(" ")[0] == date) {
+                presentCount++;
+              }
             }
           }
+
           cells[columnNames.indexOf(date)] = DataCell(Container(
             alignment: Alignment.center,
             padding: EdgeInsets.all(8),
@@ -657,7 +718,11 @@ class MyData extends DataTableSource {
               presentCount++;
             }
           }
-          absentCount = _fetchedOrganization!.people.length - presentCount;
+          if (isFiltering) {
+            absentCount = 0;
+          } else {
+            absentCount = _fetchedOrganization!.people.length - presentCount;
+          }
           cells[columnNames.indexOf(date)] = DataCell(Container(
             alignment: Alignment.center,
             padding: EdgeInsets.all(8),
@@ -691,7 +756,7 @@ class MyData extends DataTableSource {
                 )))),
       );
       cells[0] = DataCell(Text(person.preferred_name!));
-      cells[1] = DataCell(Text(person.digital_id.toString()));
+      cells[1] = DataCell(Text(person.nic_no.toString()));
       for (final attendance in _fetchedAttendance) {
         if (attendance.person_id == person.id) {
           for (final date in columnNames) {

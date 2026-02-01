@@ -282,23 +282,26 @@ public type  TotalAttendanceCountByDate  record {
 };
 
 public type MonthlyLeaveDates record {
-    string? leave_dates?;
-    int? month?;
     int[] leave_dates_list?;
     int? year?;
     int? batch_id?;
+    anydata? monthly_payment_amount?;
     string? created?;
+    string? record_type?;
+    string? leave_dates?;
+    int? month?;
     int? total_days_in_month?;
     int? organization_id?;
     int? id?;
     anydata? daily_amount?;
     string? updated?;
-    string? record_type?;
 };
-public type CalendarMetadata record {
+
+public type BatchPaymentPlan record {
     string? record_type?;
-    int? id?;
+    int id?;
     int? organization_id;
+    int? batch_id;
     anydata? monthly_payment_amount;
 };
 
@@ -809,9 +812,11 @@ public type GetDailyAttendanceSummaryReportResponse record {|
     record {|
         string? sign_in_date;
         int? present_count;
+        int? absent_count;
         int? late_count;
         int? total_count;
         anydata? present_attendance_percentage;
+        anydata? absent_attendance_percentage;
         anydata? late_attendance_percentage;
     |}[] daily_attendance_summary_report;
 |};
@@ -891,13 +896,27 @@ public type GetOrganizationsByAvinyaTypeWithActiveStatusResponse record {|
     |}[] organizations_by_avinya_type;
 |};
 
-public type GetCalendarMetadataByOrgIdResponse record {|
+public type GetBatchPaymentPlanByOrgIdResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
         int? organization_id;
         int? batch_id;
         anydata? monthly_payment_amount;
-    |}? calendar_metadata_by_org_id;
+    |} batch_payment_plan_by_org_id;
 |};
 
+public type GetOrganizationsByAvinyaTypeAndStatusResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string? name_en;
+        |} name;
+        string? description;
+        record {|
+            string? key_name;
+            string? value;
+        |}[]? organization_metadata;
+    |}[] organizations_by_avinya_type_and_status;
+|};

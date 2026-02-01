@@ -76,7 +76,7 @@ class _DailyLateAttendanceExcelReportExportState extends State<DailyLateAttendan
     // Styling for organization header
     final organizationHeaderStyle = CellStyle(
       bold: true,
-      backgroundColorHex: '#807f7d',
+      backgroundColorHex: ExcelColor.fromHexString('#807f7d'),
       horizontalAlign: HorizontalAlign.Center,
     );
 
@@ -96,7 +96,7 @@ class _DailyLateAttendanceExcelReportExportState extends State<DailyLateAttendan
     final subHeaderStyle = CellStyle(
       bold: true,
       horizontalAlign: HorizontalAlign.Center,
-      backgroundColorHex: '#a3a3a2',
+      backgroundColorHex: ExcelColor.fromHexString('#a3a3a2'),
       textWrapping: TextWrapping.WrapText,
     );
 
@@ -106,28 +106,28 @@ class _DailyLateAttendanceExcelReportExportState extends State<DailyLateAttendan
         colIndex++) {
       sheet
           .cell(CellIndex.indexByColumnRow(columnIndex: colIndex, rowIndex: 1))
-          .value = columnNamesWithoutDates[colIndex];
+          .value = TextCellValue(columnNamesWithoutDates[colIndex]??'');
       sheet
           .cell(CellIndex.indexByColumnRow(columnIndex: colIndex, rowIndex: 1))
           .cellStyle = subHeaderStyle;
     }
-    sheet.setColWidth(0, 15);
-    sheet.setColWidth(1, 30);
-    sheet.setColWidth(2, 50);
+    sheet.setColumnWidth(0, 15);
+    sheet.setColumnWidth(1, 30);
+    sheet.setColumnWidth(2, 50);
 
     if(_selectedValue == null){
-      sheet.setColWidth(3, 20);
-      sheet.setColWidth(4, 25);
-      sheet.setColWidth(5, 26);
+      sheet.setColumnWidth(3, 20);
+      sheet.setColumnWidth(4, 25);
+      sheet.setColumnWidth(5, 26);
     }else{
-      sheet.setColWidth(3, 20);
-      sheet.setColWidth(4, 25);
+      sheet.setColumnWidth(3, 20);
+      sheet.setColumnWidth(4, 25);
     }
 
    
 
     sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0)).value =
-        "Avinya Foundation Daily Late Attendance Summary Report From ${widget.formattedStartDate} to ${widget.formattedEndDate}";
+      TextCellValue("Avinya Foundation Daily Late Attendance Summary Report From ${widget.formattedStartDate} to ${widget.formattedEndDate}");
     sheet
         .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0))
         .cellStyle = organizationHeaderStyle;
@@ -142,25 +142,25 @@ class _DailyLateAttendanceExcelReportExportState extends State<DailyLateAttendan
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: index + 2))
-            .value = date.toString() ?? '';
+            .value = TextCellValue(date.toString() ?? '');
 
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: index + 2))
-            .value = dailyLateAttendanceData.preferred_name?.toString() ?? '';
+            .value = TextCellValue(dailyLateAttendanceData.preferred_name?.toString() ?? '');
 
         sheet
                 .cell(CellIndex.indexByColumnRow(
                     columnIndex: 2, rowIndex: index + 2))
                 .value =
-            (dailyLateAttendanceData.digital_id?.toString() ?? ''); 
+            TextCellValue((dailyLateAttendanceData.digital_id?.toString() ?? '')); 
 
       if(_selectedValue == null){
 
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: index + 2))
-            .value = dailyLateAttendanceData.description?.toString() ?? '';
+            .value = TextCellValue(dailyLateAttendanceData.description?.toString() ?? '');
 
         
         var lateSignInTime =
@@ -172,12 +172,12 @@ class _DailyLateAttendanceExcelReportExportState extends State<DailyLateAttendan
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: index + 2))
-            .value = (formattedTime.toString()??'');
+            .value = TextCellValue(formattedTime.toString()??'');
         
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: index + 2))
-            .value = (lateBy.toString()??'') + " minutes";
+            .value = TextCellValue((lateBy.toString()??'') + " minutes");
 
       }else{
 
@@ -190,12 +190,12 @@ class _DailyLateAttendanceExcelReportExportState extends State<DailyLateAttendan
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: index + 2))
-            .value = (formattedTime.toString()??'');
+            .value = TextCellValue(formattedTime.toString()??'');
         
         sheet
             .cell(
                 CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: index + 2))
-            .value = (lateBy.toString()??'')+ " minutes";
+            .value = TextCellValue((lateBy.toString()??'')+ " minutes");
 
       }
         

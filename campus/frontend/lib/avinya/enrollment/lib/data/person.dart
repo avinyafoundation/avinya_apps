@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:typed_data';
+import 'package:gallery/avinya/attendance/lib/data/organization_meta_data.dart';
 import 'package:gallery/widgets/success_message.dart';
 import 'package:gallery/widgets/error_message.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ import 'dart:convert';
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 
-class MainOrganization {
+class Organization {
   int? id;
   String? description;
   String? notes;
@@ -18,8 +19,11 @@ class MainOrganization {
   Name? name;
   String? phone;
   List<ParentOrganization>? parent_organizations;
+  var child_organizations = <Organization>[];
+  var people = <Person>[];
+  var organization_metadata = <OrganizationMetaData>[];
 
-  MainOrganization(
+  Organization(
       {this.id,
       this.description,
       this.notes,
@@ -27,10 +31,14 @@ class MainOrganization {
       this.avinya_type,
       this.name,
       this.phone,
-      this.parent_organizations});
+      this.parent_organizations,
+      this.child_organizations = const [],
+      this.people = const [],
+      this.organization_metadata = const [],
+      });
 
-  factory MainOrganization.fromJson(Map<String, dynamic> json) {
-    return MainOrganization(
+  factory Organization.fromJson(Map<String, dynamic> json) {
+    return Organization(
       id: json['id'],
       description: json['description'],
       notes: json['notes'],
@@ -46,6 +54,17 @@ class MainOrganization {
           ? (json['parent_organizations'] as List)
               .map((item) => ParentOrganization.fromJson(item))
               .toList()
+          : [],
+      child_organizations: json['child_organizations'] != null
+          ? List<Organization>.from(
+              json['child_organizations'].map((x) => Organization.fromJson(x)))
+          : [],
+      people: json['people'] != null
+          ? List<Person>.from(json['people'].map((x) => Person.fromJson(x)))
+          : [],
+      organization_metadata: json['organization_metadata'] != null
+          ? List<OrganizationMetaData>.from(json['organization_metadata']
+              .map((x) => OrganizationMetaData.fromJson(x)))
           : [],
     );
   }
@@ -63,6 +82,11 @@ class MainOrganization {
           'parent_organizations': parent_organizations!
               .map((parentOrg) => parentOrg.toJson())
               .toList(),
+        'child_organizations':
+            List<dynamic>.from(child_organizations.map((x) => x.toJson())),
+        'people': List<dynamic>.from(people.map((x) => x.toJson())),
+        'organization_metadata':
+            List<dynamic>.from(organization_metadata.map((x) => x.toJson()))
       };
 }
 
@@ -256,7 +280,7 @@ class Person {
   String? id_no;
   int? phone;
   int? organization_id;
-  MainOrganization? organization;
+  Organization? organization;
   int? parent_organization_id;
   AvinyaType? avinya_type;
   String? asgardeo_id;
@@ -357,7 +381,7 @@ class Person {
         bank_account_name: json['bank_account_name'],
         avinya_phone: json['avinya_phone'],
         academy_org_id: json['academy_org_id'],
-        organization: MainOrganization.fromJson(
+        organization: Organization.fromJson(
             json['organization'] != null ? json['organization'] : {}),
         parent_organization_id: json['parent_organization_id'],
         avinya_type: AvinyaType.fromJson(
@@ -398,7 +422,7 @@ class Person {
         if (jwt_sub_id != null) 'jwt_sub_id': jwt_sub_id,
         if (jwt_email != null) 'jwt_email': jwt_email,
         if (email != null) 'email': email,
-        if (permanent_address != null)
+        if (permanent_address != null && permanent_address!.toJson().isNotEmpty)
           'permanent_address': permanent_address!.toJson(),
         if (mailing_address != null)
           'mailing_address': mailing_address!.toJson(),
@@ -560,6 +584,7 @@ Future<Person> createPerson(BuildContext context, Person person) async {
 }
 
 Future<Person> updatePerson(Person person) async {
+  print("update person: ${jsonEncode(person.permanent_address)}");
   print("update person: ${jsonEncode(person.toJson())}");
   final response = await http.put(
     Uri.parse(AppConfig.campusEnrollmentsBffApiUrl + '/update_person'),
@@ -617,7 +642,9 @@ Future<List<AvinyaType>> fetchAvinyaTypes() async {
   }
 }
 
-Future<List<MainOrganization>> fetchClasses(int? id) async {
+
+
+Future<List<Organization>> fetchClasses(int? id) async {
   final uri = Uri.parse(AppConfig.campusProfileBffApiUrl + '/organization')
       .replace(queryParameters: {'id': id.toString()});
 
@@ -635,9 +662,9 @@ Future<List<MainOrganization>> fetchClasses(int? id) async {
     final Map<String, dynamic> jsonResponse = json.decode(response.body);
 
     // Extract the child_organizations_for_dashboard field
-    final List<MainOrganization> classes =
+    final List<Organization> classes =
         (jsonResponse['child_organizations'] as List)
-            .map((data) => MainOrganization.fromJson(data))
+            .map((data) => Organization.fromJson(data))
             .toList();
 
     return classes;
@@ -646,7 +673,7 @@ Future<List<MainOrganization>> fetchClasses(int? id) async {
   }
 }
 
-Future<List<MainOrganization>> fetchOrganizations() async {
+Future<List<Organization>> fetchOrganizations() async {
   final response = await http.get(
     Uri.parse('${AppConfig.campusEnrollmentsBffApiUrl}/all_organizations'),
     headers: <String, String>{
@@ -657,8 +684,8 @@ Future<List<MainOrganization>> fetchOrganizations() async {
   );
   if (response.statusCode > 199 && response.statusCode < 300) {
     var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    List<MainOrganization> activityAttendances = await resultsJson
-        .map<MainOrganization>((json) => MainOrganization.fromJson(json))
+    List<Organization> activityAttendances = await resultsJson
+        .map<Organization>((json) =>Organization.fromJson(json))
         .toList();
     return activityAttendances;
   } else {
@@ -787,3 +814,35 @@ Future<http.StreamedResponse?> uploadFile(
     return null;
   }
 }
+
+Future<List<Organization>> fetchOrganizationsByAvinyaTypeAndStatus(
+      int? avinya_type, int? active) async {
+    Map<String, String> queryParams = {};
+
+    if (avinya_type != null)
+      queryParams['avinya_type'] = avinya_type.toString();
+    if (active != null) queryParams['active'] = active.toString();
+
+    final response = await http.get(
+      Uri.parse(
+              '${AppConfig.campusAttendanceBffApiUrl}/organizations_by_avinya_type_and_status')
+          .replace(queryParameters: queryParams),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'accept': 'application/json',
+        'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+      },
+    );
+
+    if (response.statusCode > 199 && response.statusCode < 300) {
+      var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+
+      List<Organization> organization = await resultsJson
+          .map<Organization>((json) => Organization.fromJson(json))
+          .toList();
+      return organization;
+    } else {
+      throw Exception('Failed to load organizations');
+    }
+  }
+

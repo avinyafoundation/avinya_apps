@@ -16,6 +16,7 @@ class _ConsumableMonthlyReportScreenState extends State<ConsumableMonthlyReportS
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.yellow[600],
         automaticallyImplyLeading: false,
         title: Text("Consumable Monthly Report"),
       ),
