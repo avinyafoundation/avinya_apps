@@ -1,0 +1,8 @@
+{
+    "admissionsApplicationBffApiUrl": "https://3a907137-52a3-4196-9e0d-22d054ea5789-dev.e1-us-east-azure.choreoapis.dev/gkwb/admissions-bff-v2/endpoint-9095-20c/0.9.0",
+    "campusMaintenanceBffApiUrl":"",
+    "campusProfileBffApiUrl":"",
+    "choreo_sts_endpoint" : "https://sts.choreo.dev/oauth2/token",
+    "asgardeo_token_endpoint" : "https://api.asgardeo.io/t/avinyatest/oauth2/token",
+    "logout_url" : ""
+}

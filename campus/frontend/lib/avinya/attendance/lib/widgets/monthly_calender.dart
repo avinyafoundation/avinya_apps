@@ -8,6 +8,7 @@ class LeaveDatePicker extends StatefulWidget {
   final int year;
   final int month;
   final DateTime selectedDay;
+  final double monthlyPaymentAmount;
 
   LeaveDatePicker({
     this.organizationId,
@@ -15,6 +16,7 @@ class LeaveDatePicker extends StatefulWidget {
     required this.year,
     required this.month,
     required this.selectedDay,
+    required this.monthlyPaymentAmount
   });
 
   @override
@@ -94,6 +96,7 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
           organizationId: widget.organizationId ?? 2,
           batchId: widget.batchId!,
           totalDaysInMonth: totalDaysInMonth,
+          monthlyPaymentAmount: widget.monthlyPaymentAmount,
           leaveDatesList: leaveDatesList,
         );
         print("Leave dates updated: $_selectedDates");
@@ -104,6 +107,7 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
           organizationId: widget.organizationId ?? 2,
           batchId: widget.batchId!,
           totalDaysInMonth: totalDaysInMonth,
+          monthlyPaymentAmount: widget.monthlyPaymentAmount,
           leaveDatesList: leaveDatesList,
         );
         print("New leave dates created: $_selectedDates");

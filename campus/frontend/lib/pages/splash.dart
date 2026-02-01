@@ -139,7 +139,7 @@ class _SplashPageState extends State<SplashPage>
 
             if (isDisplayDesktop(context)) {
               frontLayer = Padding(
-                padding: const EdgeInsets.only(top: 136),
+                padding: const EdgeInsets.only(top: 15),
                 child: ClipRRect(
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(40),
@@ -149,7 +149,7 @@ class _SplashPageState extends State<SplashPage>
               );
             } else {
               frontLayer = Padding(
-                padding: const EdgeInsets.only(top: 65),
+                padding: const EdgeInsets.only(top: 15),
                 child: ClipRRect(
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(40),
