@@ -249,7 +249,7 @@ Future<List<ActivityInstance>> fetchOverdueActivityInstance(
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
