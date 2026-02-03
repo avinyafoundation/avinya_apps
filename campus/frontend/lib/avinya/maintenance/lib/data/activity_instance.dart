@@ -226,6 +226,7 @@ Future<List<ActivityInstance>> getMonthlyTasksByStatus({
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
