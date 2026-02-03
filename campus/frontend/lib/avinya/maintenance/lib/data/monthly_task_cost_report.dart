@@ -57,6 +57,8 @@ Future<MonthlyTaskCostReport> getMonthlyTaskCostReport({
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+
     },
   );
 

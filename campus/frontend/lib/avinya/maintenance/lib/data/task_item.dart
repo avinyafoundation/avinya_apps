@@ -117,6 +117,7 @@ Future<void> updateTaskStatus(
     uri,
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
     },
     body: jsonEncode({
       'person_id': personId,
