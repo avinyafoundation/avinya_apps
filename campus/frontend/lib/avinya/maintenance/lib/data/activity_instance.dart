@@ -185,6 +185,7 @@ Future<List<ActivityInstance>> getOrganizationTasks({
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
 
