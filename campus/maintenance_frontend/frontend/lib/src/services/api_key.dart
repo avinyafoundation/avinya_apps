@@ -1,3 +1,3 @@
 class ApiKey {
-  static const String googleGenerativeAIKey = 'AIzaSyCXHIPqOMr4S0houVAV2od4C0R47aSLKpM';
+  static const String googleGenerativeAIKey = 'AIzaSyB9Yb9sfoigG7lhdCxmoY3u0X9AzLadf6Q';
 }

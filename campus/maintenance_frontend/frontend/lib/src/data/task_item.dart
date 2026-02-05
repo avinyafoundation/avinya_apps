@@ -65,7 +65,7 @@ Future<List<AppFlowyGroupData>> getBoardData({
   Map<String, String> headers = {
     'Content-Type': 'application/json; charset=UTF-8',
     'accept': 'application/json',
-    'Authorization': 'Bearer ' + AppConfig.maintenanceAppBffApiKey,
+    'api-key': AppConfig.maintenanceAppBffApiKey,
   };
 
   try {
@@ -117,6 +117,7 @@ Future<void> updateTaskStatus(
     uri,
     headers: {
       'Content-Type': 'application/json',
+      'api-key': AppConfig.maintenanceAppBffApiKey,
     },
     body: jsonEncode({
       'person_id': personId,
@@ -128,4 +129,3 @@ Future<void> updateTaskStatus(
     throw Exception('Failed to update task status: ${response.body}');
   }
 }
-
