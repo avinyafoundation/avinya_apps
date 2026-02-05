@@ -552,4 +552,23 @@ service / on new http:Listener(9097) {
 
         return groupsJson;
     }
+
+    resource function post validate_pin(@http:Payload PersonPin pin) returns Person|ApiErrorResponse|error {
+       
+       string personPin = pin?.pin_hash?:"";
+       
+       ValidatePinResponse|graphql:ClientError validatePinResponse = globalDataClient->validatePin(personPin);
+       if (validatePinResponse is ValidatePinResponse) {
+            Person|error personRecord = validatePinResponse.validatePin.cloneWithType(Person);
+            if (personRecord is Person) {
+                return personRecord;
+            } else {
+                log:printError("Error while validating the pin",personRecord);
+                return <ApiErrorResponse>{body: { message: "Error while validating the pin" }};
+            }
+        } else {
+            log:printError("User Not Found", validatePinResponse);
+            return <ApiErrorResponse>{body: { message: "User Not Found" }};
+        }
+    }
 }    
