@@ -645,7 +645,7 @@ Future<List<Person>> fetchEmployeeListByOrganization(int? organization_id) async
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
-      'Authorization': 'Bearer ${AppConfig.maintenanceAppBffApiKey}',
+      'api-key': AppConfig.maintenanceAppBffApiKey,
     },
   );
   if (response.statusCode > 199 && response.statusCode < 300) {

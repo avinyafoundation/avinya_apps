@@ -21,7 +21,8 @@ class DirectorDashboardScreen extends StatefulWidget {
       _DirectorDashboardScreenState();
 }
 
-class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
+class _DirectorDashboardScreenState extends State<DirectorDashboardScreen>
+    with SingleTickerProviderStateMixin {
   // --- STATE ---
   String? selectedAcademy = "Bandaragama";
   int? selectedOrganizationId = 2;
@@ -40,10 +41,54 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
   List<ActivityInstance> _overdueTasks = [];
   MonthlyReport? _summaryReport;
 
+  late AnimationController _blinkController;
+  late Animation<double> _blinkAnimation;
+
   @override
   void initState() {
     super.initState();
+    _initializeBlinkAnimation();
     _loadData();
+  }
+
+  void _initializeBlinkAnimation() {
+    // Start with a default duration, will be updated based on overdue count
+    _blinkController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    );
+
+    _blinkAnimation = Tween<double>(begin: 0.3, end: 1.0).animate(
+      CurvedAnimation(parent: _blinkController, curve: Curves.easeInOut),
+    );
+
+    _blinkController.repeat(reverse: true);
+  }
+
+  void _updateBlinkSpeed(int overdueCount) {
+    // Update animation speed based on overdue count
+    Duration newDuration;
+    if (overdueCount == 0) {
+      _blinkController.stop();
+      return;
+    } else if (overdueCount <= 5) {
+      newDuration = const Duration(milliseconds: 2000); // Slow blink
+    } else if (overdueCount <= 10) {
+      newDuration = const Duration(milliseconds: 1200); // Medium blink
+    } else {
+      newDuration = const Duration(milliseconds: 600); // Fast blink
+    }
+
+    _blinkController.duration = newDuration;
+    if (!_blinkController.isAnimating) {
+      _blinkController.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _blinkController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -96,7 +141,10 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
         nextMonthlyEstimatedCost: 0.0,
       );
     } finally {
-      setState(() => _isLoading = false);
+      setState(() {
+        _isLoading = false;
+        _updateBlinkSpeed(_overdueTasks.length);
+      });
     }
   }
 
@@ -217,7 +265,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
           onChanged: (index) {
             setState(
                 () => selectedMonth = index != null ? months[index] : null);
-                selectedMonthIndex = index;
+            selectedMonthIndex = index;
             _loadData();
           },
         ),
@@ -246,12 +294,12 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           PageTitle(
-              title: "Maintenance Report",
+              title: "Maintenance Dashboard",
               fontSize: 24,
               fontWeight: FontWeight.w800,
               color: _primaryText),
           const SizedBox(height: 4),
-          Text("Directors View",
+          Text("Management View",
               style: TextStyle(fontSize: 16, color: _secondaryText)),
           const SizedBox(height: 20),
           Wrap(runSpacing: 10, spacing: 10, children: filters),
@@ -265,7 +313,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               PageTitle(
-                  title: "Maintenance Report — Directors View",
+                  title: "Maintenance Dashboard — Management View",
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                   color: _primaryText),
@@ -501,7 +549,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
             organizationId: selectedOrganizationId!,
             year: nextYear,
             month: nextMonth);
-        break;  
+        break;
       case 'all':
       default:
         rawData = await getMonthlyTasksByStatus(
@@ -577,14 +625,12 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
   }
 
   void _showEstimatedCostDialog() async {
-    
     int currentYear = int.parse(DateTime.now().year.toString());
     int currentMonth = DateTime.now().month;
     int nextMonth = currentMonth == 12 ? 1 : currentMonth + 1;
     int nextYear = currentMonth == 12 ? currentYear + 1 : currentYear;
-    
-    try {
 
+    try {
       final report = await getMonthlyTaskCostReport(
         organizationId: selectedOrganizationId ?? 2,
         year: nextYear,
@@ -610,9 +656,13 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
         ),
       );
     } catch (e) {
-      String nextMonthName = DateFormat.MMMM().format(DateTime(nextYear, nextMonth));
+      String nextMonthName =
+          DateFormat.MMMM().format(DateTime(nextYear, nextMonth));
       List<Map<String, String>> costItems = [
-        {"name": "No tasks with finance details for $nextMonthName $nextYear", "cost": ""}
+        {
+          "name": "No tasks with finance details for $nextMonthName $nextYear",
+          "cost": ""
+        }
       ];
       String totalCost = "LKR 0";
 
@@ -888,128 +938,214 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen> {
 
   // --- 4. OVERDUE CARD ---
   Widget _buildOverdueCard() {
-    return ChartCard(
-      cardRadius: _cardRadius,
-      padding: EdgeInsets.zero,
-      child: Column(
-        children: [
-          // Header with Alert style
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.red.shade50,
-              borderRadius:
-                  BorderRadius.vertical(top: Radius.circular(_cardRadius)),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.warning_amber_rounded,
-                    color: Colors.red.shade700, size: 18),
-                const SizedBox(width: 8),
-                Text("Overdue Tasks",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red.shade900,
-                        fontSize: 13)),
-                const Spacer(),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Text("${_overdueTasks.length}",
+    // Categorize overdue tasks and determine glow effect
+    int overdueCount = _overdueTasks.length;
+    Color glowColor;
+    double glowIntensity;
+    Color headerBgColor;
+    Color headerTextColor;
+    Color badgeBgColor;
+    IconData headerIcon;
+
+    if (overdueCount == 0) {
+      glowColor = Colors.green;
+      glowIntensity = 0.3;
+      headerBgColor = Colors.green.shade50;
+      headerTextColor = Colors.green.shade900;
+      badgeBgColor = Colors.white;
+      headerIcon = Icons.check_circle_outline;
+    } else if (overdueCount <= 4) {
+      glowColor = Colors.orange;
+      glowIntensity = 0.4;
+      headerBgColor = Colors.orange.shade50;
+      headerTextColor = Colors.orange.shade900;
+      badgeBgColor = Colors.white;
+      headerIcon = Icons.warning_amber_rounded;
+    } else if (overdueCount <= 10) {
+      glowColor = Colors.deepOrange;
+      glowIntensity = 0.5;
+      headerBgColor = Colors.deepOrange.shade50;
+      headerTextColor = Colors.deepOrange.shade900;
+      badgeBgColor = Colors.white;
+      headerIcon = Icons.error_outline;
+    } else {
+      glowColor = Colors.red;
+      glowIntensity = 0.7;
+      headerBgColor = Colors.red.shade50;
+      headerTextColor = Colors.red.shade900;
+      badgeBgColor = Colors.white;
+      headerIcon = Icons.dangerous_outlined;
+    }
+
+    return AnimatedBuilder(
+      animation: _blinkAnimation,
+      builder: (context, child) {
+        // Calculate opacity based on animation value and category
+        double animatedOpacity = overdueCount == 0
+            ? glowIntensity
+            : glowIntensity * _blinkAnimation.value;
+
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(_cardRadius),
+            boxShadow: [
+              // Outer glow effect with animation
+              BoxShadow(
+                color: glowColor.withOpacity(animatedOpacity),
+                blurRadius: 20 + (5 * _blinkAnimation.value),
+                spreadRadius: 2 + (1 * _blinkAnimation.value),
+              ),
+              // Secondary glow for more intensity
+              BoxShadow(
+                color: glowColor.withOpacity(animatedOpacity * 0.5),
+                blurRadius: 35 + (10 * _blinkAnimation.value),
+                spreadRadius: 5 + (2 * _blinkAnimation.value),
+              ),
+            ],
+          ),
+          child: child,
+        );
+      },
+      child: ChartCard(
+        cardRadius: _cardRadius,
+        padding: EdgeInsets.zero,
+        child: Column(
+          children: [
+            // Header with Alert style
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: headerBgColor,
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(_cardRadius)),
+              ),
+              child: Row(
+                children: [
+                  Icon(headerIcon, color: headerTextColor, size: 18),
+                  const SizedBox(width: 8),
+                  Text("Overdue Tasks",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.red.shade700)),
-                )
-              ],
+                          color: headerTextColor,
+                          fontSize: 13)),
+                  const SizedBox(width: 8),
+                  const Spacer(),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                        color: badgeBgColor,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Text("$overdueCount",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: headerTextColor)),
+                  )
+                ],
+              ),
             ),
-          ),
-          // Scrollable Table
-          _overdueTasks.isEmpty
-              ? Expanded(
-                  child: Center(
-                    child: Text("No overdue tasks found",
-                        style: TextStyle(color: _secondaryText, fontSize: 12)),
-                  ),
-                )
-              : Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(_cardRadius)),
-                    child: SingleChildScrollView(
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: DataTable(
-                          headingRowHeight: 36,
-                          dataRowMinHeight: 40,
-                          dataRowMaxHeight: 48,
-                          columnSpacing: 24,
-                          horizontalMargin: 16,
-                          headingTextStyle: TextStyle(
-                              color: _secondaryText,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 11),
-                          columns: const [
-                            DataColumn(label: Text("Task")),
-                            DataColumn(label: Text("Assigned")),
-                            DataColumn(label: Text("Due")),
-                            DataColumn(label: Text("Days")),
-                          ],
-                          rows: _overdueTasks.map((instance) {
-                            // Combine all participant names into one string
-                            String assignedNames =
-                                (instance.activityParticipants ?? [])
-                                    .map((p) => p.person?.preferred_name ?? "-")
-                                    .join(", ");
+            // Scrollable Table
+            _overdueTasks.isEmpty
+                ? Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.celebration,
+                              color: Colors.green.shade300, size: 48),
+                          const SizedBox(height: 8),
+                          Text("No overdue tasks!",
+                              style: TextStyle(
+                                  color: Colors.green.shade700,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 4),
+                          Text("All tasks are on track",
+                              style: TextStyle(
+                                  color: _secondaryText, fontSize: 12)),
+                        ],
+                      ),
+                    ),
+                  )
+                : Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(_cardRadius)),
+                      child: SingleChildScrollView(
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: DataTable(
+                            headingRowHeight: 36,
+                            dataRowMinHeight: 40,
+                            dataRowMaxHeight: 48,
+                            columnSpacing: 24,
+                            horizontalMargin: 16,
+                            headingTextStyle: TextStyle(
+                                color: _secondaryText,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 11),
+                            columns: const [
+                              DataColumn(label: Text("Task")),
+                              DataColumn(label: Text("Assigned")),
+                              DataColumn(label: Text("Due")),
+                              DataColumn(label: Text("Days")),
+                            ],
+                            rows: _overdueTasks.map((instance) {
+                              // Combine all participant names into one string
+                              String assignedNames = (instance
+                                          .activityParticipants ??
+                                      [])
+                                  .map((p) => p.person?.preferred_name ?? "-")
+                                  .join(", ");
 
-                            if (assignedNames.isEmpty) assignedNames = "-";
+                              if (assignedNames.isEmpty) assignedNames = "-";
 
-                            String dueDate = instance.end_time != null
-                                ? instance.end_time!.split(" ")[0]
-                                : "-";
+                              String dueDate = instance.end_time != null
+                                  ? instance.end_time!.split(" ")[0]
+                                  : "-";
 
-                            return DataRow(cells: [
-                              DataCell(Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(instance.maintenanceTask?.title ?? '',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: _primaryText,
-                                          fontSize: 11)),
-                                ],
-                              )),
-                              DataCell(Text(assignedNames,
-                                  style: TextStyle(
-                                      fontSize: 10, color: _secondaryText))),
-                              DataCell(Text(dueDate,
-                                  style: TextStyle(
-                                      fontSize: 10, color: _secondaryText))),
-                              DataCell(
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                      color: Colors.red.shade100,
-                                      borderRadius: BorderRadius.circular(4)),
-                                  child: Text("${instance.overdueDays}d",
-                                      style: TextStyle(
-                                          color: Colors.red.shade900,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 11)),
+                              return DataRow(cells: [
+                                DataCell(Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(instance.maintenanceTask?.title ?? '',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            color: _primaryText,
+                                            fontSize: 11)),
+                                  ],
+                                )),
+                                DataCell(Text(assignedNames,
+                                    style: TextStyle(
+                                        fontSize: 10, color: _secondaryText))),
+                                DataCell(Text(dueDate,
+                                    style: TextStyle(
+                                        fontSize: 10, color: _secondaryText))),
+                                DataCell(
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                        color: Colors.red.shade100,
+                                        borderRadius: BorderRadius.circular(4)),
+                                    child: Text("${instance.overdueDays}d",
+                                        style: TextStyle(
+                                            color: Colors.red.shade900,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 11)),
+                                  ),
                                 ),
-                              ),
-                            ]);
-                          }).toList(),
+                              ]);
+                            }).toList(),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-        ],
+          ],
+        ),
       ),
     );
   }
