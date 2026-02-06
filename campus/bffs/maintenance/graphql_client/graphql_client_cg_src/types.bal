@@ -850,3 +850,11 @@ public type GetMaintenanceTasksByStatusResponse record {|
             |}[] tasks;
         |}[] groups;|} maintenanceTasksByStatus;
 |};
+
+public type ValidatePinResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? preferred_name;
+    |}? validatePin;
+|};

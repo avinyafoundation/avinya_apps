@@ -124,4 +124,11 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <UpdateTaskProgressResponse> check performDataBinding(graphqlResponse, UpdateTaskProgressResponse);
     }
+
+    remote isolated function validatePin(string pin) returns ValidatePinResponse|graphql:ClientError {
+        string query = string `query validatePin($pin:String!) {validatePin(pin:$pin) {id preferred_name}}`;
+        map<anydata> variables = {"pin": pin};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <ValidatePinResponse>check performDataBinding(graphqlResponse, ValidatePinResponse);
+    }
 }
