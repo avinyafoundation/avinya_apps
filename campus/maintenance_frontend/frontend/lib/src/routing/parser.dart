@@ -1,5 +1,5 @@
 import 'dart:developer';
-import 'dart:html';
+import 'package:universal_html/html.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:path_to_regexp/path_to_regexp.dart';
