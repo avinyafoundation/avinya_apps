@@ -47,5 +47,4 @@ app.*.map.json
 # FVM Version Cache
 .fvm/
 api_key.dart
-/android
 /ios
