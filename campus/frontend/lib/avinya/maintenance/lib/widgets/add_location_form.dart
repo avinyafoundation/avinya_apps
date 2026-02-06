@@ -18,6 +18,7 @@ class _AddLocationFormState extends State<AddLocationForm> {
 
   int? selectedAcademy;
   Future<List<Organization>>? organizationsFuture;
+  bool _isSubmitting = false;
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
@@ -38,9 +39,15 @@ class _AddLocationFormState extends State<AddLocationForm> {
   //   ];
   // }
 
-  void submitForm() {
+  void submitForm() async {
+    if (_isSubmitting) return;
+    
     if (_formKey.currentState!.validate()) {
       if (selectedAcademy == null) return;
+
+      setState(() {
+        _isSubmitting = true;
+      });
 
       AcademyLocation academyLocation = AcademyLocation(
         organizationId: selectedAcademy!,
@@ -49,99 +56,111 @@ class _AddLocationFormState extends State<AddLocationForm> {
       );
 
       try {
-        createAcademyLocation(academyLocation).then((response) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Academy Location added successfully!')),
-          );
-          setState(() {
-            selectedAcademy = null;
-            nameController.clear();
-            descriptionController.clear();
-          });
+        //await Future.delayed(const Duration(seconds: 3));
+        await createAcademyLocation(academyLocation);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Academy Location added successfully!'),
+          ),
+        );
+
+        setState(() {
+          selectedAcademy = null;
+          nameController.clear();
+          descriptionController.clear();
         });
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error adding location: $error')),
         );
+      } finally {
+        setState(() {
+          _isSubmitting = false;
+        });
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        width: 800,
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              PageTitle(
-                title: "Add Academy Location",
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 30),
-              FutureBuilder<List<Organization>>(
-                future: organizationsFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  }
-
-                  if (snapshot.hasError) {
-                    return const Text("Error loading organizations");
-                  }
-
-                  final orgs = snapshot.data!;
-
-                  if (selectedAcademy == null && orgs.isNotEmpty) {
-                    selectedAcademy = orgs.first.id;
-                  }
-
-                  return DropDown<Organization>(
-                    label: "Select Academy",
-                    items: orgs,
-                    selectedValues: selectedAcademy,
-                    valueField: (org) => org.id!,
-                    displayField: (org) => org.name?.name_en ?? '',
-                    onChanged: (value) {
-                      setState(() => selectedAcademy = value);
-                    },
-                    validator: (value) =>
-                        value == null ? "Select an academy" : null,
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFieldForm(
-                label: "Location Name",
-                hintText: "e.g. Pod 1, Front Office, Café",
-                controller: nameController,
-                validator: (v) => v == null || v.isEmpty
-                    ? "Please enter location name"
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              TextFieldForm(
-                label: "Location Description (Optional)",
-                maxLines: 5,
-                hintText: "Short description of the location",
-                textAlignVertical: TextAlignVertical.top,
-                controller: descriptionController,
-              ),
-              const SizedBox(height: 30),
-              Button(
-                label: "Add Location",
-                width: double.infinity,
-                onPressed: submitForm,
-                buttonColor: Colors.blue,
-                textColor: Colors.white,
-              )
-            ],
+    return SingleChildScrollView(
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          width: 800,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                PageTitle(
+                  title: "Add Academy Location",
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 30),
+                FutureBuilder<List<Organization>>(
+                  future: organizationsFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+      
+                    if (snapshot.hasError) {
+                      return const Text("Error loading organizations");
+                    }
+      
+                    final orgs = snapshot.data!;
+      
+                    if (selectedAcademy == null && orgs.isNotEmpty) {
+                      selectedAcademy = orgs.first.id;
+                    }
+      
+                    return DropDown<Organization>(
+                      label: "Select Academy",
+                      items: orgs,
+                      selectedValues: selectedAcademy,
+                      valueField: (org) => org.id!,
+                      displayField: (org) => org.name?.name_en ?? '',
+                      onChanged: (value) {
+                        setState(() => selectedAcademy = value);
+                      },
+                      validator: (value) =>
+                          value == null ? "Select an academy" : null,
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFieldForm(
+                  label: "Location Name",
+                  hintText: "e.g. Pod 1, Front Office, Café",
+                  controller: nameController,
+                  validator: (v) => v == null || v.isEmpty
+                      ? "Please enter location name"
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                TextFieldForm(
+                  label: "Location Description (Optional)",
+                  maxLines: 5,
+                  hintText: "Short description of the location",
+                  textAlignVertical: TextAlignVertical.top,
+                  controller: descriptionController,
+                ),
+                const SizedBox(height: 30),
+                Button(
+                  label: _isSubmitting ? "Adding..." : "Add Location",
+                  width: double.infinity,
+                  onPressed: () {
+                    if (_isSubmitting) return null;
+                    submitForm();
+                  },
+                  buttonColor: Colors.blue,
+                  textColor: Colors.white,
+                )
+              ],
+            ),
           ),
         ),
       ),
