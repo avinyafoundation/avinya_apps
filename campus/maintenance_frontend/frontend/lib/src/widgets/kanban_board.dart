@@ -473,12 +473,14 @@ class _KanbanBoardState extends State<KanbanBoard> {
                     ),
 
                     // --- KANBAN BOARD SECTION ---
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        return SizedBox(
-                          height: _calculateBoardHeight(),
-                          width: double.infinity,
-                          child: AppFlowyBoard(
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          return SizedBox(
+                            height: _calculateBoardHeight(),
+                            width: 1200, // Fixed width to enable horizontal scroll
+                            child: AppFlowyBoard(
                             controller: controller,
                             // Config: Transparent background
                             config: const AppFlowyBoardConfig(
@@ -637,6 +639,7 @@ class _KanbanBoardState extends State<KanbanBoard> {
                         );
                       },
                     ),
+                  ),
                   ],
                 ),
               ),
