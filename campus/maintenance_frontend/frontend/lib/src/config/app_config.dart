@@ -35,7 +35,8 @@ class AppConfig {
 
     // decode our json
     final json = jsonDecode(contents);
-    campusMaintenanceBffApiUrl = MaintenanceAppApiKey.maintenanceAppBffApiKey;
+    campusMaintenanceBffApiUrl = json['campusMaintenanceBffApiUrl'];
+    maintenanceAppBffApiKey = MaintenanceAppApiKey.maintenanceAppBffApiKey;
     campusProfileBffApiUrl = json['campusProfileBffApiUrl'];
     choreoSTSEndpoint = json['choreo_sts_endpoint'];
     asgardeoTokenEndpoint = json['asgardeo_token_endpoint'];
