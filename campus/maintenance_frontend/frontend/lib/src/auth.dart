@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:html';
+import 'package:universal_html/html.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:url_launcher/url_launcher.dart';
