@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import '../services/api_key.dart';
 
 class AppConfig {
   static String apiUrl = '';
@@ -34,7 +35,7 @@ class AppConfig {
 
     // decode our json
     final json = jsonDecode(contents);
-    campusMaintenanceBffApiUrl = json['campusMaintenanceBffApiUrl'];
+    campusMaintenanceBffApiUrl = MaintenanceAppApiKey.maintenanceAppBffApiKey;
     campusProfileBffApiUrl = json['campusProfileBffApiUrl'];
     choreoSTSEndpoint = json['choreo_sts_endpoint'];
     asgardeoTokenEndpoint = json['asgardeo_token_endpoint'];
