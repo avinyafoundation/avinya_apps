@@ -30,6 +30,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen>
   String? selectedMonth = DateFormat.MMMM().format(DateTime.now());
   String? selectedYear = DateFormat.y().format(DateTime.now());
   bool _isLoading = true;
+  String? _loadingCardKey;
 
   // --- THEME CONSTANTS ---
   final Color _primaryText = const Color(0xFF172B4D);
@@ -71,9 +72,9 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen>
     if (overdueCount == 0) {
       _blinkController.stop();
       return;
-    } else if (overdueCount <= 5) {
+    } else if (overdueCount <= 4) {
       newDuration = const Duration(milliseconds: 2000); // Slow blink
-    } else if (overdueCount <= 10) {
+    } else if (overdueCount <= 9) {
       newDuration = const Duration(milliseconds: 1200); // Medium blink
     } else {
       newDuration = const Duration(milliseconds: 600); // Fast blink
@@ -344,7 +345,12 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen>
           cardRadius: _cardRadius,
           primaryText: _primaryText,
           secondaryText: _secondaryText,
-          onTap: () => _showTasksDialog("Total Tasks", "all"),
+          isLoading: _loadingCardKey == 'total_tasks',
+          onTap: () async {
+            setState(() => _loadingCardKey = 'total_tasks');
+            await _showTasksDialog("Total Tasks", "all");
+            if (mounted) setState(() => _loadingCardKey = null);
+          },
         ),
 
         // 2. Completed
@@ -357,7 +363,12 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen>
           cardRadius: _cardRadius,
           primaryText: _primaryText,
           secondaryText: _secondaryText,
-          onTap: () => _showTasksDialog("Completed Tasks", "completed"),
+          isLoading: _loadingCardKey == 'completed_tasks',
+          onTap: () async {
+            setState(() => _loadingCardKey = 'completed_tasks');
+            await _showTasksDialog("Completed Tasks", "completed");
+            if (mounted) setState(() => _loadingCardKey = null);
+          },
         ),
 
         // 3. Ongoing
@@ -370,7 +381,12 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen>
           cardRadius: _cardRadius,
           primaryText: _primaryText,
           secondaryText: _secondaryText,
-          onTap: () => _showTasksDialog("Ongoing Tasks", "ongoing"),
+          isLoading: _loadingCardKey == 'ongoing_tasks',
+          onTap: () async {
+            setState(() => _loadingCardKey = 'ongoing_tasks');
+            await _showTasksDialog("Ongoing Tasks", "ongoing");
+            if (mounted) setState(() => _loadingCardKey = null);
+          },
         ),
 
         // 4. Pending
@@ -383,7 +399,12 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen>
           cardRadius: _cardRadius,
           primaryText: _primaryText,
           secondaryText: _secondaryText,
-          onTap: () => _showTasksDialog("Pending Tasks", "pending"),
+          isLoading: _loadingCardKey == 'pending_tasks',
+          onTap: () async {
+            setState(() => _loadingCardKey = 'pending_tasks');
+            await _showTasksDialog("Pending Tasks", "pending");
+            if (mounted) setState(() => _loadingCardKey = null);
+          },
         ),
 
         // 5. Total Cost (Formatted)
@@ -396,7 +417,12 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen>
           cardRadius: _cardRadius,
           primaryText: _primaryText,
           secondaryText: _secondaryText,
-          onTap: () => _showCostBreakdownDialog(),
+          isLoading: _loadingCardKey == 'total_cost',
+          onTap: () async {
+            setState(() => _loadingCardKey = 'total_cost');
+            await _showCostBreakdownDialog();
+            if (mounted) setState(() => _loadingCardKey = null);
+          },
         ),
       ],
     );
@@ -482,7 +508,12 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen>
           cardRadius: _cardRadius,
           primaryText: _primaryText,
           secondaryText: _secondaryText,
-          onTap: () => _showTasksDialog("Ongoing Tasks", "nextMonth"),
+          isLoading: _loadingCardKey == 'upcoming_tasks',
+          onTap: () async {
+            setState(() => _loadingCardKey = 'upcoming_tasks');
+            await _showTasksDialog("Ongoing Tasks", "nextMonth");
+            if (mounted) setState(() => _loadingCardKey = null);
+          },
         ),
       ),
       SizedBox(width: isMobile ? 0 : 20, height: isMobile ? 15 : 0),
@@ -496,7 +527,12 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen>
           cardRadius: _cardRadius,
           primaryText: _primaryText,
           secondaryText: _secondaryText,
-          onTap: () => _showEstimatedCostDialog(),
+          isLoading: _loadingCardKey == 'est_cost',
+          onTap: () async {
+            setState(() => _loadingCardKey = 'est_cost');
+            await _showEstimatedCostDialog();
+            if (mounted) setState(() => _loadingCardKey = null);
+          },
         ),
       ),
     ];
@@ -513,85 +549,95 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen>
   // ---------------------------------------------------------------------------
 
   // Dialog to show tasks
-  void _showTasksDialog(String title, String filter) async {
-    // Fetch data based on filter
-    List<ActivityInstance> rawData;
+  Future<void> _showTasksDialog(String title, String filter) async {
+    try {
+      // Fetch data based on filter
+      List<ActivityInstance> rawData;
 
-    switch (filter) {
-      case 'completed':
-        rawData = await getMonthlyTasksByStatus(
-            organizationId: selectedOrganizationId!,
-            year: int.parse(selectedYear!),
-            month: selectedMonthIndex! + 1,
-            overallTaskStatus: 'Completed');
-        break;
-      case 'ongoing':
-        rawData = await getMonthlyTasksByStatus(
-            organizationId: selectedOrganizationId!,
-            year: int.parse(selectedYear!),
-            month: selectedMonthIndex! + 1,
-            overallTaskStatus: 'InProgress');
-        break;
-      case 'pending':
-        rawData = await getMonthlyTasksByStatus(
-            organizationId: selectedOrganizationId!,
-            year: int.parse(selectedYear!),
-            month: selectedMonthIndex! + 1,
-            overallTaskStatus: 'Pending');
-        break;
-      case 'nextMonth':
-        int currentYear = int.parse(DateTime.now().year.toString());
-        int currentMonth = DateTime.now().month;
-        int nextMonth = currentMonth == 12 ? 1 : currentMonth + 1;
-        int nextYear = currentMonth == 12 ? currentYear + 1 : currentYear;
+      switch (filter) {
+        case 'completed':
+          rawData = await getMonthlyTasksByStatus(
+              organizationId: selectedOrganizationId!,
+              year: int.parse(selectedYear!),
+              month: selectedMonthIndex! + 1,
+              overallTaskStatus: 'Completed');
+          break;
+        case 'ongoing':
+          rawData = await getMonthlyTasksByStatus(
+              organizationId: selectedOrganizationId!,
+              year: int.parse(selectedYear!),
+              month: selectedMonthIndex! + 1,
+              overallTaskStatus: 'InProgress');
+          break;
+        case 'pending':
+          rawData = await getMonthlyTasksByStatus(
+              organizationId: selectedOrganizationId!,
+              year: int.parse(selectedYear!),
+              month: selectedMonthIndex! + 1,
+              overallTaskStatus: 'Pending');
+          break;
+        case 'nextMonth':
+          int currentYear = int.parse(DateTime.now().year.toString());
+          int currentMonth = DateTime.now().month;
+          int nextMonth = currentMonth == 12 ? 1 : currentMonth + 1;
+          int nextYear = currentMonth == 12 ? currentYear + 1 : currentYear;
 
-        rawData = await getMonthlyTasksByStatus(
-            organizationId: selectedOrganizationId!,
-            year: nextYear,
-            month: nextMonth);
-        break;
-      case 'all':
-      default:
-        rawData = await getMonthlyTasksByStatus(
-            organizationId: selectedOrganizationId!,
-            year: int.parse(selectedYear!),
-            month: selectedMonthIndex! + 1);
-        break;
+          rawData = await getMonthlyTasksByStatus(
+              organizationId: selectedOrganizationId!,
+              year: nextYear,
+              month: nextMonth);
+          break;
+        case 'all':
+        default:
+          rawData = await getMonthlyTasksByStatus(
+              organizationId: selectedOrganizationId!,
+              year: int.parse(selectedYear!),
+              month: selectedMonthIndex! + 1);
+          break;
+      }
+
+      List<Map<String, dynamic>> formattedTasks = rawData.map((instance) {
+        // Helper to join multiple names
+        String assignedNames = (instance.activityParticipants ?? [])
+            .map((p) => p.person?.preferred_name ?? "-")
+            .join(", ");
+
+        if (assignedNames.isEmpty) assignedNames = "Unassigned";
+
+        // Helper to format date
+        String dueDate =
+            instance.end_time != null ? instance.end_time!.split(" ")[0] : "-";
+
+        return {
+          "task": instance.maintenanceTask?.title ?? "Unknown Task",
+          "assigned": assignedNames,
+          "due": dueDate,
+          "status": instance.overallTaskStatus ?? "Pending",
+        };
+      }).toList();
+
+      // Show the Dialog with the data
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => TasksDialog(
+            title: title,
+            tasks: formattedTasks,
+            primaryText: _primaryText,
+            secondaryText: _secondaryText,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load tasks: $e')),
+        );
+      }
     }
-
-    List<Map<String, dynamic>> formattedTasks = rawData.map((instance) {
-      // Helper to join multiple names
-      String assignedNames = (instance.activityParticipants ?? [])
-          .map((p) => p.person?.preferred_name ?? "-")
-          .join(", ");
-
-      if (assignedNames.isEmpty) assignedNames = "Unassigned";
-
-      // Helper to format date
-      String dueDate =
-          instance.end_time != null ? instance.end_time!.split(" ")[0] : "-";
-
-      return {
-        "task": instance.maintenanceTask?.title ?? "Unknown Task",
-        "assigned": assignedNames,
-        "due": dueDate,
-        "status": instance.overallTaskStatus ?? "Pending",
-      };
-    }).toList();
-
-    // Show the Dialog with the data
-    showDialog(
-      context: context,
-      builder: (context) => TasksDialog(
-        title: title,
-        tasks: formattedTasks,
-        primaryText: _primaryText,
-        secondaryText: _secondaryText,
-      ),
-    );
   }
 
-  void _showCostBreakdownDialog() async {
+  Future<void> _showCostBreakdownDialog() async {
     try {
       final report = await getMonthlyTaskCostReport(
         organizationId: selectedOrganizationId ?? 2,
@@ -624,7 +670,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen>
     }
   }
 
-  void _showEstimatedCostDialog() async {
+  Future<void> _showEstimatedCostDialog() async {
     int currentYear = int.parse(DateTime.now().year.toString());
     int currentMonth = DateTime.now().month;
     int nextMonth = currentMonth == 12 ? 1 : currentMonth + 1;
@@ -961,7 +1007,7 @@ class _DirectorDashboardScreenState extends State<DirectorDashboardScreen>
       headerTextColor = Colors.orange.shade900;
       badgeBgColor = Colors.white;
       headerIcon = Icons.warning_amber_rounded;
-    } else if (overdueCount <= 10) {
+    } else if (overdueCount <= 9) {
       glowColor = Colors.deepOrange;
       glowIntensity = 0.5;
       headerBgColor = Colors.deepOrange.shade50;
