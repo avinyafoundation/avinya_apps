@@ -198,10 +198,10 @@ class CampusAppsPortal {
         }
 
         userPerson = person;
-        log('Campus Apps Portal - fetchPersonForUser: ' +
-            person.toJson().toString());
-        print('Campus Apps Portal - fetchPersonForUser: ' +
-            person.toJson().toString());
+        // log('Campus Apps Portal - fetchPersonForUser: ' +
+        //     person.toJson().toString());
+        // print('Campus Apps Portal - fetchPersonForUser: ' +
+        //     person.toJson().toString());
         campusAppsPortalInstance.setUserPerson(person);
         campusAppsPortalInstance.setAlumniUserPerson(alumniPerson);
 

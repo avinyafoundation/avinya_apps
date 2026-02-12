@@ -1,6 +1,7 @@
 import ballerina/http;
 import ballerina/graphql;
 import ballerina/log;
+import ballerina/io;
 
 public function initClientConfig() returns ConnectionConfig{
     ConnectionConfig _clientConig = {};
@@ -973,6 +974,22 @@ service / on new http:Listener(9091) {
             return error("Error while creating application: " + getBatchPaymentPlanByOrgIdResponse.message() +
                 ":: Detail: " + getBatchPaymentPlanByOrgIdResponse.detail().toString());
         }
+    }
+    
+    resource function post attendance/log(http:Request req) returns int|error {
+        // 1. Get the JSON body from the request
+        // 'check' handles errors if the body isn't valid JSON
+        json payload = check req.getJsonPayload();
+
+        // 2. Print the JSON body to the console
+        io:println("JSON Body: ", payload.toJsonString());
+
+        // 3. Print specific details (like Headers or Method)
+        log:printInfo("Request received", 
+            method = req.method, 
+            contentType = req.getContentType()
+        );
+        return 1;
     }
 
 }

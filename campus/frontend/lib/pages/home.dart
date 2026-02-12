@@ -70,7 +70,8 @@ class HomePage extends StatelessWidget {
         ),
 
       if (campusAppsPortalInstance.isTeacher ||
-          campusAppsPortalInstance.isFoundation)
+          campusAppsPortalInstance.isFoundation ||
+          campusAppsPortalInstance.isOperations)
         Padding(
           padding: const EdgeInsets.all(10.0),
           child: _CarouselCard(
