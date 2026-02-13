@@ -28,6 +28,7 @@ import 'package:academic_scheduler/routes.dart' as academic_scheduler_routes;
 import 'package:alumni/routes.dart' as alumni_routes;
 import 'package:enrollment/routes.dart' as enrollment_routes;
 import 'package:maintenance/routes.dart' as maintenance_routes;
+import 'package:gallery/avinya/food_waste/lib/routes.dart' as food_waste_routes;
 
 const _horizontalPadding = 32.0;
 const _carouselItemMargin = 8.0;
@@ -90,6 +91,28 @@ class HomePage extends StatelessWidget {
             studyRoute: enrollment_routes.enrollmentRoute,
           ),
         ),
+      if (campusAppsPortalInstance.isFoundation ||
+          campusAppsPortalInstance.isFinance ||
+          campusAppsPortalInstance.isOperations)
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: _CarouselCard(
+            //2023-03-09 lahiru added for campus_pcti
+            demo: studyDemos['food_wastage'],
+            asset: const AssetImage(
+              'assets/images/food_wastage.png',
+              // package: 'flutter_gallery_assets',
+            ),
+            assetColor: const Color(0xFFFFFFFF),
+            // assetDark: const AssetImage(
+            //   'assets/studies/rally_card_dark.png',
+            //   package: 'flutter_gallery_assets',
+            // ),
+            //assetDarkColor: const Color(0xFF253538),
+            textColor: Colors.black,
+            studyRoute: food_waste_routes.foodWastageDashboardRoute,
+          ),
+        ),    
       if (campusAppsPortalInstance.isFoundation ||
           campusAppsPortalInstance.isFinance ||
           campusAppsPortalInstance.isOperations)
