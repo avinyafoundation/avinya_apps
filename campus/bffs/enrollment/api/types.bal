@@ -183,6 +183,9 @@ public type GetPersonsResponse record {|
                     string? name_si;
                     string? name_ta;
                 |} name;
+                record {|record {|
+                        string? name_en;
+                    |} name;|} district;
             |} city;
             string? street_address;
             int? phone;
@@ -196,6 +199,9 @@ public type GetPersonsResponse record {|
                     string? name_si;
                     string? name_ta;
                 |} name;
+                record {|record {|
+                        string? name_en;
+                    |} name;|} district;
             |} city;
             string? street_address;
             int? phone;
@@ -240,7 +246,7 @@ public type GetPersonsResponse record {|
         int? created_by;
         int? updated_by;
         string? current_job;
-    |}[] persons;
+    |}[]? persons;
 |};
 
 public type GetPersonByIdResponse record {|
