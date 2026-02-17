@@ -487,3 +487,26 @@ query getBatchPaymentPlanByOrgId(
     monthly_payment_amount
   }
 }
+
+query getPerson($nic: String!) {
+  person_by_digital_id_or_nic(nic: $nic) {
+    id
+    full_name
+    sex
+    phone
+    organization_id
+    avinya_type_id
+    nic_no
+    email
+  }
+}
+
+mutation addBiometricAttendance($attendance: ActivityParticipantAttendance!) {
+  addBiometricAttendance(attendance: $attendance) {
+    id
+    activity_instance_id
+    sign_in_time
+    sign_out_time
+    created
+  }
+}

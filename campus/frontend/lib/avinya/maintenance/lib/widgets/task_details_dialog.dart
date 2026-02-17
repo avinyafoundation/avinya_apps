@@ -18,6 +18,23 @@ class TaskDetailsDialog extends StatefulWidget {
 }
 
 class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
+  // Map to track original participant statuses to detect changes
+  Map<int, ProgressStatus> _originalParticipantStatuses = {};
+
+  @override
+  void initState() {
+    super.initState();
+    // Store original participant statuses
+    if (widget.activityInstance.activityParticipants != null) {
+      for (var participant in widget.activityInstance.activityParticipants!) {
+        if (participant.person?.id != null && participant.status != null) {
+          _originalParticipantStatuses[participant.person!.id!] =
+              participant.status!;
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -181,27 +198,78 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                           height: 40,
                           fontSize: 14,
                           onPressed: () async {
-                            // Call API to update participant statuses
+                            // Only update participants whose status has changed
                             if (widget.activityInstance.activityParticipants !=
                                 null) {
+                              List<String> updateErrors = [];
+
                               for (var participant in widget
                                   .activityInstance.activityParticipants!) {
-                                String status = progressStatusToString(participant.status!).replaceAll(' ', '');
-                                try {
-                                  await updateTaskStatus(
-                                    widget.activityInstance.id!,
-                                    participant.person!.id!,
-                                    status,
-                                  );
-                                } catch (e) {
-                                  // Handle error, e.g., show snackbar
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text(
-                                            'Failed to update status for ${participant.person?.preferred_name}: $e')),
-                                  );
-                                  return; // Stop on first error, or continue as needed
+                                if (participant.person?.id != null &&
+                                    participant.status != null) {
+                                  int personId = participant.person!.id!;
+                                  ProgressStatus currentStatus =
+                                      participant.status!;
+                                  ProgressStatus? originalStatus =
+                                      _originalParticipantStatuses[personId];
+
+                                  // Only update if status has changed
+                                  if (originalStatus != currentStatus) {
+                                    String status =
+                                        progressStatusToString(currentStatus)
+                                            .replaceAll(' ', '');
+
+                                    try {
+                                      await updateTaskStatus(
+                                        widget.activityInstance.id!,
+                                        personId,
+                                        status,
+                                      );
+
+                                      // Update the original status after successful update
+                                      _originalParticipantStatuses[personId] =
+                                          currentStatus;
+                                    } catch (e) {
+                                      updateErrors.add(
+                                          '${participant.person?.preferred_name}: $e');
+                                    }
+                                  }
                                 }
+                              }
+
+                              // Show errors if any occurred
+                              if (updateErrors.isNotEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        'Failed to update status for:\n${updateErrors.join('\n')}'),
+                                    backgroundColor: Colors.red,
+                                    duration: Duration(seconds: 5),
+                                  ),
+                                );
+                                return; // Don't close dialog if there were errors
+                              }
+
+                              // Show success message only if there were actual updates
+                              bool hasChanges = updateErrors.isEmpty &&
+                                  _originalParticipantStatuses.values.any(
+                                      (status) => widget.activityInstance
+                                          .activityParticipants!
+                                          .any((p) =>
+                                              p.person?.id != null &&
+                                              _originalParticipantStatuses[
+                                                      p.person!.id!] !=
+                                                  p.status));
+
+                              if (hasChanges) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        'Task status updated successfully'),
+                                    backgroundColor: Colors.green,
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
                               }
                             }
                             widget.onSave?.call();

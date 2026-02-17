@@ -243,4 +243,16 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetBatchPaymentPlanByOrgIdResponse> check performDataBinding(graphqlResponse, GetBatchPaymentPlanByOrgIdResponse);
     }
+    remote isolated function getPerson(string nic) returns GetPersonResponse|graphql:ClientError {
+        string query = string `query getPerson($nic:String!) {person_by_digital_id_or_nic(nic:$nic) {id full_name sex phone organization_id avinya_type_id nic_no email}}`;
+        map<anydata> variables = {"nic": nic};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetPersonResponse> check performDataBinding(graphqlResponse, GetPersonResponse);
+    }
+    remote isolated function addBiometricAttendance(ActivityParticipantAttendance attendance) returns AddBiometricAttendanceResponse|graphql:ClientError {
+        string query = string `mutation addBiometricAttendance($attendance:ActivityParticipantAttendance!) {addBiometricAttendance(attendance:$attendance) {id activity_instance_id sign_in_time sign_out_time created}}`;
+        map<anydata> variables = {"attendance": attendance};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <AddBiometricAttendanceResponse> check performDataBinding(graphqlResponse, AddBiometricAttendanceResponse);
+    }
 }

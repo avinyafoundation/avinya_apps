@@ -120,6 +120,7 @@ input ActivityParticipantAttendance {
   id: Int
   person_id: Int
   activity_instance_id: Int
+  event_time: String
   sign_in_time: String
   sign_out_time: String
   in_marked_by: String
@@ -1005,6 +1006,7 @@ type Mutation {
   add_prospect(prospect: Prospect!): ProspectData
   add_organization(org: Organization!): OrganizationData
   add_attendance(attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
+  addBiometricAttendance(attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
   delete_attendance(id: Int!): Int
   delete_person_attendance(person_id: Int!): Int
   add_empower_parent(person: Person!): PersonData
@@ -1359,7 +1361,7 @@ type Query {
   organizations_by_avinya_type_and_status(avinya_type: Int, active: Int): [OrganizationData!]
   student_list_by_parent(parent_organization_id: Int, batch_id: Int): [PersonData!]
   person(name: String, id: Int): PersonData
-  person_by_digital_id(id: String): PersonData
+  person_by_digital_id_or_nic(id: String, nic: String): PersonData
   validatePin(pin: String): PersonData
   prospect(email: String, phone: Int): ProspectData
   applicant_consent(email: String, phone: Int): ApplicantConsentData

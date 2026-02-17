@@ -541,10 +541,19 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "person_by_digital_id",
+                            "name": "person_by_digital_id_or_nic",
                             "args": [
                                 {
                                     "name": "id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "nic",
                                     "type": {
                                         "kind": "SCALAR",
                                         "name": "String",
@@ -15235,6 +15244,31 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "addBiometricAttendance",
+                            "args": [
+                                {
+                                    "name": "attendance",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "INPUT_OBJECT",
+                                            "name": "ActivityParticipantAttendance",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "ActivityParticipantAttendanceData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "delete_attendance",
                             "args": [
                                 {
@@ -17598,6 +17632,15 @@
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "event_time",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
                                 "ofType": null
                             },
                             "defaultValue": null
