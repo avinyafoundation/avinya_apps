@@ -37,27 +37,70 @@ final GraphqlClient globalDataClient = check new (GLOBAL_DATA_API_URL,
 }
 service / on new http:Listener(9095) {
 
-    resource function get persons/[int organization_id]/[int avinya_type_id]() returns Person[]|error {
-        GetPersonsResponse|graphql:ClientError getPersonsResponse = globalDataClient->getPersons(organization_id, avinya_type_id);
+    resource function get persons/[int organization_id]/[int avinya_type_id](
+        int? 'limit = (),
+        int? offset = (),
+        int? class_id = (),
+        string? search = ()
+    ) returns Person[]|error {
+
+        // Pagination safety check
+        if (('limit == null) != (offset == null)) {
+            return error("Both 'limit' and 'offset' must be provided together.");
+        }
+
+        GetPersonsResponse|graphql:ClientError getPersonsResponse =
+            globalDataClient->getPersons(
+                organization_id,
+                avinya_type_id,
+                search,               
+                offset,
+                class_id,
+                'limit
+            );
+
         if (getPersonsResponse is GetPersonsResponse) {
+
             Person[] person_datas = [];
-            foreach var person_data in getPersonsResponse.persons {
-                Person|error person_data_record = person_data.cloneWithType(Person);
+
+            // Prevent iterable error if null
+            var persons = getPersonsResponse.persons ?: [];
+
+            foreach var person_data in persons {
+
+                Person|error person_data_record =
+                    person_data.cloneWithType(Person);
+
                 if (person_data_record is Person) {
                     person_datas.push(person_data_record);
                 } else {
-                    log:printError("Error while processing Application record received", person_data_record);
-                    return error("Error while processing Application record received: " + person_data_record.message() +
-                        ":: Detail: " + person_data_record.detail().toString());
+
+                    log:printError(
+                        "Error while processing Person record",
+                        person_data_record
+                    );
+
+                    return error(
+                        "Error while processing Person record: "
+                        + person_data_record.message()
+                        + ":: Detail: "
+                        + person_data_record.detail().toString()
+                    );
                 }
             }
 
             return person_datas;
 
         } else {
-            log:printError("Error while getting application", getPersonsResponse);
-            return error("Error while getting application: " + getPersonsResponse.message() +
-                ":: Detail: " + getPersonsResponse.detail().toString());
+
+            log:printError("Error while getting persons", getPersonsResponse);
+
+            return error(
+                "Error while getting persons: "
+                + getPersonsResponse.message()
+                + ":: Detail: "
+                + getPersonsResponse.detail().toString()
+            );
         }
     }
 
