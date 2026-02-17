@@ -71,7 +71,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
 
   Future<List<Organization>> _loadBatchData() async {
     //_batchData = await fetchOrganizationsByAvinyaType(86);
-    _batchData = await fetchOrganizationsByAvinyaTypeAndStatus(86, null);
+    _batchData = await fetchOrganizationsByAvinyaTypeAndStatus(null,1);
     _selectedOrganizationValue = _batchData.isNotEmpty ? _batchData.last : null;
     batchStartDate = DateFormat('MMM d, yyyy').format(DateTime.parse(
         _selectedOrganizationValue!.organization_metadata[0].value.toString()));

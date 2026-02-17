@@ -33,7 +33,7 @@ class _AttendanceMarkerScreenState extends State<AttendanceMarkerScreen> {
             child: Column(
               children: [
                 SizedBox(height: 40),
-                AttendanceMarker(),
+                //AttendanceMarker(),
                 SizedBox(height: 20),
                 Text('Person Attendance Report'),
                 SizedBox(height: 5),
