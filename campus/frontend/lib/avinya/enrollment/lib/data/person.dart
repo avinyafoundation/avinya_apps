@@ -517,25 +517,46 @@ Future<List<UserDocument>?> fetchDocuments(int id) async {
 }
 
 Future<List<Person>> fetchPersons(
-    int organization_id, int avinya_type_id) async {
+  int organizationId,
+  int avinyaTypeId, {
+  int? limit,
+  int? offset,
+  int? classId,
+  String? search,
+}) async {
+  final uri = Uri.parse(
+    '${AppConfig.campusEnrollmentsBffApiUrl}/persons/$organizationId/$avinyaTypeId',
+  ).replace(
+    queryParameters: {
+      if (limit != null) 'limit': limit.toString(),
+      if (offset != null) 'offset': offset.toString(),
+      if (classId != null) 'class_id': classId.toString(),
+      if (search != null && search.isNotEmpty) 'search': search,
+    },
+  );
+
   final response = await http.get(
-    Uri.parse(
-        '${AppConfig.campusEnrollmentsBffApiUrl}/persons/$organization_id/$avinya_type_id'),
+    uri,
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
       'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
-  if (response.statusCode > 199 && response.statusCode < 300) {
-    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    List<Person> persons =
-        await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
-    return persons;
+
+  if (response.statusCode >= 200 && response.statusCode < 300) {
+    final List<dynamic> resultsJson = json.decode(response.body);
+
+    return resultsJson
+        .map((json) => Person.fromJson(json as Map<String, dynamic>))
+        .toList();
   } else {
-    throw Exception('Failed to get persons Data');
+    throw Exception(
+      'Failed to get persons data. Status code: ${response.statusCode}',
+    );
   }
 }
+
 
 Future<Person> fetchPerson(int? person_id) async {
   final response = await http.get(
