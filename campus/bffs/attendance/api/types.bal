@@ -44,18 +44,16 @@ public type ActivityParticipant record {
 
 public type ActivityParticipantAttendance record {
     int? activity_instance_id?;
+    string? in_marked_by?;
     string? created?;
     string? sign_in_time?;
     int? id?;
+    string? out_marked_by?;
     string? updated?;
     string? record_type?;
+    string? event_time?;
     int? person_id?;
     string? sign_out_time?;
-    string? in_marked_by?;
-    string? out_marked_by?;
-    string? description?;
-    string? preferred_name?;
-    string? digital_id?;
 };
 
 public type ActivityParticipantAttendanceSummary record {
@@ -919,4 +917,29 @@ public type GetOrganizationsByAvinyaTypeAndStatusResponse record {|
             string? value;
         |}[]? organization_metadata;
     |}[] organizations_by_avinya_type_and_status;
+|};
+
+public type GetPersonResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? full_name;
+        string? sex;
+        int? phone;
+        int? organization_id;
+        int? avinya_type_id;
+        string? nic_no;
+        string? email;
+    |}? person_by_digital_id_or_nic;
+|};
+
+public type AddBiometricAttendanceResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? created;
+    |}? addBiometricAttendance;
 |};

@@ -637,7 +637,7 @@ public type GetPersonResponse record {|
         int? alumni_id;
         boolean? is_graduated;
         string? profile_picture_folder_id;
-    |}? person_by_digital_id;
+    |}? person_by_digital_id_or_nic;
 |};
 
 public type GetOrganizationResponse record {|

@@ -2,6 +2,7 @@ import ballerina/http;
 import ballerina/graphql;
 import ballerina/log;
 import ballerina/io;
+import ballerina/mime;
 
 public function initClientConfig() returns ConnectionConfig{
     ConnectionConfig _clientConig = {};
@@ -976,20 +977,118 @@ service / on new http:Listener(9091) {
         }
     }
     
-    resource function post attendance/log(http:Request req) returns int|error {
-        // 1. Get the JSON body from the request
-        // 'check' handles errors if the body isn't valid JSON
-        json payload = check req.getJsonPayload();
+    resource function post attendance/events(http:Request req) returns http:Response|error {
+        // Prepare the response immediately
+        http:Response response = new;
+        response.statusCode = 200;
+        response.setPayload("OK");
 
-        // 2. Print the JSON body to the console
-        io:println("JSON Body: ", payload.toJsonString());
+        // Extract parts (JSON + Image)
+        var bodyParts = req.getBodyParts();
+        if bodyParts is mime:Entity[] {
+            foreach var part in bodyParts {
+                if part.getContentType().startsWith("application/json") {
+                    json payload = check part.getJson();
+                    
+                    // Drill down to the User Details
+                    var event = payload.AccessControllerEvent;
+                    var dateTime = payload.dateTime;
+                    io:println(`event:${event}`);
+                    io:println(`date time:${dateTime}`);
 
-        // 3. Print specific details (like Headers or Method)
-        log:printInfo("Request received", 
-            method = req.method, 
-            contentType = req.getContentType()
-        );
-        return 1;
+                    if event != null && event is map<json> && dateTime != null && dateTime is string {  
+
+                        // 1. Get the subEventType as an integer
+                        int subType = check event.get("subEventType").ensureType(int);
+
+                        if subType == 75 || subType == 38 {
+                            // Registered User
+                            string name = event.get("name").toString();
+                            string empId = event.get("employeeNoString").toString();
+
+                            if name is string && empId is string && name.trim() != ""{
+                              io:println(string `Verified User: ${name}`);
+
+                                // ^.*-  Matches everything from the start up to the hyphen
+                                // \s* Matches any optional spaces
+                                string nic = re `^.*-\s*`.replace(name, "");
+                                string formattedDateTime = formatDateTime(dateTime);
+
+                                GetPersonResponse|graphql:ClientError getPersonResponse = globalDataClient->getPerson(nic);
+                                if(getPersonResponse is GetPersonResponse) {
+                                    Person|error person_record = getPersonResponse.person_by_digital_id_or_nic.cloneWithType(Person);
+                                    
+                                    if(person_record is Person){
+                                        GetActivityInstancesTodayResponse|graphql:ClientError getActivityInstancesTodayResponse;
+                                        int avinyaType = person_record?.avinya_type_id?: 0;
+                                        io:println("person avinya type:",person_record?.avinya_type_id);
+                                        io:println("person nic:",person_record?.nic_no);
+
+                                        if(avinyaType==37 || avinyaType==110){
+                                            //Get today activity instance id for students
+                                          getActivityInstancesTodayResponse = globalDataClient->getActivityInstancesToday(4);
+                                        }else{
+                                          getActivityInstancesTodayResponse = globalDataClient->getActivityInstancesToday(1);
+                                        }
+                                        
+                                        if(getActivityInstancesTodayResponse is GetActivityInstancesTodayResponse) {
+                                           var instances = getActivityInstancesTodayResponse.activity_instances_today;
+                                           if instances.length() > 0 {
+                                                // Access index 0
+                                                var firstItem = instances[0];
+                                                
+                                                // Now you can clone it
+                                                ActivityInstance|error activityInstance = firstItem.cloneWithType(ActivityInstance);
+                                                
+                                                if activityInstance is ActivityInstance{
+                                                    io:println("Found first instance: ", activityInstance?.id);
+                                                    ActivityParticipantAttendance attendance = {
+                                                        activity_instance_id: activityInstance?.id,
+                                                        person_id: person_record?.id,
+                                                        event_time: formattedDateTime
+                                                    };
+
+                                                    AddBiometricAttendanceResponse|graphql:ClientError addBiometricAttendanceResponse = globalDataClient->addBiometricAttendance(attendance);
+                                                    if(addBiometricAttendanceResponse is AddBiometricAttendanceResponse) {
+                                                        ActivityParticipantAttendance|error attendance_record = addBiometricAttendanceResponse.addBiometricAttendance.cloneWithType(ActivityParticipantAttendance);
+                                                        if(attendance_record is ActivityParticipantAttendance) {
+                                                          log:printInfo("Biometric Attendance Marked Successfully.Person Name:"+name.toString());
+                                                        }else{
+                                                          log:printError("Failed to record biometric attendance. Person Name:"+name.toString());
+                                                        }   
+                                                    }else {
+                                                        log:printError("Failed to record biometric attendance. Person Name:"+name.toString());
+                                                        return error("Error while adding  biometric attendance: " + addBiometricAttendanceResponse.message() +
+                                                            ":: Detail: " + addBiometricAttendanceResponse.detail().toString());
+                                                    }                                     
+                                                }
+                                            } else {
+                                                io:println("No activity instances found for today.");
+                                            }
+
+                                        }else {
+                                            log:printError("Error while creating the activity instances", getActivityInstancesTodayResponse);
+                                            return error("Error while creating the activity instances: " + getActivityInstancesTodayResponse.message() + 
+                                                ":: Detail: " + getActivityInstancesTodayResponse.detail().toString());
+                                        }
+                                    }
+                                     
+                                }else{
+                                    log:printError("Failed to Fetch person from the database");
+                                }
+                            }
+
+                        }
+                         
+                    }
+                } else if part.getContentType().startsWith("image/jpeg") {
+                    // We acknowledge the image but don't print the binary mess
+                    io:println("[System] Face Image Captured and Processed.");
+                }
+            }
+        }
+        // Send the OK back to the device to STOP the looping
+        return response;
     }
 
 }
