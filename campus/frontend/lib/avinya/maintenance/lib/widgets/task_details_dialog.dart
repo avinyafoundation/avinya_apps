@@ -20,6 +20,7 @@ class TaskDetailsDialog extends StatefulWidget {
 class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
   // Map to track original participant statuses to detect changes
   Map<int, ProgressStatus> _originalParticipantStatuses = {};
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -192,88 +193,14 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                       runSpacing: 8,
                       children: [
                         Button(
-                          label: "Save",
-                          buttonColor: Colors.blue,
+                          label: _isSaving ? "Saving..." : "Save",
+                          buttonColor: _isSaving ? Colors.grey : Colors.blue,
                           textColor: Colors.white,
                           height: 40,
                           fontSize: 14,
-                          onPressed: () async {
-                            // Only update participants whose status has changed
-                            if (widget.activityInstance.activityParticipants !=
-                                null) {
-                              List<String> updateErrors = [];
-
-                              for (var participant in widget
-                                  .activityInstance.activityParticipants!) {
-                                if (participant.person?.id != null &&
-                                    participant.status != null) {
-                                  int personId = participant.person!.id!;
-                                  ProgressStatus currentStatus =
-                                      participant.status!;
-                                  ProgressStatus? originalStatus =
-                                      _originalParticipantStatuses[personId];
-
-                                  // Only update if status has changed
-                                  if (originalStatus != currentStatus) {
-                                    String status =
-                                        progressStatusToString(currentStatus)
-                                            .replaceAll(' ', '');
-
-                                    try {
-                                      await updateTaskStatus(
-                                        widget.activityInstance.id!,
-                                        personId,
-                                        status,
-                                      );
-
-                                      // Update the original status after successful update
-                                      _originalParticipantStatuses[personId] =
-                                          currentStatus;
-                                    } catch (e) {
-                                      updateErrors.add(
-                                          '${participant.person?.preferred_name}: $e');
-                                    }
-                                  }
-                                }
-                              }
-
-                              // Show errors if any occurred
-                              if (updateErrors.isNotEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Failed to update status for:\n${updateErrors.join('\n')}'),
-                                    backgroundColor: Colors.red,
-                                    duration: Duration(seconds: 5),
-                                  ),
-                                );
-                                return; // Don't close dialog if there were errors
-                              }
-
-                              // Show success message only if there were actual updates
-                              bool hasChanges = updateErrors.isEmpty &&
-                                  _originalParticipantStatuses.values.any(
-                                      (status) => widget.activityInstance
-                                          .activityParticipants!
-                                          .any((p) =>
-                                              p.person?.id != null &&
-                                              _originalParticipantStatuses[
-                                                      p.person!.id!] !=
-                                                  p.status));
-
-                              if (hasChanges) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Task status updated successfully'),
-                                    backgroundColor: Colors.green,
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                              }
-                            }
-                            widget.onSave?.call();
-                            Navigator.of(context).pop();
+                          onPressed: () {
+                            if (_isSaving) return;
+                            _handleSave();
                           },
                         ),
                         Button(
@@ -298,6 +225,79 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
     );
   }
 
+  Future<void> _handleSave() async {
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      if (widget.activityInstance.activityParticipants != null) {
+        List<String> updateErrors = [];
+
+        for (var participant in widget.activityInstance.activityParticipants!) {
+          if (participant.person?.id != null && participant.status != null) {
+            int personId = participant.person!.id!;
+            ProgressStatus currentStatus = participant.status!;
+            ProgressStatus? originalStatus =
+                _originalParticipantStatuses[personId];
+
+            if (originalStatus != currentStatus) {
+              String status =
+                  progressStatusToString(currentStatus).replaceAll(' ', '');
+
+              try {
+                await updateTaskStatus(
+                  widget.activityInstance.id!,
+                  personId,
+                  status,
+                );
+                _originalParticipantStatuses[personId] = currentStatus;
+              } catch (e) {
+                updateErrors.add('${participant.person?.preferred_name}: $e');
+              }
+            }
+          }
+        }
+
+        if (updateErrors.isNotEmpty) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    'Failed to update status for:\n${updateErrors.join('\n')}'),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 5),
+              ),
+            );
+          }
+          return;
+        }
+
+        // Check for actual changes for success message
+        bool hasChanges = _originalParticipantStatuses.entries.any((entry) =>
+            widget.activityInstance.activityParticipants!.any(
+                (p) => p.person?.id == entry.key && p.status == entry.value));
+
+        if (hasChanges && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Task status updated successfully'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+      widget.onSave?.call();
+      if (mounted) Navigator.of(context).pop();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
+  }
   // Helper Widget for Rows
   Widget _buildDetailRow(IconData icon, String label, String value,
       {bool isStatus = false, Color? color,}) {
