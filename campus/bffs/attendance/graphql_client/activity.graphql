@@ -390,12 +390,14 @@ query getTotalAttendanceCountByParentOrg($parent_organization_id: Int!, $from_da
 }
 
 query getDailyAttendanceSummaryReport(
-  $organization_id: Int!
-  $avinya_type_id: Int!
+  $parent_organization_id: Int
+  $organization_id: Int
+  $avinya_type_id: Int
   $from_date: String!
   $to_date: String!
 ) {
   daily_attendance_summary_report(
+    parent_organization_id: $parent_organization_id
     organization_id: $organization_id
     avinya_type_id: $avinya_type_id
     from_date: $from_date
