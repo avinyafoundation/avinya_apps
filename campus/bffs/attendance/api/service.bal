@@ -859,7 +859,7 @@ service / on new http:Listener(9091) {
     }
 
     resource function get daily_attendance_summary_report/[int organization_id]/[int avinya_type_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendanceSummary[]|error {
-        GetDailyAttendanceSummaryReportResponse|graphql:ClientError getDailyAttendanceSummaryReportResponse = globalDataClient->getDailyAttendanceSummaryReport(from_date,to_date,organization_id,avinya_type_id);
+        GetDailyAttendanceSummaryReportResponse|graphql:ClientError getDailyAttendanceSummaryReportResponse = globalDataClient->getDailyAttendanceSummaryReport(from_date,to_date,organization_id,(),avinya_type_id);
         if(getDailyAttendanceSummaryReportResponse is GetDailyAttendanceSummaryReportResponse) {
             ActivityParticipantAttendanceSummary[] activityParticipantAttendances = [];
             foreach var attendance_record in getDailyAttendanceSummaryReportResponse.daily_attendance_summary_report {
@@ -879,6 +879,31 @@ service / on new http:Listener(9091) {
             log:printError("Error while creating application", getDailyAttendanceSummaryReportResponse);
             return error("Error while creating application: " + getDailyAttendanceSummaryReportResponse.message() + 
                 ":: Detail: " + getDailyAttendanceSummaryReportResponse.detail().toString());
+        }
+    }
+
+    //Get employee attendance summary report
+    resource function get employees/attendance_summary_report/[int parent_organization_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendanceSummary[]|error {
+        GetDailyAttendanceSummaryReportResponse|graphql:ClientError getEmployeeAttendanceSummaryReportResponse = globalDataClient->getDailyAttendanceSummaryReport(from_date,to_date,(),parent_organization_id,());
+        if(getEmployeeAttendanceSummaryReportResponse is GetDailyAttendanceSummaryReportResponse) {
+            ActivityParticipantAttendanceSummary[] activityParticipantAttendances = [];
+            foreach var attendance_record in getEmployeeAttendanceSummaryReportResponse.daily_attendance_summary_report {
+                ActivityParticipantAttendanceSummary|error activityParticipantAttendance = attendance_record.cloneWithType(ActivityParticipantAttendanceSummary);
+                if(activityParticipantAttendance is ActivityParticipantAttendanceSummary) {
+                    activityParticipantAttendances.push(activityParticipantAttendance);
+                } else {
+                    log:printError("Error while processing Application record received", activityParticipantAttendance);
+                    return error("Error while processing Application record received: " + activityParticipantAttendance.message() + 
+                        ":: Detail: " + activityParticipantAttendance.detail().toString());
+                }
+            }
+
+            return activityParticipantAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getEmployeeAttendanceSummaryReportResponse);
+            return error("Error while creating application: " + getEmployeeAttendanceSummaryReportResponse.message() + 
+                ":: Detail: " + getEmployeeAttendanceSummaryReportResponse.detail().toString());
         }
     }
 

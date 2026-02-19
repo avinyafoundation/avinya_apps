@@ -309,9 +309,9 @@ log:printInfo("Formatted Response: " + formattedJson);
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetTotalAttendanceCountByParentOrgResponse> check performDataBinding(graphqlResponse, GetTotalAttendanceCountByParentOrgResponse);
     }
-    remote isolated function getDailyAttendanceSummaryReport(string from_date, string to_date, int organization_id, int avinya_type_id) returns GetDailyAttendanceSummaryReportResponse|graphql:ClientError {
-        string query = string `query getDailyAttendanceSummaryReport($organization_id:Int!,$avinya_type_id:Int!,$from_date:String!,$to_date:String!) {daily_attendance_summary_report(organization_id:$organization_id,avinya_type_id:$avinya_type_id,from_date:$from_date,to_date:$to_date) {sign_in_date present_count absent_count late_count total_count present_attendance_percentage absent_attendance_percentage late_attendance_percentage}}`;
-        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id, "avinya_type_id": avinya_type_id};
+    remote isolated function getDailyAttendanceSummaryReport(string from_date, string to_date, int? organization_id = (), int? parent_organization_id = (), int? avinya_type_id = ()) returns GetDailyAttendanceSummaryReportResponse|graphql:ClientError {
+        string query = string `query getDailyAttendanceSummaryReport($parent_organization_id:Int,$organization_id:Int,$avinya_type_id:Int,$from_date:String!,$to_date:String!) {daily_attendance_summary_report(parent_organization_id:$parent_organization_id,organization_id:$organization_id,avinya_type_id:$avinya_type_id,from_date:$from_date,to_date:$to_date) {sign_in_date present_count absent_count late_count total_count present_attendance_percentage absent_attendance_percentage late_attendance_percentage}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id, "parent_organization_id": parent_organization_id, "avinya_type_id": avinya_type_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetDailyAttendanceSummaryReportResponse> check performDataBinding(graphqlResponse, GetDailyAttendanceSummaryReportResponse);
     }
