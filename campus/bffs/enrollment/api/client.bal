@@ -84,4 +84,23 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetAllDocumentsResponse>check performDataBinding(graphqlResponse, GetAllDocumentsResponse);
     }
+
+    remote isolated function GetStudentCount(int organization_id) returns GetStudentCountResponse|graphql:ClientError {
+        string query = string `query GetStudentCount($organization_id:Int!) {studentCountByOrganization(organization_id:$organization_id) {current_student_count male_student_count female_student_count dropout_student_count}}`;
+        map<anydata> variables = {"organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetStudentCountResponse> check performDataBinding(graphqlResponse, GetStudentCountResponse);
+    }
+    remote isolated function GetAgeDistribution(int organization_id) returns GetAgeDistributionResponse|graphql:ClientError {
+        string query = string `query GetAgeDistribution($organization_id:Int!) {studentAgeDistribution(organization_id:$organization_id) {total_students age_groups {age_group count}}}`;
+        map<anydata> variables = {"organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetAgeDistributionResponse> check performDataBinding(graphqlResponse, GetAgeDistributionResponse);
+    }
+    remote isolated function GetDistrictDistribution(int organization_id) returns GetDistrictDistributionResponse|graphql:ClientError {
+        string query = string `query GetDistrictDistribution($organization_id:Int!) {studentDistrictDistribution(organization_id:$organization_id) {total_students districts {district_name count}}}`;
+        map<anydata> variables = {"organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetDistrictDistributionResponse> check performDataBinding(graphqlResponse, GetDistrictDistributionResponse);
+    }
 }

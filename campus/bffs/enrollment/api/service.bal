@@ -426,4 +426,70 @@ service / on new http:Listener(9095) {
     //             ":: Detail: " + addPersonResponse.detail().toString());
     //     }
     // }
+
+    resource function get student_count/[int organization_id]() returns StudentCount|error {
+        GetStudentCountResponse|graphql:ClientError getStudentCountResponse =
+            globalDataClient->GetStudentCount(organization_id);
+
+        if (getStudentCountResponse is GetStudentCountResponse) {
+            StudentCount|error studentCountRecord =
+                getStudentCountResponse.studentCountByOrganization.cloneWithType(StudentCount);
+
+            if (studentCountRecord is StudentCount) {
+                return studentCountRecord;
+            } else {
+                log:printError("Error while processing Student Count record", studentCountRecord);
+                return error("Error while processing Student Count record: " + studentCountRecord.message() +
+                    ":: Detail: " + studentCountRecord.detail().toString());
+            }
+        } else {
+            log:printError("Error while getting student count", getStudentCountResponse);
+            return error("Error while getting student count: " + getStudentCountResponse.message() +
+                ":: Detail: " + getStudentCountResponse.detail().toString());
+        }
+    }
+
+    resource function get student_age_distribution/[int organization_id]() returns AgeDistribution|error {
+        GetAgeDistributionResponse|graphql:ClientError getAgeDistributionResponse =
+            globalDataClient->GetAgeDistribution(organization_id);
+
+        if (getAgeDistributionResponse is GetAgeDistributionResponse) {
+            AgeDistribution|error ageDistributionRecord =
+                getAgeDistributionResponse.studentAgeDistribution.cloneWithType(AgeDistribution);
+
+            if (ageDistributionRecord is AgeDistribution) {
+                return ageDistributionRecord;
+            } else {
+                log:printError("Error while processing Age Distribution record", ageDistributionRecord);
+                return error("Error while processing Age Distribution record: " + ageDistributionRecord.message() +
+                    ":: Detail: " + ageDistributionRecord.detail().toString());
+            }
+        } else {
+            log:printError("Error while getting age distribution", getAgeDistributionResponse);
+            return error("Error while getting age distribution: " + getAgeDistributionResponse.message() +
+                ":: Detail: " + getAgeDistributionResponse.detail().toString());
+        }
+    }
+
+    resource function get student_district_distribution/[int organization_id]() returns DistrictDistribution|error {
+        GetDistrictDistributionResponse|graphql:ClientError getDistrictDistributionResponse =
+            globalDataClient->GetDistrictDistribution(organization_id);
+
+        if (getDistrictDistributionResponse is GetDistrictDistributionResponse) {
+            DistrictDistribution|error districtDistributionRecord =
+                getDistrictDistributionResponse.studentDistrictDistribution.cloneWithType(DistrictDistribution);
+
+            if (districtDistributionRecord is DistrictDistribution) {
+                return districtDistributionRecord;
+            } else {
+                log:printError("Error while processing District Distribution record", districtDistributionRecord);
+                return error("Error while processing District Distribution record: " + districtDistributionRecord.message() +
+                    ":: Detail: " + districtDistributionRecord.detail().toString());
+            }
+        } else {
+            log:printError("Error while getting district distribution", getDistrictDistributionResponse);
+            return error("Error while getting district distribution: " + getDistrictDistributionResponse.message() +
+                ":: Detail: " + getDistrictDistributionResponse.detail().toString());
+        }
+    }
 }

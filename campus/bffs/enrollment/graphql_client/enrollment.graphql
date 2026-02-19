@@ -421,3 +421,32 @@ query getAllDocuments($id: Int!) {
     document_type
   }
 }
+
+query GetStudentCount($organization_id: Int!) {
+    studentCountByOrganization(organization_id: $organization_id) {
+        current_student_count
+        male_student_count
+        female_student_count
+        dropout_student_count
+    }
+}
+
+query GetAgeDistribution($organization_id: Int!) {
+    studentAgeDistribution(organization_id: $organization_id) {
+        total_students
+        age_groups {
+            age_group
+            count
+        }
+    }
+}
+
+query GetDistrictDistribution($organization_id: Int!) {
+    studentDistrictDistribution(organization_id: $organization_id) {
+        total_students
+        districts {
+            district_name
+            count
+        }
+    }
+}
