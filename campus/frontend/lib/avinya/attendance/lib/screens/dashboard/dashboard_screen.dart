@@ -24,6 +24,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
   Organization? _fetchedOrganization;
   List<Organization> _fetchedOrganizations = [];
   List<Organization> _batchData = [];
+  int organizationId = 2;
 
   // Loading state
   bool _isFetching = true;
@@ -166,16 +167,15 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
 
       // Fetch weekly student attendance data (using selected month date range)
       if (_selectedOrganizationValue != null) {
-          _fetchedWeeklyStudentData = await getDailyAttendanceSummaryReport(
+        _fetchedWeeklyStudentData = await getDailyAttendanceSummaryReport(
           _selectedOrganizationValue!.id!, //_selectedOrganizationValue!.id! (44 before)
           110, // activity type for students  (110) (37 before)
           startDateFormatted,
           endDateFormatted,
         );
 
-        _fetchedWeeklyStaffData = await getDailyAttendanceSummaryReport(
-          _selectedOrganizationValue!.id!,
-          38, // activity type for staff (adjust based on your system)
+        _fetchedWeeklyStaffData = await getDailyEmployeeAttendanceSummaryReport(
+          organizationId,
           startDateFormatted,
           endDateFormatted,
         );
@@ -353,7 +353,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
       var dayData = _fetchedWeeklyStaffData[i];
 
       chartData.add({
-        'day': _formatDayLabel(dayData.date ?? ''),
+        'day': _formatDayLabel(dayData.sign_in_date ?? ''),
         'present': dayData.present_count ?? 0,
         'absent': dayData.absent_count ?? 0,
       });
