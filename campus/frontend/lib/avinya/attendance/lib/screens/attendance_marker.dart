@@ -23,28 +23,79 @@ class _AttendanceMarkerScreenState extends State<AttendanceMarkerScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text('Attendance Marker',style: TextStyle(color: Colors.black)),
-          backgroundColor: Color.fromARGB(255, 236, 230, 253),
-        ),
-        body: SingleChildScrollView(
-          child: Center(
+  Widget build(BuildContext context) {
+    bool isMobile = MediaQuery.of(context).size.width < 600;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 1600),
+            padding: EdgeInsets.all(isMobile ? 20 : 30),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 40),
-                //AttendanceMarker(),
-                SizedBox(height: 20),
-                Text('Person Attendance Report'),
-                SizedBox(height: 5),
+                // Person Attendance Report Card
                 Container(
-                  width: 500,
-                  height: 500,
-                  child: PersonAttendanceMarkerReport()
+                  padding: const EdgeInsets.all(25),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Card Title
+                      Container(
+                        padding: const EdgeInsets.only(bottom: 15),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(color: Color(0xFFECF0F1))),
+                        ),
+                        child: const Row(
+                          children: [
+                            Icon(
+                              Icons.person_search,
+                              color: Color(0xFF1BB6E8),
+                              size: 24,
+                            ),
+                            SizedBox(width: 12),
+                            Text(
+                              'Person Attendance Report',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF2C3E50),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Person Attendance Report Widget
+                      SizedBox(
+                        width: double.infinity,
+                        height: 500,
+                        child: PersonAttendanceMarkerReport(),
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(height: 40),
               ],
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 }
