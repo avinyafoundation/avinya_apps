@@ -52,14 +52,47 @@ class _EnrollmentDashboardState extends State<EnrollmentDashboard> {
   }
 
   // ── Load batches exactly like Students screen ────────────────────────────
+  // Future<void> _loadBatches() async {
+  //   setState(() => _isLoadingBatches = true);
+  //   try {
+  //     final batches = await fetchOrganizationsByAvinyaTypeAndStatus(null, null);
+  //     setState(() {
+  //       _batchList = batches;
+  //       _isLoadingBatches = false;
+  //     });
+  //   } catch (e) {
+  //     setState(() => _isLoadingBatches = false);
+  //   }
+  // }
+
   Future<void> _loadBatches() async {
     setState(() => _isLoadingBatches = true);
     try {
       final batches = await fetchOrganizationsByAvinyaTypeAndStatus(null, null);
+
+      Organization? defaultBatch;
+      try {
+        defaultBatch = batches.firstWhere(
+          (b) => (b.name?.name_en ?? '')
+              .toLowerCase()
+              .contains('empower - 2026a - bandaragama'),
+        );
+      } catch (_) {
+        defaultBatch = null;
+      }
+
       setState(() {
         _batchList = batches;
         _isLoadingBatches = false;
+        if (defaultBatch != null) {
+          _selectedBatch = defaultBatch;
+        }
       });
+
+      // Auto-load dashboard data for the default batch
+      if (defaultBatch?.id != null) {
+        _loadDashboardData(defaultBatch!.id!);
+      }
     } catch (e) {
       setState(() => _isLoadingBatches = false);
     }
