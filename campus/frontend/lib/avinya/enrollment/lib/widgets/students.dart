@@ -57,16 +57,16 @@ const List<String> _colLabels = [
   'Date of Birth',
   'Digital ID',
   'Gender',
-  'Organisation',
+  'Mobile',
 ];
 const List<double> _colWidths = [
   50,
-  150,
+  250,
   145,
   130,
   350,
-  100,
-  220,
+  109,
+  200,
 ];
 
 // ─── Students Widget ──────────────────────────────────────────────────────────
@@ -309,7 +309,7 @@ class _StudentsState extends State<Students> {
             crossAxisAlignment: WrapCrossAlignment.end,
             children: [
               SizedBox(
-                width: 200,
+                width: 250,
                 child: _buildDropdown<Organization>(
                   label: 'Select Batch',
                   icon: Icons.calendar_today_rounded,
@@ -758,6 +758,7 @@ class _StudentRowState extends State<_StudentRow> {
         : Colors.white; 
 
     return MouseRegion(
+      cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
@@ -787,7 +788,7 @@ class _StudentRowState extends State<_StudentRow> {
               _cell(
                 width: _colWidths[1],
                 child: Text(
-                  widget.student.preferred_name ?? 'N/A',
+                  widget.student.full_name ?? 'N/A',
                   style: const TextStyle(
                       color: AppTheme.textPrimary,
                       fontWeight: FontWeight.w600,
@@ -810,7 +811,7 @@ class _StudentRowState extends State<_StudentRow> {
               // Organisation — last column, no right border
               _textCell(
                 _colWidths[6],
-                widget.student.organization?.avinya_type?.name,
+                widget.student.phone.toString(),
                 isLast: true,
               ),
             ],
@@ -928,131 +929,136 @@ class _StudentDetailDialog extends StatelessWidget {
                 color: Color(0x28000000), blurRadius: 30, offset: Offset(0, 8)),
           ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.fromLTRB(22, 22, 12, 18),
-              decoration: const BoxDecoration(
-                color: Colors.lightBlueAccent,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-              ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 26,
-                    backgroundColor: Colors.white24,
-                    child: Text(
-                      (student.preferred_name?.isNotEmpty == true
-                              ? student.preferred_name![0]
-                              : '?')
-                          .toUpperCase(),
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(22, 22, 12, 18),
+                decoration: const BoxDecoration(
+                  color: Colors.lightBlueAccent,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 26,
+                      backgroundColor: Colors.white24,
+                      child: Text(
+                        (student.preferred_name?.isNotEmpty == true
+                                ? student.preferred_name![0]
+                                : '?')
+                            .toUpperCase(),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          student.preferred_name ?? 'Unknown',
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          student.organization?.avinya_type?.name ??
-                              'No Programme',
-                          style: TextStyle(
-                              color: Colors.white.withOpacity(0.78),
-                              fontSize: 12),
-                        ),
-                      ],
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            student.preferred_name ?? 'Unknown',
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            student.organization?.avinya_type?.name ??
+                                'No Programme',
+                            style: TextStyle(
+                                color: Colors.white.withOpacity(0.78),
+                                fontSize: 12),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close_rounded,
-                        color: Colors.white, size: 20),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(22),
-              child: Column(
-                children: [
-                  _DetailRow(Icons.badge_rounded, 'NIC Number',
-                      student.nic_no?.toString()),
-                  _DetailRow(Icons.cake_rounded, 'Date of Birth',
-                      student.date_of_birth?.toString()),
-                  _DetailRow(Icons.fingerprint_rounded, 'Digital ID',
-                      student.digital_id?.toString()),
-                  _DetailRow(Icons.person_rounded, 'Gender', student.sex),
-                  _DetailRow(Icons.business_rounded, 'Organisation',
-                      student.organization?.avinya_type?.name),
-                  if (student.id != null)
-                    _DetailRow(
-                        Icons.tag_rounded, 'Student ID', student.id.toString()),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22, 0, 22, 20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
+                    IconButton(
                       onPressed: () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppTheme.textSecondary,
-                        side: const BorderSide(color: AppTheme.border),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(9)),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: const Text('Close',
-                          style: TextStyle(fontWeight: FontWeight.w600)),
+                      icon: const Icon(Icons.close_rounded,
+                          color: Colors.white, size: 20),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: student.id != null
-                          ? () {
-                              Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      StudentUpdateScreen(id: student.id!),
-                                ),
-                              );
-                            }
-                          : null,
-                      icon: const Icon(Icons.edit_rounded, size: 15),
-                      label: const Text('Edit Student',
-                          style: TextStyle(fontWeight: FontWeight.w700)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primary,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(9)),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        elevation: 0,
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.all(22),
+                child: Column(
+                  children: [
+                    _DetailRow(Icons.badge_rounded, 'NIC Number',
+                        student.nic_no?.toString()),
+                    _DetailRow(Icons.cake_rounded, 'Date of Birth',
+                        student.date_of_birth?.toString()),
+                    _DetailRow(Icons.class_, 'Class', student.organization!.description),
+                    _DetailRow(Icons.fingerprint_rounded, 'Digital ID',
+                        student.digital_id?.toString()),
+                    _DetailRow(Icons.person_rounded, 'Gender', student.sex),
+                    _DetailRow(Icons.business_rounded, 'Organisation',
+                        student.organization?.avinya_type?.name),
+                    _DetailRow(Icons.phone, 'Mobile', student.phone.toString()),
+                    _DetailRow(Icons.streetview, 'Address', student.mailing_address!.street_address)
+                    // if (student.id != null)
+                    //   _DetailRow(
+                    //       Icons.tag_rounded, 'Student ID', student.id.toString()),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(22, 0, 22, 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppTheme.textSecondary,
+                          side: const BorderSide(color: AppTheme.border),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(9)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: const Text('Close',
+                            style: TextStyle(fontWeight: FontWeight.w600)),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: student.id != null
+                            ? () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        StudentUpdateScreen(id: student.id!),
+                                  ),
+                                );
+                              }
+                            : null,
+                        //icon: const Icon(Icons.edit_rounded, size: 15),
+                        label: const Text('Edit Student',
+                            style: TextStyle(fontWeight: FontWeight.w700)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primary,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(9)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          elevation: 0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
