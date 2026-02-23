@@ -1115,5 +1115,30 @@ service / on new http:Listener(9091) {
         // Send the OK back to the device to STOP the looping
         return response;
     }
+    //Get Organizations Late Attendance Summary List
+    resource function get organizations/[int organizationId]/'late\-attendance\-summary(
+        string date = "",
+        int activity_id = 4
+    ) returns json[] | error {
+        GetStudentLateAttendanceByTimeRangeResponse|graphql:ClientError getStudentLateAttendanceByTimeRangeResponse = globalDataClient->getStudentLateAttendanceByTimeRange(date,organizationId,activity_id);
+        if(getStudentLateAttendanceByTimeRangeResponse is GetStudentLateAttendanceByTimeRangeResponse){
+            json[] lateAttendanceSummaryList = [];
+            foreach var late_attendance_summary_record in getStudentLateAttendanceByTimeRangeResponse.late_attendance_report{
+                json|error late_record = late_attendance_summary_record.cloneWithType(json);
+                if(late_record is json){
+                    lateAttendanceSummaryList.push(late_record);
+                }else{
+                    log:printError("Error while retrieving the late attendance summary list", late_record);
+                    return error("Error while retrieving the late attendance summary list: " + late_record.message() + 
+                        ":: Detail: " + late_record.detail().toString());
+                }
+            }
 
+            return lateAttendanceSummaryList;
+        }else {
+            log:printError("Error while retrieving the late attendance summary list", getStudentLateAttendanceByTimeRangeResponse);
+            return error("Error while retrieving the late attendance summary list: " + getStudentLateAttendanceByTimeRangeResponse.message() + 
+                ":: Detail: " + getStudentLateAttendanceByTimeRangeResponse.detail().toString());
+        }
+    }
 }

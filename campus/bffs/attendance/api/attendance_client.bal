@@ -358,4 +358,16 @@ log:printInfo("Formatted Response: " + formattedJson);
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <AddBiometricAttendanceResponse> check performDataBinding(graphqlResponse, AddBiometricAttendanceResponse);
     }
+    remote isolated function getStudentLateAttendanceByTimeRange(string date, int parent_organization_id, int activity_id) returns GetStudentLateAttendanceByTimeRangeResponse|graphql:ClientError {
+        string query = string `query getStudentLateAttendanceByTimeRange($parent_organization_id:Int!,$activity_id:Int!,$date:String!) {late_attendance_report(parent_organization_id:$parent_organization_id,activity_id:$activity_id,date:$date) {label student_count student_name}}`;
+        map<anydata> variables = {"date": date, "parent_organization_id": parent_organization_id, "activity_id": activity_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetStudentLateAttendanceByTimeRangeResponse> check performDataBinding(graphqlResponse, GetStudentLateAttendanceByTimeRangeResponse);
+    }
+    remote isolated function getDailyAbsenceSummary(string date, int activity_id, string? from_date = (), string? to_date = (), int? result_limit = (), int? organization_id = (), int? parent_organization_id = ()) returns GetDailyAbsenceSummaryResponse|graphql:ClientError {
+        string query = string `query getDailyAbsenceSummary($organization_id:Int,$parent_organization_id:Int,$activity_id:Int!,$result_limit:Int,$date:String!,$from_date:String,$to_date:String) {absent_report(organization_id:$organization_id,parent_organization_id:$parent_organization_id,activity_id:$activity_id,result_limit:$result_limit,date:$date,from_date:$from_date,to_date:$to_date) {absent_count absent_names}}`;
+        map<anydata> variables = {"date": date, "from_date": from_date, "to_date": to_date, "result_limit": result_limit, "organization_id": organization_id, "parent_organization_id": parent_organization_id, "activity_id": activity_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetDailyAbsenceSummaryResponse> check performDataBinding(graphqlResponse, GetDailyAbsenceSummaryResponse);
+    }
 }
