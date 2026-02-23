@@ -1,5 +1,5 @@
 input Activity {
-  record_type: String
+  record_type: String = "activity"
   id: Int
   name: String
   description: String
@@ -24,9 +24,10 @@ type ActivityData {
 }
 
 input ActivityInstance {
-  record_type: String
+  record_type: String = "activity_instance"
   id: Int
   activity_id: Int
+  task_id: Int
   name: String
   place_id: Int
   location: String
@@ -38,8 +39,12 @@ input ActivityInstance {
   notes: String
   start_time: String
   end_time: String
+  overall_task_status: String
   created: String
   updated: String
+  task: MaintenanceTask
+  finance: MaintenanceFinance
+  activity_participants: [ActivityParticipant!]
 }
 
 type ActivityInstanceData {
@@ -48,12 +53,18 @@ type ActivityInstanceData {
   location: String
   description: String
   activity_id: Int
+  task_id: Int
   notes: String
   daily_sequence: Int
   weekly_sequence: Int
   monthly_sequence: Int
   start_time: String
   end_time: String
+  task: MaintenanceTaskData
+  finance: MaintenanceFinanceData
+  overall_task_status: String
+  overdue_days: Int
+  statusText: String
   created: String
   updated: String
   place: PlaceData
@@ -67,7 +78,7 @@ type ActivityInstanceData {
 }
 
 input ActivityInstanceEvaluation {
-  record_type: String
+  record_type: String = "activity_instance_evaluation"
   id: Int
   activity_instance_id: Int
   evaluator_id: Int
@@ -88,22 +99,24 @@ type ActivityInstanceEvaluationData {
 }
 
 input ActivityParticipant {
-  record_type: String
+  record_type: String = "activity_participant"
   id: Int
   activity_instance_id: Int
   person_id: Int
   organization_id: Int
   start_date: String
   end_date: String
+  participant_task_status: String
   role: String
   notes: String
   is_attending: Int
   created: String
   updated: String
+  person: Person
 }
 
 input ActivityParticipantAttendance {
-  record_type: String
+  record_type: String = "activity_participant_attendance"
   id: Int
   person_id: Int
   activity_instance_id: Int
@@ -160,6 +173,7 @@ type ActivityParticipantData {
   organization: OrganizationData
   start_date: String
   end_date: String
+  participant_task_status: String
   role: String
   notes: String
   is_attending: Int
@@ -168,7 +182,7 @@ type ActivityParticipantData {
 }
 
 input ActivitySequencePlan {
-  record_type: String
+  record_type: String = "activity_sequence_plan"
   id: Int
   activity_id: Int
   sequence_number: Int
@@ -191,7 +205,7 @@ type ActivitySequencePlanData {
 }
 
 input Address {
-  record_type: String
+  record_type: String = "address"
   id: Int
   street_address: String
   phone: Int
@@ -206,8 +220,18 @@ type AddressData {
   id: Int
 }
 
+type AgeDistributionData {
+  age_groups: [AgeGroupData!]!
+  total_students: Int!
+}
+
+type AgeGroupData {
+  age_group: String!
+  count: Int!
+}
+
 input Alumni {
-  record_type: String
+  record_type: String = "alumni"
   id: Int
   status: String
   company_name: String
@@ -216,6 +240,7 @@ input Alumni {
   facebook_id: String
   instagram_id: String
   tiktok_id: String
+  canva_cv_url: String
   updated_by: String
   person_count: Int
   created: String
@@ -231,6 +256,7 @@ type AlumniData {
   facebook_id: String
   instagram_id: String
   tiktok_id: String
+  canva_cv_url: String
   updated_by: String
   created: String
   updated: String
@@ -238,7 +264,7 @@ type AlumniData {
 }
 
 input AlumniEducationQualification {
-  record_type: String
+  record_type: String = "alumni_education_qualification"
   id: Int
   person_id: Int
   university_name: String
@@ -263,7 +289,7 @@ type AlumniEducationQualificationData {
 }
 
 input AlumniWorkExperience {
-  record_type: String
+  record_type: String = "alumni_work_experience"
   id: Int
   person_id: Int
   company_name: String
@@ -288,7 +314,7 @@ type AlumniWorkExperienceData {
 }
 
 input ApplicantConsent {
-  record_type: String
+  record_type: String = "applicant_consent"
   id: Int
   active: Boolean
   organization_id: Int
@@ -334,7 +360,7 @@ type ApplicantConsentData {
 }
 
 input Application {
-  record_type: String
+  record_type: String = "application"
   id: Int
   person_id: Int
   vacancy_id: Int
@@ -357,7 +383,7 @@ type ApplicationStatusData {
 }
 
 input Asset {
-  record_type: String
+  record_type: String = "asset"
   id: Int
   name: String
   manufacturer: String
@@ -399,7 +425,7 @@ type AttendanceDashboardDataMain {
 }
 
 input AvinyaType {
-  record_type: String
+  record_type: String = "avinya_type"
   id: Int
   active: Boolean!
   global_type: String!
@@ -421,15 +447,18 @@ type AvinyaTypeData {
   description: String
 }
 
-type CalendarMetaData {
+type BatchPaymentPlanData {
   id: Int
   organization_id: Int
   batch_id: Int
   monthly_payment_amount: Decimal
+  valid_from: String
+  valid_to: String
+  created: String
 }
 
 input City {
-  record_type: String
+  record_type: String = "city"
   id: Int
   district_id: Int
   suburb_name_en: String
@@ -450,7 +479,7 @@ type CityData {
 }
 
 input Consumable {
-  record_type: String
+  record_type: String = "consumable"
   id: Int
   avinya_type_id: Int
   name: String
@@ -476,6 +505,25 @@ type ConsumableData {
   updated: String
 }
 
+input CvRequest {
+  record_type: String = "cv_request"
+  id: Int
+  person_id: Int
+  phone: Int
+  status: String
+  created: String
+  updated: String
+}
+
+type CvRequestData {
+  id: Int
+  person_id: Int
+  phone: Int
+  status: String
+  created: String
+  updated: String
+}
+
 type DailyActivityParticipantAttendanceByParentOrgData {
   description: String
   present_count: Int
@@ -487,9 +535,11 @@ type DailyActivityParticipantAttendanceByParentOrgData {
 type DailyActivityParticipantAttendanceSummaryReportData {
   sign_in_date: String
   present_count: Int
+  absent_count: Int
   late_count: Int
   total_count: Int
   present_attendance_percentage: Decimal
+  absent_attendance_percentage: Decimal
   late_attendance_percentage: Decimal
 }
 
@@ -500,6 +550,16 @@ type DistrictData {
   id: Int
   province: ProvinceData!
   cities: [CityData!]!
+}
+
+type DistrictDistributionData {
+  districts: [DistrictStudentCount!]!
+  total_students: Int!
+}
+
+type DistrictStudentCount {
+  district_name: String!
+  count: Int!
 }
 
 type DocumentsData {
@@ -521,7 +581,7 @@ type DocumentsData {
 }
 
 input DutyParticipant {
-  record_type: String
+  record_type: String = "duty_participant"
   id: Int
   activity_id: Int
   activity: Activity
@@ -551,7 +611,7 @@ type DutyRotationMetaData {
 }
 
 input DutyRotationMetaDetails {
-  record_type: String
+  record_type: String = "duty_rotation_metadata"
   id: Int
   start_date: String
   end_date: String
@@ -559,7 +619,7 @@ input DutyRotationMetaDetails {
 }
 
 input EducationExperience {
-  record_type: String
+  record_type: String = "education_experience"
   id: Int
   person_id: Int
   school: String
@@ -577,7 +637,7 @@ type EducationExperienceData {
 }
 
 input Evaluation {
-  record_type: String
+  record_type: String = "evaluation"
   id: Int
   evaluatee_id: Int
   evaluator_id: Int
@@ -593,7 +653,7 @@ input Evaluation {
 }
 
 input EvaluationCriteria {
-  record_type: String
+  record_type: String = "evaluation_criteria"
   id: Int
   prompt: String
   description: String
@@ -604,7 +664,7 @@ input EvaluationCriteria {
 }
 
 input EvaluationCriteriaAnswerOption {
-  record_type: String
+  record_type: String = "evaluation_criteria_answer_option"
   id: Int
   evaluation_criteria_id: Int
   answer: String
@@ -629,7 +689,7 @@ type EvaluationCriteriaData {
 }
 
 input EvaluationCycle {
-  record_type: String
+  record_type: String = "evaluation_cycle"
   id: Int
   name: String
   description: String
@@ -660,7 +720,7 @@ type EvaluationData {
 }
 
 input EvaluationMetadata {
-  record_type: String
+  record_type: String = "metadata"
   id: Int
   evaluation_id: Int
   location: String
@@ -700,8 +760,12 @@ type GeoData {
   address(id: Int!): AddressData!
 }
 
+type GroupedTasks {
+  groups: [TaskGroup!]!
+}
+
 input Inventory {
-  record_type: String
+  record_type: String = "inventory"
   id: Int
   avinya_type_id: Int
   asset_id: Int
@@ -753,7 +817,7 @@ type JobCategoryData {
 }
 
 input JobPost {
-  record_type: String
+  record_type: String = "job_post"
   id: Int
   job_type: String
   job_text: String
@@ -789,8 +853,121 @@ type LocalizedName {
   name_si: String
 }
 
+input MaintenanceFinance {
+  record_type: String = "maintenance_finance"
+  id: Int
+  activity_instance_id: Int
+  estimated_cost: Decimal
+  labour_cost: Decimal
+  total_cost: Decimal
+  status: String
+  rejection_reason: String
+  reviewed_by: String
+  reviewed_date: String
+  created: String
+  updated: String
+  materialCosts: [MaterialCost!]
+}
+
+type MaintenanceFinanceData {
+  id: Int
+  activity_instance_id: Int
+  estimated_cost: Decimal
+  labour_cost: Decimal
+  material_costs: [MaterialCostData!]
+  status: String
+  rejection_reason: String
+  reviewed_by: String
+  reviewed_date: String
+  created: String
+  updated: String
+  total_cost: Decimal!
+}
+
+type MaintenanceMonthlyTaskCostReportData {
+  organizationId: Int!
+  year: Int!
+  month: Int!
+  totalActualCost: Decimal!
+  totalEstimatedCost: Decimal!
+  tasks: [MaintenanceTaskCostSummaryData!]!
+}
+
+input MaintenanceTask {
+  record_type: String = "maintenance_task"
+  id: Int
+  title: String
+  description: String
+  task_type: String
+  frequency: String
+  location_id: Int
+  start_date: String
+  exception_deadline: Int
+  has_financial_info: Int
+  modified_by: String
+  is_active: Boolean
+  created: String
+  updated: String
+  person_id_list: [Int!]
+  finance: MaintenanceFinance
+}
+
+type MaintenanceTaskCostSummaryData {
+  taskId: Int!
+  taskTitle: String!
+  actualCost: Decimal!
+  estimatedCost: Decimal!
+}
+
+type MaintenanceTaskData {
+  id: Int
+  title: String
+  description: String
+  task_type: String
+  frequency: String
+  location_id: Int
+  location: OrganizationLocationData
+  start_date: String
+  exception_deadline: Int
+  has_financial_info: Int
+  modified_by: String
+  is_active: Boolean
+  created: String
+  updated: String
+}
+
+input MaterialCost {
+  record_type: String = "material_cost"
+  id: Int
+  financial_id: Int
+  item: String
+  quantity: Decimal
+  unit: String
+  unit_cost: Decimal
+}
+
+type MaterialCostData {
+  id: Int
+  financial_id: Int
+  item: String
+  quantity: Decimal
+  unit: String
+  unit_cost: Decimal
+}
+
+type MonthlyCostData {
+  month: Int
+  estimated_cost: Decimal
+  actual_cost: Decimal
+}
+
+type MonthlyCostSummaryData {
+  year: Int
+  monthly_costs: [MonthlyCostData!]
+}
+
 input MonthlyLeaveDates {
-  record_type: String
+  record_type: String = "monthly_leave_dates"
   id: Int
   year: Int
   month: Int
@@ -800,6 +977,7 @@ input MonthlyLeaveDates {
   leave_dates_list: [Int!]!
   leave_dates: String
   daily_amount: Decimal
+  monthly_payment_amount: Decimal
   created: String
   updated: String
 }
@@ -814,6 +992,16 @@ type MonthlyLeaveDatesData {
   daily_amount: Decimal
   created: String
   updated: String
+}
+
+type MonthlyReportData {
+  totalTasks: Int
+  completedTasks: Int
+  pendingTasks: Int
+  inProgressTasks: Int
+  totalCosts: Decimal
+  totalUpcomingTasks: Int
+  nextMonthlyEstimatedCost: Decimal
 }
 
 type Mutation {
@@ -894,10 +1082,20 @@ type Mutation {
   create_job_post(job_post: JobPost!): JobPostData
   update_job_post(job_post: JobPost!): JobPostData
   delete_job_post(job_post: JobPost!): Int
+  addCvRequest(personId: Int!, cvRequest: CvRequest!): CvRequestData
+  uploadCV(personId: Int!, personCv: PersonCv!): PersonCvData
+  saveUserFCMToken(personId: Int!, personFCMToken: PersonFcmToken!): PersonFcmTokenData
+  updateUserFCMToken(personId: Int!, personFCMToken: PersonFcmToken!): PersonFcmTokenData
+  saveOrganizationLocation(organizationId: Int!, organizationLocation: OrganizationLocation!): OrganizationLocationData
+  createMaintenanceTask(organizationId: Int, maintenanceTask: MaintenanceTask!, finance: MaintenanceFinance, materialCosts: [MaterialCost!]): MaintenanceTaskData
+  updateMaintenanceTask(organizationId: Int!, maintenanceTaskActivityInstance: ActivityInstance!, maintenanceTask: MaintenanceTask!, maintenanceTaskParticipantList: [Int!]!, finance: MaintenanceFinance, materialCosts: [MaterialCost!]): ActivityInstanceData
+  updateTaskProgress(activityInstanceId: Int!, taskParticipantId: Int!, taskParticipant: ActivityParticipant!): ActivityParticipantData
+  softDeactivateMaintenanceTask(taskId: Int!, modifiedBy: String!): MaintenanceTaskData
+  updateMaintenanceFinance(financeId: Int!, maintenanceFinance: MaintenanceFinance!): MaintenanceFinanceData
 }
 
 input Organization {
-  record_type: String
+  record_type: String = "organization"
   id: Int
   child_organizations: [Int!]
   parent_organizations: [Int!]
@@ -930,6 +1128,21 @@ type OrganizationData {
   active: Int
 }
 
+input OrganizationLocation {
+  record_type: String = "organization_location"
+  id: Int
+  organization_id: Int
+  location_name: String
+  description: String
+}
+
+type OrganizationLocationData {
+  id: Int
+  organization_id: Int
+  location_name: String
+  description: String
+}
+
 type OrganizationMetaData {
   id: Int
   organization_id: Int
@@ -942,7 +1155,7 @@ type OrganizationStructureData {
 }
 
 input Person {
-  record_type: String
+  record_type: String = "person"
   id: Int
   preferred_name: String
   full_name: String
@@ -986,6 +1199,28 @@ input Person {
   updated_by: Int
   is_graduated: Boolean
   profile_picture_folder_id: String
+}
+
+input PersonCv {
+  record_type: String = "person_cv"
+  id: Int
+  person_id: Int
+  file_content: String
+  nic_no: String
+  drive_file_id: String
+  uploaded_by: String
+  created: String
+  updated: String
+}
+
+type PersonCvData {
+  id: Int
+  person_id: Int
+  drive_file_id: String
+  file_content: String
+  uploaded_by: String
+  created: String
+  updated: String
 }
 
 type PersonData {
@@ -1036,8 +1271,25 @@ type PersonData {
   profile_picture_folder_id: String
 }
 
+input PersonFcmToken {
+  record_type: String = "person_fcm_token"
+  id: Int
+  person_id: Int
+  fcm_token: String
+  created: String
+  updated: String
+}
+
+type PersonFcmTokenData {
+  id: Int
+  person_id: Int
+  fcm_token: String
+  created: String
+  updated: String
+}
+
 input PersonProfilePicture {
-  record_type: String
+  record_type: String = "person_profile_pictures"
   id: Int
   person_id: Int
   profile_picture_drive_id: String
@@ -1076,7 +1328,7 @@ type PlaceData {
 }
 
 input Prospect {
-  record_type: String
+  record_type: String = "prospect"
   id: Int
   active: Boolean
   name: String
@@ -1124,10 +1376,11 @@ type Query {
   organization_structure(name: String, id: Int): OrganizationStructureData
   organizations(level: Int!): OrganizationStructureData
   organization(name: String, id: Int): OrganizationData
-  organizations_by_avinya_type(active: Int): [OrganizationData!]
+  organizations_by_avinya_type_and_status(avinya_type: Int, active: Int): [OrganizationData!]
   student_list_by_parent(parent_organization_id: Int, batch_id: Int): [PersonData!]
   person(name: String, id: Int): PersonData
   person_by_digital_id(id: String): PersonData
+  validatePin(pin: String): PersonData
   prospect(email: String, phone: Int): ProspectData
   applicant_consent(email: String, phone: Int): ApplicantConsentData
   application(person_id: Int!): ApplicationData
@@ -1153,12 +1406,12 @@ type Query {
   education_experience_byPerson(person_id: Int): [EducationExperienceData!]!
   work_experience(id: Int): WorkExperienceData
   work_experience_ByPerson(person_id: Int): [WorkExperienceData!]
-  activity(name: String, id: Int): ActivityData
+  activity(name: String, id: Int = 0): ActivityData
   class_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_today(person_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
-  person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int): [ActivityParticipantAttendanceData!]
-  class_attendance_report(batch_id: Int, organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String, to_date: String): [ActivityParticipantAttendanceData!]
-  late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int, from_date: String, to_date: String): [ActivityParticipantAttendanceDataForLateAttendance!]
+  person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int = 0): [ActivityParticipantAttendanceData!]
+  class_attendance_report(batch_id: Int, organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
+  late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceDataForLateAttendance!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
   supplier(id: Int!): SupplierData
@@ -1184,23 +1437,26 @@ type Query {
   duty_participants_by_duty_activity_id(organization_id: Int, duty_activity_id: Int): [DutyParticipantData!]!
   duty_attendance_today(organization_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   duty_participant(person_id: Int): DutyParticipantData
-  attendance_dashboard_data_by_date(organization_id: Int, parent_organization_id: Int, activity_id: Int, from_date: String, to_date: String): [AttendanceDashboardDataMain!]
-  attendance_missed_by_security(organization_id: Int, parent_organization_id: Int, from_date: String, to_date: String): [ActivityParticipantAttendanceMissedBySecurityData!]
+  attendance_dashboard_data_by_date(organization_id: Int, parent_organization_id: Int, activity_id: Int, from_date: String = "", to_date: String = ""): [AttendanceDashboardDataMain!]
+  attendance_missed_by_security(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceMissedBySecurityData!]
   daily_students_attendance_by_parent_org(parent_organization_id: Int): [DailyActivityParticipantAttendanceByParentOrgData!]
-  total_attendance_count_by_date(organization_id: Int, parent_organization_id: Int, from_date: String, to_date: String): [TotalActivityParticipantAttendanceCountByDateData!]
-  daily_attendance_summary_report(organization_id: Int, avinya_type_id: Int, from_date: String, to_date: String): [DailyActivityParticipantAttendanceSummaryReportData!]
-  inventory_data_by_organization(organization_id: Int, date: String): [InventoryData!]
-  consumable_weekly_report(organization_id: Int, from_date: String, to_date: String): [InventoryData!]
+  total_attendance_count_by_date(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [TotalActivityParticipantAttendanceCountByDateData!]
+  daily_attendance_summary_report(organization_id: Int, avinya_type_id: Int, from_date: String = "", to_date: String = ""): [DailyActivityParticipantAttendanceSummaryReportData!]
+  inventory_data_by_organization(organization_id: Int, date: String = ""): [InventoryData!]
+  consumable_weekly_report(organization_id: Int, from_date: String = "", to_date: String = ""): [InventoryData!]
   consumable_monthly_report(organization_id: Int, year: Int, month: Int): [InventoryData!]
   consumable_yearly_report(organization_id: Int, consumable_id: Int, year: Int): [InventoryData!]
-  persons(organization_id: Int, avinya_type_id: Int): [PersonData!]
+  studentCountByOrganization(organization_id: Int!): StudentCountData!
+  studentAgeDistribution(organization_id: Int!): AgeDistributionData!
+  studentDistrictDistribution(organization_id: Int!): DistrictDistributionData!
+  persons(organization_id: Int, avinya_type_id: Int, limit: Int, offset: Int, class_id: Int, search: String): [PersonData!]
   person_by_id(id: Int): PersonData
   document_list(id: Int!): [DocumentsData!]
   districts: [DistrictData!]
   cities(district_id: Int): [CityData!]
   all_organizations: [OrganizationData!]
   monthly_leave_dates_record_by_id(organization_id: Int!, batch_id: Int!, year: Int!, month: Int!): MonthlyLeaveDatesData
-  calendar_metadata_by_org_id(organization_id: Int!, batch_id: Int!): CalendarMetaData
+  batch_payment_plan_by_org_id(organization_id: Int!, batch_id: Int!, selected_month_date: String!): BatchPaymentPlanData
   alumni_education_qualification_by_id(id: Int): AlumniEducationQualificationData
   alumni_work_experience_by_id(id: Int): AlumniWorkExperienceData
   upcoming_events(person_id: Int): [ActivityInstanceData!]
@@ -1208,8 +1464,19 @@ type Query {
   alumni_persons(parent_organization_id: Int): [PersonData!]
   alumni_summary(alumni_batch_id: Int): [AlumniData!]
   job_post(id: Int): JobPostData
-  job_posts(result_limit: Int!, offset: Int!): [JobPostData!]
+  job_posts(result_limit: Int! = 4, offset: Int! = 0): [JobPostData!]
   job_categories: [JobCategoryData!]
+  fetchLatestCvRequest(personId: Int!): CvRequestData
+  fetchPersonCV(personId: Int!, driveFileId: String): PersonCvData
+  fetchUserFCMToken(personId: Int): PersonFcmTokenData
+  locationsByOrganization(organizationId: Int): [OrganizationLocationData!]
+  maintenanceTasks(organizationId: Int!, personId: [Int!], fromDate: String, toDate: String, taskStatus: String, financialStatus: String, taskType: String, location: Int, title: String, limit: Int! = 10, offset: Int! = 0, includeFinance: Boolean! = false): [ActivityInstanceData!]
+  overdueMaintenanceTasks(organizationId: Int!): [ActivityInstanceData!]
+  maintenanceTasksByMonthYearStatus(organizationId: Int!, month: Int!, year: Int!, overallTaskStatus: String, limit: Int! = 10, offset: Int! = 0): [ActivityInstanceData!]
+  monthlyMaintenanceReport(organizationId: Int!, year: Int!, month: Int!): MonthlyReportData!
+  monthlyCostSummary(year: Int!, organizationId: Int!): MonthlyCostSummaryData
+  maintenanceTasksByStatus(organizationId: Int!, personId: Int, fromDate: String, toDate: String, taskType: String, location: Int): GroupedTasks!
+  monthlyTaskCostReport(organizationId: Int!, year: Int!, month: Int!): MaintenanceMonthlyTaskCostReportData!
 }
 
 input ResourceAllocation {
@@ -1264,6 +1531,13 @@ type ResourcePropertyData {
   value: String
 }
 
+type StudentCountData {
+  current_student_count: Int!
+  male_student_count: Int!
+  female_student_count: Int!
+  dropout_student_count: Int!
+}
+
 input Supplier {
   record_type: String
   id: Int
@@ -1314,6 +1588,12 @@ type SupplyData {
   order_amount: Int
   created: String
   updated: String
+}
+
+type TaskGroup {
+  groupId: String!
+  groupName: String!
+  tasks: [ActivityInstanceData!]!
 }
 
 type TotalActivityParticipantAttendanceCountByDateData {

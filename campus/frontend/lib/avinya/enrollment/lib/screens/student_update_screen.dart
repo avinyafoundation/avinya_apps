@@ -14,10 +14,10 @@ class _StudentUpdateScreenState extends State<StudentUpdateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Student Profile", style: TextStyle(color: Colors.black)),
-        backgroundColor: Color.fromARGB(255, 120, 224, 158),
-      ),
+      // appBar: AppBar(
+      //   title: Text("Student Profile", style: TextStyle(color: Colors.black)),
+      //   backgroundColor: Color.fromARGB(255, 120, 224, 158),
+      // ),
       body: Container(
         child: StudentUpdate(id: widget.id),
       ),
