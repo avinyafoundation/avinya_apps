@@ -25,9 +25,9 @@ class _MaintenanceManagementSystemState
   void initState() {
     /// Configure the parser with all of the app's allowed path templates.
     _routeParser = TemplateRouteParser(
-      allowedPaths: [AppRoutes.kanbanBoardRoute],
+      allowedPaths: [AppRoutes.kanbanBoardRoute, AppRoutes.maintenanceDashboardRoute],
       guard: _guard,
-      initialRoute: AppRoutes.kanbanBoardRoute,
+      initialRoute: AppRoutes.maintenanceDashboardRoute,
     );
 
     _routeState = RouteState(_routeParser);
@@ -87,9 +87,18 @@ class _MaintenanceManagementSystemState
         AppRoutes.kanbanBoardRoute,
         AppRoutes.kanbanBoardRoute, {}, {});
     
+    final maintenanceDashboardRoute = ParsedRoute(
+        AppRoutes.maintenanceDashboardRoute,
+        AppRoutes.maintenanceDashboardRoute, {}, {});
+
     if (signedIn && from == kanbanBoardRoute) {
       return kanbanBoardRoute;
     }
+    
+    if (signedIn && from == maintenanceDashboardRoute) {
+      return maintenanceDashboardRoute;
+    }
+
     // } else if (!signedIn && from == subscribedThankyouRoute) {
     //   return subscribedThankyouRoute;
 
@@ -99,7 +108,7 @@ class _MaintenanceManagementSystemState
   void _handleAuthStateChanged() async {
     bool signedIn = await _auth.getSignedIn();
     if (!signedIn) {
-      _routeState.go(AppRoutes.kanbanBoardRoute);
+      _routeState.go(AppRoutes.maintenanceDashboardRoute);
     }
   }
 

@@ -93,6 +93,8 @@ class SMSAuth extends ChangeNotifier {
                   print("API tokens Key : $key, Value : $value"));
             AppConfig.maintenanceAppBffApiKey =
                 _api_tokens["access_token"];
+            AppConfig.attendanceAppBffApiKey =
+                _api_tokens["access_token"];    
             print('Fetch API tokens success');
           } else {
             print('Failed to fetch API key');
