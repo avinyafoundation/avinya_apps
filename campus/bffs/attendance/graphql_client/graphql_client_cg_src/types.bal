@@ -1218,3 +1218,20 @@ public type AddBiometricAttendanceResponse record {|
         string? created;
     |}? addBiometricAttendance;
 |};
+
+public type GetStudentLateAttendanceByTimeRangeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? label;
+        int? student_count;
+        string? student_name;
+    |}[]? late_attendance_report;
+|};
+
+public type GetDailyAbsenceSummaryResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? absent_count;
+        string? absent_names;
+    |}[]? absent_report;
+|};
