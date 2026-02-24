@@ -809,3 +809,27 @@ Future<List<ActivityAttendance>> getDailyAttendanceSummaryReport(
     throw Exception('Failed to get Daily Attendances Summary Data');
   }
 }
+
+Future<List<ActivityAttendance>> getDailyEmployeeAttendanceSummaryReport(
+    int organization_id,
+    String from_date,
+    String to_date) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/employees/attendance_summary_report/$organization_id/$from_date/$to_date'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityAttendance> activityAttendances = await resultsJson
+        .map<ActivityAttendance>((json) => ActivityAttendance.fromJson(json))
+        .toList();
+    return activityAttendances;
+  } else {
+    throw Exception('Failed to get Daily Employee Attendances Summary Data');
+  }
+}
