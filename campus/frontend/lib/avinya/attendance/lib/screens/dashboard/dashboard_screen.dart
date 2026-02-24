@@ -35,6 +35,9 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
   String _selectedYear = '';
   String _selectedDate = '';
 
+  // parent organization id for API calls
+  int? _parentOrgId;
+
   // Date variables
   DateTime today = DateTime.now();
   String batchStartDate = "";
@@ -46,6 +49,24 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
 
   // Class-wise attendance data
   List<Map<String, dynamic>> _classData = [];
+
+  // Late attendance data (fetched from backend)
+  List<dynamic> _fetchedLateAttendanceData = [];
+  List<Map<String, dynamic>> _lateAttendanceData = [];
+  final List<Color> _lateAttendanceColors = [
+    const Color(0xFF2ECC71), // Green
+    const Color(0xFF3498DB), // Blue
+    const Color(0xFFF39C12), // Orange
+    const Color(0xFFE67E22), // Deep Orange
+    const Color(0xFFE74C3C), // Red
+  ];
+  final List<String> _lateAttendanceLabels = [
+    'Before 07:30',
+    '07:30 - 07:45',
+    '07:45 - 08:00',
+    '08:00 - 08:30',
+    'After 08:30',
+  ];
 
   // Pagination for charts
   int _studentChartPage = 0;
@@ -142,6 +163,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     try {
       int? parentOrgId =
           campusAppsPortalInstance.getUserPerson().organization!.id;
+      _parentOrgId = parentOrgId; // save for later taps
 
       // Calculate start date as the first day of selected month
       int monthIndex = _months.indexOf(_selectedMonth) + 1;
@@ -168,7 +190,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
       // Fetch weekly student attendance data (using selected month date range)
       if (_selectedOrganizationValue != null) {
         _fetchedWeeklyStudentData = await getDailyAttendanceSummaryReport(
-          _selectedOrganizationValue!.id!, //_selectedOrganizationValue!.id! (44 before)
+          _selectedOrganizationValue!
+              .id!, //_selectedOrganizationValue!.id! (44 before)
           110, // activity type for students  (110) (37 before)
           startDateFormatted,
           endDateFormatted,
@@ -179,6 +202,46 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
           startDateFormatted,
           endDateFormatted,
         );
+
+        // Fetch late attendance summary for selected date (defaults to today)
+        if (parentOrgId != null) {
+          String queryDate = _selectedDate;
+          _fetchedLateAttendanceData =
+              await getLateAttendanceSummary(parentOrgId, queryDate, 4);
+          _lateAttendanceData = [];
+          for (var item in _fetchedLateAttendanceData) {
+            String label = item['label'] ?? '';
+            int value = item['student_count'] ?? 0;
+            String rawNames = item['student_name'] ?? '';
+            List<String> students = rawNames
+                .split(',')
+                .map((s) => s.trim())
+                .where((s) => s.isNotEmpty)
+                .toList();
+
+            // determine color index based on predefined label order
+            int labelIndex = _lateAttendanceLabels.indexOf(label);
+            if (labelIndex == -1) {
+              // fallback to sequential order if label isn't recognized
+              labelIndex = _lateAttendanceData.length;
+            }
+            Color color = _lateAttendanceColors[
+                labelIndex % _lateAttendanceColors.length];
+            _lateAttendanceData.add({
+              'label': label,
+              'value': value,
+              'color': color,
+              'students': students,
+            });
+          }
+
+          // ensure the data respects the fixed label ordering
+          _lateAttendanceData.sort((a, b) {
+            int ia = _lateAttendanceLabels.indexOf(a['label']);
+            int ib = _lateAttendanceLabels.indexOf(b['label']);
+            return ia.compareTo(ib);
+          });
+        }
       }
 
       setState(() {
@@ -328,6 +391,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
       // Adjust these field names according to your actual data structure
       chartData.add({
         'day': _formatDayLabel(dayData.sign_in_date ?? ''),
+        'date': dayData.sign_in_date ?? '',
         'academyPresent': dayData.present_count ?? 0,
         'academyAbsent': dayData.absent_count ?? 0,
       });
@@ -354,6 +418,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
 
       chartData.add({
         'day': _formatDayLabel(dayData.sign_in_date ?? ''),
+        'date': dayData.sign_in_date ?? '',
         'present': dayData.present_count ?? 0,
         'absent': dayData.absent_count ?? 0,
       });
@@ -814,16 +879,22 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     );
   }
 
-  void _showAbsentStudentsDialog(String className, int absentCount,
-      {String? date}) {
-    // Dummy data for absent students
-    List<Map<String, String>> absentStudents = List.generate(
-      absentCount,
-      (index) => {
-        'name': 'Student ${index + 1}',
-        'id': 'ST${(1000 + index).toString()}',
-      },
-    );
+  void _showAbsentStudentsDialog(String title, int absentCount,
+      {String? date, List<String>? studentNames}) {
+    // prepare list either from provided names or dummy
+    List<Map<String, String>> absentStudents;
+    if (studentNames != null && studentNames.isNotEmpty) {
+      absentStudents = studentNames.map((n) => {'name': n, 'id': ''}).toList();
+    } else {
+      // Dummy data for absent students
+      absentStudents = List.generate(
+        absentCount,
+        (index) => {
+          'name': 'Student ${index + 1}',
+          'id': 'ST${(1000 + index).toString()}',
+        },
+      );
+    }
 
     showDialog(
       context: context,
@@ -849,9 +920,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            date != null
-                                ? 'Absent Students - $date'
-                                : 'Absent Students - $className',
+                            date != null ? '$title - $date' : title,
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
@@ -1341,13 +1410,37 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                               chartType,
                               maxValue,
                               barWidth,
-                              onTap: chartType == 'student'
-                                  ? () {
-                                      int absentCount =
-                                          (item['academyAbsent'] ?? 0) as int;
+                              onTap: (chartType == 'student' ||
+                                      chartType == 'staff')
+                                  ? () async {
+                                      int absentCount = chartType == 'student'
+                                          ? (item['academyAbsent'] ?? 0) as int
+                                          : (item['absent'] ?? 0) as int;
+                                      String rawDate = item['date'] ?? '';
+                                      List<String> names = [];
+                                      try {
+                                        int? orgId = _parentOrgId;
+                                        int activityId =
+                                            chartType == 'student' ? 4 : 1;
+                                        int? parentId = chartType == 'staff'
+                                            ? _parentOrgId
+                                            : null;
+                                        if (orgId != null) {
+                                          names = await getDailyAbsenceSummary(
+                                              orgId, activityId, rawDate,
+                                              parentOrgId: parentId);
+                                        }
+                                      } catch (e) {
+                                        print('Error fetching absentees: $e');
+                                      }
                                       _showAbsentStudentsDialog(
-                                          'Students', absentCount,
-                                          date: item['day']);
+                                        chartType == 'student'
+                                            ? 'Students'
+                                            : 'Employees',
+                                        absentCount,
+                                        date: rawDate,
+                                        studentNames: names,
+                                      );
                                     }
                                   : null,
                             );
@@ -1476,6 +1569,84 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     return barWidget;
   }
 
+  // helper that renders a single entry as a horizontal bar with the count at the end
+  Widget _buildBarLegendItem(Map<String, dynamic> item, int total) {
+    int value = item['value'] as int;
+    Color color = item['color'] as Color;
+    String label = item['label'] as String;
+    double fraction = total > 0 ? value / total : 0;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // top row: square + label
+          Row(
+            children: [
+              Container(
+                width: 16,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Flexible(
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF2C3E50),
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 2),
+          // bar row
+          Row(
+            children: [
+              const SizedBox(width: 28), // align with label start after square
+              Expanded(
+                child: Container(
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.3), // lighter background
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  child: FractionallySizedBox(
+                    alignment: Alignment.centerLeft,
+                    widthFactor: fraction,
+                    child: Container(
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '$value',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildLegendItem(Color color, String label) {
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -1590,14 +1761,23 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
   }
 
   void _showStudentsByTimeRange(String timeRange, int studentCount) {
-    // Dummy data for students in time range
-    List<Map<String, String>> students = List.generate(
-      studentCount,
-      (index) => {
-        'name': 'Student ${index + 1}',
-        'id': 'ST${(1000 + index).toString()}',
-      },
-    );
+    // look up student names returned by backend for this time range
+    List<String> names = [];
+    for (var entry in _lateAttendanceData) {
+      if (entry['label'] == timeRange) {
+        if (entry['students'] is List<String>) {
+          names = List<String>.from(entry['students']);
+        }
+        break;
+      }
+    }
+    List<Map<String, String>> students;
+    if (names.isNotEmpty) {
+      students = names.map((n) => {'name': n, 'id': ''}).toList();
+    } else {
+      // fallback to empty list
+      students = [];
+    }
 
     showDialog(
       context: context,
@@ -1708,13 +1888,14 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 2),
-                                  Text(
-                                    'ID: ${student['id']}',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.grey[600],
+                                  if ((student['id'] ?? '').isNotEmpty)
+                                    Text(
+                                      'ID: ${student['id']}',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey[600],
+                                      ),
                                     ),
-                                  ),
                                 ],
                               ),
                             ),
@@ -1733,14 +1914,30 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
   }
 
   Widget _buildLateAttendanceCard() {
-    // Dummy data for time ranges
-    final List<Map<String, dynamic>> lateAttendanceData = [
-      {'label': 'Before 7:30', 'value': 45, 'color': const Color(0xFF2ECC71)},
-      {'label': '7:30 - 7:45', 'value': 25, 'color': const Color(0xFF3498DB)},
-      {'label': '7:45 - 8:00', 'value': 15, 'color': const Color(0xFFF39C12)},
-      {'label': '8:00 - 8:30', 'value': 10, 'color': const Color(0xFFE67E22)},
-      {'label': 'After 8:30', 'value': 5, 'color': const Color(0xFFE74C3C)},
-    ];
+    // use only the real data fetched earlier; if list empty show placeholder
+    List<Map<String, dynamic>> lateAttendanceData = _lateAttendanceData;
+    if (lateAttendanceData.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(25),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            'No late attendance data available for ${DateFormat('MMM d, yyyy').format(DateTime.parse(_selectedDate))}',
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+          ),
+        ),
+      );
+    }
 
     int totalStudents =
         lateAttendanceData.fold(0, (sum, item) => sum + (item['value'] as int));
@@ -1898,53 +2095,13 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
 
               const SizedBox(width: 30),
 
-              // Legend
+              // Legend: show each range as a horizontal bar with count at end
               Expanded(
                 flex: 3,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: lateAttendanceData.map((item) {
-                    double percentage =
-                        (item['value'] as int) / totalStudents * 100;
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 15),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 16,
-                            height: 16,
-                            decoration: BoxDecoration(
-                              color: item['color'] as Color,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item['label'] as String,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFF2C3E50),
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  '${item['value']} students (${percentage.toStringAsFixed(1)}%)',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
+                    return _buildBarLegendItem(item, totalStudents);
                   }).toList(),
                 ),
               ),
