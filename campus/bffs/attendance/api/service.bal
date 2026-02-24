@@ -1155,7 +1155,7 @@ service / on new http:Listener(9091) {
     ) returns json[] | error {
         GetDailyAbsenceSummaryResponse|graphql:ClientError getDailyAbsenceSummaryResponse = globalDataClient->
                                                                                              getDailyAbsenceSummary(date,activity_id,from_date,to_date,
-                                                                                              result_limit,organization_id,parent_organization_id);
+                                                                                              result_limit,organization_id,parent_org_id);
         
         if(getDailyAbsenceSummaryResponse is GetDailyAbsenceSummaryResponse){
             json[] absenceSummaryList = [];
