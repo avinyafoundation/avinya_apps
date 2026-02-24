@@ -877,13 +877,13 @@ class _MaintenanceDashboardScreenState
   Widget _buildFoodWasteCard() {
     // Hardcoded last-7-days data
     final List<Map<String, dynamic>> wasteData = [
-      {'day': '2/24', 'cost': 320.0, 'color': _orange},
-      {'day': '2/23', 'cost': 180.0, 'color': _orange},
-      {'day': '2/22', 'cost': 400.0, 'color': _orange},
+      {'day': '2/18', 'cost': 320.0, 'color': _orange},
+      {'day': '2/19', 'cost': 180.0, 'color': _orange},
+      {'day': '2/20', 'cost': 400.0, 'color': _orange},
       {'day': '2/21', 'cost': 250.0, 'color': _orange},
-      {'day': '2/20', 'cost': 250.0, 'color': _orange},
-      {'day': '2/19', 'cost': 450.0, 'color': _orange},
-      {'day': '2/18', 'cost': 1310.0, 'color': _orange},
+      {'day': '2/22', 'cost': 250.0, 'color': _orange},
+      {'day': '2/23', 'cost': 450.0, 'color': _orange},
+      {'day': '2/24', 'cost': 1310.0, 'color': _orange},
     ];
 
     final maxCost = wasteData.map((d) => d['cost'] as double).reduce(max);
