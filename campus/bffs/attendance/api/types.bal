@@ -976,5 +976,5 @@ public type GetDailyAbsenceSummaryResponse record {|
     record {|
         int? absent_count;
         string? absent_names;
-    |}[]? absent_report;
+    |}[] absent_report;
 |};
