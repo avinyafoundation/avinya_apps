@@ -88,20 +88,20 @@ class _MaintenanceDashboardScreenState
     final hour = now.hour;
     // generate times
     bool shouldRefresh = false;
-    // 7:15-8:15 every 5
-    if (hour == 7 || hour == 8) {
-      if (hour == 7 && minute >= 15 || hour == 8 && minute <= 15) {
-        if ((minute - 15) % 5 == 0 && minute >= 15 && minute <= 15 + 60) {
-          shouldRefresh = true;
-        }
+    // between 7:15 and 8:15, refresh every 3 minutes (inclusive)
+    if ((hour == 7 && minute >= 15) || (hour == 8 && minute <= 15)) {
+      final totalMinutes = hour * 60 + minute;
+      final start = 7 * 60 + 15; // 7:15 in minutes
+      if ((totalMinutes - start) % 3 == 0) {
+        shouldRefresh = true;
       }
     }
-    // special points
+    // fixed checkpoints around breakfast hours
     if (hour == 8 && minute == 30) shouldRefresh = true;
     if (hour == 9 && (minute == 0 || minute == 30)) shouldRefresh = true;
     if (hour == 10 && minute == 0) shouldRefresh = true;
-    // every 2 hours from 12 to 20
-    if (hour >= 12 && hour <= 20 && hour % 2 == 0 && minute == 0) {
+    // thereafter, on the hour every hour from 10am through 6am next day
+    if ((hour >= 10 || hour < 7) && minute == 0) {
       shouldRefresh = true;
     }
 
@@ -159,8 +159,12 @@ class _MaintenanceDashboardScreenState
     }
 
 // fetch pending and in-progress separately to reduce payload
-    List<dynamic> pendingTasks = await getOrganizationTasksByStatus(2, 'Pending');
-    List<dynamic> inProgressTasks = await getOrganizationTasksByStatus(2, 'InProgress');
+    // include a seven‑day toDate window for both requests
+    final DateTime sevenDaysFromNow = DateTime.now().add(const Duration(days: 7));
+    List<dynamic> pendingTasks = await getOrganizationTasksByStatus(
+        2, 'Pending', toDate: sevenDaysFromNow);
+    List<dynamic> inProgressTasks = await getOrganizationTasksByStatus(
+        2, 'InProgress', toDate: sevenDaysFromNow);
     if (!mounted) return;
 
     List<dynamic> tasks = [];

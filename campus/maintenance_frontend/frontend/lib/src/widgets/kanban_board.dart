@@ -42,7 +42,10 @@ class _KanbanBoardState extends State<KanbanBoard> {
   @override
   void initState() {
     super.initState();
-    // Removed redundant _fetchEmployees(); call
+    // Prompt for PIN immediately instead of waiting for employee list to load
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _promptInitialPin();
+    });
 
     // 1. Initialize AppFlowy Controller
     controller = AppFlowyBoardController(
@@ -270,15 +273,6 @@ class _KanbanBoardState extends State<KanbanBoard> {
 
   Future<void> _fetchEmployees() async {
     employees = await fetchEmployeeListByOrganization(2);
-
-    if (employees.isNotEmpty) {
-      // Don't auto-select. Wait for PIN.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_sessionPersonId == null) {
-              _promptInitialPin();
-          }
-      });
-    }
     setState(() {});
   }
 
