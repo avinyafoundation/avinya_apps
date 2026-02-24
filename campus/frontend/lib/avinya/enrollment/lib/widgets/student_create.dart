@@ -110,7 +110,7 @@ class _StudentCreateState extends State<StudentCreate> {
         width: 850,
         child: Stepper(
             connectorColor:
-                WidgetStateProperty.all(Color.fromARGB(255, 74, 161, 70)),
+                WidgetStateProperty.all(Colors.lightBlueAccent),
             type: StepperType.vertical,
             currentStep: _currentStep,
             onStepContinue: _nextStep,
@@ -163,7 +163,7 @@ class _StudentCreateState extends State<StudentCreate> {
                                       margin: EdgeInsets.only(top: 10),
                                       child: SpinKitCircle(
                                         color:
-                                            (Color.fromARGB(255, 74, 161, 70)),
+                                            (Colors.lightBlueAccent),
                                         size: 70,
                                       ),
                                     );
@@ -227,7 +227,7 @@ class _StudentCreateState extends State<StudentCreate> {
                                       margin: EdgeInsets.only(top: 10),
                                       child: SpinKitCircle(
                                         color:
-                                            (Color.fromARGB(255, 74, 161, 70)),
+                                            (Colors.lightBlueAccent),
                                         size: 70,
                                       ),
                                     );
@@ -281,7 +281,7 @@ class _StudentCreateState extends State<StudentCreate> {
                                       margin: EdgeInsets.only(top: 10),
                                       child: SpinKitCircle(
                                         color:
-                                            (Color.fromARGB(255, 74, 161, 70)),
+                                            (Colors.lightBlueAccent),
                                         size: 70,
                                       ),
                                     );
@@ -489,6 +489,15 @@ class _StudentCreateState extends State<StudentCreate> {
         isAvinyaTypesDataLoaded;
     print('is enabled:${isEnabled}');
     if (_currentStep == 0 && isEnabled) {
+
+      // Validate date of birth manually
+      if (selectedDateOfBirth == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Date of Birth is required')),
+        );
+        return;
+      }
+
       if (_formKey.currentState!.validate()) {
         _formKey.currentState!.save();
         createdPerson = await createPerson(context, userPerson);
@@ -644,6 +653,10 @@ class _StudentCreateState extends State<StudentCreate> {
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
               ),
+              validator: (value) {
+                if (value == null) return 'Sex is required';
+                return null;
+              },
             ),
           ),
         ],
@@ -687,6 +700,10 @@ class _StudentCreateState extends State<StudentCreate> {
                 labelText: 'Select District',
                 border: OutlineInputBorder(),
               ),
+              validator: (value) {
+                if (value == null) return 'District is required';
+                return null;
+              },
             ),
           ),
         ],
@@ -750,6 +767,10 @@ class _StudentCreateState extends State<StudentCreate> {
                 labelText: 'Select City',
                 border: OutlineInputBorder(),
               ),
+              validator: (value) {
+                if (value == null) return 'City is required';
+                return null;
+              },
             ),
           ),
         ],
