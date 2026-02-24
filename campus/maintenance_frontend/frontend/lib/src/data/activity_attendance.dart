@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 import '../config/app_config.dart';
 
@@ -241,5 +242,28 @@ Future<List<ActivityAttendance>> getDailyStudentsAttendanceByParentOrg(
   } else {
     throw Exception(
         'Failed to get Activity Participant Attendances  by parent org');
+  }
+}
+
+Future<List<Map<String, dynamic>>> getLateAttendanceSummary(
+  int organizationId,
+  int activityId,
+) async {
+  final String dateStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/organizations/$organizationId/late-attendance-summary?date=$dateStr&activity_id=$activityId'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'api-key': AppConfig.attendanceAppBffApiKey,
+    },
+  );
+
+  if (response.statusCode >= 200 && response.statusCode < 300) {
+    return List<Map<String, dynamic>>.from(json.decode(response.body));
+  } else {
+    throw Exception('Failed to get Late Attendance Summary');
   }
 }
