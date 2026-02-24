@@ -199,7 +199,7 @@ class _StudentCreateState extends State<StudentCreate> {
                             _buildEditableField(
                                 'Personal Email', userPerson.email, (value) {
                               userPerson.email = value;
-                            }), // Email format validation
+                            }, validator: _validateEmail), // Email format validation
 
                             _buildEditableField(
                                 'Phone', userPerson.phone?.toString() ?? '',
@@ -551,7 +551,7 @@ class _StudentCreateState extends State<StudentCreate> {
 
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Email is required';
+      return null;
     }
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
     if (!emailRegex.hasMatch(value)) {
