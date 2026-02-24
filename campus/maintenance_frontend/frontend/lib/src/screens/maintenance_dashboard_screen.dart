@@ -350,8 +350,17 @@ class _MaintenanceDashboardScreenState
         Expanded(flex: 5, child: _buildClassWiseCard()),
         const SizedBox(width: 10),
 
-        // RIGHT: Staff tasks
-        Expanded(flex: 4, child: _buildStaffTaskOverviewCard()),
+        // RIGHT: Staff tasks + food waste
+        Expanded(
+          flex: 4,
+          child: Column(
+            children: [
+              Expanded(child: _buildStaffTaskOverviewCard()),
+              const SizedBox(height: 10),
+              Expanded(child: _buildFoodWasteCard()),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -864,6 +873,134 @@ class _MaintenanceDashboardScreenState
   }
 
   // ── Shared helpers ───────────────────────────
+  // ── Food Waste Card ──────────────────────────
+  Widget _buildFoodWasteCard() {
+    // Hardcoded last-7-days data
+    final List<Map<String, dynamic>> wasteData = [
+      {'day': '2/24', 'cost': 320.0, 'color': _orange},
+      {'day': '2/23', 'cost': 180.0, 'color': _orange},
+      {'day': '2/22', 'cost': 400.0, 'color': _orange},
+      {'day': '2/21', 'cost': 250.0, 'color': _orange},
+      {'day': '2/20', 'cost': 250.0, 'color': _orange},
+      {'day': '2/19', 'cost': 450.0, 'color': _orange},
+      {'day': '2/18', 'cost': 1310.0, 'color': _orange},
+    ];
+
+    final maxCost = wasteData.map((d) => d['cost'] as double).reduce(max);
+
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('FOOD WASTE TREND',
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700,
+                      letterSpacing: 1.5, color: _textMid)),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: _orange.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Text('Last 7 Days',
+                    style: TextStyle(fontSize: 10, color: _orange,
+                        fontWeight: FontWeight.w700)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // Line chart
+          Expanded(
+            flex: 6,
+            child: LayoutBuilder(builder: (context, constraints) {
+              final w = constraints.maxWidth;
+              final h = constraints.maxHeight;
+              final pointCount = wasteData.length;
+
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  // Horizontal grid lines (no value labels)
+                  ...List.generate(4, (i) {
+                    final y = h - (i / 3) * h * 0.75 - h * 0.1;
+                    return Positioned(
+                      top: y - 8,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 1,
+                        color: _divider,
+                      ),
+                    );
+                  }),
+
+                  // Chart area (full width)
+                  Positioned(
+                    left: 0,
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: CustomPaint(
+                      painter: _LineChartPainter(
+                        lineColor: _orange,
+                        fillColor: _orange.withOpacity(0.08),
+                        maxCost: maxCost,
+                        data: wasteData,
+                      ),
+                    ),
+                  ),
+
+                  // Day labels + cost labels on points
+                  ...List.generate(pointCount, (i) {
+                    final cost = wasteData[i]['cost'] as double;
+                    final x = i * (w / (pointCount - 1));
+                    final y = h - (cost / maxCost) * (h * 0.75) - h * 0.1;
+                    return Positioned(
+                      left: x - 20,
+                      top: y - 22,
+                      child: SizedBox(
+                        width: 40,
+                        child: Text(
+                          'LKR ${cost.toInt()}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontSize: 7, color: _textMid,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    );
+                  }),
+                  ...List.generate(pointCount, (i) {
+                    final x = i * (w / (pointCount - 1));
+                    return Positioned(
+                      left: x - 16,
+                      bottom: 0,
+                      child: SizedBox(
+                        width: 32,
+                        child: Text(
+                          wasteData[i]['day'] as String,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 8, color: _textMid),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              );
+            }),
+          ),
+
+          const SizedBox(height: 10),
+          const Divider(height: 1, color: _divider),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
   Widget _legendDot(Color color, String label) {
     return Row(
       children: [
@@ -1018,4 +1155,92 @@ class _PieChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// Simple painter for the food waste line chart
+class _LineChartPainter extends CustomPainter {
+  final Color lineColor;
+  final Color fillColor;
+  final double maxCost;
+  final List<Map<String, dynamic>> data;
+
+  _LineChartPainter({
+    required this.lineColor,
+    required this.fillColor,
+    required this.maxCost,
+    required this.data,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (data.isEmpty) return;
+
+    final paint = Paint()
+      ..color = lineColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    final path = Path();
+    final double w = size.width;
+    final double h = size.height;
+    final int count = data.length;
+
+    // draw vertical dotted guidelines for each point
+    final dashPaint = Paint()
+      ..color = lineColor.withOpacity(0.3)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0;
+    for (int i = 0; i < count; i++) {
+      final double x = i * (w / (count - 1));
+      double y = 0;
+      const double dashHeight = 4;
+      const double gapHeight = 4;
+      while (y < h) {
+        final double y2 = (y + dashHeight).clamp(0, h);
+        canvas.drawLine(Offset(x, y), Offset(x, y2), dashPaint);
+        y += dashHeight + gapHeight;
+      }
+    }
+
+    for (int i = 0; i < count; i++) {
+      final double x = i * (w / (count - 1));
+      final double value = data[i]['cost'] as double;
+      final double y = h - (value / maxCost) * (h * 0.75) - h * 0.1;
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+
+    // draw colored circles at each point
+    for (int i = 0; i < count; i++) {
+      final double x = i * (w / (count - 1));
+      final double value = data[i]['cost'] as double;
+      final double y = h - (value / maxCost) * (h * 0.75) - h * 0.1;
+      final Color dotColor = data[i]['color'] as Color? ?? lineColor;
+      canvas.drawCircle(Offset(x, y), 4.0, Paint()..color = dotColor);
+    }
+
+    // fill under the curve
+    final fillPath = Path.from(path)
+      ..lineTo(w, h)
+      ..lineTo(0, h)
+      ..close();
+
+    final fillPaint = Paint()
+      ..color = fillColor
+      ..style = PaintingStyle.fill;
+
+    canvas.drawPath(fillPath, fillPaint);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _LineChartPainter old) {
+    return old.data != data ||
+        old.maxCost != maxCost ||
+        old.lineColor != lineColor ||
+        old.fillColor != fillColor;
+  }
 }
