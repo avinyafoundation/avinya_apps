@@ -657,3 +657,26 @@ Future<List<Person>> fetchEmployeeListByOrganization(int? organization_id) async
     throw Exception('Failed to get persons Data');
   }
 }
+
+
+Future<Organization> fetchOrganization(int id) async {
+  final uri = Uri.parse(AppConfig.campusProfileBffApiUrl + '/organization')
+      .replace(queryParameters: {'id': id.toString()});
+
+  final response = await http.get(
+    uri,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      // 'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    Organization organization =
+        Organization.fromJson(json.decode(response.body));
+    return organization;
+  } else {
+    throw Exception('Failed to load Person');
+  }
+}

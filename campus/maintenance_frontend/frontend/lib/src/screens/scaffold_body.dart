@@ -3,7 +3,7 @@ import 'package:maintenance_management_system/src/app_routes/app_routes.dart';
 
 import '../routing.dart';
 import '../widgets/fade_transition_page.dart';
-import 'kanban_screen.dart';
+import 'maintenance_dashboard_screen.dart';
 import 'scaffold.dart';
 
 /// Displays the contents of the body of [SMSScaffold]
@@ -26,10 +26,10 @@ class SMSScaffoldBody extends StatelessWidget {
       pages: [
         
         if (currentRoute.pathTemplate
-                .startsWith(AppRoutes.kanbanBoardRoute))
+                .startsWith(AppRoutes.maintenanceDashboardRoute))
           const FadeTransitionPage<void>(
-            key: ValueKey('kanban_board_screen'),
-            child: KanbanScreen(),
+            key: ValueKey('maintenance_dashboard_screen'),
+            child: MaintenanceDashboardScreen(),
           )
         // Avoid building a Navigator with an empty `pages` list when the
         // RouteState is set to an unexpected path, such as /signin.
