@@ -600,6 +600,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
         totalStudentCount > 0 ? (totalAttendance / totalStudentCount) * 100 : 0;
 
     return Container(
+      height: 417.5,
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -726,6 +727,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
 
   Widget _buildClassWiseAttendanceCard() {
     return Container(
+      height: 860,
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -1918,6 +1920,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     List<Map<String, dynamic>> lateAttendanceData = _lateAttendanceData;
     if (lateAttendanceData.isEmpty) {
       return Container(
+        height: 417.5,
         padding: const EdgeInsets.all(25),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -1943,6 +1946,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
         lateAttendanceData.fold(0, (sum, item) => sum + (item['value'] as int));
 
     return Container(
+      height: 417.5,
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -2005,8 +2009,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                 flex: 2,
                 child: Center(
                   child: SizedBox(
-                    width: 220,
-                    height: 220,
+                    width: 240,
+                    height: 240,
                     child: GestureDetector(
                       onTapUp: (TapUpDetails details) {
                         _handlePieChartTap(
