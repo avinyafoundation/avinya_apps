@@ -692,7 +692,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 25),
                 Text(
                   'Students Present',
                   style: TextStyle(
@@ -700,7 +700,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                     color: Colors.grey[600],
                   ),
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
