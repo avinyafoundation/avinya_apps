@@ -786,8 +786,8 @@ service / on new http:Listener(9091) {
         }
     }
 
-    resource function get daily_students_attendance_by_parent_org/[int parent_organization_id]() returns DailyActivityParticipantAttendanceByParentOrg[]|error {
-        GetDailyStudentsAttendanceByParentOrgResponse|graphql:ClientError getDailyStudentsAttendanceResponse = globalDataClient->getDailyStudentsAttendanceByParentOrg(parent_organization_id);
+    resource function get daily_students_attendance_by_parent_org/[int parent_organization_id](string date) returns DailyActivityParticipantAttendanceByParentOrg[]|error {
+        GetDailyStudentsAttendanceByParentOrgResponse|graphql:ClientError getDailyStudentsAttendanceResponse = globalDataClient->getDailyStudentsAttendanceByParentOrg(date,parent_organization_id);
         if(getDailyStudentsAttendanceResponse is GetDailyStudentsAttendanceByParentOrgResponse) {
             DailyActivityParticipantAttendanceByParentOrg[] dailyStudentsAttendances = [];
             foreach var daily_students_attendance_record in getDailyStudentsAttendanceResponse.daily_students_attendance_by_parent_org {
