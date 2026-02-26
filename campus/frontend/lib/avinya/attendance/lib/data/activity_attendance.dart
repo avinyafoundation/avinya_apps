@@ -174,8 +174,7 @@ class BatchPaymentPlan {
       required this.batch_id,
       required this.monthly_payment_amount,
       required this.valid_from,
-      required this.valid_to
-      });
+      required this.valid_to});
 
   factory BatchPaymentPlan.fromJson(Map<String, dynamic> json) {
     return BatchPaymentPlan(
@@ -183,9 +182,8 @@ class BatchPaymentPlan {
         organization_id: json['organization_id'],
         batch_id: json['batch_id'],
         monthly_payment_amount: json['monthly_payment_amount'],
-        valid_from:json['valid_from'],
-        valid_to: json['valid_to']
-        );
+        valid_from: json['valid_from'],
+        valid_to: json['valid_to']);
   }
 
   Map<String, dynamic> toJson() => {
@@ -194,14 +192,13 @@ class BatchPaymentPlan {
         if (batch_id != null) 'batch_id': batch_id,
         if (monthly_payment_amount != null)
           'monthly_payment_amount': monthly_payment_amount,
-        if (valid_from != null)
-          'valid_from': valid_from,
-        if (valid_to != null)
-          'valid_to': valid_to
+        if (valid_from != null) 'valid_from': valid_from,
+        if (valid_to != null) 'valid_to': valid_to
       };
 }
+
 Future<BatchPaymentPlan?> fetchBatchPaymentPlanByOrgId(
-    int organizationId, int batch_id,String selected_month_date) async {
+    int organizationId, int batch_id, String selected_month_date) async {
   final response = await http.get(
     Uri.parse(AppConfig.campusAttendanceBffApiUrl +
         '/batch_payment_plan_by_org_id/$organizationId/$batch_id/$selected_month_date'),
@@ -220,6 +217,7 @@ Future<BatchPaymentPlan?> fetchBatchPaymentPlanByOrgId(
     return null;
   }
 }
+
 class LeaveDate {
   final int id;
   final DateTime date;
@@ -229,15 +227,14 @@ class LeaveDate {
   final int organizationId;
   final int batch_id;
 
-  LeaveDate({
-    required this.id,
-    required this.date,
-    required this.dailyAmount,
-    required this.created,
-    required this.updated,
-    required this.organizationId,
-    required this.batch_id
-  });
+  LeaveDate(
+      {required this.id,
+      required this.date,
+      required this.dailyAmount,
+      required this.created,
+      required this.updated,
+      required this.organizationId,
+      required this.batch_id});
 }
 
 Future<void> createMonthlyLeaveDates({
@@ -254,7 +251,7 @@ Future<void> createMonthlyLeaveDates({
     "year": year,
     "month": month,
     "organization_id": organizationId,
-    "batch_id":batchId,
+    "batch_id": batchId,
     "total_days_in_month": totalDaysInMonth,
     "monthly_payment_amount": monthlyPaymentAmount,
     "leave_dates_list": leaveDatesList,
@@ -349,16 +346,17 @@ Future<List<LeaveDate>> getLeaveDatesForMonth(
 
     if (resultsJson is Map<String, dynamic> &&
         resultsJson['leave_dates_list'] is List) {
-      List<LeaveDate> leaveDates = (resultsJson['leave_dates_list'] !=null ? resultsJson['leave_dates_list'] as List:[])
+      List<LeaveDate> leaveDates = (resultsJson['leave_dates_list'] != null
+              ? resultsJson['leave_dates_list'] as List
+              : [])
           .map((day) => LeaveDate(
-                id: resultsJson['id'] ?? 0,
-                date: DateTime(year, month, day as int),
-                dailyAmount: (resultsJson['daily_amount'] ?? 0.0) as double,
-                created: DateTime.parse(resultsJson['created']),
-                updated: DateTime.parse(resultsJson['updated']),
-                organizationId: resultsJson['organization_id'] ?? 0,
-                batch_id: resultsJson['batch_id'] ?? 0
-              ))
+              id: resultsJson['id'] ?? 0,
+              date: DateTime(year, month, day as int),
+              dailyAmount: (resultsJson['daily_amount'] ?? 0.0) as double,
+              created: DateTime.parse(resultsJson['created']),
+              updated: DateTime.parse(resultsJson['updated']),
+              organizationId: resultsJson['organization_id'] ?? 0,
+              batch_id: resultsJson['batch_id'] ?? 0))
           .toList();
 
       return leaveDates;
@@ -551,10 +549,7 @@ Future<List<ActivityAttendance>> getClassActivityAttendanceReportByParentOrg(
 }
 
 Future<List<ActivityAttendance>> getActivityAttendanceReportByBatch(
-    int batch_id,
-    int activity_id,
-    String from_date,
-    String to_date) async {
+    int batch_id, int activity_id, String from_date, String to_date) async {
   final response = await http.get(
     Uri.parse(
         '${AppConfig.campusAttendanceBffApiUrl}/attendance_report_by_batch/$batch_id/$activity_id/$from_date/$to_date'),
@@ -717,10 +712,11 @@ Future<List<ActivityAttendance>> getAttendanceMissedBySecurityByParentOrg(
 
 Future<List<ActivityAttendance>> getDailyStudentsAttendanceByParentOrg(
   int? parent_organization_id,
+  String date,
 ) async {
   final response = await http.get(
     Uri.parse(
-        '${AppConfig.campusAttendanceBffApiUrl}/daily_students_attendance_by_parent_org/$parent_organization_id'),
+        '${AppConfig.campusAttendanceBffApiUrl}/daily_students_attendance_by_parent_org/$parent_organization_id?date=$date'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -811,9 +807,7 @@ Future<List<ActivityAttendance>> getDailyAttendanceSummaryReport(
 }
 
 Future<List<ActivityAttendance>> getDailyEmployeeAttendanceSummaryReport(
-    int organization_id,
-    String from_date,
-    String to_date) async {
+    int organization_id, String from_date, String to_date) async {
   final response = await http.get(
     Uri.parse(
         '${AppConfig.campusAttendanceBffApiUrl}/employees/attendance_summary_report/$organization_id/$from_date/$to_date'),
@@ -831,5 +825,59 @@ Future<List<ActivityAttendance>> getDailyEmployeeAttendanceSummaryReport(
     return activityAttendances;
   } else {
     throw Exception('Failed to get Daily Employee Attendances Summary Data');
+  }
+}
+
+Future<List<Map<String, dynamic>>> getLateAttendanceSummary(
+    int organization_id, String date, int activity_id) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/organizations/$organization_id/late-attendance-summary?date=$date&activity_id=$activity_id'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    List<dynamic> results = json.decode(response.body);
+    return results.cast<Map<String, dynamic>>();
+  } else {
+    throw Exception(
+        'Failed to get late attendance summary for organization $organization_id');
+  }
+}
+
+Future<List<String>> getDailyAbsenceSummary(
+    int organization_id, int activity_id, String date,
+    {int? parentOrgId}) async {
+  String uri =
+      '${AppConfig.campusAttendanceBffApiUrl}/organizations/$organization_id/daily-absence-summary?activity_id=$activity_id&date=$date';
+  if (parentOrgId != null) uri += '&organization_id=$parentOrgId';
+  //here parentOrgId is the id of the class which is returned from daily_students_attendance_by_parent_org endpoint
+
+  final response = await http.get(
+    Uri.parse(uri),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    var results = json.decode(response.body);
+    if (results is List && results.isNotEmpty) {
+      var first = results[0];
+      String names = first['absent_names'] ?? '';
+      return names
+          .split(',')
+          .map((s) => s.trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
+    }
+    return [];
+  } else {
+    throw Exception(
+        'Failed to fetch daily absence summary for organization $organization_id');
   }
 }
