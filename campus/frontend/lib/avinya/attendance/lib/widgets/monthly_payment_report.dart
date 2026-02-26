@@ -581,16 +581,20 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                 color: const Color(0xFF2C3E50))),
       ),
     )));
-    ColumnNames.add(DataColumn(
-        label: Expanded(
-      child: Center(
-        child: Text('Student Payment Rs.',
-            style: TextStyle(
-                fontSize: 14.0,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF2C3E50))),
-      ),
-    )));
+    if (campusAppsPortalInstance.isFoundation ||
+        campusAppsPortalInstance.isOperations ||
+        campusAppsPortalInstance.isFinance) {
+      ColumnNames.add(DataColumn(
+          label: Expanded(
+        child: Center(
+          child: Text('Student Payment Rs.',
+              style: TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF2C3E50))),
+        ),
+      )));
+    }
 
     return ColumnNames;
   }
@@ -767,63 +771,67 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                 ),
               ),
 
-              // Update Leave Dates Button
-              ElevatedButton.icon(
-                onPressed: () async {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LeaveDatePicker(
-                            organizationId: organization_id ?? 0,
-                            batchId: _selectedOrganizationValue?.id ?? 0,
-                            year: _selected?.year ?? _year,
-                            month: _selected?.month ?? _month,
-                            selectedDay: _selectedDay ?? DateTime.now(),
-                            monthlyPaymentAmount: MonthlyPayment ?? 0.0),
-                      )).then((value) {
-                    setState(() {
-                      _isFetchingClassPaymentData = true;
+              if (campusAppsPortalInstance.isOperations ||
+                  campusAppsPortalInstance.isFinance)
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LeaveDatePicker(
+                              organizationId: organization_id ?? 0,
+                              batchId: _selectedOrganizationValue?.id ?? 0,
+                              year: _selected?.year ?? _year,
+                              month: _selected?.month ?? _month,
+                              selectedDay: _selectedDay ?? DateTime.now(),
+                              monthlyPaymentAmount: MonthlyPayment ?? 0.0),
+                        )).then((value) {
+                      setState(() {
+                        _isFetchingClassPaymentData = true;
+                      });
+                      _fetchLeaveDates(_year, _month);
+                      setState(() {
+                        _isFetchingClassPaymentData = false;
+                      });
                     });
-                    _fetchLeaveDates(_year, _month);
-                    setState(() {
-                      _isFetchingClassPaymentData = false;
-                    });
-                  });
-                },
-                icon: const Icon(Icons.edit_calendar, size: 18),
-                label: const Text('Update Leave Dates'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1BB6E8),
-                  foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
+                  },
+                  icon: const Icon(Icons.edit_calendar, size: 18),
+                  label: const Text('Update Leave Dates'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1BB6E8),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
                   ),
                 ),
-              ),
 
               // Export Button
-              _isFetching
-                  ? Container(
-                      padding: const EdgeInsets.all(10),
-                      child: SpinKitCircle(
-                        color: const Color(0xFF1BB6E8),
-                        size: 30,
-                      ),
-                    )
-                  : MonthlyPaymentReportExcelExport(
-                      classes: classes,
-                      fetchedAttendance: _fetchedExcelReportData,
-                      columnNames: columnNames,
-                      fetchedStudentList: _fetchedStudentList,
-                      isFetching: _isFetching,
-                      totalSchoolDaysInMonth: _totalSchoolDaysInMonth,
-                      dailyAmount: _dailyAmount,
-                      year: _year,
-                      month: _monthFullName,
-                      batch: _selectedOrganizationValue?.name?.name_en ?? '',
-                    ),
+              if (campusAppsPortalInstance.isFoundation ||
+                  campusAppsPortalInstance.isOperations ||
+                  campusAppsPortalInstance.isFinance)
+                (_isFetching
+                    ? Container(
+                        padding: const EdgeInsets.all(10),
+                        child: SpinKitCircle(
+                          color: const Color(0xFF1BB6E8),
+                          size: 30,
+                        ),
+                      )
+                    : MonthlyPaymentReportExcelExport(
+                        classes: classes,
+                        fetchedAttendance: _fetchedExcelReportData,
+                        columnNames: columnNames,
+                        fetchedStudentList: _fetchedStudentList,
+                        isFetching: _isFetching,
+                        totalSchoolDaysInMonth: _totalSchoolDaysInMonth,
+                        dailyAmount: _dailyAmount,
+                        year: _year,
+                        month: _monthFullName,
+                        batch: _selectedOrganizationValue?.name?.name_en ?? '',
+                      )),
             ];
 
             if (wide) {
@@ -842,38 +850,41 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                   ),
 
                   // Right: summary cards (centered vertically)
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildSummaryCard(
-                        icon: Icons.school,
-                        iconColor: const Color(0xFFE74C3C),
-                        title: 'Total School Days',
-                        value: '$_totalSchoolDaysInMonth',
-                        valueColor: const Color(0xFFE74C3C),
-                        isMobile: false,
-                      ),
-                      const SizedBox(width: 16),
-                      _buildSummaryCard(
-                        icon: Icons.account_balance_wallet,
-                        iconColor: const Color(0xFF27AE60),
-                        title: 'Monthly Payment Amount',
-                        value:
-                            'Rs. ${MonthlyPayment?.toStringAsFixed(2) ?? '0.00'}',
-                        valueColor: const Color(0xFF27AE60),
-                        isMobile: false,
-                      ),
-                      const SizedBox(width: 16),
-                      _buildSummaryCard(
-                        icon: Icons.payments,
-                        iconColor: const Color(0xFF3498DB),
-                        title: 'Daily Payment Amount',
-                        value: 'Rs. ${_dailyAmount.toStringAsFixed(2)}',
-                        valueColor: const Color(0xFF3498DB),
-                        isMobile: false,
-                      ),
-                    ],
-                  ),
+                  if (campusAppsPortalInstance.isFoundation ||
+                      campusAppsPortalInstance.isOperations ||
+                      campusAppsPortalInstance.isFinance)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildSummaryCard(
+                          icon: Icons.school,
+                          iconColor: const Color(0xFFE74C3C),
+                          title: 'Total School Days',
+                          value: '$_totalSchoolDaysInMonth',
+                          valueColor: const Color(0xFFE74C3C),
+                          isMobile: false,
+                        ),
+                        const SizedBox(width: 16),
+                        _buildSummaryCard(
+                          icon: Icons.account_balance_wallet,
+                          iconColor: const Color(0xFF27AE60),
+                          title: 'Monthly Payment Amount',
+                          value:
+                              'Rs. ${MonthlyPayment?.toStringAsFixed(2) ?? '0.00'}',
+                          valueColor: const Color(0xFF27AE60),
+                          isMobile: false,
+                        ),
+                        const SizedBox(width: 16),
+                        _buildSummaryCard(
+                          icon: Icons.payments,
+                          iconColor: const Color(0xFF3498DB),
+                          title: 'Daily Payment Amount',
+                          value: 'Rs. ${_dailyAmount.toStringAsFixed(2)}',
+                          valueColor: const Color(0xFF3498DB),
+                          isMobile: false,
+                        ),
+                      ],
+                    ),
                 ],
               );
             }
@@ -889,37 +900,40 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                   children: interactiveFilters,
                 ),
                 const SizedBox(height: 20),
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: [
-                    _buildSummaryCard(
-                      icon: Icons.school,
-                      iconColor: const Color(0xFFE74C3C),
-                      title: 'Total School Days',
-                      value: '$_totalSchoolDaysInMonth',
-                      valueColor: const Color(0xFFE74C3C),
-                      isMobile: true,
-                    ),
-                    _buildSummaryCard(
-                      icon: Icons.account_balance_wallet,
-                      iconColor: const Color(0xFF27AE60),
-                      title: 'Monthly Payment Amount',
-                      value:
-                          'Rs. ${MonthlyPayment?.toStringAsFixed(2) ?? '0.00'}',
-                      valueColor: const Color(0xFF27AE60),
-                      isMobile: true,
-                    ),
-                    _buildSummaryCard(
-                      icon: Icons.payments,
-                      iconColor: const Color(0xFF3498DB),
-                      title: 'Daily Payment Amount',
-                      value: 'Rs. ${_dailyAmount.toStringAsFixed(2)}',
-                      valueColor: const Color(0xFF3498DB),
-                      isMobile: true,
-                    ),
-                  ],
-                ),
+                if (campusAppsPortalInstance.isFoundation ||
+                    campusAppsPortalInstance.isOperations ||
+                    campusAppsPortalInstance.isFinance)
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: [
+                      _buildSummaryCard(
+                        icon: Icons.school,
+                        iconColor: const Color(0xFFE74C3C),
+                        title: 'Total School Days',
+                        value: '$_totalSchoolDaysInMonth',
+                        valueColor: const Color(0xFFE74C3C),
+                        isMobile: true,
+                      ),
+                      _buildSummaryCard(
+                        icon: Icons.account_balance_wallet,
+                        iconColor: const Color(0xFF27AE60),
+                        title: 'Monthly Payment Amount',
+                        value:
+                            'Rs. ${MonthlyPayment?.toStringAsFixed(2) ?? '0.00'}',
+                        valueColor: const Color(0xFF27AE60),
+                        isMobile: true,
+                      ),
+                      _buildSummaryCard(
+                        icon: Icons.payments,
+                        iconColor: const Color(0xFF3498DB),
+                        title: 'Daily Payment Amount',
+                        value: 'Rs. ${_dailyAmount.toStringAsFixed(2)}',
+                        valueColor: const Color(0xFF3498DB),
+                        isMobile: true,
+                      ),
+                    ],
+                  ),
               ],
             );
           }),
@@ -1024,9 +1038,13 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                   size: 22,
                 ),
                 const SizedBox(width: 10),
-                const Text(
-                  'Payment Details',
-                  style: TextStyle(
+                Text(
+                  (campusAppsPortalInstance.isFoundation ||
+                          campusAppsPortalInstance.isOperations ||
+                          campusAppsPortalInstance.isFinance)
+                      ? 'Payment Details'
+                      : 'Attendance Details',
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF2C3E50),
@@ -1178,7 +1196,14 @@ class MyData extends DataTableSource {
     if (_fetchedOrganization != null &&
         _fetchedOrganization!.people.isNotEmpty) {
       var person = _fetchedOrganization!.people[index];
-      List<DataCell> cells = List<DataCell>.filled(5, DataCell.empty);
+
+      // determine whether payment column is shown (must match header logic)
+      bool showPayment = campusAppsPortalInstance.isFoundation ||
+          campusAppsPortalInstance.isOperations ||
+          campusAppsPortalInstance.isFinance;
+      int cellCount = showPayment ? 5 : 4;
+
+      List<DataCell> cells = List<DataCell>.filled(cellCount, DataCell.empty);
       cells[0] = DataCell(Align(
           alignment: Alignment.centerLeft,
           child: Text(person.preferred_name!)));
@@ -1214,16 +1239,18 @@ class MyData extends DataTableSource {
                 fontWeight: FontWeight.w500,
               ),
               (totalSchoolDaysInMonth - presentCount).toString())));
-      double studentPayment = (DailyPayment ?? 0.0) * presentCount;
-      cells[4] = DataCell(Container(
-          alignment: Alignment.center,
-          child: Text(
-              style: TextStyle(
-                color: const Color(0xFF27AE60),
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-              studentPayment.toDouble().toStringAsFixed(2))));
+      if (showPayment) {
+        double studentPayment = (DailyPayment ?? 0.0) * presentCount;
+        cells[4] = DataCell(Container(
+            alignment: Alignment.center,
+            child: Text(
+                style: TextStyle(
+                  color: const Color(0xFF27AE60),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                studentPayment.toDouble().toStringAsFixed(2))));
+      }
       int numItems = _fetchedOrganization!.people.length;
       List<bool> selected = List<bool>.generate(numItems, (int index) => false);
       return DataRow(
