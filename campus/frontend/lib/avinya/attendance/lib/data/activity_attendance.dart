@@ -712,10 +712,11 @@ Future<List<ActivityAttendance>> getAttendanceMissedBySecurityByParentOrg(
 
 Future<List<ActivityAttendance>> getDailyStudentsAttendanceByParentOrg(
   int? parent_organization_id,
+  String date,
 ) async {
   final response = await http.get(
     Uri.parse(
-        '${AppConfig.campusAttendanceBffApiUrl}/daily_students_attendance_by_parent_org/$parent_organization_id'),
+        '${AppConfig.campusAttendanceBffApiUrl}/daily_students_attendance_by_parent_org/$parent_organization_id?date=$date'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -852,7 +853,8 @@ Future<List<String>> getDailyAbsenceSummary(
     {int? parentOrgId}) async {
   String uri =
       '${AppConfig.campusAttendanceBffApiUrl}/organizations/$organization_id/daily-absence-summary?activity_id=$activity_id&date=$date';
-  if (parentOrgId != null) uri += '&parent_org_id=$parentOrgId';
+  if (parentOrgId != null) uri += '&organization_id=$parentOrgId';
+  //here parentOrgId is the id of the class which is returned from daily_students_attendance_by_parent_org endpoint
 
   final response = await http.get(
     Uri.parse(uri),

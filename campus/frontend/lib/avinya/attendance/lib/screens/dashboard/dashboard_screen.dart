@@ -179,8 +179,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
       String startDateFormatted = DateFormat('yyyy-MM-dd').format(startDate);
 
       // Fetch attendance pie chart data for selected date
-      _fetchedPieChartData =
-          await getDailyStudentsAttendanceByParentOrg(parentOrgId);
+      _fetchedPieChartData = await getDailyStudentsAttendanceByParentOrg(
+          parentOrgId, _selectedDate);
       totalStudentCount = calculateTotalStudentCount(_fetchedPieChartData);
       totalAttendance = calculateTotalAttendance(_fetchedPieChartData);
 
@@ -318,6 +318,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
             'DEBUG - Class: $className, Total: $classTotal, Present: $classPresent');
 
         classDataList.add({
+          'id': org.id, // organization id needed for absence lookup
           'name': className,
           'emoji': classEmojis[className] ?? '📚',
           'total': classTotal,
@@ -330,6 +331,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
         String className = org.description ?? org.name?.name_en ?? 'Unknown';
 
         classDataList.add({
+          'id': org.id,
           'name': className,
           'emoji': classEmojis[className] ?? '📚',
           'total': 0,
@@ -777,6 +779,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
               : Column(
                   children: _classData.map((classInfo) {
                     return _buildClassItem(
+                      orgId: classInfo['id'] as int,
                       emoji: classInfo['emoji'],
                       className: classInfo['name'],
                       totalStudents: classInfo['total'],
@@ -790,6 +793,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
   }
 
   Widget _buildClassItem({
+    required int orgId,
     required String emoji,
     required String className,
     required int totalStudents,
@@ -806,8 +810,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
         curve: Curves.easeOut,
         transform: Matrix4.translationValues(0, isHovered ? -4 : 0, 0),
         child: InkWell(
-          onTap: () => _showAbsentStudentsDialog(
-              className, totalStudents - presentCount),
+          onTap: () => _fetchAbsentStudentsAndShow(
+              orgId, className, totalStudents - presentCount),
           borderRadius: BorderRadius.circular(8),
           hoverColor: const Color(0xFFE3F2FD),
           child: Container(
@@ -1074,6 +1078,34 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
         );
       },
     );
+  }
+
+  // helper to fetch absent student names then open dialog
+  Future<void> _fetchAbsentStudentsAndShow(
+      int orgId, String className, int absentCount) async {
+    setState(() {
+      _isFetching = true;
+    });
+    List<String> names = [];
+    try {
+      names = await getDailyAbsenceSummary(_parentOrgId!, 4, _selectedDate,
+          parentOrgId: orgId);
+      //here parentOrgId is the id of the class which is returned from daily_students_attendance_by_parent_org endpoint
+    } catch (e) {
+      print('Error fetching absence names for org $orgId: $e');
+    } finally {
+      setState(() {
+        _isFetching = false;
+      });
+    }
+
+    // if API returned a list, use that count for accuracy
+    int displayCount = absentCount;
+    if (names.isNotEmpty) {
+      displayCount = names.length;
+    }
+    _showAbsentStudentsDialog(className, displayCount,
+        date: _selectedDate, studentNames: names);
   }
 
   Widget _buildWeeklyStudentChartCard() {
