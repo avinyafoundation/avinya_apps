@@ -501,9 +501,13 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                     _buildWeeklyStudentChartCard(),
                     const SizedBox(height: 25),
 
-                    // Weekly Staff Attendance Chart
-                    _buildWeeklyStaffChartCard(),
-                    const SizedBox(height: 40),
+                    // Weekly Staff Attendance Chart (privileged roles)
+                    if (campusAppsPortalInstance.isFoundation ||
+                        campusAppsPortalInstance.isOperations ||
+                        campusAppsPortalInstance.isFinance) ...[
+                      _buildWeeklyStaffChartCard(),
+                      const SizedBox(height: 40),
+                    ],
                   ],
                 ),
               ),
