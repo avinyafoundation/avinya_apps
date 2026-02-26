@@ -23,6 +23,7 @@ class _MaintenanceDashboardScreenState
   List<Map<String, dynamic>> _classData = [];
   List<Map<String, dynamic>> _staffTaskSummaries = [];
   Set<int> _overduePersonIds = {};
+  List<Map<String, dynamic>> _lateAttendanceData = [];
 
   Timer? _blinkTimer;
   bool _blinkOn = false;
@@ -130,6 +131,33 @@ class _MaintenanceDashboardScreenState
     if (!silent) setState(() => _isFetching = true);
     try {
       _fetchedPieChartData = await getDailyStudentsAttendanceByParentOrg(2);
+
+      // fetch late attendance for today's date
+      final rawLateData = await getLateAttendanceSummary(2, 4);
+      final List<Color> palette = [
+        const Color(0xFF2ECC71),
+        const Color(0xFF3498DB),
+        const Color(0xFFF39C12),
+        const Color(0xFFE67E22),
+        const Color(0xFFE74C3C),
+      ];
+      final Map<String, Color> colorByLabel = {
+        'Before 07:30': palette[0],
+        '07:30 - 07:45': palette[1],
+        '07:45 - 08:00': palette[2],
+        '08:00 - 08:30': palette[3],
+        'After 08:30': palette[4],
+      };
+      _lateAttendanceData = rawLateData.map<Map<String, dynamic>>((item) {
+        final label = item['label'] as String? ?? '';
+        return {
+          'label': label,
+          'value': item['student_count'] as int? ?? 0,
+          'color': colorByLabel[label] ??
+              palette[_lateAttendanceData.length % palette.length],
+        };
+      }).toList();
+
       if (!mounted) return;
       totalStudentCount = calculateTotalStudentCount(_fetchedPieChartData);
       totalAttendance   = calculateTotalAttendance(_fetchedPieChartData);
@@ -463,13 +491,18 @@ class _MaintenanceDashboardScreenState
   }
   // ── Late Analysis Card ───────────────────────
   Widget _buildLateAnalysisCard() {
-    final List<Map<String, dynamic>> lateAttendanceData = [
-      {'label': 'Before 7:30', 'value': 45, 'color': const Color(0xFF2ECC71)},
-      {'label': '7:30 – 7:45', 'value': 25, 'color': const Color(0xFF3498DB)},
-      {'label': '7:45 – 8:00', 'value': 15, 'color': const Color(0xFFF39C12)},
-      {'label': '8:00 – 8:30', 'value': 10, 'color': const Color(0xFFE67E22)},
-      {'label': 'After 8:30',  'value': 5,  'color': const Color(0xFFE74C3C)},
-    ];
+    final List<Map<String, dynamic>> lateAttendanceData =
+        _lateAttendanceData.isNotEmpty
+            ? _lateAttendanceData
+            : [];
+    if (lateAttendanceData.isEmpty) {
+      return _card(
+        child: Center(
+          child: Text('No late attendance data',
+              style: TextStyle(fontSize: 12, color: _textLight)),
+        ),
+      );
+    }
     int totalLate = lateAttendanceData.fold(0, (s, i) => s + (i['value'] as int));
 
     return _card(
