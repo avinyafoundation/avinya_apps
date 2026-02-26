@@ -153,11 +153,14 @@ Future<List<dynamic>> getOrganizationTasks(int organizationId) async {
 /// Fetches tasks filtered by status ("Pending" or "InProgress").
 Future<List<dynamic>> getOrganizationTasksByStatus(
     int organizationId, String status,
-    {DateTime? toDate}) async {
-  // prepare query parameters; include status and optional toDate
+    {DateTime? toDate, int? limit}) async {
+  // prepare query parameters; include status and optional toDate/limit
   final Map<String, String> queryParams = {'taskStatus': status};
   if (toDate != null) {
     queryParams['toDate'] = toDate.toIso8601String();
+  }
+  if (limit != null) {
+    queryParams['limit'] = limit.toString();
   }
   final uri = Uri.parse(
           '${AppConfig.campusMaintenanceBffApiUrl}/organizations/$organizationId/tasks')

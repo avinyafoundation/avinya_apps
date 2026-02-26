@@ -23,7 +23,7 @@ class _MaintenanceDashboardScreenState
   List<Map<String, dynamic>> _classData = [];
   List<Map<String, dynamic>> _staffTaskSummaries = [];
   Set<int> _overduePersonIds = {};
-  List<Map<String, dynamic>> _lateAttendanceUIList = [];
+  List<Map<String, dynamic>> _lateAttendanceData = [];
 
   Timer? _blinkTimer;
   bool _blinkOn = false;
@@ -131,17 +131,15 @@ class _MaintenanceDashboardScreenState
     if (!silent) setState(() => _isFetching = true);
     try {
       _fetchedPieChartData = await getDailyStudentsAttendanceByParentOrg(2);
-      
+
+      // fetch late attendance for today's date
       final rawLateData = await getLateAttendanceSummary(2, 4);
-      
-      // assign colours based on the expected time-range label; fall back to a
-      // rotating palette if the label is unrecognized or extra ranges arrive.
       final List<Color> palette = [
-        const Color(0xFF2ECC71), // Green
-        const Color(0xFF3498DB), // Blue
-        const Color(0xFFF39C12), // Orange
-        const Color(0xFFE67E22), // Deep Orange
-        const Color(0xFFE74C3C), // Red
+        const Color(0xFF2ECC71),
+        const Color(0xFF3498DB),
+        const Color(0xFFF39C12),
+        const Color(0xFFE67E22),
+        const Color(0xFFE74C3C),
       ];
       final Map<String, Color> colorByLabel = {
         'Before 07:30': palette[0],
@@ -150,21 +148,19 @@ class _MaintenanceDashboardScreenState
         '08:00 - 08:30': palette[3],
         'After 08:30': palette[4],
       };
-
-      _lateAttendanceUIList = List.generate(rawLateData.length, (index) {
-        final item = rawLateData[index];
+      _lateAttendanceData = rawLateData.map<Map<String, dynamic>>((item) {
         final label = item['label'] as String? ?? '';
         return {
           'label': label,
-          'value': item['student_count'] ?? 0,
-          'color': colorByLabel[label] ?? palette[index % palette.length],
+          'value': item['student_count'] as int? ?? 0,
+          'color': colorByLabel[label] ??
+              palette[_lateAttendanceData.length % palette.length],
         };
-      });
-      // ------------------------------------------
+      }).toList();
 
       if (!mounted) return;
       totalStudentCount = calculateTotalStudentCount(_fetchedPieChartData);
-      totalAttendance = calculateTotalAttendance(_fetchedPieChartData);
+      totalAttendance   = calculateTotalAttendance(_fetchedPieChartData);
       _loadClassWiseData();
       await _fetchStaffTaskSummaries();
     } catch (error) {
@@ -194,9 +190,9 @@ class _MaintenanceDashboardScreenState
     // include a seven‑day toDate window for both requests
     final DateTime sevenDaysFromNow = DateTime.now().add(const Duration(days: 7));
     List<dynamic> pendingTasks = await getOrganizationTasksByStatus(
-        2, 'Pending', toDate: sevenDaysFromNow);
+        2, 'Pending', toDate: sevenDaysFromNow, limit: 1000);
     List<dynamic> inProgressTasks = await getOrganizationTasksByStatus(
-        2, 'InProgress', toDate: sevenDaysFromNow);
+        2, 'InProgress', toDate: sevenDaysFromNow, limit: 1000);
     if (!mounted) return;
 
     List<dynamic> tasks = [];
@@ -495,85 +491,90 @@ class _MaintenanceDashboardScreenState
   }
   // ── Late Analysis Card ───────────────────────
   Widget _buildLateAnalysisCard() {
-  // Use live data from state, or an empty list if not yet loaded
-  final List<Map<String, dynamic>> lateAttendanceData = _lateAttendanceUIList;
-  
-  int totalLate = lateAttendanceData.isEmpty 
-      ? 0 
-      : lateAttendanceData.fold(0, (s, i) => s + (i['value'] as int));
+    final List<Map<String, dynamic>> lateAttendanceData =
+        _lateAttendanceData.isNotEmpty
+            ? _lateAttendanceData
+            : [];
+    if (lateAttendanceData.isEmpty) {
+      return _card(
+        child: Center(
+          child: Text('No late attendance data',
+              style: TextStyle(fontSize: 12, color: _textLight)),
+        ),
+      );
+    }
+    int totalLate = lateAttendanceData.fold(0, (s, i) => s + (i['value'] as int));
 
-  return _card(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('LATE ATTENDANCE ANALYSIS',
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700,
-                letterSpacing: 1.5, color: _textMid)),
-        const SizedBox(height: 10),
-        Expanded(
-          child: lateAttendanceData.isEmpty 
-            ? const Center(child: Text('No late data for today', style: TextStyle(fontSize: 10, color: _textLight)))
-            : Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Donut
-                  Expanded(
-                    flex: 4,
-                    child: Center(
-                      child: SizedBox(
-                        width: 150, height: 150,
-                        child: GestureDetector(
-                          onTapUp: (d) =>
-                              _handlePieChartTap(d.localPosition, lateAttendanceData, 150),
-                          child: MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            onHover: (e) =>
-                                _handlePieChartHover(e.localPosition, lateAttendanceData, 150),
-                            onExit: (_) => setState(() => _hoveredPieSegment = null),
-                            child: Stack(
-                              children: [
-                                CustomPaint(
-                                  painter: _PieChartPainter(lateAttendanceData, Colors.white),
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('LATE ATTENDANCE ANALYSIS',
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700,
+                  letterSpacing: 1.5, color: _textMid)),
+          const SizedBox(height: 10),
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Donut
+                Expanded(
+                  flex: 4,
+                  child: Center(
+                    child: SizedBox(
+                      width: 150, height: 150,
+                      child: GestureDetector(
+                        onTapUp: (d) =>
+                            _handlePieChartTap(d.localPosition, lateAttendanceData, 150),
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          onHover: (e) =>
+                              _handlePieChartHover(e.localPosition, lateAttendanceData, 150),
+                          onExit: (_) => setState(() => _hoveredPieSegment = null),
+                          child: Stack(
+                            children: [
+                              CustomPaint(
+                                painter: _PieChartPainter(lateAttendanceData, Colors.white),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text('$totalAttendance',
+                                          style: const TextStyle(fontSize: 26,
+                                              fontWeight: FontWeight.w800, color: _textDark)),
+                                      const Text('Students',
+                                          style: TextStyle(fontSize: 10, color: _textMid)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              if (_hoveredPieSegment != null)
+                                Positioned(
+                                  top: 0, left: 0, right: 0,
                                   child: Center(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text('$totalAttendance',
-                                            style: const TextStyle(fontSize: 26,
-                                                fontWeight: FontWeight.w800, color: _textDark)),
-                                        const Text('Students',
-                                            style: TextStyle(fontSize: 10, color: _textMid)),
-                                      ],
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 5),
+                                      decoration: BoxDecoration(
+                                        color: _textDark,
+                                        borderRadius: BorderRadius.circular(6),
+                                        boxShadow: [BoxShadow(
+                                            color: Colors.black.withOpacity(0.15),
+                                            blurRadius: 4)],
+                                      ),
+                                      child: Text(_hoveredPieSegment!,
+                                          style: const TextStyle(color: Colors.white,
+                                              fontSize: 10, fontWeight: FontWeight.w600)),
                                     ),
                                   ),
                                 ),
-                                if (_hoveredPieSegment != null)
-                                  Positioned(
-                                    top: 0, left: 0, right: 0,
-                                    child: Center(
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
-                                        decoration: BoxDecoration(
-                                          color: _textDark,
-                                          borderRadius: BorderRadius.circular(6),
-                                          boxShadow: [BoxShadow(
-                                              color: Colors.black.withOpacity(0.15),
-                                              blurRadius: 4)],
-                                        ),
-                                        child: Text(_hoveredPieSegment!,
-                                            style: const TextStyle(color: Colors.white,
-                                                fontSize: 10, fontWeight: FontWeight.w600)),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
+                            ],
                           ),
                         ),
                       ),
                     ),
                   ),
+                ),
 
                 // Legend + bars
                 Expanded(
@@ -1154,23 +1155,6 @@ class _PieChartPainter extends CustomPainter {
     final radius = min(size.width, size.height) / 2;
     final innerRadius = radius * 0.6;
     int total = data.fold(0, (s, i) => s + (i['value'] as int));
-
-    if (total <= 0) return; // nothing to draw
-
-    // when there's only one segment, render a solid ring of that color without
-    if (data.length == 1) {
-      // draw a full ring using even-odd fill to leave the inner circle empty
-      final paint = Paint()
-        ..color = data[0]['color']
-        ..style = PaintingStyle.fill;
-      final path = Path()
-        ..addOval(Rect.fromCircle(center: center, radius: radius))
-        ..addOval(Rect.fromCircle(center: center, radius: innerRadius))
-        ..fillType = PathFillType.evenOdd;
-      canvas.drawPath(path, paint);
-      return;
-    }
-
     double startAngle = -pi / 2;
 
     for (var item in data) {

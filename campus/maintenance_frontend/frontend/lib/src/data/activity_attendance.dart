@@ -224,9 +224,11 @@ class LeaveDate {
 Future<List<ActivityAttendance>> getDailyStudentsAttendanceByParentOrg(
   int? parent_organization_id,
 ) async {
+  final String dateStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  final uri = Uri.parse(
+      '${AppConfig.campusAttendanceBffApiUrl}/daily_students_attendance_by_parent_org/$parent_organization_id?date=$dateStr');
   final response = await http.get(
-    Uri.parse(
-        '${AppConfig.campusAttendanceBffApiUrl}/daily_students_attendance_by_parent_org/$parent_organization_id'),
+    uri,
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',

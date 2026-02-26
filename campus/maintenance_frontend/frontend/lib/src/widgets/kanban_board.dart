@@ -79,7 +79,6 @@ class _KanbanBoardState extends State<KanbanBoard> {
         });
       },
     );
-    _fetchEmployees();
   }
 
   void _revertMove(
@@ -111,7 +110,9 @@ class _KanbanBoardState extends State<KanbanBoard> {
       _endSession,
     );
 
+    // immediately load tasks; employees can come later
     _loadBoardData();
+    _fetchEmployees();
   }
 
   void _endSession({bool navigateToDashboard = false}) {
@@ -363,7 +364,7 @@ class _KanbanBoardState extends State<KanbanBoard> {
     if (overdueDays > 0) {
       // Already late
       return "දින $overdueDays ක් ප්‍රමාදයි";
-    } else if (overdueDays >= -2 && overdueDays < 0) {
+    } else if (overdueDays >= -7 && overdueDays < 0) {
       // Upcoming deadline
       return "අවසන් වීමට තව දින ${overdueDays.abs()} කි";
     } else if (overdueDays == 0) {
