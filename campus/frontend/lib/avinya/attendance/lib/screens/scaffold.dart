@@ -135,56 +135,58 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                   // ),
                 ),
               ),
-              // Self Attendance Marker
-              MouseRegion(
-                onEnter: (_) {
-                  setState(() {
-                    isSelfAttendanceHovered = true;
-                  });
-                },
-                onExit: (_) {
-                  setState(() {
-                    isSelfAttendanceHovered = false;
-                  });
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isSelfAttendanceHovered
-                        ? Colors.white.withOpacity(0.3)
-                        : null,
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  margin: EdgeInsets.all(8.0),
-                  child: Material(
-                    type: MaterialType.transparency,
-                    child: Container(
-                      child: ListTile(
-                        leading: Icon(Icons.assignment_ind,
-                            color: Colors.white, size: 20.0),
-                        title: Container(
-                          margin: EdgeInsets.only(left: 12.0),
-                          transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                          child: Text(
-                            "View Self Attendance",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
+              // Self Attendance Marker (hide for foundation users)
+              if (!campusAppsPortalInstance.isFoundation)
+                MouseRegion(
+                  onEnter: (_) {
+                    setState(() {
+                      isSelfAttendanceHovered = true;
+                    });
+                  },
+                  onExit: (_) {
+                    setState(() {
+                      isSelfAttendanceHovered = false;
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isSelfAttendanceHovered
+                          ? Colors.white.withOpacity(0.3)
+                          : null,
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    margin: EdgeInsets.all(8.0),
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: Container(
+                        child: ListTile(
+                          leading: Icon(Icons.assignment_ind,
+                              color: Colors.white, size: 20.0),
+                          title: Container(
+                            margin: EdgeInsets.only(left: 12.0),
+                            transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                            child: Text(
+                              "View Self Attendance",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
+                          onTap: () {
+                            Navigator.pop(context); // Close the drawer
+                            routeState.go('/attendance_marker');
+                          },
                         ),
-                        onTap: () {
-                          Navigator.pop(context); // Close the drawer
-                          routeState.go('/attendance_marker');
-                        },
                       ),
                     ),
                   ),
                 ),
-              ),
               // Bulk Attendance Marker (for teachers/security/foundation)
               if (campusAppsPortalInstance.isTeacher ||
                   campusAppsPortalInstance.isSecurity ||
-                  campusAppsPortalInstance.isFoundation)
+                  campusAppsPortalInstance.isOperations ||
+                  campusAppsPortalInstance.isFinance)
                 MouseRegion(
                   onEnter: (_) {
                     setState(() {
@@ -282,8 +284,9 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                   ),
                 ),
               if (campusAppsPortalInstance.isTeacher ||
-                  campusAppsPortalInstance.isSecurity ||
-                  campusAppsPortalInstance.isFoundation)
+                  campusAppsPortalInstance.isFoundation ||
+                  campusAppsPortalInstance.isOperations ||
+                  campusAppsPortalInstance.isFinance)
                 MouseRegion(
                   onEnter: (_) {
                     setState(() {
