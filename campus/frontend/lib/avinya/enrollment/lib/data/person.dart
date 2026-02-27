@@ -674,10 +674,41 @@ Future<Person> createPerson(BuildContext context, Person person) async {
     // );
     return person;
   } else {
-    log(response.body + " Status code =" + response.statusCode.toString());
-    showErrorToast("Student Account Already Exists");
-    return person;
+    // log(response.body + " Status code =" + response.statusCode.toString());
+    // showErrorToast("Student Account Already Exists");
+    // return person;
     // throw Exception('Failed to create Person.');
+
+    log(response.body + " Status code = " + response.statusCode.toString());
+
+    String errorMessage = "Failed to create student profile.";
+    try {
+      final errorBody = json.decode(response.body);
+      if (errorBody is Map && errorBody.containsKey('message')) {
+        String fullMessage = errorBody['message'];
+
+        // Check if it contains GraphQL error JSON
+        if (fullMessage.contains('"errors"')) {
+          // Extract the JSON part after "Detail: "
+          int detailIndex = fullMessage.indexOf('{');
+          if (detailIndex != -1) {
+            String jsonPart = fullMessage.substring(detailIndex);
+            final graphqlError = json.decode(jsonPart);
+            if (graphqlError['errors'] != null &&
+                graphqlError['errors'].isNotEmpty) {
+              errorMessage = graphqlError['errors'][0]
+                  ['message']; // "Person already exists."
+            }
+          }
+        } else {
+          errorMessage = fullMessage;
+        }
+      }
+    } catch (_) {
+      // If parsing fails, use default message
+    }
+
+    throw Exception(errorMessage);
   }
 }
 
