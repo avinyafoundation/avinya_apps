@@ -240,17 +240,21 @@ service / on new http:Listener(9095) {
                 return person_record;
             } else {
                 log:printError("Error while processing Application record received", person_record);
-                return {
-                    "message": person_record.message().toString(),
-                    "errorCode": "500"
-                };
+                // return {
+                //     "message": person_record.message().toString(),
+                //     "errorCode": "500"
+                // };
+                return error("Error while processing Application record received: " + person_record.message() +
+                    ":: Detail: " + person_record.detail().toString());
             }
         } else {
             log:printError("Error while creating application", addPersonResponse);
-            return {
-                "message": addPersonResponse.message().toString(),
-                "errorCode": "500"
-            };
+            // return {
+            //     "message": addPersonResponse.message().toString(),
+            //     "errorCode": "500"
+            // };
+            return error("Error while creating application: " + addPersonResponse.message() +
+                ":: Detail: " + addPersonResponse.detail().toString());
         }
     }
     resource function post upload_document(http:Request req) returns UserDocument|ErrorDetail|error {
