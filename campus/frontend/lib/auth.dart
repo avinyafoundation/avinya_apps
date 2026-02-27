@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:html';
+import 'dart:html' as html;
 
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:flutter/widgets.dart';
@@ -19,24 +20,24 @@ class CampusAppsPortalAuth extends ChangeNotifier {
   var _openid_tokens;
 
   Future<bool> getSignedIn() async {
-    log("_guard signed in uuuuuu");
+    //log("_guard signed in uuuuuu");
     if (_signedIn)
       return _signedIn; // already signed in -- todo - remove before production release
     var tokens = window.localStorage['openid_client:tokens'];
-    log("_guard signed in $tokens");
+    //log("_guard signed in $tokens");
     if (tokens != null) {
       log("_guard signed in truetrue");
       _openid_tokens = json.decode(tokens);
 
       if (_openid_tokens != null && _openid_tokens['access_token'] != null) {
         _signedIn = true;
-        print('OpenID tokens ##################');
-        _openid_tokens.forEach((key, value) =>
-            print("Access token -- Key : $key, Value : $value"));
+        // print('OpenID tokens ##################');
+        // _openid_tokens.forEach((key, value) =>
+        //     print("Access token -- Key : $key, Value : $value"));
         Map<String, dynamic> decodedAccessToken =
             JwtDecoder.decode(_openid_tokens["access_token"]);
-        decodedAccessToken.forEach((key, value) =>
-            print("access_token -- Key : $key, Value : $value"));
+        // decodedAccessToken.forEach((key, value) =>
+        //     print("access_token -- Key : $key, Value : $value"));
 
         // capture token information to help map the sing in user to Avinya person
         campusAppsPortalInstance.setJWTSub(decodedAccessToken["sub"]);
@@ -48,13 +49,13 @@ class CampusAppsPortalAuth extends ChangeNotifier {
             .setScopes(decodedAccessToken["scope"] as String);
 
         bool isTokenExpired = JwtDecoder.isExpired(_openid_tokens["id_token"]);
-        print("Open ID token is expired $isTokenExpired");
+        //print("Open ID token is expired $isTokenExpired");
 
         Map<String, dynamic> decodedIDToken =
             JwtDecoder.decode(_openid_tokens["id_token"]);
-        decodedIDToken.forEach(
-            (key, value) => print("id_token -- Key : $key, Value : $value"));
-        print('email :: ' + decodedIDToken["email"]);
+        // decodedIDToken.forEach(
+        //     (key, value) => print("id_token -- Key : $key, Value : $value"));
+        // print('email :: ' + decodedIDToken["email"]);
 
         if (isTokenExpired) {
           window.localStorage.remove('openid_client:tokens');
@@ -65,7 +66,7 @@ class CampusAppsPortalAuth extends ChangeNotifier {
 
         bool isAccessTokenExpired =
             JwtDecoder.isExpired(_openid_tokens["access_token"]);
-        print("Access token is expired $isAccessTokenExpired");
+        //print("Access token is expired $isAccessTokenExpired");
         if (AppConfig.apiTokens != null && isAccessTokenExpired) {
           // Use refresh token
           String refreshToken = AppConfig.refreshToken;
@@ -122,13 +123,13 @@ class CampusAppsPortalAuth extends ChangeNotifier {
             },
           );
           if (response.statusCode == 200) {
-            print(response.body.toString());
+            //print(response.body.toString());
             var _api_tokens = json.decode(response.body);
             AppConfig.apiTokens = _api_tokens;
-            print('API tokens ##################');
-            _api_tokens
-              ..forEach((key, value) =>
-                  print("API tokens Key : $key, Value : $value"));
+            //print('API tokens ##################');
+            // _api_tokens
+            //   ..forEach((key, value) =>
+            //       print("API tokens Key : $key, Value : $value"));
             AppConfig.campusBffApiKey = _api_tokens["access_token"];
             AppConfig.refreshToken = _api_tokens["refresh_token"];
             print('Fetch API tokens success');
@@ -152,11 +153,15 @@ class CampusAppsPortalAuth extends ChangeNotifier {
 
     return _signedIn;
   }
-
+  
   Future<void> logout() async {
+    html.window.localStorage.clear();
+
     String logoutUrl = AppConfig.asgardeoLogoutUrl;
     if (await canLaunchUrl(Uri.parse(logoutUrl))) {
-      await launchUrl(Uri.parse(logoutUrl), mode: LaunchMode.platformDefault);
+      await launchUrl(Uri.parse(logoutUrl), mode: LaunchMode.platformDefault,
+        webOnlyWindowName: '_self',
+      );
     } else {
       throw 'Could not launch $logoutUrl';
     }

@@ -1,24 +1,20 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:attendance/data/activity_attendance.dart';
+import 'package:gallery/avinya/attendance/lib/data/activity_attendance.dart';
 import 'package:intl/intl.dart';
-
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../routing.dart';
 
 List<DateTime> getWeekdaysFromDate(DateTime fromDate, int numberOfWeekdays) {
   List<DateTime> weekdaysList = [];
-  // Loop until we have the required number of weekdays
+  DateTime current = fromDate;
   while (weekdaysList.length < numberOfWeekdays) {
-    // Move to the next day
-    fromDate = fromDate.add(Duration(days: 1));
-
-    // Check if the current day is a weekday
-    if (fromDate.weekday >= 1 && fromDate.weekday <= 5) {
-      weekdaysList.add(fromDate);
+    current = current.add(const Duration(days: 1));
+    if (current.weekday >= 1 && current.weekday <= 5) {
+      weekdaysList.add(current);
     }
   }
-
   return weekdaysList;
 }
 
@@ -33,177 +29,258 @@ class PersonAttendanceMarkerReport extends StatefulWidget {
 class _PersonAttendanceMarkerReportState
     extends State<PersonAttendanceMarkerReport> {
   List<ActivityAttendance> _personAttendanceReport = [];
-  var result_limit = 20;
-  DateTime twentyEightDaysAgoDate = DateTime.now().subtract(Duration(days: 28));
-  List<DataColumn> _weekdaysColumns = [];
-  List<String?> stringDateTimeList = [];
+  final int resultLimit = 20;
+  final DateTime twentyEightDaysAgoDate =
+      DateTime.now().subtract(const Duration(days: 28));
+
   List<DateTime> weekdaysList = [];
+  List<String> stringDateTimeList = [];
   bool isAttendanceMarkerPathTemplate = false;
 
   @override
   void initState() {
     super.initState();
-    _generateWeekdaysColumns();
-  }
-
-  List<DataColumn> _buildDataColumns(bool isAttendanceMarkerPathTemplate) {
-    List<DataColumn> ColumnNames = [];
-
-    ColumnNames.add(DataColumn(
-        label: Text('Date',
-            style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
-    ColumnNames.add(DataColumn(
-        label: Text('Attendance',
-            style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
-
-    if (!isAttendanceMarkerPathTemplate) {
-      ColumnNames.add(DataColumn(
-          label: Text('Daily Payment',
-              style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
-      ColumnNames.add(DataColumn(
-          label: Text('Phone Payment',
-              style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold))));
-    }
-
-    return ColumnNames;
-  }
-
-  void _generateWeekdaysColumns() {
     weekdaysList = getWeekdaysFromDate(twentyEightDaysAgoDate, 20);
-    // Generate the DataColumn list
-    for (DateTime date in weekdaysList) {
-      _weekdaysColumns.add(DataColumn(
-        label: Text('${date.toString().split(" ")[0]}'),
-      ));
-    }
+    stringDateTimeList =
+        weekdaysList.map((d) => d.toString().split(" ")[0]).toList();
+  }
+
+  List<DataColumn> _buildDataColumns(bool isTemplate) {
+    return [
+      const DataColumn(
+        label: Expanded(
+          child: Center(
+            child: Text('Date',
+                style: TextStyle(
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2C3E50))),
+          ),
+        ),
+      ),
+      const DataColumn(
+        label: Expanded(
+          child: Center(
+            child: Text('Attendance',
+                style: TextStyle(
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2C3E50))),
+          ),
+        ),
+      ),
+      if (!isTemplate) ...[
+        const DataColumn(
+          label: Expanded(
+            child: Center(
+              child: Text('Daily Payment',
+                  style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2C3E50))),
+            ),
+          ),
+        ),
+        const DataColumn(
+          label: Expanded(
+            child: Center(
+              child: Text('Phone Payment',
+                  style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2C3E50))),
+            ),
+          ),
+        ),
+      ]
+    ];
   }
 
   Future<List<ActivityAttendance>>
       refreshPersonActivityAttendanceReport() async {
-    var activityInstance;
+    int? activityId;
     if (campusAppsPortalInstance.isStudent) {
-      activityInstance = campusAppsPortalInstance.activityIds['homeroom']!;
+      activityId = campusAppsPortalInstance.activityIds['homeroom'];
     } else {
-      activityInstance = campusAppsPortalInstance.activityIds['school-day']!;
+      activityId = campusAppsPortalInstance.activityIds['school-day'];
     }
+
+    if (activityId == null) return [];
+
     _personAttendanceReport = await getPersonActivityAttendanceReport(
-        campusAppsPortalInstance.getUserPerson().id!,
-        activityInstance!,
-        result_limit);
+        campusAppsPortalInstance.getUserPerson().id!, activityId, resultLimit);
     return _personAttendanceReport;
   }
 
   @override
   Widget build(BuildContext context) {
     final currentRoute = RouteStateScope.of(context).route;
+    isAttendanceMarkerPathTemplate =
+        currentRoute.pathTemplate.startsWith('/attendance_marker');
 
-    if (currentRoute.pathTemplate.startsWith('/attendance_marker')) {
-      isAttendanceMarkerPathTemplate = true;
-    } else {
-      isAttendanceMarkerPathTemplate = false;
-    }
-
-    return FutureBuilder<List<ActivityAttendance>>(
-      future: refreshPersonActivityAttendanceReport(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          stringDateTimeList = weekdaysList.map((datetime) {
-            return datetime.toString().split(" ")[0];
-          }).toList();
-          return SingleChildScrollView(
-            child: PaginatedDataTable(
-              columns: _buildDataColumns(isAttendanceMarkerPathTemplate),
-              source: _PersonAttendanceMarkerReportDataSource(snapshot.data,
-                  stringDateTimeList, isAttendanceMarkerPathTemplate),
-              rowsPerPage: 20,
-              dataRowHeight: 40.0,
-              columnSpacing: 100,
-              horizontalMargin: 60,
-            ),
-          );
-        } // } else if (snapshot.hasError) {
-        //   return Text("${snapshot.error}");
-        // }
-        return Container(
-          margin: EdgeInsets.only(top: 10),
-          child: SpinKitCircle(
-            color: (Colors
-                .deepPurpleAccent), // Customize the color of the indicator
-            size: 70, // Customize the size of the indicator
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-        );
-      },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Data Table Content
+              FutureBuilder<List<ActivityAttendance>>(
+                future: refreshPersonActivityAttendanceReport(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                        child: Padding(
+                            padding: EdgeInsets.all(60.0),
+                            child: SpinKitCircle(
+                                color: Color(0xFF1BB6E8), size: 50)));
+                  }
+
+                  if (snapshot.hasData) {
+                    // Force the table to take up the full width of the parent container
+                    return LayoutBuilder(builder: (context, constraints) {
+                      return ScrollConfiguration(
+                        behavior: ScrollConfiguration.of(context)
+                            .copyWith(dragDevices: {
+                          PointerDeviceKind.touch,
+                          PointerDeviceKind.mouse,
+                        }),
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            dataTableTheme: DataTableThemeData(
+                              headingRowColor: WidgetStateProperty.all(
+                                  const Color(0xFFF8F9FA)),
+                              headingTextStyle: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF2C3E50)),
+                            ),
+                          ),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                                minWidth:
+                                    constraints.maxWidth), // Force full width
+                            child: PaginatedDataTable(
+                              showCheckboxColumn: false,
+                              columns: _buildDataColumns(
+                                  isAttendanceMarkerPathTemplate),
+                              source: _PersonAttendanceMarkerReportDataSource(
+                                snapshot.data!,
+                                stringDateTimeList,
+                                isAttendanceMarkerPathTemplate,
+                              ),
+                              rowsPerPage: 20,
+                              columnSpacing:
+                                  40,
+                              horizontalMargin: 24,
+                              showFirstLastButtons: true,
+                            ),
+                          ),
+                        ),
+                      );
+                    });
+                  }
+                  return const Center(
+                      child: Padding(
+                          padding: EdgeInsets.all(40),
+                          child: Text("No data available")));
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
 class _PersonAttendanceMarkerReportDataSource extends DataTableSource {
-  _PersonAttendanceMarkerReportDataSource(
-      this._data, this.numberOfColumns, this.isAttendanceMarkerPathTemplate) {
-    numberOfColumns.sort((a, b) => b!.compareTo(a!));
-  }
+  final List<ActivityAttendance> _data;
+  final List<String> dates;
+  final bool isTemplate;
 
-  List<ActivityAttendance> _data;
-  List<String?> numberOfColumns = [];
-  bool isAttendanceMarkerPathTemplate;
+  _PersonAttendanceMarkerReportDataSource(
+      this._data, this.dates, this.isTemplate) {
+    dates.sort((a, b) => b.compareTo(a));
+  }
 
   @override
   DataRow? getRow(int index) {
+    if (index >= dates.length) return null;
+
+    final String dateStr = dates[index];
+    final DateTime dateObj = DateTime.parse(dateStr);
+
+    final bool isPresent = _data.any((attendance) =>
+        attendance.sign_in_time != null &&
+        attendance.sign_in_time!.split(" ")[0] == dateStr);
+
     List<DataCell> cells = [];
 
-    final attendance = numberOfColumns[index];
+    cells.add(DataCell(Center(
+        child: Text("$dateStr (${DateFormat.EEEE().format(dateObj)})",
+            style: const TextStyle(fontSize: 13, color: Color(0xFF2C3E50))))));
 
-    int i = 0;
-    double dailyPayment;
-    double phonePayment;
+    cells.add(DataCell(
+      Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+              color:
+                  isPresent ? const Color(0xFFE8F8F5) : const Color(0xFFFDEDED),
+              borderRadius: BorderRadius.circular(12)),
+          child: Text(isPresent ? "Present" : "Absent",
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: isPresent
+                      ? const Color(0xFF27AE60)
+                      : const Color(0xFFE74C3C))),
+        ),
+      ),
+    ));
 
-    for (; i < _data.length; i++) {
-      if (_data[i].sign_in_time != null &&
-          attendance == _data[i].sign_in_time!.split(" ")[0]) {
-        cells.add(DataCell(Text(attendance! +
-            "-" +
-            "(" +
-            DateFormat.EEEE().format(DateTime.parse(attendance)) +
-            ")")));
-        cells.add(DataCell(Text("Present")));
-
-        if (!isAttendanceMarkerPathTemplate) {
-          dailyPayment = 100.00;
-          phonePayment = 100.00;
-          cells.add(DataCell(Text("Rs.$dailyPayment")));
-          cells.add(DataCell(Text("Rs.$phonePayment")));
-        }
-        break;
-      }
+    if (!isTemplate) {
+      double daily = isPresent ? 100.0 : 0.0;
+      double phone = isPresent ? 100.0 : 0.0;
+      cells.add(DataCell(Center(
+          child: Text("Rs.${daily.toStringAsFixed(2)}",
+              style: const TextStyle(
+                  fontSize: 13, fontWeight: FontWeight.w500)))));
+      cells.add(DataCell(Center(
+          child: Text("Rs.${phone.toStringAsFixed(2)}",
+              style: const TextStyle(
+                  fontSize: 13, fontWeight: FontWeight.w500)))));
     }
 
-    if (i == _data.length) {
-      if (cells.isEmpty) {
-        cells.add(DataCell(Text(attendance! +
-            "-" +
-            "(" +
-            DateFormat.EEEE().format(DateTime.parse(attendance)) +
-            ")")));
-        cells
-            .add(DataCell(Container(child: Text("Absent"), color: Colors.red)));
-
-        if (!isAttendanceMarkerPathTemplate) {
-          dailyPayment = 00.00;
-          phonePayment = 00.00;
-          cells.add(DataCell(Text("Rs.$dailyPayment")));
-          cells.add(DataCell(Text("Rs.$phonePayment")));
-        }
-      }
-    }
-    return DataRow(cells: cells);
+    return DataRow(
+      cells: cells,
+      color: WidgetStateProperty.resolveWith<Color?>((states) {
+        if (states.contains(WidgetState.hovered))
+          return Colors.blue.withOpacity(0.05);
+        if (index.isEven) return Colors.grey.withOpacity(0.05);
+        return null;
+      }),
+    );
   }
 
   @override
   bool get isRowCountApproximate => false;
-
   @override
-  int get rowCount => numberOfColumns.length;
-
+  int get rowCount => dates.length;
   @override
   int get selectedRowCount => 0;
 }

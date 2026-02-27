@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:html';
+import 'package:universal_html/html.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -93,6 +93,8 @@ class SMSAuth extends ChangeNotifier {
                   print("API tokens Key : $key, Value : $value"));
             AppConfig.maintenanceAppBffApiKey =
                 _api_tokens["access_token"];
+            AppConfig.attendanceAppBffApiKey =
+                _api_tokens["access_token"];    
             print('Fetch API tokens success');
           } else {
             print('Failed to fetch API key');

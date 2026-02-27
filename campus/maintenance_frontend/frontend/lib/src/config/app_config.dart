@@ -1,12 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import '../services/api_key.dart';
 
 class AppConfig {
   static String apiUrl = '';
   static String campusMaintenanceBffApiUrl = '';
+  static String campusAttendanceBffApiUrl = '';
   static String campusProfileBffApiUrl = '';
   static String maintenanceAppBffApiKey = '';
+  static String attendanceAppBffApiKey = '';
   static String refreshToken = '';
   static String choreoSTSEndpoint = "";
   static String choreoSTSClientID = "x23_1tY7kAUtLUH9il9I3YwyrJca";
@@ -35,6 +38,9 @@ class AppConfig {
     // decode our json
     final json = jsonDecode(contents);
     campusMaintenanceBffApiUrl = json['campusMaintenanceBffApiUrl'];
+    campusAttendanceBffApiUrl = json['campusAttendanceBffApiUrl'];
+    maintenanceAppBffApiKey = ApiKey.maintenanceAppBffApiKey;
+    attendanceAppBffApiKey = ApiKey.attendanceBffApiKey;
     campusProfileBffApiUrl = json['campusProfileBffApiUrl'];
     choreoSTSEndpoint = json['choreo_sts_endpoint'];
     asgardeoTokenEndpoint = json['asgardeo_token_endpoint'];

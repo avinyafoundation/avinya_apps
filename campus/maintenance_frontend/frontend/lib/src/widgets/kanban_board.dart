@@ -42,7 +42,10 @@ class _KanbanBoardState extends State<KanbanBoard> {
   @override
   void initState() {
     super.initState();
-    // Removed redundant _fetchEmployees(); call
+    // Prompt for PIN immediately instead of waiting for employee list to load
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _promptInitialPin();
+    });
 
     // 1. Initialize AppFlowy Controller
     controller = AppFlowyBoardController(
@@ -76,7 +79,6 @@ class _KanbanBoardState extends State<KanbanBoard> {
         });
       },
     );
-    _fetchEmployees();
   }
 
   void _revertMove(
@@ -108,10 +110,12 @@ class _KanbanBoardState extends State<KanbanBoard> {
       _endSession,
     );
 
+    // immediately load tasks; employees can come later
     _loadBoardData();
+    _fetchEmployees();
   }
 
-  void _endSession() {
+  void _endSession({bool navigateToDashboard = false}) {
     if (_sessionPersonId == null) return; // Already ended
     _sessionTimer?.cancel();
     setState(() {
@@ -124,7 +128,9 @@ class _KanbanBoardState extends State<KanbanBoard> {
         controller.removeGroup(group.id);
       }
     });
-    _promptInitialPin(); // Prompt again
+    
+    // Both manual and auto logout navigate to dashboard
+    Navigator.of(context).pop();
   }
 
   bool _checkSessionValidity() {
@@ -140,7 +146,13 @@ class _KanbanBoardState extends State<KanbanBoard> {
 
   Future<void> _promptInitialPin() async {
     final pin = await _showPinDialog();
-    if (!mounted || pin == null) return;
+    if (!mounted) return;
+    
+    // If pin is null, user cancelled - go back to dashboard
+    if (pin == null) {
+      Navigator.of(context).pop();
+      return;
+    }
 
     try {
       final user = await PersonPin.validatePin(pin);
@@ -262,15 +274,6 @@ class _KanbanBoardState extends State<KanbanBoard> {
 
   Future<void> _fetchEmployees() async {
     employees = await fetchEmployeeListByOrganization(2);
-
-    if (employees.isNotEmpty) {
-      // Don't auto-select. Wait for PIN.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_sessionPersonId == null) {
-              _promptInitialPin();
-          }
-      });
-    }
     setState(() {});
   }
 
@@ -361,7 +364,7 @@ class _KanbanBoardState extends State<KanbanBoard> {
     if (overdueDays > 0) {
       // Already late
       return "දින $overdueDays ක් ප්‍රමාදයි";
-    } else if (overdueDays >= -2 && overdueDays < 0) {
+    } else if (overdueDays >= -7 && overdueDays < 0) {
       // Upcoming deadline
       return "අවසන් වීමට තව දින ${overdueDays.abs()} කි";
     } else if (overdueDays == 0) {
@@ -463,7 +466,7 @@ class _KanbanBoardState extends State<KanbanBoard> {
                               const SizedBox(width: 8),
                               IconButton(
                                 icon: const Icon(Icons.logout),
-                                onPressed: _endSession,
+                                onPressed: () => _endSession(navigateToDashboard: true),
                                 tooltip: 'Logout',
                               ),
                             ],
@@ -473,12 +476,14 @@ class _KanbanBoardState extends State<KanbanBoard> {
                     ),
 
                     // --- KANBAN BOARD SECTION ---
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        return SizedBox(
-                          height: _calculateBoardHeight(),
-                          width: double.infinity,
-                          child: AppFlowyBoard(
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          return SizedBox(
+                            height: _calculateBoardHeight(),
+                            width: 1200, // Fixed width to enable horizontal scroll
+                            child: AppFlowyBoard(
                             controller: controller,
                             // Config: Transparent background
                             config: const AppFlowyBoardConfig(
@@ -637,6 +642,7 @@ class _KanbanBoardState extends State<KanbanBoard> {
                         );
                       },
                     ),
+                  ),
                   ],
                 ),
               ),

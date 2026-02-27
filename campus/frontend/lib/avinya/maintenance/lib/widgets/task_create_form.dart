@@ -43,6 +43,8 @@ class _TaskCreateFormState extends State<TaskCreateForm> {
   String? displayDate;
   List<MaterialCost> materialCosts = [];
 
+  bool _isSubmitting = false;
+
   final taskTypes = {
     1: "Recurring",
     2: "One Time",
@@ -79,8 +81,16 @@ class _TaskCreateFormState extends State<TaskCreateForm> {
 
 
   void submitForm() async {
+    if (_isSubmitting) return;
+
     if (_formKey.currentState!.validate()) {
+
+      setState(() {
+        _isSubmitting = true;
+      });
+
       try {
+        await Future.delayed(const Duration(seconds: 3));
         // Convert int → MaintenanceType Enum
         MaintenanceType? taskTypeEnum =
             selectedTaskType == 1 ? MaintenanceType.recurring : MaintenanceType.oneTime;
@@ -160,7 +170,11 @@ class _TaskCreateFormState extends State<TaskCreateForm> {
           backgroundColor: Colors.red,
         ),
       );
-    }
+    } finally {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
   }
 }
 
@@ -441,8 +455,8 @@ class _TaskCreateFormState extends State<TaskCreateForm> {
                           if (int.tryParse(value) == null) {
                             return "Enter a valid number";
                           }
-                          if (int.parse(value) <= 0) {
-                            return "Value must be greater than 0";
+                          if (int.parse(value) < 0) {
+                            return "Value must not be negative";
                           }
                           return null;
                         },
@@ -521,8 +535,14 @@ class _TaskCreateFormState extends State<TaskCreateForm> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 2, 127, 6),
                       ),
-                      onPressed: submitForm,
-                      child: const Text(
+                      onPressed: () {
+                          if (_isSubmitting) return null;
+                          submitForm();
+                        },
+                      child: _isSubmitting ? const Text(
+                                "Saving...",
+                                style: TextStyle(color: Colors.white),
+                              ) : const Text(
                         "Save Task",
                         style: TextStyle(color: Colors.white),),
                     ),

@@ -507,3 +507,20 @@ public type UpdateTaskProgressResponse record {|
         string? participant_task_status;
     |}? updateTaskProgress;
 |};
+
+public type PersonPin record {
+    int? id?;
+    int? person_id?;
+    string? pin_hash?;
+    boolean? is_active?;
+    string? created?;
+    string? updated?;
+};
+
+public type ValidatePinResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? preferred_name;
+    |}? validatePin;
+|};
