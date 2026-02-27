@@ -365,8 +365,9 @@ query getAttendanceMissedBySecurityByParentOrg($parent_organization_id: Int!, $f
     }      
 }
 
-query getDailyStudentsAttendanceByParentOrg($parent_organization_id: Int!) {
-    daily_students_attendance_by_parent_org(parent_organization_id: $parent_organization_id) {
+query getDailyStudentsAttendanceByParentOrg($parent_organization_id: Int!,$date: String!) {
+    daily_students_attendance_by_parent_org(parent_organization_id: $parent_organization_id,date:$date) {
+        id
         description
         present_count
         total_student_count
@@ -390,12 +391,14 @@ query getTotalAttendanceCountByParentOrg($parent_organization_id: Int!, $from_da
 }
 
 query getDailyAttendanceSummaryReport(
-  $organization_id: Int!
-  $avinya_type_id: Int!
+  $parent_organization_id: Int
+  $organization_id: Int
+  $avinya_type_id: Int
   $from_date: String!
   $to_date: String!
 ) {
   daily_attendance_summary_report(
+    parent_organization_id: $parent_organization_id
     organization_id: $organization_id
     avinya_type_id: $avinya_type_id
     from_date: $from_date
@@ -508,5 +511,23 @@ mutation addBiometricAttendance($attendance: ActivityParticipantAttendance!) {
     sign_in_time
     sign_out_time
     created
+  }
+}
+
+query getStudentLateAttendanceByTimeRange($parent_organization_id:Int!,$activity_id:Int!,$date:String!) {
+    late_attendance_report(parent_organization_id:$parent_organization_id,activity_id:$activity_id,date:$date) {
+      label
+      student_count
+      student_name
+    }
+}
+
+query getDailyAbsenceSummary($organization_id: Int,$parent_organization_id: Int,$activity_id: Int!,
+                             $result_limit: Int,$date: String!,$from_date: String,$to_date: String) {
+    absent_report(organization_id: $organization_id,parent_organization_id: $parent_organization_id,
+                  activity_id: $activity_id,result_limit: $result_limit,date: $date,
+                  from_date: $from_date,to_date: $to_date) {
+    absent_count
+    absent_names
   }
 }

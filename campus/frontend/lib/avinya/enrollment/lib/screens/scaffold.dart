@@ -180,7 +180,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
             child: Text(
               'About',
               style: TextStyle(
-                color: Colors.lightGreenAccent[400],
+                color: Colors.lightBlueAccent[400],
                 fontSize: 12,
               ),
             ),
@@ -190,7 +190,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                   applicationName: AppConfig.applicationName,
                   applicationVersion: AppConfig.applicationVersion);
             }),
-        new Text("© 2025, Avinya Foundation."),
+        new Text("© 2026, Avinya Foundation."),
       ],
     );
   }

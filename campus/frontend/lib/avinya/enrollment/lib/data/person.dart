@@ -493,6 +493,83 @@ class Province {
       };
 }
 
+// ── Add these model classes in person.dart ────────────────────────────────────
+
+class StudentCount {
+  final int currentStudentCount;
+  final int maleStudentCount;
+  final int femaleStudentCount;
+  final int dropoutStudentCount;
+
+  StudentCount({
+    required this.currentStudentCount,
+    required this.maleStudentCount,
+    required this.femaleStudentCount,
+    required this.dropoutStudentCount,
+  });
+
+  factory StudentCount.fromJson(Map<String, dynamic> json) => StudentCount(
+        currentStudentCount: json['current_student_count'] ?? 0,
+        maleStudentCount: json['male_student_count'] ?? 0,
+        femaleStudentCount: json['female_student_count'] ?? 0,
+        dropoutStudentCount: json['dropout_student_count'] ?? 0,
+      );
+}
+
+class AgeGroup {
+  final String ageGroup;
+  final int count;
+
+  AgeGroup({required this.ageGroup, required this.count});
+
+  factory AgeGroup.fromJson(Map<String, dynamic> json) => AgeGroup(
+        ageGroup: json['age_group'] ?? '',
+        count: json['count'] ?? 0,
+      );
+}
+
+class AgeDistribution {
+  final int totalStudents;
+  final List<AgeGroup> ageGroups;
+
+  AgeDistribution({required this.totalStudents, required this.ageGroups});
+
+  factory AgeDistribution.fromJson(Map<String, dynamic> json) =>
+      AgeDistribution(
+        totalStudents: json['total_students'] ?? 0,
+        ageGroups: (json['age_groups'] as List<dynamic>? ?? [])
+            .map((e) => AgeGroup.fromJson(e))
+            .toList(),
+      );
+}
+
+class DistrictCount {
+  final String districtName;
+  final int count;
+
+  DistrictCount({required this.districtName, required this.count});
+
+  factory DistrictCount.fromJson(Map<String, dynamic> json) => DistrictCount(
+        districtName: json['district_name'] ?? '',
+        count: json['count'] ?? 0,
+      );
+}
+
+class DistrictDistribution {
+  final int totalStudents;
+  final List<DistrictCount> districts;
+
+  DistrictDistribution({required this.totalStudents, required this.districts});
+
+  factory DistrictDistribution.fromJson(Map<String, dynamic> json) =>
+      DistrictDistribution(
+        totalStudents: json['total_students'] ?? 0,
+        districts: (json['districts'] as List<dynamic>? ?? [])
+            .map((e) => DistrictCount.fromJson(e))
+            .toList(),
+      );
+}
+
 Future<List<UserDocument>?> fetchDocuments(int id) async {
   List<UserDocument>? userDocuments;
   final response = await http.get(
@@ -517,25 +594,46 @@ Future<List<UserDocument>?> fetchDocuments(int id) async {
 }
 
 Future<List<Person>> fetchPersons(
-    int organization_id, int avinya_type_id) async {
+  int organizationId,
+  int avinyaTypeId, {
+  int? limit,
+  int? offset,
+  int? classId,
+  String? search,
+}) async {
+  final uri = Uri.parse(
+    '${AppConfig.campusEnrollmentsBffApiUrl}/persons/$organizationId/$avinyaTypeId',
+  ).replace(
+    queryParameters: {
+      if (limit != null) 'limit': limit.toString(),
+      if (offset != null) 'offset': offset.toString(),
+      if (classId != null) 'class_id': classId.toString(),
+      if (search != null && search.isNotEmpty) 'search': search,
+    },
+  );
+
   final response = await http.get(
-    Uri.parse(
-        '${AppConfig.campusEnrollmentsBffApiUrl}/persons/$organization_id/$avinya_type_id'),
+    uri,
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
       'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
     },
   );
-  if (response.statusCode > 199 && response.statusCode < 300) {
-    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
-    List<Person> persons =
-        await resultsJson.map<Person>((json) => Person.fromJson(json)).toList();
-    return persons;
+
+  if (response.statusCode >= 200 && response.statusCode < 300) {
+    final List<dynamic> resultsJson = json.decode(response.body);
+
+    return resultsJson
+        .map((json) => Person.fromJson(json as Map<String, dynamic>))
+        .toList();
   } else {
-    throw Exception('Failed to get persons Data');
+    throw Exception(
+      'Failed to get persons data. Status code: ${response.statusCode}',
+    );
   }
 }
+
 
 Future<Person> fetchPerson(int? person_id) async {
   final response = await http.get(
@@ -845,4 +943,58 @@ Future<List<Organization>> fetchOrganizationsByAvinyaTypeAndStatus(
       throw Exception('Failed to load organizations');
     }
   }
+
+// Add these to person.dart alongside your other fetch functions
+
+Future<StudentCount> fetchStudentCount(int organizationId) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusEnrollmentsBffApiUrl}/student_count/$organizationId'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    return StudentCount.fromJson(json.decode(response.body));
+  } else {
+    throw Exception('Failed to get Student Count');
+  }
+}
+
+Future<AgeDistribution> fetchAgeDistribution(int organizationId) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusEnrollmentsBffApiUrl}/student_age_distribution/$organizationId'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    return AgeDistribution.fromJson(json.decode(response.body));
+  } else {
+    throw Exception('Failed to get Age Distribution');
+  }
+}
+
+Future<DistrictDistribution> fetchDistrictDistribution(
+    int organizationId) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusEnrollmentsBffApiUrl}/student_district_distribution/$organizationId'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    return DistrictDistribution.fromJson(json.decode(response.body));
+  } else {
+    throw Exception('Failed to get District Distribution');
+  }
+}
 

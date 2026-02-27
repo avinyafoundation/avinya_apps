@@ -129,3 +129,76 @@ Future<void> updateTaskStatus(
     throw Exception('Failed to update task status: ${response.body}');
   }
 }
+
+Future<List<dynamic>> getOrganizationTasks(int organizationId) async {
+  final uri = Uri.parse(
+      '${AppConfig.campusMaintenanceBffApiUrl}/organizations/$organizationId/tasks');
+  
+  final response = await http.get(
+    uri,
+    headers: {
+      'Content-Type': 'application/json',
+      'accept': 'application/json',
+      'api-key': AppConfig.maintenanceAppBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body) as List<dynamic>;
+  } else {
+    throw Exception('Failed to load organization tasks: ${response.statusCode}');
+  }
+}
+
+/// Fetches tasks filtered by status ("Pending" or "InProgress").
+Future<List<dynamic>> getOrganizationTasksByStatus(
+    int organizationId, String status,
+    {DateTime? toDate, int? limit}) async {
+  // prepare query parameters; include status and optional toDate/limit
+  final Map<String, String> queryParams = {'taskStatus': status};
+  if (toDate != null) {
+    queryParams['toDate'] = toDate.toIso8601String();
+  }
+  if (limit != null) {
+    queryParams['limit'] = limit.toString();
+  }
+  final uri = Uri.parse(
+          '${AppConfig.campusMaintenanceBffApiUrl}/organizations/$organizationId/tasks')
+      .replace(queryParameters: queryParams);
+
+  final response = await http.get(
+    uri,
+    headers: {
+      'Content-Type': 'application/json',
+      'accept': 'application/json',
+      'api-key': AppConfig.maintenanceAppBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body) as List<dynamic>;
+  } else {
+    throw Exception(
+        'Failed to load organization tasks by status ($status): ${response.statusCode}');
+  }
+}
+
+Future<List<dynamic>> getOverdueTasks(int organizationId) async {
+  final uri = Uri.parse(
+      '${AppConfig.campusMaintenanceBffApiUrl}/tasks/$organizationId/overdue');
+
+  final response = await http.get(
+    uri,
+    headers: {
+      'Content-Type': 'application/json',
+      'accept': 'application/json',
+      'api-key': AppConfig.maintenanceAppBffApiKey,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body) as List<dynamic>;
+  } else {
+    throw Exception('Failed to load overdue tasks: ${response.statusCode}');
+  }
+}

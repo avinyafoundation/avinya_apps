@@ -55,6 +55,24 @@ public type ActivityParticipantAttendance record {
     int? person_id?;
     string? sign_out_time?;
 };
+public type ActivityParticipantAttendanceForLateAttendance record {|
+    readonly string? record_type = "activity_participant_attendance";
+    int id?;
+    int? person_id;
+    int? activity_instance_id;
+    string? sign_in_time;
+    string? sign_out_time;
+    string? in_marked_by;
+    string? out_marked_by;
+    string? created;
+    string? updated;
+    string? description;
+    string? preferred_name;
+    string? digital_id;
+    string? label; //The label for the time range (e.g."07:30 - 07:45")
+    int studentCount; // Total number of unique students in this range(e.g."07:30 - 07:45")
+    string? studentNames; //List of names of students who signed in during this range
+|};
 
 public type ActivityParticipantAttendanceSummary record {
     string? sign_in_date;
@@ -781,6 +799,7 @@ public type GetAttendanceMissedBySecurityByParentOrgResponse record {|
 public type GetDailyStudentsAttendanceByParentOrgResponse record {|
     map<json?> __extensions?;
     record {|
+        int? id;
         string? description;
         int? present_count;
         int? total_student_count;
@@ -942,4 +961,21 @@ public type AddBiometricAttendanceResponse record {|
         string? sign_out_time;
         string? created;
     |}? addBiometricAttendance;
+|};
+
+public type GetStudentLateAttendanceByTimeRangeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? label;
+        int? student_count;
+        string? student_name;
+    |}[] late_attendance_report;
+|};
+
+public type GetDailyAbsenceSummaryResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? absent_count;
+        string? absent_names;
+    |}[] absent_report;
 |};

@@ -48,3 +48,11 @@ app.*.map.json
 .fvm/
 api_key.dart
 /ios
+
+#Generated files
+generated_plugin_registrant.cc
+generated_plugin_registrant.h
+generated_plugins.cmake
+GeneratedPluginRegistrant.swift
+flutter_export_environment.sh
+Flutter-Generated.xcconfig

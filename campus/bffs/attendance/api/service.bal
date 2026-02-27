@@ -786,8 +786,8 @@ service / on new http:Listener(9091) {
         }
     }
 
-    resource function get daily_students_attendance_by_parent_org/[int parent_organization_id]() returns DailyActivityParticipantAttendanceByParentOrg[]|error {
-        GetDailyStudentsAttendanceByParentOrgResponse|graphql:ClientError getDailyStudentsAttendanceResponse = globalDataClient->getDailyStudentsAttendanceByParentOrg(parent_organization_id);
+    resource function get daily_students_attendance_by_parent_org/[int parent_organization_id](string date) returns DailyActivityParticipantAttendanceByParentOrg[]|error {
+        GetDailyStudentsAttendanceByParentOrgResponse|graphql:ClientError getDailyStudentsAttendanceResponse = globalDataClient->getDailyStudentsAttendanceByParentOrg(date,parent_organization_id);
         if(getDailyStudentsAttendanceResponse is GetDailyStudentsAttendanceByParentOrgResponse) {
             DailyActivityParticipantAttendanceByParentOrg[] dailyStudentsAttendances = [];
             foreach var daily_students_attendance_record in getDailyStudentsAttendanceResponse.daily_students_attendance_by_parent_org {
@@ -859,7 +859,7 @@ service / on new http:Listener(9091) {
     }
 
     resource function get daily_attendance_summary_report/[int organization_id]/[int avinya_type_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendanceSummary[]|error {
-        GetDailyAttendanceSummaryReportResponse|graphql:ClientError getDailyAttendanceSummaryReportResponse = globalDataClient->getDailyAttendanceSummaryReport(from_date,to_date,organization_id,avinya_type_id);
+        GetDailyAttendanceSummaryReportResponse|graphql:ClientError getDailyAttendanceSummaryReportResponse = globalDataClient->getDailyAttendanceSummaryReport(from_date,to_date,organization_id,(),avinya_type_id);
         if(getDailyAttendanceSummaryReportResponse is GetDailyAttendanceSummaryReportResponse) {
             ActivityParticipantAttendanceSummary[] activityParticipantAttendances = [];
             foreach var attendance_record in getDailyAttendanceSummaryReportResponse.daily_attendance_summary_report {
@@ -879,6 +879,31 @@ service / on new http:Listener(9091) {
             log:printError("Error while creating application", getDailyAttendanceSummaryReportResponse);
             return error("Error while creating application: " + getDailyAttendanceSummaryReportResponse.message() + 
                 ":: Detail: " + getDailyAttendanceSummaryReportResponse.detail().toString());
+        }
+    }
+
+    //Get employee attendance summary report
+    resource function get employees/attendance_summary_report/[int parent_organization_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendanceSummary[]|error {
+        GetDailyAttendanceSummaryReportResponse|graphql:ClientError getEmployeeAttendanceSummaryReportResponse = globalDataClient->getDailyAttendanceSummaryReport(from_date,to_date,(),parent_organization_id,());
+        if(getEmployeeAttendanceSummaryReportResponse is GetDailyAttendanceSummaryReportResponse) {
+            ActivityParticipantAttendanceSummary[] activityParticipantAttendances = [];
+            foreach var attendance_record in getEmployeeAttendanceSummaryReportResponse.daily_attendance_summary_report {
+                ActivityParticipantAttendanceSummary|error activityParticipantAttendance = attendance_record.cloneWithType(ActivityParticipantAttendanceSummary);
+                if(activityParticipantAttendance is ActivityParticipantAttendanceSummary) {
+                    activityParticipantAttendances.push(activityParticipantAttendance);
+                } else {
+                    log:printError("Error while processing Application record received", activityParticipantAttendance);
+                    return error("Error while processing Application record received: " + activityParticipantAttendance.message() + 
+                        ":: Detail: " + activityParticipantAttendance.detail().toString());
+                }
+            }
+
+            return activityParticipantAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getEmployeeAttendanceSummaryReportResponse);
+            return error("Error while creating application: " + getEmployeeAttendanceSummaryReportResponse.message() + 
+                ":: Detail: " + getEmployeeAttendanceSummaryReportResponse.detail().toString());
         }
     }
 
@@ -1089,6 +1114,68 @@ service / on new http:Listener(9091) {
         }
         // Send the OK back to the device to STOP the looping
         return response;
+    }
+    //Get Organizations Late Attendance Summary List
+    resource function get organizations/[int parent_organization_id]/'late\-attendance\-summary(
+        string date = "",
+        int activity_id = 4
+    ) returns json[] | error {
+        GetStudentLateAttendanceByTimeRangeResponse|graphql:ClientError getStudentLateAttendanceByTimeRangeResponse = globalDataClient->getStudentLateAttendanceByTimeRange(date,parent_organization_id,activity_id);
+        if(getStudentLateAttendanceByTimeRangeResponse is GetStudentLateAttendanceByTimeRangeResponse){
+            json[] lateAttendanceSummaryList = [];
+            foreach var late_attendance_summary_record in getStudentLateAttendanceByTimeRangeResponse.late_attendance_report{
+                json|error late_record = late_attendance_summary_record.cloneWithType(json);
+                if(late_record is json){
+                    lateAttendanceSummaryList.push(late_record);
+                }else{
+                    log:printError("Error while retrieving the late attendance summary list", late_record);
+                    return error("Error while retrieving the late attendance summary list: " + late_record.message() + 
+                        ":: Detail: " + late_record.detail().toString());
+                }
+            }
+
+            return lateAttendanceSummaryList;
+        }else {
+            log:printError("Error while retrieving the late attendance summary list", getStudentLateAttendanceByTimeRangeResponse);
+            return error("Error while retrieving the late attendance summary list: " + getStudentLateAttendanceByTimeRangeResponse.message() + 
+                ":: Detail: " + getStudentLateAttendanceByTimeRangeResponse.detail().toString());
+        }
+    }
+
+     // Retrieves a summary of absentees for a specific organization.
+     // parent_organization_id = 2 [Avinya Academy Bandaragama]
+    resource function get organizations/[int parent_organization_id]/'daily\-absence\-summary(
+        int? organization_id,
+        int? parent_org_id,
+        int activity_id,
+        int? result_limit,
+        string date,
+        string? from_date,
+        string? to_date
+    ) returns json[] | error {
+        GetDailyAbsenceSummaryResponse|graphql:ClientError getDailyAbsenceSummaryResponse = globalDataClient->
+                                                                                             getDailyAbsenceSummary(date,activity_id,from_date,to_date,
+                                                                                              result_limit,organization_id,parent_org_id);
+        
+        if(getDailyAbsenceSummaryResponse is GetDailyAbsenceSummaryResponse){
+            json[] absenceSummaryList = [];
+            foreach var absence_summary_record in getDailyAbsenceSummaryResponse.absent_report{
+                json|error absence_record = absence_summary_record.cloneWithType(json);
+                if(absence_record is json){
+                    absenceSummaryList.push(absence_record);
+                }else{
+                    log:printError("Error while retrieving the absence summary list", absence_record);
+                    return error("Error while retrieving the absence summary list: " + absence_record.message() + 
+                        ":: Detail: " + absence_record.detail().toString());
+                }
+            }
+
+            return absenceSummaryList;
+        }else{
+            log:printError("Error while retrieving the absence summary list", getDailyAbsenceSummaryResponse);
+            return error("Error while retrieving the absence summary list: " + getDailyAbsenceSummaryResponse.message() + 
+                ":: Detail: " + getDailyAbsenceSummaryResponse.detail().toString());
+        }
     }
 
 }

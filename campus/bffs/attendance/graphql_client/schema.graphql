@@ -115,6 +115,11 @@ input ActivityParticipant {
   person: Person
 }
 
+type ActivityParticipantAbsentData {
+  absent_count: Int
+  absent_names: String
+}
+
 input ActivityParticipantAttendance {
   record_type: String = "activity_participant_attendance"
   id: Int
@@ -152,6 +157,9 @@ type ActivityParticipantAttendanceDataForLateAttendance {
   preferred_name: String
   digital_id: String
   sign_out_time: String
+  label: String
+  student_count: Int
+  student_name: String
   created: String
   updated: String
   in_marked_by: String
@@ -219,6 +227,16 @@ type AddressData {
   street_address: String
   phone: Int
   id: Int
+}
+
+type AgeDistributionData {
+  age_groups: [AgeGroupData!]!
+  total_students: Int!
+}
+
+type AgeGroupData {
+  age_group: String!
+  count: Int!
 }
 
 input Alumni {
@@ -516,6 +534,7 @@ type CvRequestData {
 }
 
 type DailyActivityParticipantAttendanceByParentOrgData {
+  id: Int
   description: String
   present_count: Int
   total_student_count: Int
@@ -541,6 +560,16 @@ type DistrictData {
   id: Int
   province: ProvinceData!
   cities: [CityData!]!
+}
+
+type DistrictDistributionData {
+  districts: [DistrictStudentCount!]!
+  total_students: Int!
+}
+
+type DistrictStudentCount {
+  district_name: String!
+  count: Int!
 }
 
 type DocumentsData {
@@ -1393,7 +1422,8 @@ type Query {
   person_attendance_today(person_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int = 0): [ActivityParticipantAttendanceData!]
   class_attendance_report(batch_id: Int, organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
-  late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceDataForLateAttendance!]
+  absent_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, date: String, from_date: String, to_date: String): [ActivityParticipantAbsentData!]
+  late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, date: String, from_date: String, to_date: String): [ActivityParticipantAttendanceDataForLateAttendance!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
   supplier(id: Int!): SupplierData
@@ -1421,14 +1451,17 @@ type Query {
   duty_participant(person_id: Int): DutyParticipantData
   attendance_dashboard_data_by_date(organization_id: Int, parent_organization_id: Int, activity_id: Int, from_date: String = "", to_date: String = ""): [AttendanceDashboardDataMain!]
   attendance_missed_by_security(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceMissedBySecurityData!]
-  daily_students_attendance_by_parent_org(parent_organization_id: Int): [DailyActivityParticipantAttendanceByParentOrgData!]
+  daily_students_attendance_by_parent_org(parent_organization_id: Int, date: String): [DailyActivityParticipantAttendanceByParentOrgData!]
   total_attendance_count_by_date(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [TotalActivityParticipantAttendanceCountByDateData!]
-  daily_attendance_summary_report(organization_id: Int, avinya_type_id: Int, from_date: String = "", to_date: String = ""): [DailyActivityParticipantAttendanceSummaryReportData!]
+  daily_attendance_summary_report(parent_organization_id: Int, organization_id: Int, avinya_type_id: Int, from_date: String = "", to_date: String = ""): [DailyActivityParticipantAttendanceSummaryReportData!]
   inventory_data_by_organization(organization_id: Int, date: String = ""): [InventoryData!]
   consumable_weekly_report(organization_id: Int, from_date: String = "", to_date: String = ""): [InventoryData!]
   consumable_monthly_report(organization_id: Int, year: Int, month: Int): [InventoryData!]
   consumable_yearly_report(organization_id: Int, consumable_id: Int, year: Int): [InventoryData!]
-  persons(organization_id: Int, avinya_type_id: Int): [PersonData!]
+  studentCountByOrganization(organization_id: Int!): StudentCountData!
+  studentAgeDistribution(organization_id: Int!): AgeDistributionData!
+  studentDistrictDistribution(organization_id: Int!): DistrictDistributionData!
+  persons(organization_id: Int, avinya_type_id: Int, limit: Int, offset: Int, class_id: Int, search: String): [PersonData!]
   person_by_id(id: Int): PersonData
   document_list(id: Int!): [DocumentsData!]
   districts: [DistrictData!]
@@ -1508,6 +1541,13 @@ type ResourcePropertyData {
   consumable: ConsumableData
   property: String
   value: String
+}
+
+type StudentCountData {
+  current_student_count: Int!
+  male_student_count: Int!
+  female_student_count: Int!
+  dropout_student_count: Int!
 }
 
 input Supplier {

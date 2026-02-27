@@ -27,9 +27,9 @@ public isolated client class GraphqlClient {
         graphql:Client clientEp = check new (serviceUrl, graphqlClientConfig);
         self.graphqlClient = clientEp;
     }
-    remote isolated function getPersons(int organization_id, int avinya_type_id) returns GetPersonsResponse|graphql:ClientError {
-        string query = string `query getPersons($organization_id:Int!,$avinya_type_id:Int!) {persons(organization_id:$organization_id,avinya_type_id:$avinya_type_id) {id preferred_name full_name date_of_birth sex asgardeo_id jwt_sub_id created updated jwt_email permanent_address {city {id name {name_en name_si name_ta}} street_address phone id} mailing_address {city {id name {name_en name_si name_ta}} street_address phone id} phone organization {id description notes address {id} avinya_type {id name} name {name_en} parent_organizations {id name {name_en}}} avinya_type_id notes nic_no passport_no id_no email street_address digital_id avinya_phone bank_name bank_account_number bank_account_name academy_org_id bank_branch created_by updated_by current_job}}`;
-        map<anydata> variables = {"organization_id": organization_id, "avinya_type_id": avinya_type_id};
+    remote isolated function getPersons(int organization_id, int avinya_type_id, string? search = (), int? offset = (), int? class_id = (), int? 'limit = ()) returns GetPersonsResponse|graphql:ClientError {
+        string query = string `query getPersons($organization_id:Int!,$avinya_type_id:Int!,$limit:Int,$offset:Int,$class_id:Int,$search:String) {persons(organization_id:$organization_id,avinya_type_id:$avinya_type_id,limit:$limit,offset:$offset,class_id:$class_id,search:$search) {id preferred_name full_name date_of_birth sex asgardeo_id jwt_sub_id created updated jwt_email permanent_address {city {id name {name_en name_si name_ta} district {name {name_en}}} street_address phone id} mailing_address {city {id name {name_en name_si name_ta} district {name {name_en}}} street_address phone id} phone organization {id description notes address {id} avinya_type {id name} name {name_en} parent_organizations {id name {name_en}}} avinya_type_id notes nic_no passport_no id_no email street_address digital_id avinya_phone bank_name bank_account_number bank_account_name academy_org_id bank_branch created_by updated_by current_job}}`;
+        map<anydata> variables = {"search": search, "offset": offset, "organization_id": organization_id, "class_id": class_id, "avinya_type_id": avinya_type_id, "limit": 'limit};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetPersonsResponse> check performDataBinding(graphqlResponse, GetPersonsResponse);
     }
@@ -86,5 +86,23 @@ public isolated client class GraphqlClient {
         map<anydata> variables = {"id": id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetAllDocumentsResponse> check performDataBinding(graphqlResponse, GetAllDocumentsResponse);
+    }
+    remote isolated function GetStudentCount(int organization_id) returns GetStudentCountResponse|graphql:ClientError {
+        string query = string `query GetStudentCount($organization_id:Int!) {studentCountByOrganization(organization_id:$organization_id) {current_student_count male_student_count female_student_count dropout_student_count}}`;
+        map<anydata> variables = {"organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetStudentCountResponse> check performDataBinding(graphqlResponse, GetStudentCountResponse);
+    }
+    remote isolated function GetAgeDistribution(int organization_id) returns GetAgeDistributionResponse|graphql:ClientError {
+        string query = string `query GetAgeDistribution($organization_id:Int!) {studentAgeDistribution(organization_id:$organization_id) {total_students age_groups {age_group count}}}`;
+        map<anydata> variables = {"organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetAgeDistributionResponse> check performDataBinding(graphqlResponse, GetAgeDistributionResponse);
+    }
+    remote isolated function GetDistrictDistribution(int organization_id) returns GetDistrictDistributionResponse|graphql:ClientError {
+        string query = string `query GetDistrictDistribution($organization_id:Int!) {studentDistrictDistribution(organization_id:$organization_id) {total_students districts {district_name count}}}`;
+        map<anydata> variables = {"organization_id": organization_id};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetDistrictDistributionResponse> check performDataBinding(graphqlResponse, GetDistrictDistributionResponse);
     }
 }

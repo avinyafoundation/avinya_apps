@@ -1086,6 +1086,7 @@ public type GetAttendanceMissedBySecurityByParentOrgResponse record {|
 public type GetDailyStudentsAttendanceByParentOrgResponse record {|
     map<json?> __extensions?;
     record {|
+        int? id;
         string? description;
         int? present_count;
         int? total_student_count;
@@ -1217,4 +1218,21 @@ public type AddBiometricAttendanceResponse record {|
         string? sign_out_time;
         string? created;
     |}? addBiometricAttendance;
+|};
+
+public type GetStudentLateAttendanceByTimeRangeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? label;
+        int? student_count;
+        string? student_name;
+    |}[]? late_attendance_report;
+|};
+
+public type GetDailyAbsenceSummaryResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? absent_count;
+        string? absent_names;
+    |}[]? absent_report;
 |};
