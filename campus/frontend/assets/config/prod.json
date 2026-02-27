@@ -6,6 +6,7 @@
     "campusAssetsBffApiUrl": "https://3a907137-52a3-4196-9e0d-22d054ea5789-prod.e1-us-east-azure.choreoapis.dev/fieg/asset-bff/0.9.0",
     "campusEnrollmentsBffApiUrl": "https://3a907137-52a3-4196-9e0d-22d054ea5789-prod.e1-us-east-azure.choreoapis.dev/fieg/enrollment-bff/v1.0",
     "campusAlumniBffApiUrl": "https://3a907137-52a3-4196-9e0d-22d054ea5789-prod.e1-us-east-azure.choreoapis.dev/fieg/alumni-bff/v1.0",
+    "campusMaintenanceBffApiUrl": "https://3a907137-52a3-4196-9e0d-22d054ea5789-prod.e1-us-east-azure.choreoapis.dev/fieg/maintenance-bff/v1.0",
     "choreo_sts_endpoint": "https://sts.choreo.dev/oauth2/token",
     "asgardeo_token_endpoint": "https://api.asgardeo.io/t/avinyaacademy/oauth2/token",
     "logout_url": "https://api.asgardeo.io/t/avinyaacademy/oidc/logout"

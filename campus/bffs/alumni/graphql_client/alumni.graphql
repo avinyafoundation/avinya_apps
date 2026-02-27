@@ -41,6 +41,7 @@ mutation createAlumni(
       facebook_id
       instagram_id
       tiktok_id
+      canva_cv_url
     }
     phone
     email
@@ -92,6 +93,7 @@ mutation updateAlumni(
       facebook_id
       instagram_id
       tiktok_id
+      canva_cv_url
     }
     phone
     email
@@ -256,6 +258,7 @@ query getAlumniPersonById($id: Int!) {
       facebook_id
       instagram_id
       tiktok_id
+      canva_cv_url
     }
     alumni_education_qualifications {
       id
@@ -469,5 +472,77 @@ query getJobCategories {
   job_categories {
     id
     name
+  }
+}
+
+mutation addCvRequest($personId: Int!, $cvRequest: CvRequest!) {
+  addCvRequest(personId: $personId, cvRequest: $cvRequest) {
+    id
+    person_id
+    phone
+    status
+    created
+    updated
+  }
+}
+
+query fetchLatestCvRequest($personId: Int!) {
+  fetchLatestCvRequest(personId: $personId) {
+    id
+    person_id
+    phone
+    status
+    created
+    updated
+  }
+}
+
+mutation uploadCV($personId: Int!, $personCv: PersonCv!) {
+  uploadCV(personId: $personId, personCv: $personCv) {
+    id
+    person_id
+    drive_file_id
+    uploaded_by
+    created
+    updated
+  }
+}
+
+query fetchPersonCV($personId: Int!, $driveFileId: String) {
+  fetchPersonCV(personId: $personId, driveFileId: $driveFileId) {
+    id
+    person_id
+    drive_file_id
+    file_content
+  }
+}
+
+mutation addUserFcmToken($personId: Int!, $personFCMToken: PersonFcmToken!) {
+  saveUserFCMToken(personId: $personId, personFCMToken: $personFCMToken) {
+    id
+    person_id
+    fcm_token
+    created
+    updated
+  }
+}
+
+mutation updateUserFCMToken($personId: Int!, $personFCMToken: PersonFcmToken!) {
+  updateUserFCMToken(personId: $personId, personFCMToken: $personFCMToken) {
+    id
+    person_id
+    fcm_token
+    created
+    updated
+  }
+}
+
+query fetchUserFCMToken($personId: Int!) {
+  fetchUserFCMToken(personId: $personId) {
+    id
+    person_id
+    fcm_token
+    created
+    updated
   }
 }

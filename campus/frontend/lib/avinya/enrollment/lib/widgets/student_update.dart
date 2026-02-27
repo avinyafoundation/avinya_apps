@@ -202,7 +202,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
       body: userPerson.preferred_name == null
           ? const Center(
               child: SpinKitCircle(
-                color: (Color.fromARGB(255, 74, 161, 70)),
+                color: (Colors.lightBlueAccent),
                 size: 70,
               ),
             )
@@ -211,7 +211,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
                 width: 850,
                 child: Stepper(
                   connectorColor: WidgetStateProperty.all(
-                      Color.fromARGB(255, 74, 161, 70)),
+                      Colors.lightBlueAccent),
                   type: StepperType.vertical,
                   currentStep: _currentStep,
                   onStepContinue: _nextStep,
@@ -264,8 +264,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
                                           return Container(
                                             margin: EdgeInsets.only(top: 10),
                                             child: SpinKitCircle(
-                                              color: (Color.fromARGB(
-                                                  255, 74, 161, 70)),
+                                              color: (Colors.lightBlueAccent),
                                               size: 70,
                                             ),
                                           );
@@ -309,7 +308,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
                                       true, 'Personal Email', userPerson.email,
                                       (value) {
                                     userPerson.email = value;
-                                  }),
+                                  }, validator: _validateEmail), // Email format validation
                                   _buildEditableField(true, 'Phone',
                                       userPerson.phone?.toString() ?? '',
                                       (value) {
@@ -337,8 +336,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
                                           return Container(
                                             margin: EdgeInsets.only(top: 10),
                                             child: SpinKitCircle(
-                                              color: (Color.fromARGB(
-                                                  255, 74, 161, 70)),
+                                              color: (Colors.lightBlueAccent),
                                               size: 70,
                                             ),
                                           );
@@ -436,7 +434,7 @@ class _StudentUpdateState extends State<StudentUpdate> {
                               return Container(
                                 margin: EdgeInsets.only(top: 10),
                                 child: SpinKitCircle(
-                                  color: (Color.fromARGB(255, 74, 161, 70)),
+                                  color: (Colors.lightBlueAccent),
                                   size: 70,
                                 ),
                               );
@@ -551,6 +549,15 @@ class _StudentUpdateState extends State<StudentUpdate> {
     bool isEnabled = isDistrictsDataLoaded && isOrganizationsDataLoaded;
     print('is enabled:${isEnabled}');
     if (_currentStep == 0 && isEnabled) {
+
+      // Validate date of birth manually
+      if (selectedDateOfBirth == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Date of Birth is required')),
+        );
+        return;
+      }
+
       if (_formKey.currentState!.validate()) {
         _formKey.currentState!.save();
         userPerson = await updatePerson(userPerson);
@@ -615,6 +622,17 @@ class _StudentUpdateState extends State<StudentUpdate> {
         ),
       ],
     );
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return null;
+    }
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    if (!emailRegex.hasMatch(value)) {
+      return 'Enter a valid email address';
+    }
+    return null;
   }
 
   String? _validateNIC(String? value) {
@@ -759,6 +777,10 @@ class _StudentUpdateState extends State<StudentUpdate> {
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
               ),
+              validator: (value) {
+                if (value == null) return 'Sex is required';
+                return null;
+              },
             ),
           ),
         ],
@@ -802,6 +824,10 @@ class _StudentUpdateState extends State<StudentUpdate> {
                 labelText: 'Select District',
                 border: OutlineInputBorder(),
               ),
+              validator: (value) {
+                if (value == null) return 'District is required';
+                return null;
+              },
             ),
           ),
         ],
@@ -857,6 +883,10 @@ class _StudentUpdateState extends State<StudentUpdate> {
                 labelText: 'Select City',
                 border: OutlineInputBorder(),
               ),
+              validator: (value) {
+                if (value == null) return 'City is required';
+                return null;
+              },
             ),
           ),
         ],

@@ -183,6 +183,9 @@ public type GetPersonsResponse record {|
                     string? name_si;
                     string? name_ta;
                 |} name;
+                record {|record {|
+                        string? name_en;
+                    |} name;|} district;
             |} city;
             string? street_address;
             int? phone;
@@ -196,6 +199,9 @@ public type GetPersonsResponse record {|
                     string? name_si;
                     string? name_ta;
                 |} name;
+                record {|record {|
+                        string? name_en;
+                    |} name;|} district;
             |} city;
             string? street_address;
             int? phone;
@@ -240,7 +246,7 @@ public type GetPersonsResponse record {|
         int? created_by;
         int? updated_by;
         string? current_job;
-    |}[] persons;
+    |}[]? persons;
 |};
 
 public type GetPersonByIdResponse record {|
@@ -566,3 +572,62 @@ public type GetAllDocumentsResponse record {|
         string? document_type;
     |}[] document_list;
 |};
+
+public type GetStudentCountResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int current_student_count;
+        int male_student_count;
+        int female_student_count;
+        int dropout_student_count;
+    |} studentCountByOrganization;
+|};
+
+public type GetAgeDistributionResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int total_students;
+        record {|
+            string age_group;
+            int count;
+        |}[] age_groups;
+    |} studentAgeDistribution;
+|};
+
+public type GetDistrictDistributionResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int total_students;
+        record {|
+            string district_name;
+            int count;
+        |}[] districts;
+    |} studentDistrictDistribution;
+|};
+
+public type StudentCount record {
+    int current_student_count;
+    int male_student_count;
+    int female_student_count;
+    int dropout_student_count;
+};
+
+public type AgeGroup record {
+    string age_group;
+    int count;
+};
+
+public type AgeDistribution record {
+    int total_students;
+    AgeGroup[] age_groups;
+};
+
+public type DistrictCount record {
+    string district_name;
+    int count;
+};
+
+public type DistrictDistribution record {
+    int total_students;
+    DistrictCount[] districts;
+};

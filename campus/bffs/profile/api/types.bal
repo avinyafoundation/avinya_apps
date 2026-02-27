@@ -1,3 +1,4 @@
+import ballerina/http;
 public type Activity record {
     string? notes?;
     int[]? parent_activities?;
@@ -9,6 +10,22 @@ public type Activity record {
     int? id?;
     string? updated?;
     string? record_type?;
+};
+
+public type ApiErrorResponse record {|
+    *http:NotFound;
+    record {
+        string message;
+    } body;
+|};
+
+public type PersonPin record {
+    int? id?;
+    int? person_id?;
+    string? pin_hash?;
+    boolean? is_active?;
+    string? created?;
+    string? updated?;
 };
 
 public type ActivityInstance record {
@@ -620,7 +637,7 @@ public type GetPersonResponse record {|
         int? alumni_id;
         boolean? is_graduated;
         string? profile_picture_folder_id;
-    |}? person_by_digital_id;
+    |}? person_by_digital_id_or_nic;
 |};
 
 public type GetOrganizationResponse record {|
@@ -689,4 +706,12 @@ public type GetStudentByParentOrgResponse record {|
             string? description;
         |}? organization;
     |}[] student_list_by_parent;
+|};
+
+public type ValidatePinResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? preferred_name;
+    |}? validatePin;
 |};

@@ -44,19 +44,35 @@ public type ActivityParticipant record {
 
 public type ActivityParticipantAttendance record {
     int? activity_instance_id?;
+    string? in_marked_by?;
     string? created?;
     string? sign_in_time?;
     int? id?;
+    string? out_marked_by?;
     string? updated?;
     string? record_type?;
+    string? event_time?;
     int? person_id?;
     string? sign_out_time?;
-    string? in_marked_by?;
-    string? out_marked_by?;
-    string? description?;
-    string? preferred_name?;
-    string? digital_id?;
 };
+public type ActivityParticipantAttendanceForLateAttendance record {|
+    readonly string? record_type = "activity_participant_attendance";
+    int id?;
+    int? person_id;
+    int? activity_instance_id;
+    string? sign_in_time;
+    string? sign_out_time;
+    string? in_marked_by;
+    string? out_marked_by;
+    string? created;
+    string? updated;
+    string? description;
+    string? preferred_name;
+    string? digital_id;
+    string? label; //The label for the time range (e.g."07:30 - 07:45")
+    int studentCount; // Total number of unique students in this range(e.g."07:30 - 07:45")
+    string? studentNames; //List of names of students who signed in during this range
+|};
 
 public type ActivityParticipantAttendanceSummary record {
     string? sign_in_date;
@@ -282,23 +298,26 @@ public type  TotalAttendanceCountByDate  record {
 };
 
 public type MonthlyLeaveDates record {
-    string? leave_dates?;
-    int? month?;
     int[] leave_dates_list?;
     int? year?;
     int? batch_id?;
+    anydata? monthly_payment_amount?;
     string? created?;
+    string? record_type?;
+    string? leave_dates?;
+    int? month?;
     int? total_days_in_month?;
     int? organization_id?;
     int? id?;
     anydata? daily_amount?;
     string? updated?;
-    string? record_type?;
 };
-public type CalendarMetadata record {
+
+public type BatchPaymentPlan record {
     string? record_type?;
-    int? id?;
+    int id?;
     int? organization_id;
+    int? batch_id;
     anydata? monthly_payment_amount;
 };
 
@@ -780,6 +799,7 @@ public type GetAttendanceMissedBySecurityByParentOrgResponse record {|
 public type GetDailyStudentsAttendanceByParentOrgResponse record {|
     map<json?> __extensions?;
     record {|
+        int? id;
         string? description;
         int? present_count;
         int? total_student_count;
@@ -809,9 +829,11 @@ public type GetDailyAttendanceSummaryReportResponse record {|
     record {|
         string? sign_in_date;
         int? present_count;
+        int? absent_count;
         int? late_count;
         int? total_count;
         anydata? present_attendance_percentage;
+        anydata? absent_attendance_percentage;
         anydata? late_attendance_percentage;
     |}[] daily_attendance_summary_report;
 |};
@@ -891,14 +913,14 @@ public type GetOrganizationsByAvinyaTypeWithActiveStatusResponse record {|
     |}[] organizations_by_avinya_type;
 |};
 
-public type GetCalendarMetadataByOrgIdResponse record {|
+public type GetBatchPaymentPlanByOrgIdResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
         int? organization_id;
         int? batch_id;
         anydata? monthly_payment_amount;
-    |}? calendar_metadata_by_org_id;
+    |} batch_payment_plan_by_org_id;
 |};
 
 public type GetOrganizationsByAvinyaTypeAndStatusResponse record {|
@@ -914,4 +936,46 @@ public type GetOrganizationsByAvinyaTypeAndStatusResponse record {|
             string? value;
         |}[]? organization_metadata;
     |}[] organizations_by_avinya_type_and_status;
+|};
+
+public type GetPersonResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? full_name;
+        string? sex;
+        int? phone;
+        int? organization_id;
+        int? avinya_type_id;
+        string? nic_no;
+        string? email;
+    |}? person_by_digital_id_or_nic;
+|};
+
+public type AddBiometricAttendanceResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? created;
+    |}? addBiometricAttendance;
+|};
+
+public type GetStudentLateAttendanceByTimeRangeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? label;
+        int? student_count;
+        string? student_name;
+    |}[] late_attendance_report;
+|};
+
+public type GetDailyAbsenceSummaryResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? absent_count;
+        string? absent_names;
+    |}[] absent_report;
 |};

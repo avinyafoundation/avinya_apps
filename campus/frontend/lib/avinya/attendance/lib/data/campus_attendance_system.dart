@@ -134,6 +134,7 @@ class CampusAttendanceSystem {
   }
 
   Future<ActivityInstance> getCheckinActivityInstance(int? activityId) async {
+    print("Activity Id:${activityId}");
     List<ActivityInstance> activityInstances =
         await fetchActivityInstance(activityId!);
     return activityInstances[0];
