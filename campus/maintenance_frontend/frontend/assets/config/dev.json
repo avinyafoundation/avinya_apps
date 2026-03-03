@@ -1,0 +1,9 @@
+{
+    "admissionsApplicationBffApiUrl": "http://localhost:9095",
+    "campusMaintenanceBffApiUrl":"http://localhost:9097",
+    "campusAttendanceBffApiUrl":"http://localhost:9091",
+    "campusProfileBffApiUrl":"http://localhost:9090",
+    "choreo_sts_endpoint" : "https://sts.choreo.dev/oauth2/token",
+    "asgardeo_token_endpoint" : "https://api.asgardeo.io/t/avinyatest/oauth2/token",
+    "logout_url" : ""
+}

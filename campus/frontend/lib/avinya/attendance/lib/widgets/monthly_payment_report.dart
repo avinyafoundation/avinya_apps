@@ -1,9 +1,11 @@
 import 'dart:ui';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:attendance/widgets/week_picker.dart';
 import 'package:gallery/avinya/attendance/lib/widgets/monthly_calender.dart';
 import 'package:gallery/avinya/attendance/lib/widgets/monthly_payment_report_excel_export.dart';
+import 'package:gallery/avinya/attendance/lib/widgets/common/drop_down.dart';
 import 'package:gallery/data/campus_apps_portal.dart';
 import 'package:attendance/data/activity_attendance.dart';
 import 'package:gallery/data/person.dart';
@@ -52,7 +54,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
 
   List<Organization> _batchData = [];
   Organization? _selectedOrganizationValue;
-  CalendarMetadata? _calendarMetadata;
+  BatchPaymentPlan? _batchPaymentPlan;
   List<Organization> _fetchedOrganizations = [];
   late Future<List<Organization>> _fetchBatchData;
 
@@ -60,8 +62,10 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   late int _totalSchoolDaysInMonth = 0;
   late String _monthFullName = "";
   late double _dailyAmount = 0.0;
+  List<String> monthDateList = [];
 
   List<String?> classes = [];
+  Set<String> fetchedLeaveDates = {};
 
   void selectedYearAndMonth(int year, int month) async {
     setState(() {
@@ -99,9 +103,9 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
     if (_selectedOrganizationValue != null) {
       int orgId = _selectedOrganizationValue!.id!;
       _fetchedOrganization = await fetchOrganization(orgId);
-      _calendarMetadata =
-          await fetchCalendarMetaDataByOrgId(organization_id, orgId);
-      MonthlyPayment = _calendarMetadata!.monthly_payment_amount ?? 0.0;
+      _batchPaymentPlan = await fetchBatchPaymentPlanByOrgId(organization_id,
+          orgId, DateFormat('yyyy-MM-dd').format(firstDateOfMonth));
+      MonthlyPayment = _batchPaymentPlan!.monthly_payment_amount ?? 0.0;
       _fetchedOrganizations = _fetchedOrganization?.child_organizations ?? [];
       classes = _fetchedOrganizations.map((org) => org.description).toList();
       _fetchLeaveDates(_year, _month);
@@ -125,19 +129,32 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   Future<void> _fetchLeaveDates(int year, int month) async {
     try {
       // Fetch leave dates and payment details for the month
-      List<LeaveDate> fetchedDates = await getLeaveDatesForMonth(
+      List<LeaveDate> leaveDates = await getLeaveDatesForMonth(
           year, month, organization_id, _selectedOrganizationValue!.id!);
 
+      fetchedLeaveDates = leaveDates
+          .map((leaveDate) => leaveDate.date.toIso8601String().split("T")[0])
+          .toSet();
+
       _totalDaysInMonth = DateTime(_year, _month + 1, 0).day;
-      _totalSchoolDaysInMonth = _totalDaysInMonth - fetchedDates.length;
+      _totalSchoolDaysInMonth = _totalDaysInMonth - fetchedLeaveDates.length;
       _monthFullName = DateFormat.MMMM().format(DateTime(0, _month));
 
       setState(() {
-        if (fetchedDates.isNotEmpty) {
-          _dailyAmount = fetchedDates.first.dailyAmount;
+        if (leaveDates.isNotEmpty) {
+          _dailyAmount = leaveDates.first.dailyAmount;
         } else {
           _dailyAmount = 0.00;
         }
+        _data = MyData(
+            _fetchedAttendance,
+            _fetchedOrganization,
+            updateSelected,
+            _dailyAmount,
+            monthDateList,
+            fetchedLeaveDates,
+            _totalSchoolDaysInMonth,
+            (int rowIndex) => _showStudentMonthDetails(context, rowIndex));
       });
     } catch (e) {
       print("Error fetching leave dates: $e");
@@ -147,14 +164,249 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
-        updateSelected, _dailyAmount);
+    _data = MyData(
+        _fetchedAttendance,
+        _fetchedOrganization,
+        updateSelected,
+        _dailyAmount,
+        monthDateList,
+        fetchedLeaveDates,
+        _totalSchoolDaysInMonth,
+        (int rowIndex) => _showStudentMonthDetails(context, rowIndex));
   }
 
   void updateSelected(int index, bool value, List<bool> selected) {
     setState(() {
       selected[index] = value;
     });
+  }
+
+  void _showStudentMonthDetails(BuildContext context, int index) {
+    if (_fetchedOrganization == null) return;
+    if (index < 0 || index >= (_fetchedOrganization?.people.length ?? 0))
+      return;
+
+    final person = _fetchedOrganization!.people[index];
+    final DateTime monthDate = _selected ?? DateTime.now();
+
+    // 1. Prepare Data Sets for lookup
+    final Set<String> leaveSet = fetchedLeaveDates;
+    final Set<String> presentSet = {};
+
+    for (final date in monthDateList) {
+      if (leaveSet.contains(date)) continue; // skip closed days
+      final hasAttendance = _fetchedAttendance.any((a) =>
+          a.person_id == person.id &&
+          a.sign_in_time != null &&
+          a.sign_in_time!.split(' ')[0] == date);
+      if (hasAttendance) presentSet.add(date);
+    }
+
+    // demo data: hardcoded absence reasons
+    final Map<String, Map<String, String?>> demoAbsentReasons = {
+      DateFormat('yyyy-MM-dd')
+          .format(DateTime(monthDate.year, monthDate.month, 3)): {
+        'reason': 'Illness',
+        'notes': null,
+      },
+      DateFormat('yyyy-MM-dd')
+          .format(DateTime(monthDate.year, monthDate.month, 6)): {
+        'reason': 'Family emergency',
+        'notes': 'Parent informed — family event', // example optional note
+      },
+      DateFormat('yyyy-MM-dd')
+          .format(DateTime(monthDate.year, monthDate.month, 13)): {
+        'reason': 'Medical appointment',
+        'notes': null,
+      },
+    };
+
+    // 2. Calendar Metadata
+    final firstDay = DateTime(monthDate.year, monthDate.month, 1);
+    final daysInMonth = DateTime(monthDate.year, monthDate.month + 1, 0).day;
+    final int offset = firstDay.weekday - 1; //Monday start
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  '${person.preferred_name ?? 'Student'} — ${DateFormat.yMMMM().format(monthDate)}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2C3E50),
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close),
+                iconSize: 20,
+                constraints: const BoxConstraints(),
+                padding: const EdgeInsets.all(4),
+                color: const Color(0xFF6C757D),
+                splashRadius: 16,
+              ),
+            ],
+          ),
+          content: SizedBox(
+            width: 350,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Summary Row
+                Row(
+                  children: [
+                    _buildStat(
+                        'Present',
+                        '${presentSet.length} / $_totalSchoolDaysInMonth',
+                        const Color(0xFF27AE60)),
+                    _buildStat(
+                        'Absent',
+                        '${_totalSchoolDaysInMonth - presentSet.length} / $_totalSchoolDaysInMonth',
+                        const Color(0xFFE74C3C)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // Weekday Headers
+                Row(
+                  children: ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+                      .map((d) => Expanded(
+                          child: Center(
+                              child: Text(d,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                      fontSize: 12)))))
+                      .toList(),
+                ),
+                const Divider(),
+
+                // Calendar Grid
+                Flexible(
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 7,
+                      mainAxisSpacing: 4,
+                      crossAxisSpacing: 4,
+                    ),
+                    itemCount: daysInMonth + offset,
+                    itemBuilder: (context, gridIndex) {
+                      if (gridIndex < offset) return const SizedBox.shrink();
+
+                      final int day = gridIndex - offset + 1;
+                      final String dateStr = DateFormat('yyyy-MM-dd').format(
+                          DateTime(monthDate.year, monthDate.month, day));
+
+                      Color bgColor = Colors.transparent;
+                      Color textColor = const Color(0xFF2C3E50);
+                      String label = "";
+
+                      // PRIORITY 1: Academy Closed
+                      if (leaveSet.contains(dateStr)) {
+                        bgColor = const Color(0xFFF8F9FA); // Very light gray
+                        textColor = const Color(0xFF6C757D); // Medium gray
+                        label = "Closed";
+                      }
+                      // PRIORITY 2: Student Present
+                      else if (presentSet.contains(dateStr)) {
+                        bgColor = const Color(0xFFE8F8F5); // Light Green
+                        textColor = const Color(0xFF27AE60); // Dark Green
+                      }
+                      // PRIORITY 3: Student Absent
+                      else {
+                        bgColor = const Color(0xFFFFEBEE); // Light Red
+                        textColor = const Color(0xFFE74C3C); // Dark Red
+                      }
+
+                      final Map<String, String?>? demoEntry =
+                          (!leaveSet.contains(dateStr) &&
+                                  !presentSet.contains(dateStr))
+                              ? demoAbsentReasons[dateStr]
+                              : null;
+                      final String? demoReason = demoEntry?['reason'];
+                      final String? demoNotes = demoEntry?['notes'];
+
+                      final bool isAbsent = !leaveSet.contains(dateStr) &&
+                          !presentSet.contains(dateStr);
+
+                      final Widget dayCell = Container(
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('$day',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: textColor)),
+                            if (label.isNotEmpty)
+                              Text(label,
+                                  style: TextStyle(
+                                      fontSize: 8,
+                                      color: textColor,
+                                      fontWeight: FontWeight.w500)),
+                          ],
+                        ),
+                      );
+
+                      // If the day is absent, show a hover tooltip only (no add/edit from this screen).
+                      if (isAbsent) {
+                        return demoReason != null
+                            ? Tooltip(
+                                message:
+                                    demoNotes != null && demoNotes!.isNotEmpty
+                                        ? '$demoReason\n\nNotes: ${demoNotes}'
+                                        : demoReason!,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF2C3E50),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                textStyle: const TextStyle(color: Colors.white),
+                                waitDuration: const Duration(milliseconds: 200),
+                                child: dayCell,
+                              )
+                            : dayCell;
+                      }
+
+                      return dayCell;
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildStat(String label, String value, Color color) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label,
+              style:
+                  const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+          Text(value,
+              style: TextStyle(
+                  color: color, fontWeight: FontWeight.bold, fontSize: 14)),
+        ],
+      ),
+    );
   }
 
   Future<void> _onPressed({
@@ -178,6 +430,8 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
       // Calculate the start and end dates of the selected month
       final _rangeStart = DateTime(year, month, 1); // First day of the month
       final _rangeEnd = DateTime(year, month + 1, 0); // Last day of the month
+
+      monthDateList = getDatesOfMonth(year, month);
 
       // Pass the calculated dates to updateDateRange
       updateDateRange(_rangeStart, _rangeEnd);
@@ -206,10 +460,12 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
         _isFetching = true; // Set _isFetching to true before starting the fetch
       });
       try {
-        _calendarMetadata = await fetchCalendarMetaDataByOrgId(
-            organization_id, _selectedOrganizationValue!.id!);
+        _batchPaymentPlan = await fetchBatchPaymentPlanByOrgId(
+            organization_id,
+            _selectedOrganizationValue!.id!,
+            DateFormat('yyyy-MM-dd').format(_rangeStart));
 
-        MonthlyPayment = _calendarMetadata!.monthly_payment_amount ?? 0.0;
+        MonthlyPayment = _batchPaymentPlan!.monthly_payment_amount ?? 0.0;
 
         _fetchedExcelReportData = await getActivityAttendanceReportByBatch(
             _selectedOrganizationValue!.id!,
@@ -223,7 +479,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
           this._fetchedExcelReportData = _fetchedExcelReportData;
           _fetchedAttendance;
           MonthlyPayment;
-          _calendarMetadata;
+          _batchPaymentPlan;
           _isFetching = false;
         });
       } catch (error) {
@@ -240,8 +496,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
     setState(() {
       _isFetchingClassPaymentData = true;
     });
-    var cols =
-        columnNames.map((label) => DataColumn(label: Text(label!))).toList();
+
     _selectedValue = newValue!;
 
     _fetchedOrganization = await fetchOrganization(newValue.id!);
@@ -253,29 +508,7 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
             .format(DateFormat('MMM d, yyyy').parse(this.formattedStartDate)),
         DateFormat('yyyy-MM-dd')
             .format(DateFormat('MMM d, yyyy').parse(this.formattedEndDate)));
-    if (_fetchedAttendance.length > 0) {
-      // Add null check here
-      // Process attendance data here
-      columnNames.clear();
-      List<String?> names = _fetchedAttendance
-          .map((attendance) => attendance.sign_in_time?.split(" ")[0])
-          .where((name) => name != null) // Filter out null values
-          .toList();
-      columnNames.addAll(names);
-    } else {
-      columnNames.clear();
-    }
 
-    columnNames = columnNames.toSet().toList();
-    columnNames.sort();
-    columnNames.insert(0, "Name");
-    columnNames.insert(1, "NIC");
-    columnNames.insert(columnNames.length, "Present Count");
-    columnNames.insert(columnNames.length, "Absent Count");
-    columnNames.insert(columnNames.length, "Student Payment Rs.");
-
-    cols = columnNames.map((label) => DataColumn(label: Text(label!))).toList();
-    print(cols.length);
     if (_fetchedAttendance.length == 0)
       _fetchedAttendance = new List.filled(_fetchedOrganization!.people.length,
           new ActivityAttendance(person_id: -1));
@@ -293,643 +526,748 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
       _fetchedOrganization;
       _fetchedAttendance;
       this._isFetchingClassPaymentData = false;
-      _data = MyData(_fetchedAttendance, columnNames, _fetchedOrganization,
-          updateSelected, _dailyAmount);
+      _data = MyData(
+          _fetchedAttendance,
+          _fetchedOrganization,
+          updateSelected,
+          _dailyAmount,
+          monthDateList,
+          fetchedLeaveDates,
+          _totalSchoolDaysInMonth,
+          (int rowIndex) => _showStudentMonthDetails(context, rowIndex));
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    var cols =
-        columnNames.map((label) => DataColumn(label: Text(label!))).toList();
+  List<DataColumn> _buildDataColumns() {
+    List<DataColumn> ColumnNames = [];
 
-    return SingleChildScrollView(
-      child: campusAppsPortalPersonMetaDataInstance
-              .getGroups()
-              .contains('Student')
-          ? Text("Please go to 'Mark Attedance' Page",
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold))
-          : Wrap(
-              children: <Widget>[
-                Column(
-                  children: [
-                    SizedBox(width: 20),
-                    Row(
-                      children: <Widget>[
-                        SizedBox(width: 5),
-                        Text('Select a Batch:'),
-                        SizedBox(width: 5),
-                        FutureBuilder<List<Organization>>(
-                          future: _fetchBatchData,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Container(
-                                margin: EdgeInsets.only(top: 10),
-                                child: SpinKitCircle(
-                                  color: (Colors.deepPurpleAccent),
-                                  size: 70,
-                                ),
-                              );
-                            } else if (snapshot.hasError) {
-                              return const Center(
-                                child: Text('Something went wrong...'),
-                              );
-                            } else if (!snapshot.hasData) {
-                              return const Center(
-                                child: Text('No batch found'),
-                              );
-                            }
-                            final batchData = snapshot.data!;
-                            return DropdownButton<Organization>(
-                                value: _selectedOrganizationValue,
-                                items: batchData.map((Organization batch) {
-                                  return DropdownMenuItem(
-                                      value: batch,
-                                      child: Text(batch.name!.name_en ?? ''));
-                                }).toList(),
-                                onChanged: (Organization? newValue) async {
-                                  if (newValue == null) {
-                                    return;
-                                  }
+    ColumnNames.add(DataColumn(
+        label: Expanded(
+      child: Center(
+        child: Text('Name',
+            style: TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF2C3E50))),
+      ),
+    )));
+    ColumnNames.add(DataColumn(
+        label: Expanded(
+      child: Center(
+        child: Text('NIC',
+            style: TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF2C3E50))),
+      ),
+    )));
+    ColumnNames.add(DataColumn(
+        label: Expanded(
+      child: Center(
+        child: Text('Present Count',
+            style: TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF2C3E50))),
+      ),
+    )));
+    ColumnNames.add(DataColumn(
+        label: Expanded(
+      child: Center(
+        child: Text('Absent Count',
+            style: TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF2C3E50))),
+      ),
+    )));
+    if (campusAppsPortalInstance.isFoundation ||
+        campusAppsPortalInstance.isOperations ||
+        campusAppsPortalInstance.isFinance) {
+      ColumnNames.add(DataColumn(
+          label: Expanded(
+        child: Center(
+          child: Text('Student Payment Rs.',
+              style: TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF2C3E50))),
+        ),
+      )));
+    }
 
-                                  if (newValue.organization_metadata.isEmpty) {
-                                    return;
-                                  }
-
-                                  setState(() {
-                                    _isFetching = true;
-                                  });
-                                  _selectedOrganizationValue = newValue;
-                                  _fetchedOrganization =
-                                      await fetchOrganization(newValue!.id!);
-                                  _fetchedOrganizations = _fetchedOrganization
-                                          ?.child_organizations ??
-                                      [];
-                                  _selectedValue = null;
-
-                                  // Calculate the start and end dates of the selected month
-                                  final _rangeStart = DateTime(_year, _month,
-                                      1); // First day of the month
-                                  final _rangeEnd = DateTime(_year, _month + 1,
-                                      0); // Last day of the month
-
-                                  classes = _fetchedOrganizations
-                                      .map((org) => org.description)
-                                      .toList();
-
-                                  _calendarMetadata =
-                                      await fetchCalendarMetaDataByOrgId(
-                                          organization_id, newValue.id!);
-                                  MonthlyPayment = _calendarMetadata!
-                                          .monthly_payment_amount ??
-                                      0.0;
-                                  _fetchLeaveDates(_year, _month);
-                                  _fetchedExcelReportData =
-                                      await getActivityAttendanceReportByBatch(
-                                          _selectedOrganizationValue!.id!,
-                                          activityId,
-                                          DateFormat('yyyy-MM-dd')
-                                              .format(_rangeStart),
-                                          DateFormat('yyyy-MM-dd')
-                                              .format(_rangeEnd));
-                                  final fetchedStudentList =
-                                      await fetchStudentListByBatchId(
-                                          _selectedOrganizationValue!.id!);
-                                  setState(() {
-                                    _fetchedOrganizations;
-                                    _selectedOrganizationValue = newValue;
-                                    _selectedValue;
-                                    MonthlyPayment;
-                                    _calendarMetadata;
-                                    this._fetchedStudentList =
-                                        fetchedStudentList;
-                                    this._fetchedExcelReportData =
-                                        _fetchedExcelReportData;
-                                    _isFetching = false;
-                                  });
-                                });
-                          },
-                        ),
-                        SizedBox(width: 10),
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              if (_fetchedOrganizations.length > 0)
-                                Container(
-                                  margin: EdgeInsets.only(
-                                      left: 10, top: 20, bottom: 10),
-                                  child: Row(children: <Widget>[
-                                    Text('Select a class:'),
-                                    SizedBox(width: 5),
-                                    DropdownButton<Organization>(
-                                      value: _selectedValue,
-                                      onChanged:
-                                          (Organization? newValue) async {
-                                        _selectedValue = newValue!;
-                                        print(newValue.id);
-
-                                        setState(() {
-                                          _isFetchingClassPaymentData = true;
-                                        });
-                                        _fetchedOrganization =
-                                            await fetchOrganization(
-                                                newValue.id!);
-
-                                        // Calculate the start and end dates of the selected month
-                                        final _rangeStart = DateTime(
-                                            _year,
-                                            _month,
-                                            1); // First day of the month
-                                        final _rangeEnd = DateTime(
-                                            _year,
-                                            _month + 1,
-                                            0); // Last day of the month
-
-                                        _fetchedAttendance =
-                                            await getClassActivityAttendanceReportForPayment(
-                                                _fetchedOrganization!.id!,
-                                                activityId,
-                                                DateFormat('yyyy-MM-dd')
-                                                    .format(_rangeStart),
-                                                DateFormat('yyyy-MM-dd')
-                                                    .format(_rangeEnd));
-                                        if (_fetchedAttendance.length > 0) {
-                                          // Add null check here
-                                          // Process attendance data here
-                                          columnNames.clear();
-                                          List<String?> names =
-                                              _fetchedAttendance
-                                                  .map((attendance) =>
-                                                      attendance.sign_in_time
-                                                          ?.split(" ")[0])
-                                                  .where((name) =>
-                                                      name !=
-                                                      null) // Filter out null values
-                                                  .toList();
-                                          columnNames.addAll(names);
-                                        } else {
-                                          columnNames.clear();
-                                        }
-
-                                        columnNames =
-                                            columnNames.toSet().toList();
-                                        columnNames.sort();
-                                        columnNames.insert(0, "Name");
-                                        columnNames.insert(1, "NIC");
-                                        columnNames.insert(columnNames.length,
-                                            "Present Count");
-                                        columnNames.insert(
-                                            columnNames.length, "Absent Count");
-                                        columnNames.insert(columnNames.length,
-                                            "Student Payment Rs.");
-                                        cols = columnNames
-                                            .map((label) =>
-                                                DataColumn(label: Text(label!)))
-                                            .toList();
-                                        print(cols.length);
-                                        if (_fetchedAttendance.length == 0)
-                                          _fetchedAttendance = new List.filled(
-                                              _fetchedOrganization!
-                                                  .people.length,
-                                              new ActivityAttendance(
-                                                  person_id: -1));
-                                        else {
-                                          for (int i = 0;
-                                              i <
-                                                  _fetchedOrganization!
-                                                      .people.length;
-                                              i++) {
-                                            if (_fetchedAttendance.indexWhere(
-                                                    (attendance) =>
-                                                        attendance.person_id ==
-                                                        _fetchedOrganization!
-                                                            .people[i].id) ==
-                                                -1) {
-                                              _fetchedAttendance.add(
-                                                  new ActivityAttendance(
-                                                      person_id: -1));
-                                            }
-                                          }
-                                        }
-                                        setState(() {
-                                          _fetchedOrganization;
-                                          _data = MyData(
-                                              _fetchedAttendance,
-                                              columnNames,
-                                              _fetchedOrganization,
-                                              updateSelected,
-                                              _dailyAmount);
-                                          _isFetchingClassPaymentData = false;
-                                        });
-                                      },
-                                      items: _fetchedOrganizations
-                                          .map((Organization value) {
-                                        return DropdownMenuItem<Organization>(
-                                          value: value,
-                                          child: Text(value.description!),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ]),
-                                ),
-                            ]),
-                        SizedBox(width: 10),
-                        FittedBox(
-                          child: Container(
-                            margin: const EdgeInsets.only(right: 20.0),
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => LeaveDatePicker(
-                                        organizationId: organization_id ??
-                                            0, // Provide a default value if needed
-                                        batchId:
-                                            _selectedOrganizationValue?.id ?? 0,
-                                        year: _selected?.year ??
-                                            _year, // Ensure an `int` value is passed
-                                        month: _selected?.month ?? _month,
-                                        selectedDay:
-                                            _selectedDay ?? DateTime.now(),
-                                      ),
-                                    )).then((value) {
-                                  setState(() {
-                                    _isFetchingClassPaymentData = true;
-                                  });
-                                  _fetchLeaveDates(_year, _month);
-                                  setState(() {
-                                    _isFetchingClassPaymentData = false;
-                                  });
-                                });
-                              },
-                              child: const Text('Update Monthly Leave Dates'),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0, vertical: 5.0),
-                                textStyle: const TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              'Select a Year & Month :',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            TextButton(
-                              onPressed: () =>
-                                  _onPressed(context: context, locale: 'en'),
-                              child: Icon(Icons.calendar_month),
-                            ),
-                            if (_selected == null)
-                              Container(
-                                margin: EdgeInsets.only(left: 10.0),
-                                child: const Text(
-                                  'No month & year selected.',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                ),
-                              )
-                            else
-                              Container(
-                                child: Text(
-                                  DateFormat.yMMMM()
-                                      .format(_selected!)
-                                      .toString(),
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.normal),
-                                ),
-                              ),
-                          ],
-                        ),
-                        SizedBox(width: 20),
-                        this._isFetching
-                            ? Container(
-                                margin: EdgeInsets.only(top: 10),
-                                child: SpinKitCircle(
-                                  color: (Colors
-                                      .deepPurpleAccent), // Customize the color of the indicator
-                                  size:
-                                      50, // Customize the size of the indicator
-                                ))
-                            : MonthlyPaymentReportExcelExport(
-                                classes: classes,
-                                fetchedAttendance: _fetchedExcelReportData,
-                                columnNames: columnNames,
-                                fetchedStudentList: _fetchedStudentList,
-                                isFetching: _isFetching,
-                                totalSchoolDaysInMonth: _totalSchoolDaysInMonth,
-                                dailyAmount: _dailyAmount,
-                                year: _year,
-                                month: _monthFullName,
-                                batch:
-                                    _selectedOrganizationValue!.name!.name_en!,
-                              )
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(left: 10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Monthly Payment Amount:',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'Rs. ${MonthlyPayment}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.green,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: 20),
-                        Container(
-                          margin:
-                              const EdgeInsets.only(left: 10.0, right: 10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Daily Payment Amount:',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'Rs. ${_dailyAmount}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.green,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-                SizedBox(height: 16.0),
-                SizedBox(height: 32.0),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if (_isFetchingClassPaymentData)
-                      Container(
-                        margin: EdgeInsets.only(top: 180),
-                        child: SpinKitCircle(
-                          color: (Colors
-                              .deepPurpleAccent), // Customize the color of the indicator
-                          size: 50, // Customize the size of the indicator
-                        ),
-                      )
-                    else if (cols.length > 2)
-                      ScrollConfiguration(
-                        behavior: ScrollConfiguration.of(context)
-                            .copyWith(dragDevices: {
-                          PointerDeviceKind.touch,
-                          PointerDeviceKind.mouse,
-                        }),
-                        child: PaginatedDataTable(
-                          showCheckboxColumn: false,
-                          source: _data,
-                          columns: cols,
-                          columnSpacing: 100,
-                          horizontalMargin: 60,
-                          rowsPerPage: 22,
-                        ),
-                      )
-                    else
-                      Container(
-                        margin: EdgeInsets.all(20),
-                        child: Text('No attendance data found'),
-                      ),
-                  ],
-                )
-              ],
-            ),
-    );
+    return ColumnNames;
   }
-}
 
-class MyData extends DataTableSource {
-  MyData(this._fetchedAttendance, this.columnNames, this._fetchedOrganization,
-      this.updateSelected, this.DailyPayment);
-
-  final List<ActivityAttendance> _fetchedAttendance;
-  final List<String?> columnNames;
-  final Organization? _fetchedOrganization;
-  final Function(int, bool, List<bool>) updateSelected;
-  final double? DailyPayment;
-
-  List<String> getDatesFromMondayToToday() {
-    DateTime now = DateTime.now();
-    DateTime previousMonday = now.subtract(Duration(days: now.weekday - 1));
-    DateTime currentDate = DateTime(now.year, now.month, now.day);
+  List<String> getDatesOfMonth(int year, int month) {
+    final startDate = DateTime(year, month, 1);
+    final endDate = DateTime(year, month + 1, 0); // last day of month
 
     List<String> dates = [];
-    for (DateTime date = previousMonday;
-        date.isBefore(currentDate);
-        date = date.add(Duration(days: 1))) {
-      if (date.weekday != DateTime.saturday &&
-          date.weekday != DateTime.sunday) {
-        dates.add(DateFormat('yyyy-MM-dd').format(date));
-      }
+
+    for (DateTime date = startDate;
+        !date.isAfter(endDate);
+        date = date.add(const Duration(days: 1))) {
+      dates.add(date.toIso8601String().split('T')[0]); // yyyy-MM-dd
     }
 
     return dates;
   }
 
   @override
+  Widget build(BuildContext context) {
+    bool isMobile = MediaQuery.of(context).size.width < 600;
+
+    return SingleChildScrollView(
+      child:
+          campusAppsPortalPersonMetaDataInstance.getGroups().contains('Student')
+              ? Container(
+                  padding: const EdgeInsets.all(40),
+                  child: Center(
+                    child: Text(
+                      "Please go to 'Mark Attendance' Page",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF2C3E50),
+                      ),
+                    ),
+                  ),
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Filters Section
+                    _buildFiltersCard(isMobile),
+                    const SizedBox(height: 20),
+
+                    // Data Table Section
+                    _buildDataTableCard(isMobile),
+                  ],
+                ),
+    );
+  }
+
+  Widget _buildFiltersCard(bool isMobile) {
+    return Container(
+      padding: EdgeInsets.all(isMobile ? 15 : 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Filter Controls (responsive: row on wide screens, stacked on mobile)
+          LayoutBuilder(builder: (context, constraints) {
+            final bool wide = constraints.maxWidth >= 900 && !isMobile;
+
+            // Helper: interactive filter widgets (used in both layouts)
+            final interactiveFilters = [
+              if (_fetchedOrganizations.isNotEmpty)
+                SizedBox(
+                  width: isMobile ? double.infinity : 200,
+                  child: DropDown<Organization>(
+                    label: 'Select Class',
+                    items: _fetchedOrganizations,
+                    selectedValues: _selectedValue?.id,
+                    valueField: (org) => org.id!,
+                    displayField: (org) => org.description ?? '',
+                    onChanged: (value) async {
+                      if (value == null) return;
+                      final newValue = _fetchedOrganizations
+                          .firstWhere((org) => org.id == value);
+                      _selectedValue = newValue;
+
+                      setState(() {
+                        _isFetchingClassPaymentData = true;
+                      });
+                      _fetchedOrganization =
+                          await fetchOrganization(newValue.id!);
+
+                      final _rangeStart = DateTime(_year, _month, 1);
+                      final _rangeEnd = DateTime(_year, _month + 1, 0);
+
+                      monthDateList = getDatesOfMonth(_year, _month);
+
+                      _fetchedAttendance =
+                          await getClassActivityAttendanceReportForPayment(
+                              _fetchedOrganization!.id!,
+                              activityId,
+                              DateFormat('yyyy-MM-dd').format(_rangeStart),
+                              DateFormat('yyyy-MM-dd').format(_rangeEnd));
+
+                      if (_fetchedAttendance.isEmpty) {
+                        _fetchedAttendance = List.filled(
+                            _fetchedOrganization!.people.length,
+                            ActivityAttendance(person_id: -1));
+                      } else {
+                        for (int i = 0;
+                            i < _fetchedOrganization!.people.length;
+                            i++) {
+                          if (_fetchedAttendance.indexWhere((attendance) =>
+                                  attendance.person_id ==
+                                  _fetchedOrganization!.people[i].id) ==
+                              -1) {
+                            _fetchedAttendance
+                                .add(ActivityAttendance(person_id: -1));
+                          }
+                        }
+                      }
+                      setState(() {
+                        _data = MyData(
+                            _fetchedAttendance,
+                            _fetchedOrganization,
+                            updateSelected,
+                            _dailyAmount,
+                            monthDateList,
+                            fetchedLeaveDates,
+                            _totalSchoolDaysInMonth,
+                            (int rowIndex) =>
+                                _showStudentMonthDetails(context, rowIndex));
+                        _isFetchingClassPaymentData = false;
+                      });
+                    },
+                  ),
+                ),
+
+              // Year & Month Picker
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade400),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: InkWell(
+                  onTap: () => _onPressed(context: context, locale: 'en'),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.calendar_month,
+                        color: const Color(0xFF1BB6E8),
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _selected != null
+                            ? DateFormat.yMMMM().format(_selected!).toString()
+                            : 'Select Month & Year',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF2C3E50),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              if (campusAppsPortalInstance.isOperations ||
+                  campusAppsPortalInstance.isFinance)
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LeaveDatePicker(
+                              organizationId: organization_id ?? 0,
+                              batchId: _selectedOrganizationValue?.id ?? 0,
+                              year: _selected?.year ?? _year,
+                              month: _selected?.month ?? _month,
+                              selectedDay: _selectedDay ?? DateTime.now(),
+                              monthlyPaymentAmount: MonthlyPayment ?? 0.0),
+                        )).then((value) {
+                      setState(() {
+                        _isFetchingClassPaymentData = true;
+                      });
+                      _fetchLeaveDates(_year, _month);
+                      setState(() {
+                        _isFetchingClassPaymentData = false;
+                      });
+                    });
+                  },
+                  icon: const Icon(Icons.edit_calendar, size: 18),
+                  label: const Text('Update Leave Dates'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1BB6E8),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                ),
+
+              // Export Button
+              if (campusAppsPortalInstance.isFoundation ||
+                  campusAppsPortalInstance.isOperations ||
+                  campusAppsPortalInstance.isFinance)
+                (_isFetching
+                    ? Container(
+                        padding: const EdgeInsets.all(10),
+                        child: SpinKitCircle(
+                          color: const Color(0xFF1BB6E8),
+                          size: 30,
+                        ),
+                      )
+                    : MonthlyPaymentReportExcelExport(
+                        classes: classes,
+                        fetchedAttendance: _fetchedExcelReportData,
+                        columnNames: columnNames,
+                        fetchedStudentList: _fetchedStudentList,
+                        isFetching: _isFetching,
+                        totalSchoolDaysInMonth: _totalSchoolDaysInMonth,
+                        dailyAmount: _dailyAmount,
+                        year: _year,
+                        month: _monthFullName,
+                        batch: _selectedOrganizationValue?.name?.name_en ?? '',
+                      )),
+            ];
+
+            if (wide) {
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Left: interactive filters (wrap inside Expanded)
+                  Expanded(
+                    child: Wrap(
+                      spacing: 16,
+                      runSpacing: 12,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: interactiveFilters,
+                    ),
+                  ),
+
+                  // Right: summary cards (centered vertically)
+                  if (campusAppsPortalInstance.isFoundation ||
+                      campusAppsPortalInstance.isOperations ||
+                      campusAppsPortalInstance.isFinance)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildSummaryCard(
+                          icon: Icons.school,
+                          iconColor: const Color(0xFFE74C3C),
+                          title: 'Total School Days',
+                          value: '$_totalSchoolDaysInMonth',
+                          valueColor: const Color(0xFFE74C3C),
+                          isMobile: false,
+                        ),
+                        const SizedBox(width: 16),
+                        _buildSummaryCard(
+                          icon: Icons.account_balance_wallet,
+                          iconColor: const Color(0xFF27AE60),
+                          title: 'Monthly Payment Amount',
+                          value:
+                              'Rs. ${MonthlyPayment?.toStringAsFixed(2) ?? '0.00'}',
+                          valueColor: const Color(0xFF27AE60),
+                          isMobile: false,
+                        ),
+                        const SizedBox(width: 16),
+                        _buildSummaryCard(
+                          icon: Icons.payments,
+                          iconColor: const Color(0xFF3498DB),
+                          title: 'Daily Payment Amount',
+                          value: 'Rs. ${_dailyAmount.toStringAsFixed(2)}',
+                          valueColor: const Color(0xFF3498DB),
+                          isMobile: false,
+                        ),
+                      ],
+                    ),
+                ],
+              );
+            }
+
+            // Mobile / narrow layout: interactive filters first, summary cards stacked below
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  crossAxisAlignment: WrapCrossAlignment.end,
+                  children: interactiveFilters,
+                ),
+                const SizedBox(height: 20),
+                if (campusAppsPortalInstance.isFoundation ||
+                    campusAppsPortalInstance.isOperations ||
+                    campusAppsPortalInstance.isFinance)
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: [
+                      _buildSummaryCard(
+                        icon: Icons.school,
+                        iconColor: const Color(0xFFE74C3C),
+                        title: 'Total School Days',
+                        value: '$_totalSchoolDaysInMonth',
+                        valueColor: const Color(0xFFE74C3C),
+                        isMobile: true,
+                      ),
+                      _buildSummaryCard(
+                        icon: Icons.account_balance_wallet,
+                        iconColor: const Color(0xFF27AE60),
+                        title: 'Monthly Payment Amount',
+                        value:
+                            'Rs. ${MonthlyPayment?.toStringAsFixed(2) ?? '0.00'}',
+                        valueColor: const Color(0xFF27AE60),
+                        isMobile: true,
+                      ),
+                      _buildSummaryCard(
+                        icon: Icons.payments,
+                        iconColor: const Color(0xFF3498DB),
+                        title: 'Daily Payment Amount',
+                        value: 'Rs. ${_dailyAmount.toStringAsFixed(2)}',
+                        valueColor: const Color(0xFF3498DB),
+                        isMobile: true,
+                      ),
+                    ],
+                  ),
+              ],
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryCard({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String value,
+    required Color valueColor,
+    required bool isMobile,
+  }) {
+    return Container(
+      width: isMobile ? double.infinity : 220,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: iconColor, size: 20),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF7F8C8D),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 15),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              color: valueColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDataTableCard(bool isMobile) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(isMobile ? 15 : 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Card Header
+          Container(
+            padding: const EdgeInsets.only(bottom: 15),
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Color(0xFFECF0F1)),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.table_chart,
+                  color: const Color(0xFF1BB6E8),
+                  size: 22,
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  (campusAppsPortalInstance.isFoundation ||
+                          campusAppsPortalInstance.isOperations ||
+                          campusAppsPortalInstance.isFinance)
+                      ? 'Payment Details'
+                      : 'Attendance Details',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2C3E50),
+                  ),
+                ),
+                const Spacer(),
+                if (_selectedValue != null)
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE8F8F5),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      _selectedValue!.description ?? '',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF27AE60),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Data Table Content
+          if (_isFetchingClassPaymentData)
+            Container(
+              padding: const EdgeInsets.all(60),
+              alignment: Alignment.center,
+              child: SpinKitCircle(
+                color: const Color(0xFF1BB6E8),
+                size: 50,
+              ),
+            )
+          else if (_fetchedAttendance.length > 2)
+            ScrollConfiguration(
+              behavior: ScrollConfiguration.of(context).copyWith(dragDevices: {
+                PointerDeviceKind.touch,
+                PointerDeviceKind.mouse,
+              }),
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  dataTableTheme: DataTableThemeData(
+                    headingRowColor:
+                        WidgetStateProperty.all(const Color(0xFFF8F9FA)),
+                    headingTextStyle: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2C3E50),
+                    ),
+                    dataRowColor: WidgetStateProperty.resolveWith<Color?>(
+                        (Set<WidgetState> states) {
+                      if (states.contains(WidgetState.hovered)) {
+                        return const Color(0xFFF5F7FA);
+                      }
+                      return null;
+                    }),
+                    dataTextStyle: const TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF2C3E50),
+                    ),
+                  ),
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final tableColumnSpacing = isMobile ? 30.0 : 80.0;
+                    final int effectiveRows = (_data.rowCount > 0)
+                        ? math.min(22, _data.rowCount)
+                        : 1; // avoid zero
+                    return ConstrainedBox(
+                      constraints:
+                          BoxConstraints(minWidth: constraints.maxWidth),
+                      child: PaginatedDataTable(
+                        showCheckboxColumn: false,
+                        source: _data,
+                        columns: _buildDataColumns(),
+                        columnSpacing: tableColumnSpacing,
+                        horizontalMargin: isMobile ? 15 : 24,
+                        rowsPerPage: effectiveRows,
+                        showFirstLastButtons: true,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.all(40),
+              alignment: Alignment.center,
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 48,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No attendance data found',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Please select a class to view payment details',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class MyData extends DataTableSource {
+  MyData(
+      this._fetchedAttendance,
+      this._fetchedOrganization,
+      this.updateSelected,
+      this.DailyPayment,
+      this.monthDateList,
+      this.monthLeaveDates,
+      this.totalSchoolDaysInMonth,
+      this.onRowTap);
+
+  final List<ActivityAttendance> _fetchedAttendance;
+  final Organization? _fetchedOrganization;
+  final Function(int, bool, List<bool>) updateSelected;
+  final double? DailyPayment;
+  final List<String> monthDateList;
+  final Set<String> monthLeaveDates;
+  final int totalSchoolDaysInMonth;
+  final void Function(int rowIndex) onRowTap;
+
+  @override
   DataRow? getRow(int index) {
-    if (index == 0) {
-      List<DataCell> cells = new List.filled(
-        columnNames.toSet().toList().length,
-        new DataCell(Container(child: Text("Absent"), color: Colors.red)),
-      );
-      cells[0] = DataCell(Text(''));
-      cells[1] = DataCell(Text(''));
-      cells[columnNames.length - 3] = DataCell(Text(''));
-      cells[columnNames.length - 2] = DataCell(Text(''));
-      cells[columnNames.length - 1] = DataCell(Text(''));
-
-      for (final date in columnNames) {
-        if (columnNames.indexOf(date) == 0 ||
-            columnNames.indexOf(date) == 1 ||
-            columnNames.indexOf(date) == columnNames.length - 3 ||
-            columnNames.indexOf(date) == columnNames.length - 2 ||
-            columnNames.indexOf(date) == columnNames.length - 1) {
-          continue;
-        }
-
-        date == '$date 00:00:00';
-        cells[columnNames.indexOf(date)] = DataCell(Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.all(8),
-          child: Text(DateFormat.EEEE().format(DateTime.parse(date!)),
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 72, 90),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              )),
-        ));
-      }
-      return DataRow(
-        cells: cells,
-      );
-    }
     if (_fetchedOrganization != null &&
-        _fetchedOrganization!.people.isNotEmpty &&
-        columnNames.length > 0) {
-      var person = _fetchedOrganization!
-          .people[index - 1]; // to facilitate additional rows
-      List<DataCell> cells = new List.filled(
-        columnNames.toSet().toList().length,
-        new DataCell(Container(
-            alignment: Alignment.center,
-            child: Text("Absent",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                )))),
-      );
+        _fetchedOrganization!.people.isNotEmpty) {
+      var person = _fetchedOrganization!.people[index];
 
-      cells[0] = DataCell(Text(person.preferred_name!));
-      cells[1] = DataCell(Text(person.nic_no.toString()));
+      // determine whether payment column is shown (must match header logic)
+      bool showPayment = campusAppsPortalInstance.isFoundation ||
+          campusAppsPortalInstance.isOperations ||
+          campusAppsPortalInstance.isFinance;
+      int cellCount = showPayment ? 5 : 4;
 
-      int absentCount = 0;
-
-      final dateRegex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
-      final dateFormatter = DateFormat('yyyy-MM-dd');
-
-      for (var element in columnNames) {
-        if (dateRegex.hasMatch(element!)) {
-          try {
-            dateFormatter.parseStrict(element);
-            absentCount++;
-          } catch (e) {
-            // Handle the exception or continue to the next element
-          }
-        }
-      }
-      cells[columnNames.length - 3] = DataCell(Container(
-          alignment: Alignment.center,
-          child: Text(
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 72, 90),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              '0')));
-
-      cells[columnNames.length - 2] = DataCell(Container(
-          alignment: Alignment.center,
-          child: Text(
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 72, 90),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              absentCount.toString())));
-
-      cells[columnNames.length - 1] = DataCell(Container(
-          alignment: Alignment.center,
-          child: Text(
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 72, 90),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              '0')));
+      List<DataCell> cells = List<DataCell>.filled(cellCount, DataCell.empty);
+      cells[0] = DataCell(Align(
+          alignment: Alignment.centerLeft,
+          child: Text(person.preferred_name!)));
+      cells[1] = DataCell(Center(child: Text(person.nic_no.toString())));
 
       int presentCount = 0;
       for (final attendance in _fetchedAttendance) {
         if (attendance.person_id == person.id) {
-          int newAbsentCount = 0;
-          for (final date in columnNames) {
-            if (attendance.sign_in_time != null &&
-                attendance.sign_in_time!.split(" ")[0] == date) {
-              presentCount++;
-              // print(
-              //     'index ${index} date ${date} person_id ${attendance.person_id} sign_in_time ${attendance.sign_in_time} columnNames length ${columnNames.length} columnNames.indexOf(date) ${columnNames.indexOf(date)}');
-              cells[columnNames.indexOf(date)] = DataCell(Container(
-                  alignment: Alignment.center, child: Text("Present")));
-            }
+          if (monthLeaveDates
+              .contains(attendance.sign_in_time!.split(" ")[0])) {
+            continue;
           }
-
-          newAbsentCount = absentCount - presentCount;
-          cells[columnNames.length - 3] = DataCell(Container(
-              alignment: Alignment.center,
-              child: Text(
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 72, 90),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  presentCount.toString())));
-          cells[columnNames.length - 2] = DataCell(Container(
-              alignment: Alignment.center,
-              child: Text(
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 72, 90),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  newAbsentCount.toString())));
-          double studentPayment = (DailyPayment ?? 0.0) * presentCount;
-          cells[columnNames.length - 1] = DataCell(Container(
-              alignment: Alignment.center,
-              child: Text(
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 72, 90),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  studentPayment.toDouble().toStringAsFixed(2))));
+          if (attendance.sign_in_time != null) {
+            presentCount++;
+          }
         }
       }
-
+      cells[2] = DataCell(Container(
+          alignment: Alignment.center,
+          child: Text(
+              style: TextStyle(
+                color: const Color(0xFF2C3E50),
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+              presentCount.toString())));
+      cells[3] = DataCell(Container(
+          alignment: Alignment.center,
+          child: Text(
+              style: TextStyle(
+                color: const Color(0xFF2C3E50),
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+              (totalSchoolDaysInMonth - presentCount).toString())));
+      if (showPayment) {
+        double studentPayment = (DailyPayment ?? 0.0) * presentCount;
+        cells[4] = DataCell(Container(
+            alignment: Alignment.center,
+            child: Text(
+                style: TextStyle(
+                  color: const Color(0xFF27AE60),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                studentPayment.toDouble().toStringAsFixed(2))));
+      }
       int numItems = _fetchedOrganization!.people.length;
       List<bool> selected = List<bool>.generate(numItems, (int index) => false);
       return DataRow(
         cells: cells,
         onSelectChanged: (value) {
-          updateSelected(index, value!,
-              selected); // Call the callback to update the selected state
+          updateSelected(index, value!, selected);
+          try {
+            onRowTap(index);
+          } catch (_) {}
         },
-        color: MaterialStateProperty.resolveWith<Color?>(
-            (Set<MaterialState> states) {
-          if (states.contains(MaterialState.hovered)) {
-            return Colors.grey.withOpacity(0.4);
+        color:
+            WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+          if (states.contains(WidgetState.hovered)) {
+            return Colors.blue.withOpacity(0.05);
           }
           if (index.isEven) {
-            return Colors.grey.withOpacity(0.2);
+            return Colors.grey.withOpacity(0.05);
           }
           return null;
         }),
@@ -943,12 +1281,10 @@ class MyData extends DataTableSource {
 
   @override
   int get rowCount {
-    int count = 0;
     if (_fetchedOrganization != null) {
-      count = _fetchedOrganization?.people.length ?? 0;
-      count += 1; //to facilitate additional rows
+      return _fetchedOrganization?.people.length ?? 0;
     }
-    return count;
+    return 0;
   }
 
   @override

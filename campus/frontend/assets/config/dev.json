@@ -6,6 +6,7 @@
     "campusAssetsBffApiUrl": "http://localhost:9094",
     "campusEnrollmentsBffApiUrl": "http://localhost:9095",
     "campusAlumniBffApiUrl":"http://localhost:9096",
+    "campusMaintenanceBffApiUrl":"http://localhost:9097",
     "choreo_sts_endpoint": "https://sts.choreo.dev/oauth2/token",
     "asgardeo_token_endpoint": "https://api.asgardeo.io/t/avinyatest/oauth2/token",
     "logout_url": "https://api.asgardeo.io/t/avinyatest/oidc/logout"

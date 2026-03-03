@@ -86,13 +86,13 @@ class _EnrollmentSystemState extends State<EnrollmentSystem> {
                   },
                 ),
                 drawerTheme: DrawerThemeData(
-                  backgroundColor: Colors.tealAccent[700],
+                  backgroundColor: Colors.lightBlueAccent[400],
                   //width: 270.0,
                 ),
                 appBarTheme:
-                    AppBarTheme(backgroundColor: Colors.tealAccent[400]),
+                    AppBarTheme(backgroundColor: Colors.lightBlueAccent[400]),
                 floatingActionButtonTheme: FloatingActionButtonThemeData(
-                  backgroundColor: Colors.tealAccent[400],
+                  backgroundColor: Colors.lightBlueAccent[400],
                 ),
               ),
             ),

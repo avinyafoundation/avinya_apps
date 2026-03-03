@@ -49,7 +49,7 @@ service / on new http:Listener(9090) {
 
         GetPersonResponse|graphql:ClientError getPersonResponse = globalDataClient->getPerson(digital_id);
         if(getPersonResponse is GetPersonResponse) {
-            Person|error person_record = getPersonResponse.person_by_digital_id.cloneWithType(Person);
+            Person|error person_record = getPersonResponse.person_by_digital_id_or_nic.cloneWithType(Person);
             if(person_record is Person) {
                 return person_record;
             } else {
@@ -127,5 +127,23 @@ service / on new http:Listener(9090) {
                 ":: Detail: " + getOrganizationResponse.detail().toString());
         }
     }
-    
+        
+    // resource function post validate_pin(@http:Payload PersonPin pin) returns Person|ApiErrorResponse|error {
+       
+    //    string personPin = pin?.pin_hash?:"";
+       
+    //    ValidatePinResponse|graphql:ClientError validatePinResponse = globalDataClient->validatePin(personPin);
+    //    if (validatePinResponse is ValidatePinResponse) {
+    //         Person|error personRecord = validatePinResponse.validatePin.cloneWithType(Person);
+    //         if (personRecord is Person) {
+    //             return personRecord;
+    //         } else {
+    //             log:printError("Error while validating the pin",personRecord);
+    //             return <ApiErrorResponse>{body: { message: "Error while validating the pin" }};
+    //         }
+    //     } else {
+    //         log:printError("User Not Found", validatePinResponse);
+    //         return <ApiErrorResponse>{body: { message: "User Not Found" }};
+    //     }
+    // }
 }

@@ -1,5 +1,6 @@
-query getPersons($organization_id: Int!, $avinya_type_id: Int!) {
-  persons(organization_id: $organization_id, avinya_type_id: $avinya_type_id) {
+query getPersons($organization_id: Int!, $avinya_type_id: Int!, $limit: Int, $offset: Int, $class_id: Int, $search: String) {
+  persons(organization_id: $organization_id, avinya_type_id: $avinya_type_id, limit: $limit, 
+    offset: $offset, class_id: $class_id, search: $search) {
     id
     preferred_name
     full_name
@@ -18,6 +19,11 @@ query getPersons($organization_id: Int!, $avinya_type_id: Int!) {
           name_si
           name_ta
         }
+        district{
+            name{
+                name_en
+            }
+        }
       }
       street_address
       phone
@@ -30,6 +36,11 @@ query getPersons($organization_id: Int!, $avinya_type_id: Int!) {
           name_en
           name_si
           name_ta
+        }
+        district{
+            name{
+                name_en
+            }
         }
       }
       street_address
@@ -409,4 +420,33 @@ query getAllDocuments($id: Int!) {
     document
     document_type
   }
+}
+
+query GetStudentCount($organization_id: Int!) {
+    studentCountByOrganization(organization_id: $organization_id) {
+        current_student_count
+        male_student_count
+        female_student_count
+        dropout_student_count
+    }
+}
+
+query GetAgeDistribution($organization_id: Int!) {
+    studentAgeDistribution(organization_id: $organization_id) {
+        total_students
+        age_groups {
+            age_group
+            count
+        }
+    }
+}
+
+query GetDistrictDistribution($organization_id: Int!) {
+    studentDistrictDistribution(organization_id: $organization_id) {
+        total_students
+        districts {
+            district_name
+            count
+        }
+    }
 }

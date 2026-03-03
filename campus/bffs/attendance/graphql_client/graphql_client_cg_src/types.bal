@@ -13,21 +13,26 @@ public type Activity record {
 
 public type ActivityInstance record {
     string? notes?;
+    ActivityParticipant[]? activity_participants?;
     string? created?;
     int? weekly_sequence?;
     string? end_time?;
     string? description?;
+    int? task_id?;
     int? daily_sequence?;
     string? record_type?;
     int? monthly_sequence?;
     string? start_time?;
+    MaintenanceTask? task?;
     int? organization_id?;
+    string? overall_task_status?;
     int? activity_id?;
     string? name?;
     string? location?;
     int? id?;
     string? updated?;
     int? place_id?;
+    MaintenanceFinance? finance?;
 };
 
 public type ActivityInstanceEvaluation record {
@@ -43,15 +48,17 @@ public type ActivityInstanceEvaluation record {
 
 public type ActivityParticipant record {
     string? end_date?;
-    int? activity_instance_id?;
     string? role?;
     string? notes?;
+    string? participant_task_status?;
     string? created?;
-    int? organization_id?;
     int? is_attending?;
+    string? record_type?;
+    int? activity_instance_id?;
+    Person? person?;
+    int? organization_id?;
     int? id?;
     string? updated?;
-    string? record_type?;
     int? person_id?;
     string? start_date?;
 };
@@ -65,6 +72,7 @@ public type ActivityParticipantAttendance record {
     string? out_marked_by?;
     string? updated?;
     string? record_type?;
+    string? event_time?;
     int? person_id?;
     string? sign_out_time?;
 };
@@ -96,6 +104,7 @@ public type Alumni record {
     string? record_type?;
     string? facebook_id?;
     string? instagram_id?;
+    string? canva_cv_url?;
     string? company_name?;
     string? tiktok_id?;
     string? updated_by?;
@@ -217,6 +226,16 @@ public type Consumable record {
     string? updated?;
     string? record_type?;
     string? manufacturer?;
+};
+
+public type CvRequest record {
+    int? phone?;
+    string? created?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+    string? status?;
 };
 
 public type DutyParticipant record {
@@ -346,19 +365,65 @@ public type JobPost record {
     string? current_date_time?;
 };
 
+public type MaintenanceFinance record {
+    anydata? labour_cost?;
+    string? reviewed_by?;
+    anydata? total_cost?;
+    string? created?;
+    MaterialCost[]? materialCosts?;
+    string? record_type?;
+    int? activity_instance_id?;
+    anydata? estimated_cost?;
+    string? rejection_reason?;
+    int? id?;
+    string? updated?;
+    string? reviewed_date?;
+    string? status?;
+};
+
+public type MaintenanceTask record {
+    boolean? is_active?;
+    int? exception_deadline?;
+    string? created?;
+    int? has_financial_info?;
+    string? description?;
+    string? title?;
+    string? record_type?;
+    int? location_id?;
+    string? frequency?;
+    string? modified_by?;
+    int[]? person_id_list?;
+    int? id?;
+    string? task_type?;
+    string? updated?;
+    MaintenanceFinance? finance?;
+    string? start_date?;
+};
+
+public type MaterialCost record {
+    string? item?;
+    string? unit?;
+    int? financial_id?;
+    anydata? quantity?;
+    anydata? unit_cost?;
+    int? id?;
+    string? record_type?;
+};
+
 public type MonthlyLeaveDates record {
-    string? leave_dates?;
-    int? month?;
     int[] leave_dates_list?;
     int? year?;
     int? batch_id?;
+    anydata? monthly_payment_amount?;
     string? created?;
+    string? record_type?;
+    string? leave_dates?;
+    int? month?;
     int? total_days_in_month?;
     int? organization_id?;
     int? id?;
     anydata? daily_amount?;
     string? updated?;
-    string? record_type?;
 };
 
 public type Organization record {
@@ -376,6 +441,14 @@ public type Organization record {
     int? phone?;
     int? id?;
     string? name_en?;
+};
+
+public type OrganizationLocation record {
+    string? location_name?;
+    int? organization_id?;
+    string? description?;
+    int? id?;
+    string? record_type?;
 };
 
 public type Person record {
@@ -423,6 +496,27 @@ public type Person record {
     string? preferred_name?;
     string? jwt_sub_id?;
     int? academy_org_id?;
+};
+
+public type PersonCv record {
+    string? file_content?;
+    string? uploaded_by?;
+    string? nic_no?;
+    string? drive_file_id?;
+    string? created?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+};
+
+public type PersonFcmToken record {
+    string? created?;
+    string? fcm_token?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
 };
 
 public type PersonProfilePicture record {
@@ -992,6 +1086,7 @@ public type GetAttendanceMissedBySecurityByParentOrgResponse record {|
 public type GetDailyStudentsAttendanceByParentOrgResponse record {|
     map<json?> __extensions?;
     record {|
+        int? id;
         string? description;
         int? present_count;
         int? total_student_count;
@@ -1021,9 +1116,11 @@ public type GetDailyAttendanceSummaryReportResponse record {|
     record {|
         string? sign_in_date;
         int? present_count;
+        int? absent_count;
         int? late_count;
         int? total_count;
         anydata? present_attendance_percentage;
+        anydata? absent_attendance_percentage;
         anydata? late_attendance_percentage;
     |}[]? daily_attendance_summary_report;
 |};
@@ -1088,12 +1185,54 @@ public type GetMonthlyLeaveDatesRecordByIdResponse record {|
     |}? monthly_leave_dates_record_by_id;
 |};
 
-public type GetCalendarMetadataByOrgIdResponse record {|
+public type GetBatchPaymentPlanByOrgIdResponse record {|
     map<json?> __extensions?;
     record {|
         int? id;
         int? organization_id;
         int? batch_id;
         anydata? monthly_payment_amount;
-    |}? calendar_metadata_by_org_id;
+    |}? batch_payment_plan_by_org_id;
+|};
+
+public type GetPersonResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? full_name;
+        string? sex;
+        int? phone;
+        int? organization_id;
+        int? avinya_type_id;
+        string? nic_no;
+        string? email;
+    |}? person_by_digital_id_or_nic;
+|};
+
+public type AddBiometricAttendanceResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? created;
+    |}? addBiometricAttendance;
+|};
+
+public type GetStudentLateAttendanceByTimeRangeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? label;
+        int? student_count;
+        string? student_name;
+    |}[]? late_attendance_report;
+|};
+
+public type GetDailyAbsenceSummaryResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? absent_count;
+        string? absent_names;
+    |}[]? absent_report;
 |};

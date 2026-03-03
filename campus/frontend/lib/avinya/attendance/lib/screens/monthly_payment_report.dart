@@ -29,12 +29,6 @@ class _MonthlyPaymentReportScreenState extends State<MonthlyPaymentReportScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text("Monthly Student Payment Report",
-            style: TextStyle(color: Colors.black)),
-        backgroundColor: Color.fromARGB(255, 236, 230, 253),
-      ),
       body: SingleChildScrollView(
         child: Container(
           child: Column(

@@ -640,4 +640,168 @@ service / on new http:Listener(9096) {
                 ":: Detail: " + getJobCategoriesResponse.detail().toString());
         }
     }
+
+    //alumni cv feature rest api functions
+
+    //Add cv request rest api function
+    resource function post alumni/[int personId]/cv_requests(@http:Payload CvRequest cvRequest) returns CvRequest|ApiInternalServerError|error{
+        AddCvRequestResponse|graphql:ClientError addCvRequestResponse = globalDataClient->addCvRequest(cvRequest,personId);
+        if(addCvRequestResponse is AddCvRequestResponse) {
+            CvRequest|error cvRequestRecord = addCvRequestResponse.addCvRequest.cloneWithType(CvRequest);
+            if(cvRequestRecord is CvRequest) {
+                return cvRequestRecord;
+            } else {
+                log:printError("Error adding the CV request", cvRequestRecord);
+                return <ApiInternalServerError>{body: { message: "Error adding the CV request" }};
+            }
+        } else {
+            log:printError("Error while adding CV request", addCvRequestResponse);
+            return <ApiInternalServerError>{body: { message: "Error adding the CV request" }};
+        }
+    }
+
+    
+    //Get the most recent CV request for an student
+    resource function get alumni/[int personId]/cv_requests/last() returns CvRequest|ApiInternalServerError|error {
+        FetchLatestCvRequestResponse|graphql:ClientError getLatestCvRequestResponse = globalDataClient->fetchLatestCvRequest(personId);
+        if (getLatestCvRequestResponse is FetchLatestCvRequestResponse) {
+            CvRequest|error cvRequestRecord = getLatestCvRequestResponse.fetchLatestCvRequest.cloneWithType(CvRequest);
+            if (cvRequestRecord is CvRequest) {
+                return cvRequestRecord;
+            } else {
+                //log:printError("Error while getting the cv request",cvRequestRecord);
+                return <ApiInternalServerError>{body: { message: "Error while retrieving the CV request" }};
+            }
+        } else {
+            log:printError("Error while getting the cv request", getLatestCvRequestResponse);
+            return <ApiInternalServerError>{body: { message: "Error while retrieving the CV request" }};
+        }
+    }
+
+    //upload the cv
+    resource function post alumni/[int personId]/cv(http:Request req) returns PersonCv|ApiErrorResponse|error {
+
+        PersonCv cvDetails = {};
+
+        if (req.getContentType().startsWith("multipart/form-data")) {
+
+            mime:Entity[] bodyParts = check req.getBodyParts();
+            string base64EncodedStringCvFile= "";
+
+
+            foreach var part in bodyParts {
+                mime:ContentDisposition contentDisposition = part.getContentDisposition();
+
+                if (contentDisposition.name == "cv_metadata") {
+
+                    json cvMetaDataInJson = check part.getJson();
+                    cvDetails = check cvMetaDataInJson.cloneWithType(PersonCv);
+
+                } else if (contentDisposition.name == "cv_file") {
+
+                    stream<byte[], io:Error?>|mime:ParserError str = part.getByteStream();
+
+                    if str is stream<byte[], io:Error?> {
+
+                        byte[] allBytes = []; // Initialize an empty byte array
+
+                        // Iterate through the stream and collect all chunks
+                        error? e = str.forEach(function(byte[] chunk) {
+                            array:push(allBytes, ...chunk); // Efficiently append all bytes from chunk
+                        });
+
+                        byte[] base64EncodedCvFile = <byte[]>(check mime:base64Encode(allBytes));
+                        base64EncodedStringCvFile = check string:fromBytes(base64EncodedCvFile);
+                        cvDetails.file_content = base64EncodedStringCvFile;
+
+                    }
+                }
+
+            }
+        }
+        UploadCVResponse|graphql:ClientError uploadCVResponse = globalDataClient->uploadCV(cvDetails,personId);
+        if (uploadCVResponse is UploadCVResponse) {
+            PersonCv|error personCvRecord = uploadCVResponse.uploadCV.cloneWithType(PersonCv);
+            if (personCvRecord is PersonCv) {
+                return personCvRecord;
+            } else {
+                log:printError("Error while uploading cv", personCvRecord);
+                return <ApiErrorResponse>{body: { message: "Error while uploadnig the CV" }};
+            }
+        } else {
+            log:printError("Error while uploading cv", uploadCVResponse);
+            return <ApiErrorResponse>{body: { message: "Error while uploading the CV"}};
+
+        }
+    }
+
+
+    //Fetch the CV of a specific student, which the student can view and download through the mobile app.
+    resource function get alumni/[int personId]/cv(string? driveFileId) returns PersonCv|ApiErrorResponse|error {
+        FetchPersonCVResponse|graphql:ClientError fetchPersonCVResponse = globalDataClient->fetchPersonCV(personId,driveFileId = ());
+        if (fetchPersonCVResponse is FetchPersonCVResponse) {
+            PersonCv|error personCvRecord = fetchPersonCVResponse.fetchPersonCV.cloneWithType(PersonCv);
+            if (personCvRecord is PersonCv) {
+                return personCvRecord;
+            } else {
+                log:printError("Error while fetching cv", personCvRecord);
+                return <ApiErrorResponse>{body: { message: "Error while fetching the CV" }};
+            }
+        } else {
+            log:printError("Error while fetching cv", fetchPersonCVResponse);
+            return <ApiErrorResponse>{body: { message: "Error while fetching the CV" }};
+        }
+    }
+
+   //Create a FCM token for a specific student
+    resource function post fcm/[int personId]/token(@http:Payload PersonFcmToken personFcmToken) returns PersonFcmToken|ApiErrorResponse|error {
+        AddUserFcmTokenResponse|graphql:ClientError addUserFcmTokenResponse = globalDataClient->addUserFcmToken(personFcmToken,personId);
+        if(addUserFcmTokenResponse is AddUserFcmTokenResponse) {
+            PersonFcmToken|error personFcmTokenRecord = addUserFcmTokenResponse.saveUserFCMToken.cloneWithType(PersonFcmToken);
+            if(personFcmTokenRecord is PersonFcmToken) {
+                return personFcmTokenRecord;
+            } else {
+                log:printError("Error while adding fcm token record", personFcmTokenRecord);
+                return <ApiErrorResponse>{body: { message: "Error while adding fcm token record" }};
+            }
+        } else {
+            log:printError("Error while creating application", addUserFcmTokenResponse);
+            return <ApiErrorResponse>{body: { message: "Error while adding fcm token record" }};
+        }
+    }
+
+     //Get FCM token for a specific student
+    resource function get fcm/[int personId]/token() returns PersonFcmToken|ApiErrorResponse|error {
+        FetchUserFCMTokenResponse|graphql:ClientError fetchUserFCMTokenResponse = globalDataClient->fetchUserFCMToken(personId);
+        if (fetchUserFCMTokenResponse is FetchUserFCMTokenResponse) {
+            PersonFcmToken|error personFcmTokenRecord = fetchUserFCMTokenResponse.fetchUserFCMToken.cloneWithType(PersonFcmToken);
+            if (personFcmTokenRecord is PersonFcmToken) {
+                return personFcmTokenRecord;
+            } else {
+                log:printError("Error while getting the fcm token",personFcmTokenRecord);
+                return <ApiErrorResponse>{body: { message: "Error while retrieving the fcm token" }};
+            }
+        } else {
+            log:printError("Error while getting the fcm token", fetchUserFCMTokenResponse);
+            return <ApiErrorResponse>{body: { message: "Error while retrieving the fcm token" }};
+        }
+    }
+    
+    //Update FCM token for a specific student
+    resource function put fcm/[int personId]/token(@http:Payload PersonFcmToken personFcmToken) returns PersonFcmToken|ApiErrorResponse|error {
+        UpdateUserFCMTokenResponse|graphql:ClientError updateUserFCMTokenResponse = globalDataClient->updateUserFCMToken(personFcmToken,personId);
+        if(updateUserFCMTokenResponse is  UpdateUserFCMTokenResponse) {
+            PersonFcmToken|error personFcmTokenRecord = updateUserFCMTokenResponse.updateUserFCMToken.cloneWithType(PersonFcmToken);
+            if(personFcmTokenRecord is  PersonFcmToken) {
+                return personFcmTokenRecord;
+            } else {
+                log:printError("Error while updating the fcm token",personFcmTokenRecord);
+                return <ApiErrorResponse>{body: { message: "Error while updating the fcm token" }};
+
+            }
+        } else {
+            log:printError("Error while updating the fcm token",updateUserFCMTokenResponse);
+            return <ApiErrorResponse>{body: { message: "Error while updating the fcm token" }};
+        }
+    }
 }

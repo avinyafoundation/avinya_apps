@@ -205,7 +205,7 @@ class _ConsumableBarChartState extends State<ConsumableBarChart> {
         break;
     }
     return SideTitleWidget(
-      axisSide: meta.axisSide,
+      meta: meta,
       space: 0,
       child: text,
     );

@@ -122,7 +122,7 @@ void generateDutyParticipantsReportPdf() async{
       floatingActionButton: FloatingActionButton(
         tooltip: 'Duty Participants Report',
         child: Icon(Icons.download),
-        backgroundColor: Colors.deepPurpleAccent,
+        backgroundColor: Colors.blueAccent,
         onPressed: () async{
           generateDutyParticipantsReportPdf();
         }),

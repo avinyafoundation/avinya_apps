@@ -22,6 +22,8 @@ class NavigationMenu extends StatelessWidget {
               BottomNavigationBarItem(
                   icon: Icon(Icons.card_travel), label: 'Job Portal'),
               BottomNavigationBarItem(
+                  icon: Icon(Icons.description), label: 'CV'),
+              BottomNavigationBarItem(
                   icon: Icon(Icons.notifications), label: 'Notification'),
               BottomNavigationBarItem(
                   icon: Icon(Icons.person), label: 'Profile'),

@@ -163,7 +163,7 @@ class _AttendanceSummaryExcelReportExportState extends State<AttendanceSummaryEx
         icon: Icon(Icons.download),
         label: Text('Excel Export'),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.deepPurpleAccent,
+          backgroundColor: Colors.blueAccent,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10)
           ),

@@ -1,6 +1,8 @@
 import ballerina/http;
 import ballerina/graphql;
 import ballerina/log;
+import ballerina/io;
+import ballerina/mime;
 
 public function initClientConfig() returns ConnectionConfig{
     ConnectionConfig _clientConig = {};
@@ -784,8 +786,8 @@ service / on new http:Listener(9091) {
         }
     }
 
-    resource function get daily_students_attendance_by_parent_org/[int parent_organization_id]() returns DailyActivityParticipantAttendanceByParentOrg[]|error {
-        GetDailyStudentsAttendanceByParentOrgResponse|graphql:ClientError getDailyStudentsAttendanceResponse = globalDataClient->getDailyStudentsAttendanceByParentOrg(parent_organization_id);
+    resource function get daily_students_attendance_by_parent_org/[int parent_organization_id](string date) returns DailyActivityParticipantAttendanceByParentOrg[]|error {
+        GetDailyStudentsAttendanceByParentOrgResponse|graphql:ClientError getDailyStudentsAttendanceResponse = globalDataClient->getDailyStudentsAttendanceByParentOrg(date,parent_organization_id);
         if(getDailyStudentsAttendanceResponse is GetDailyStudentsAttendanceByParentOrgResponse) {
             DailyActivityParticipantAttendanceByParentOrg[] dailyStudentsAttendances = [];
             foreach var daily_students_attendance_record in getDailyStudentsAttendanceResponse.daily_students_attendance_by_parent_org {
@@ -857,7 +859,7 @@ service / on new http:Listener(9091) {
     }
 
     resource function get daily_attendance_summary_report/[int organization_id]/[int avinya_type_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendanceSummary[]|error {
-        GetDailyAttendanceSummaryReportResponse|graphql:ClientError getDailyAttendanceSummaryReportResponse = globalDataClient->getDailyAttendanceSummaryReport(from_date,to_date,organization_id,avinya_type_id);
+        GetDailyAttendanceSummaryReportResponse|graphql:ClientError getDailyAttendanceSummaryReportResponse = globalDataClient->getDailyAttendanceSummaryReport(from_date,to_date,organization_id,(),avinya_type_id);
         if(getDailyAttendanceSummaryReportResponse is GetDailyAttendanceSummaryReportResponse) {
             ActivityParticipantAttendanceSummary[] activityParticipantAttendances = [];
             foreach var attendance_record in getDailyAttendanceSummaryReportResponse.daily_attendance_summary_report {
@@ -877,6 +879,31 @@ service / on new http:Listener(9091) {
             log:printError("Error while creating application", getDailyAttendanceSummaryReportResponse);
             return error("Error while creating application: " + getDailyAttendanceSummaryReportResponse.message() + 
                 ":: Detail: " + getDailyAttendanceSummaryReportResponse.detail().toString());
+        }
+    }
+
+    //Get employee attendance summary report
+    resource function get employees/attendance_summary_report/[int parent_organization_id]/[string from_date]/[string to_date]() returns ActivityParticipantAttendanceSummary[]|error {
+        GetDailyAttendanceSummaryReportResponse|graphql:ClientError getEmployeeAttendanceSummaryReportResponse = globalDataClient->getDailyAttendanceSummaryReport(from_date,to_date,(),parent_organization_id,());
+        if(getEmployeeAttendanceSummaryReportResponse is GetDailyAttendanceSummaryReportResponse) {
+            ActivityParticipantAttendanceSummary[] activityParticipantAttendances = [];
+            foreach var attendance_record in getEmployeeAttendanceSummaryReportResponse.daily_attendance_summary_report {
+                ActivityParticipantAttendanceSummary|error activityParticipantAttendance = attendance_record.cloneWithType(ActivityParticipantAttendanceSummary);
+                if(activityParticipantAttendance is ActivityParticipantAttendanceSummary) {
+                    activityParticipantAttendances.push(activityParticipantAttendance);
+                } else {
+                    log:printError("Error while processing Application record received", activityParticipantAttendance);
+                    return error("Error while processing Application record received: " + activityParticipantAttendance.message() + 
+                        ":: Detail: " + activityParticipantAttendance.detail().toString());
+                }
+            }
+
+            return activityParticipantAttendances;
+            
+        } else {
+            log:printError("Error while creating application", getEmployeeAttendanceSummaryReportResponse);
+            return error("Error while creating application: " + getEmployeeAttendanceSummaryReportResponse.message() + 
+                ":: Detail: " + getEmployeeAttendanceSummaryReportResponse.detail().toString());
         }
     }
 
@@ -957,21 +984,197 @@ service / on new http:Listener(9091) {
                 ":: Detail: " + getMonthlyLeaveDatesRecordByIdResponse.detail().toString());
         }
     }
-    resource function get calendar_metadata_by_org_id/[int organization_id]/[int batch_id]() returns CalendarMetadata|error {
-        GetCalendarMetadataByOrgIdResponse|graphql:ClientError getCalendarMetadataByOrgIdResponse = globalDataClient->getCalendarMetadataByOrgId(batch_id,organization_id);
-        if (getCalendarMetadataByOrgIdResponse is GetCalendarMetadataByOrgIdResponse) {
-            CalendarMetadata|error calendar_metadata_record = getCalendarMetadataByOrgIdResponse.calendar_metadata_by_org_id.cloneWithType(CalendarMetadata);
-            if (calendar_metadata_record is CalendarMetadata) {
-                return calendar_metadata_record;
+    resource function get batch_payment_plan_by_org_id/[int organization_id]/[int batch_id]/[string selected_month_date]() returns BatchPaymentPlan|error {
+        GetBatchPaymentPlanByOrgIdResponse|graphql:ClientError getBatchPaymentPlanByOrgIdResponse = globalDataClient->getBatchPaymentPlanByOrgId(selected_month_date,batch_id,organization_id);
+        if (getBatchPaymentPlanByOrgIdResponse is GetBatchPaymentPlanByOrgIdResponse) {
+            BatchPaymentPlan|error batch_payment_plan_record = getBatchPaymentPlanByOrgIdResponse.batch_payment_plan_by_org_id.cloneWithType(BatchPaymentPlan);
+            if (batch_payment_plan_record is BatchPaymentPlan) {
+                return batch_payment_plan_record;
             } else {
-                log:printError("Error while processing Application record received", calendar_metadata_record);
-                return error("Error while processing Application record received: " + calendar_metadata_record.message() +
-                    ":: Detail: " + calendar_metadata_record.detail().toString());
+                log:printError("Error while processing Application record received", batch_payment_plan_record);
+                return error("Error while processing Application record received: " + batch_payment_plan_record.message() +
+                    ":: Detail: " + batch_payment_plan_record.detail().toString());
             }
         } else {
-            log:printError("Error while creating application", getCalendarMetadataByOrgIdResponse);
-            return error("Error while creating application: " + getCalendarMetadataByOrgIdResponse.message() +
-                ":: Detail: " + getCalendarMetadataByOrgIdResponse.detail().toString());
+            log:printError("Error while creating application", getBatchPaymentPlanByOrgIdResponse);
+            return error("Error while creating application: " + getBatchPaymentPlanByOrgIdResponse.message() +
+                ":: Detail: " + getBatchPaymentPlanByOrgIdResponse.detail().toString());
+        }
+    }
+    
+    resource function post attendance/events(http:Request req) returns http:Response|error {
+        // Prepare the response immediately
+        http:Response response = new;
+        response.statusCode = 200;
+        response.setPayload("OK");
+
+        // Extract parts (JSON + Image)
+        var bodyParts = req.getBodyParts();
+        if bodyParts is mime:Entity[] {
+            foreach var part in bodyParts {
+                if part.getContentType().startsWith("application/json") {
+                    json payload = check part.getJson();
+                    
+                    // Drill down to the User Details
+                    var event = payload.AccessControllerEvent;
+                    var dateTime = payload.dateTime;
+                    io:println(`event:${event}`);
+                    io:println(`date time:${dateTime}`);
+
+                    if event != null && event is map<json> && dateTime != null && dateTime is string {  
+
+                        // 1. Get the subEventType as an integer
+                        int subType = check event.get("subEventType").ensureType(int);
+
+                        if subType == 75 || subType == 38 {
+                            // Registered User
+                            string name = event.get("name").toString();
+                            string empId = event.get("employeeNoString").toString();
+
+                            if name is string && empId is string && name.trim() != ""{
+                              io:println(string `Verified User: ${name}`);
+
+                                // ^.*-  Matches everything from the start up to the hyphen
+                                // \s* Matches any optional spaces
+                                string nic = re `^.*-\s*`.replace(name, "");
+                                string formattedDateTime = formatDateTime(dateTime);
+
+                                GetPersonResponse|graphql:ClientError getPersonResponse = globalDataClient->getPerson(nic);
+                                if(getPersonResponse is GetPersonResponse) {
+                                    Person|error person_record = getPersonResponse.person_by_digital_id_or_nic.cloneWithType(Person);
+                                    
+                                    if(person_record is Person){
+                                        GetActivityInstancesTodayResponse|graphql:ClientError getActivityInstancesTodayResponse;
+                                        int avinyaType = person_record?.avinya_type_id?: 0;
+                                        io:println("person avinya type:",person_record?.avinya_type_id);
+                                        io:println("person nic:",person_record?.nic_no);
+
+                                        if(avinyaType==37 || avinyaType==110){
+                                            //Get today activity instance id for students
+                                          getActivityInstancesTodayResponse = globalDataClient->getActivityInstancesToday(4);
+                                        }else{
+                                          getActivityInstancesTodayResponse = globalDataClient->getActivityInstancesToday(1);
+                                        }
+                                        
+                                        if(getActivityInstancesTodayResponse is GetActivityInstancesTodayResponse) {
+                                           var instances = getActivityInstancesTodayResponse.activity_instances_today;
+                                           if instances.length() > 0 {
+                                                // Access index 0
+                                                var firstItem = instances[0];
+                                                
+                                                // Now you can clone it
+                                                ActivityInstance|error activityInstance = firstItem.cloneWithType(ActivityInstance);
+                                                
+                                                if activityInstance is ActivityInstance{
+                                                    io:println("Found first instance: ", activityInstance?.id);
+                                                    ActivityParticipantAttendance attendance = {
+                                                        activity_instance_id: activityInstance?.id,
+                                                        person_id: person_record?.id,
+                                                        event_time: formattedDateTime
+                                                    };
+
+                                                    AddBiometricAttendanceResponse|graphql:ClientError addBiometricAttendanceResponse = globalDataClient->addBiometricAttendance(attendance);
+                                                    if(addBiometricAttendanceResponse is AddBiometricAttendanceResponse) {
+                                                        ActivityParticipantAttendance|error attendance_record = addBiometricAttendanceResponse.addBiometricAttendance.cloneWithType(ActivityParticipantAttendance);
+                                                        if(attendance_record is ActivityParticipantAttendance) {
+                                                          log:printInfo("Biometric Attendance Marked Successfully.Person Name:"+name.toString());
+                                                        }else{
+                                                          log:printError("Failed to record biometric attendance. Person Name:"+name.toString());
+                                                        }   
+                                                    }else {
+                                                        log:printError("Failed to record biometric attendance. Person Name:"+name.toString());
+                                                        return error("Error while adding  biometric attendance: " + addBiometricAttendanceResponse.message() +
+                                                            ":: Detail: " + addBiometricAttendanceResponse.detail().toString());
+                                                    }                                     
+                                                }
+                                            } else {
+                                                io:println("No activity instances found for today.");
+                                            }
+
+                                        }else {
+                                            log:printError("Error while creating the activity instances", getActivityInstancesTodayResponse);
+                                            return error("Error while creating the activity instances: " + getActivityInstancesTodayResponse.message() + 
+                                                ":: Detail: " + getActivityInstancesTodayResponse.detail().toString());
+                                        }
+                                    }
+                                     
+                                }else{
+                                    log:printError("Failed to Fetch person from the database");
+                                }
+                            }
+
+                        }
+                         
+                    }
+                } else if part.getContentType().startsWith("image/jpeg") {
+                    // We acknowledge the image but don't print the binary mess
+                    io:println("[System] Face Image Captured and Processed.");
+                }
+            }
+        }
+        // Send the OK back to the device to STOP the looping
+        return response;
+    }
+    //Get Organizations Late Attendance Summary List
+    resource function get organizations/[int parent_organization_id]/'late\-attendance\-summary(
+        string date = "",
+        int activity_id = 4
+    ) returns json[] | error {
+        GetStudentLateAttendanceByTimeRangeResponse|graphql:ClientError getStudentLateAttendanceByTimeRangeResponse = globalDataClient->getStudentLateAttendanceByTimeRange(date,parent_organization_id,activity_id);
+        if(getStudentLateAttendanceByTimeRangeResponse is GetStudentLateAttendanceByTimeRangeResponse){
+            json[] lateAttendanceSummaryList = [];
+            foreach var late_attendance_summary_record in getStudentLateAttendanceByTimeRangeResponse.late_attendance_report{
+                json|error late_record = late_attendance_summary_record.cloneWithType(json);
+                if(late_record is json){
+                    lateAttendanceSummaryList.push(late_record);
+                }else{
+                    log:printError("Error while retrieving the late attendance summary list", late_record);
+                    return error("Error while retrieving the late attendance summary list: " + late_record.message() + 
+                        ":: Detail: " + late_record.detail().toString());
+                }
+            }
+
+            return lateAttendanceSummaryList;
+        }else {
+            log:printError("Error while retrieving the late attendance summary list", getStudentLateAttendanceByTimeRangeResponse);
+            return error("Error while retrieving the late attendance summary list: " + getStudentLateAttendanceByTimeRangeResponse.message() + 
+                ":: Detail: " + getStudentLateAttendanceByTimeRangeResponse.detail().toString());
+        }
+    }
+
+     // Retrieves a summary of absentees for a specific organization.
+     // parent_organization_id = 2 [Avinya Academy Bandaragama]
+    resource function get organizations/[int parent_organization_id]/'daily\-absence\-summary(
+        int? organization_id,
+        int? parent_org_id,
+        int activity_id,
+        int? result_limit,
+        string date,
+        string? from_date,
+        string? to_date
+    ) returns json[] | error {
+        GetDailyAbsenceSummaryResponse|graphql:ClientError getDailyAbsenceSummaryResponse = globalDataClient->
+                                                                                             getDailyAbsenceSummary(date,activity_id,from_date,to_date,
+                                                                                              result_limit,organization_id,parent_org_id);
+        
+        if(getDailyAbsenceSummaryResponse is GetDailyAbsenceSummaryResponse){
+            json[] absenceSummaryList = [];
+            foreach var absence_summary_record in getDailyAbsenceSummaryResponse.absent_report{
+                json|error absence_record = absence_summary_record.cloneWithType(json);
+                if(absence_record is json){
+                    absenceSummaryList.push(absence_record);
+                }else{
+                    log:printError("Error while retrieving the absence summary list", absence_record);
+                    return error("Error while retrieving the absence summary list: " + absence_record.message() + 
+                        ":: Detail: " + absence_record.detail().toString());
+                }
+            }
+
+            return absenceSummaryList;
+        }else{
+            log:printError("Error while retrieving the absence summary list", getDailyAbsenceSummaryResponse);
+            return error("Error while retrieving the absence summary list: " + getDailyAbsenceSummaryResponse.message() + 
+                ":: Detail: " + getDailyAbsenceSummaryResponse.detail().toString());
         }
     }
 

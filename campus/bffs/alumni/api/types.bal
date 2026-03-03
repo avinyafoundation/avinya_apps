@@ -1,3 +1,18 @@
+import ballerina/http;
+public type ApiErrorResponse record {|
+    *http:BadRequest;
+    record {
+        string message;
+    } body;
+|};
+
+public type ApiInternalServerError record {|
+    *http:InternalServerError;
+    record {
+        string message;
+    } body;
+|};
+
 public type Address record {
     string? street_address?;
     string? name_ta?;
@@ -50,6 +65,7 @@ public type Alumni record {
     string? record_type?;
     string? facebook_id?;
     string? instagram_id?;
+    string? canva_cv_url?;
     string? company_name?;
     string? tiktok_id?;
     string? updated_by?;
@@ -84,6 +100,16 @@ public type AlumniWorkExperience record {
     int? person_id?;
     int? currently_working?;
     string? start_date?;
+};
+
+public type CvRequest record {
+    int? phone?;
+    string? created?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+    string? status?;
 };
 
 public type Person record {
@@ -131,6 +157,27 @@ public type Person record {
     string? preferred_name?;
     string? jwt_sub_id?;
     int? academy_org_id?;
+};
+
+public type PersonCv record {
+    string? file_content?;
+    string? uploaded_by?;
+    string? nic_no?;
+    string? drive_file_id?;
+    string? created?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
+};
+
+public type PersonFcmToken record {
+    string? created?;
+    string? fcm_token?;
+    int? id?;
+    string? updated?;
+    string? record_type?;
+    int? person_id?;
 };
 
 public type PersonProfilePicture record {
@@ -273,6 +320,7 @@ public type CreateAlumniResponse record {|
             string? facebook_id;
             string? instagram_id;
             string? tiktok_id;
+            string? canva_cv_url;
         |}? alumni;
         int? phone;
         string? email;
@@ -315,6 +363,7 @@ public type UpdateAlumniResponse record {|
             string? facebook_id;
             string? instagram_id;
             string? tiktok_id;
+            string? canva_cv_url;
         |}? alumni;
         int? phone;
         string? email;
@@ -470,6 +519,7 @@ public type GetAlumniPersonByIdResponse record {|
             string? facebook_id;
             string? instagram_id;
             string? tiktok_id;
+            string? canva_cv_url;
         |}? alumni;
         record {|
             int? id;
@@ -689,4 +739,83 @@ public type GetJobCategoriesResponse record {|
         int? id;
         string? name;
     |}[] job_categories;
+|};
+
+public type AddCvRequestResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        int? phone;
+        string? status;
+        string? created;
+        string? updated;
+    |}? addCvRequest;
+|};
+
+public type FetchLatestCvRequestResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        int? phone;
+        string? status;
+        string? created;
+        string? updated;
+    |}? fetchLatestCvRequest;
+|};
+
+public type UploadCVResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        string? drive_file_id;
+        string? uploaded_by;
+        string? created;
+        string? updated;
+    |}? uploadCV;
+|};
+
+public type FetchPersonCVResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        string? drive_file_id;
+        string? file_content;
+    |}? fetchPersonCV;
+|};
+
+public type AddUserFcmTokenResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        string? fcm_token;
+        string? created;
+        string? updated;
+    |}? saveUserFCMToken;
+|};
+
+public type UpdateUserFCMTokenResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        string? fcm_token;
+        string? created;
+        string? updated;
+    |}? updateUserFCMToken;
+|};
+
+public type FetchUserFCMTokenResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? person_id;
+        string? fcm_token;
+        string? created;
+        string? updated;
+    |}? fetchUserFCMToken;
 |};

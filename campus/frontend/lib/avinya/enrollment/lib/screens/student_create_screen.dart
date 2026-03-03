@@ -14,10 +14,10 @@ class _StudentCreateScreenState extends State<StudentCreateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Student Profile", style: TextStyle(color: Colors.black)),
-        backgroundColor: Color.fromARGB(255, 120, 224, 158),
-      ),
+      // appBar: AppBar(
+      //   title: Text("Student Profile", style: TextStyle(color: Colors.black)),
+      //   backgroundColor: Color.fromARGB(255, 120, 224, 158),
+      // ),
       body: Container(
         child: StudentCreate(id: widget.id),
       ),

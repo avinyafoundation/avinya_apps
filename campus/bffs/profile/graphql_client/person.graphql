@@ -1,5 +1,5 @@
 query getPerson($id: String!) {
-  person_by_digital_id(id: $id) {
+  person_by_digital_id_or_nic(id: $id) {
     id
     preferred_name
     full_name
@@ -264,5 +264,12 @@ query getStudentByParentOrg($parent_organization_id: Int,$batch_id:Int) {
       }
       description
     }
+  }
+}
+
+query validatePin($pin: String!) {
+  validatePin(pin: $pin) {
+    id
+    preferred_name
   }
 }

@@ -37,6 +37,8 @@ class CampusAppsPortal {
   bool isTeacher = false;
   bool isFoundation = false;
   bool isGroupFetched = false;
+  bool isOperations = false;
+  bool isFinance = false;
 
   DutyParticipant leaderParticipant = new DutyParticipant();
 
@@ -196,10 +198,10 @@ class CampusAppsPortal {
         }
 
         userPerson = person;
-        log('Campus Apps Portal - fetchPersonForUser: ' +
-            person.toJson().toString());
-        print('Campus Apps Portal - fetchPersonForUser: ' +
-            person.toJson().toString());
+        // log('Campus Apps Portal - fetchPersonForUser: ' +
+        //     person.toJson().toString());
+        // print('Campus Apps Portal - fetchPersonForUser: ' +
+        //     person.toJson().toString());
         campusAppsPortalInstance.setUserPerson(person);
         campusAppsPortalInstance.setAlumniUserPerson(alumniPerson);
 
@@ -219,10 +221,22 @@ class CampusAppsPortal {
           isTeacher = campusAppsPortalPersonMetaDataInstance
               .getGroups()
               .contains('Educator');
+          isFinance = campusAppsPortalPersonMetaDataInstance
+              .getGroups()
+              .contains('Finance');
+          isOperations = campusAppsPortalPersonMetaDataInstance
+              .getGroups()
+              .contains('Operation');
           isFoundation = campusAppsPortalPersonMetaDataInstance
               .getGroups()
               .contains('Foundation');
-          if (isSecurity || isTeacher || isFoundation || isStudent) {
+          if (isSecurity ||
+              isTeacher ||
+              isFoundation ||
+              isStudent ||
+              isFinance ||
+              isOperations ||
+              isJanitor) {
             isGroupFetched = true;
           }
 
