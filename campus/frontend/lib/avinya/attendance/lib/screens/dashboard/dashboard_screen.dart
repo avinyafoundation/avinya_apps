@@ -1460,13 +1460,14 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                                         int? orgId = _parentOrgId;
                                         int activityId =
                                             chartType == 'student' ? 4 : 1;
-                                        int? parentId = chartType == 'staff'
-                                            ? _parentOrgId
+                                        int? parentId = chartType != 'student'
+                                            ? 2  // Use parent_org_id=2 for employees
                                             : null;
                                         if (orgId != null) {
                                           names = await getDailyAbsenceSummary(
                                               orgId, activityId, rawDate,
                                               parentOrgId: parentId);
+                                          print('OrgId: $orgId, ActivityId: $activityId, Date: $rawDate, ParentId: $parentId');
                                         }
                                       } catch (e) {
                                         print('Error fetching absentees: $e');

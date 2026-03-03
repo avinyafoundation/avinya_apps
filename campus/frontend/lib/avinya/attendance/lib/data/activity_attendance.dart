@@ -853,7 +853,7 @@ Future<List<String>> getDailyAbsenceSummary(
     {int? parentOrgId}) async {
   String uri =
       '${AppConfig.campusAttendanceBffApiUrl}/organizations/$organization_id/daily-absence-summary?activity_id=$activity_id&date=$date';
-  if (parentOrgId != null) uri += '&organization_id=$parentOrgId';
+  if (parentOrgId != null) uri += '&parent_org_id=$parentOrgId';
   //here parentOrgId is the id of the class which is returned from daily_students_attendance_by_parent_org endpoint
 
   final response = await http.get(
