@@ -850,10 +850,11 @@ Future<List<Map<String, dynamic>>> getLateAttendanceSummary(
 
 Future<List<String>> getDailyAbsenceSummary(
     int organization_id, int activity_id, String date,
-    {int? parentOrgId}) async {
+    {int? parentOrgId, int? organizationId}) async {
   String uri =
       '${AppConfig.campusAttendanceBffApiUrl}/organizations/$organization_id/daily-absence-summary?activity_id=$activity_id&date=$date';
   if (parentOrgId != null) uri += '&parent_org_id=$parentOrgId';
+  if (organizationId != null) uri += '&organization_id=$organizationId';
   //here parentOrgId is the id of the class which is returned from daily_students_attendance_by_parent_org endpoint
 
   final response = await http.get(

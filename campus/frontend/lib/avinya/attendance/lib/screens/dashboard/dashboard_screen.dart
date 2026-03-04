@@ -1093,8 +1093,8 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     List<String> names = [];
     try {
       names = await getDailyAbsenceSummary(_parentOrgId!, 4, _selectedDate,
-          parentOrgId: orgId);
-      //here parentOrgId is the id of the class which is returned from daily_students_attendance_by_parent_org endpoint
+          organizationId: orgId);
+      //here organizationId is the id of the class which is returned from daily_students_attendance_by_parent_org endpoint
     } catch (e) {
       print('Error fetching absence names for org $orgId: $e');
     } finally {
