@@ -438,8 +438,8 @@ class _EnrollmentDashboardState extends State<EnrollmentDashboard> {
             : '',
         sections: [
           PieChartSectionData(
-              value: active,
-              title: active > 0 ? active.toInt().toString() : '',
+              value: total,
+              title: total > 0 ? total.toInt().toString() : '',
               color: const Color(0xFF4CAF50),
               radius: 65,
               titleStyle: const TextStyle(
