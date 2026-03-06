@@ -524,3 +524,12 @@ public type ValidatePinResponse record {|
         string? preferred_name;
     |}? validatePin;
 |};
+
+public type ImageUploadRequest record {
+    string image;
+};
+
+public type ImageUploadResponse record {
+    string secure_url;
+    string public_id;
+};

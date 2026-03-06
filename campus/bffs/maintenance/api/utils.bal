@@ -1,7 +1,10 @@
+import ballerina/crypto;
 import ballerina/graphql;
 import ballerina/http;
 import ballerina/log;
+import ballerina/mime;
 import ballerina/regex;
+import ballerina/time;
 
 public configurable boolean GLOBAL_DATA_USE_AUTH = true;
 public configurable string GLOBAL_DATA_API_URL = "http://localhost:4000/graphql";
@@ -10,6 +13,9 @@ public configurable string GLOBAL_DATA_CLIENT_ID = "undefined";
 public configurable string GLOBAL_DATA_CLIENT_SECRET = "undefined";
 configurable string GEMINI_API_KEY = ?;
 configurable string GEMINI_URL = ?;
+configurable string CLOUDINARY_CLOUD_NAME = ?;
+configurable string CLOUDINARY_API_KEY = ?;
+configurable string CLOUDINARY_API_SECRET = ?;
 
 type OperationResponse record {| anydata...; |}|record {| anydata...; |}[]|boolean|string|int|float|();
 
