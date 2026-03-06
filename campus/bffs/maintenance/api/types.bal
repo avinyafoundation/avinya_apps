@@ -524,24 +524,3 @@ public type ValidatePinResponse record {|
         string? preferred_name;
     |}? validatePin;
 |};
-
-public type ImageUploadRequest record {
-    string image;
-};
-
-public type ImageUploadResponse record {
-    string secure_url;
-    string public_id;
-};
-
-public type WhatsAppImageRequest record {
-    string to;
-    string image_url;
-    string caption?;
-};
-
-public type WhatsAppMessageResponse record {
-    string messaging_product;
-    json[] contacts;
-    json[] messages;
-};
