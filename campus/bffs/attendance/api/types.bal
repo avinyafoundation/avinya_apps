@@ -1,3 +1,5 @@
+import ballerina/http;
+
 public type Activity record {
     string? notes?;
     Activity[]? parent_activities?;
@@ -978,4 +980,32 @@ public type GetDailyAbsenceSummaryResponse record {|
         int? absent_count;
         string? absent_names;
     |}[] absent_report;
+|};
+
+public type ImageUploadRequest record {
+    string image;
+};
+
+public type ImageUploadResponse record {
+    string secure_url;
+    string public_id;
+};
+
+public type WhatsAppImageRequest record {
+    string to;
+    string image_url;
+    string caption?;
+};
+
+public type WhatsAppMessageResponse record {
+    string messaging_product;
+    json[] contacts;
+    json[] messages;
+};
+
+public type ApiErrorResponse record {|
+    *http:BadRequest;
+    record {
+        string message;
+    } body;
 |};
