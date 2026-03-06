@@ -616,4 +616,16 @@ service / on new http:Listener(9097) {
             return <ApiErrorResponse>{body: {message: "Error uploading image to Cloudinary"}};
         }
     }
+
+    // Send an image via WhatsApp
+    resource function post whatsapp/send/image(@http:Payload WhatsAppImageRequest whatsAppRequest) returns json|ApiErrorResponse|error {
+        string caption = whatsAppRequest.caption ?: "";
+        json|error whatsappResponse = sendWhatsAppImage(whatsAppRequest.to, whatsAppRequest.image_url, caption);
+        if (whatsappResponse is json) {
+            return whatsappResponse;
+        } else {
+            log:printError("Error sending WhatsApp image", whatsappResponse);
+            return <ApiErrorResponse>{body: {message: "Error sending WhatsApp image"}};
+        }
+    }
 }    

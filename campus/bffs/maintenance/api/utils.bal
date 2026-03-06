@@ -16,6 +16,8 @@ configurable string GEMINI_URL = ?;
 configurable string CLOUDINARY_CLOUD_NAME = ?;
 configurable string CLOUDINARY_API_KEY = ?;
 configurable string CLOUDINARY_API_SECRET = ?;
+configurable string WHATSAPP_PHONE_NUMBER_ID = ?;
+configurable string WHATSAPP_ACCESS_TOKEN = ?;
 
 type OperationResponse record {| anydata...; |}|record {| anydata...; |}[]|boolean|string|int|float|();
 
@@ -213,4 +215,34 @@ function createFormData(string name) returns mime:ContentDisposition {
     cd.name = name;
     cd.disposition = "form-data";
     return cd;
+}
+
+// Send an image via WhatsApp using the Meta Graph API
+public function sendWhatsAppImage(string recipientPhone, string imageUrl, string caption) returns json|error {
+    http:Client whatsappClient = check new ("https://graph.facebook.com/v22.0/" + WHATSAPP_PHONE_NUMBER_ID);
+
+    json payload = {
+        "messaging_product": "whatsapp",
+        "to": recipientPhone,
+        "type": "image",
+        "image": {
+            "link": imageUrl,
+            "caption": caption
+        }
+    };
+
+    http:Request req = new;
+    req.setJsonPayload(payload);
+    req.setHeader("Authorization", "Bearer " + WHATSAPP_ACCESS_TOKEN);
+
+    http:Response response = check whatsappClient->post("/messages", req);
+    json responseJson = check response.getJsonPayload();
+
+    int statusCode = response.statusCode;
+    if (statusCode < 200 || statusCode >= 300) {
+        log:printError("WhatsApp API error: " + responseJson.toString());
+        return error("WhatsApp API error: " + responseJson.toString());
+    }
+
+    return responseJson;
 }
