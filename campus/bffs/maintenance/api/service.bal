@@ -1,7 +1,6 @@
 import ballerina/graphql;
 import ballerina/http;
 import ballerina/log;
-import ballerina/mime;
 
 public function initClientConfig() returns ConnectionConfig {
     ConnectionConfig _clientConig = {};
