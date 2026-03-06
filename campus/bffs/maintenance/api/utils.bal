@@ -16,6 +16,8 @@ configurable string GEMINI_URL = ?;
 configurable string CLOUDINARY_CLOUD_NAME = ?;
 configurable string CLOUDINARY_API_KEY = ?;
 configurable string CLOUDINARY_API_SECRET = ?;
+configurable string WHATSAPP_PHONE_NUMBER_ID = ?;
+configurable string WHATSAPP_ACCESS_TOKEN = ?;
 
 type OperationResponse record {| anydata...; |}|record {| anydata...; |}[]|boolean|string|int|float|();
 
