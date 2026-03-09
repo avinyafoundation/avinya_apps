@@ -140,18 +140,13 @@ query getPersonAttendanceToday($person_id: Int!, $activity_id: Int!) {
     }      
 }
 
-query getActivityEvaluations($activity_id: Int!) {
-    activity_evaluations(activity_id:$activity_id) {
-        id
-        evaluatee_id
-        evaluator_id
-        evaluation_criteria_id
-        response
-        notes
-        grade
-        activity_instance_id
-        updated
-    }      
+query getActivityEvaluations($person_id:Int!,$activity_id: Int!,from_date: String!,to_date: $to_date) {
+  activity_evaluations(person_id: $person_id, activity_id: $activity_id,from_date: $from_date,to_date:$to_date) {
+    id
+    evaluatee_id
+    response
+    notes
+  }
 }
 
 query getActivityInstanceEvaluations($activity_instance_id: Int!) {

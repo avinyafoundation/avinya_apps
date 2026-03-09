@@ -1408,7 +1408,7 @@ type Query {
   project_tasks(activity_id: Int!): [ActivityData!]
   student_applicant(jwt_sub_id: String): PersonData
   all_evaluations: [EvaluationData!]!
-  activity_evaluations(activity_id: Int!): [EvaluationData!]
+  activity_evaluations(person_id: Int, activity_id: Int!, from_date: String = "", to_date: String = ""): [EvaluationData!]
   activity_instance_evaluations(activity_instance_id: Int!): [EvaluationData!]
   evaluation_meta_data(meta_evaluation_id: Int!): EvaluationMetadataData
   evaluationCriteria(prompt: String, id: Int): EvaluationCriteriaData!
