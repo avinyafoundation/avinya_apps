@@ -1,4 +1,5 @@
 import ballerina/graphql;
+import ballerina/http;
 
 
 public configurable boolean GLOBAL_DATA_USE_AUTH = true;
@@ -34,4 +35,12 @@ function formatDateTime(string isoDateTime) returns string {
     string step1 = re `T`.replace(isoDateTime, " ");
     string result = re `\+.*$`.replace(step1, "");
     return result;
+}
+
+// Helper function to keep code clean
+function createErrorResponse(int status, string message) returns http:Response {
+    http:Response res = new;
+    res.statusCode = status;
+    res.setPayload({"error": message});
+    return res;
 }
