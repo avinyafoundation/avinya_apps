@@ -90,7 +90,7 @@ class _MaintenanceDashboardScreenState
     // generate times
     bool shouldRefresh = false;
     // between 7:15 and 8:15, refresh every 3 minutes (inclusive)
-    if ((hour == 7 && minute >= 15) || (hour == 8 && minute <= 15)) {
+    if ((hour == 7 && minute >= 15) || (hour == 8 && minute <= 30)) {
       final totalMinutes = hour * 60 + minute;
       final start = 7 * 60 + 15; // 7:15 in minutes
       if ((totalMinutes - start) % 3 == 0) {
@@ -98,7 +98,8 @@ class _MaintenanceDashboardScreenState
       }
     }
     // fixed checkpoints around breakfast hours
-    if (hour == 8 && minute == 30) shouldRefresh = true;
+    if (hour == 8 && minute == 33) shouldRefresh = true;
+    if (hour == 8 && minute == 45) shouldRefresh = true;
     if (hour == 9 && (minute == 0 || minute == 30)) shouldRefresh = true;
     if (hour == 10 && minute == 0) shouldRefresh = true;
     // thereafter, on the hour every hour from 10am through 6am next day

@@ -33,6 +33,7 @@ class _StudentCreateState extends State<StudentCreate> {
   bool isDistrictsDataLoaded = false;
   bool isOrganizationsDataLoaded = false;
   bool isAvinyaTypesDataLoaded = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -487,10 +488,8 @@ class _StudentCreateState extends State<StudentCreate> {
     bool isEnabled = isDistrictsDataLoaded &&
         isOrganizationsDataLoaded &&
         isAvinyaTypesDataLoaded;
-    print('is enabled:${isEnabled}');
-    if (_currentStep == 0 && isEnabled) {
 
-      // Validate date of birth manually
+    if (_currentStep == 0 && isEnabled) {
       if (selectedDateOfBirth == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Date of Birth is required')),
@@ -500,21 +499,46 @@ class _StudentCreateState extends State<StudentCreate> {
 
       if (_formKey.currentState!.validate()) {
         _formKey.currentState!.save();
-        createdPerson = await createPerson(context, userPerson);
-        if (createdPerson.id != null) {
-          setState(() {
-            _currentStep += 1;
-          });
+
+        setState(() => _isLoading = true); // show loading
+
+        try {
+          createdPerson = await createPerson(context, userPerson);
+          if (createdPerson.id != null) {
+            setState(() {
+              _currentStep += 1;
+            });
+          }
+        } catch (e) {
+          // Extract clean message from "Exception: Person already exists."
+          String errorMessage = e.toString().replaceFirst('Exception: ', '');
+
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Row(
+                children: [
+                  Icon(Icons.error_outline, color: Colors.red),
+                  SizedBox(width: 8),
+                  Text('Error'),
+                ],
+              ),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } finally {
+          setState(() => _isLoading = false); // hide loading
         }
       }
     } else if (_currentStep == 1) {
       Navigator.pop(context);
     }
-    // } else if (_currentStep < 1 && isEnabled) {
-    //   setState(() {
-    //     _currentStep += 1;
-    //   });
-    // }
   }
 
   //   Widget _buildSaveButton(bool isDistrictsDataLoaded,

@@ -46,7 +46,9 @@ class _BulkAttendanceMarkerState extends State<BulkAttendanceMarker> {
     _fetchBatchData = _loadBatchData();
     if (campusAppsPortalInstance.isTeacher ||
         campusAppsPortalInstance.isFoundation ||
-        campusAppsPortalInstance.isSecurity) {
+        campusAppsPortalInstance.isSecurity || 
+        campusAppsPortalInstance.isOperations ||  
+        campusAppsPortalInstance.isFinance) {
       activityId = campusAppsPortalInstance.activityIds['homeroom']!;
       afterSchoolActivityId =
           campusAppsPortalInstance.activityIds['after-school']!;
