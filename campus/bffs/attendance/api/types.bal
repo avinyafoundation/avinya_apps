@@ -1,3 +1,21 @@
+public type AccessControllerEvent record {
+    string? deviceName?;
+    string? name?;
+    int? majorEventType?;
+    int? subEventType?;
+    int? cardReaderKind?;
+    int? verifyNo?;
+    int? InternetAccess?;
+    int? serialNo?;
+    string? currentVerifyMode?;
+    int? frontSerialNo?;
+    string? attendanceStatus?;
+    string? label?;
+    int? statusValue?;
+    string? mask?;
+    boolean? purePwdVerifyEnable?;
+};
+
 public type Activity record {
     string? notes?;
     Activity[]? parent_activities?;

@@ -1007,36 +1007,73 @@ service / on new http:Listener(9091) {
         http:Response response = new;
         response.statusCode = 200;
         response.setPayload("OK");
+        string dateTime;
 
         // Extract parts (JSON + Image)
         var bodyParts = req.getBodyParts();
         if bodyParts is mime:Entity[] {
             foreach var part in bodyParts {
                 if part.getContentType().startsWith("application/json") {
-                    json payload = check part.getJson();
-                    io:println(payload);
-                    // Drill down to the User Details
-                    var event = payload.AccessControllerEvent;
-                    var dateTime = payload.dateTime;
-                    io:println(`event:${event}`);
-                    io:println(`date time:${dateTime}`);
+                    json|error payload = check part.getJson();
+                    io:println("payload:",payload);
+                    if(payload is error){
+                        return createErrorResponse(400,"Invalid JSON payload");
+                    }
 
-                    if event != null && event is map<json> && dateTime != null && dateTime is string {  
+                    // Access fields safely
+                    json?|error accessControllerEvent = payload?.AccessControllerEvent;
+                    json?|error dateTimeJson = payload?.dateTime;
 
-                        // 1. Get the subEventType as an integer
-                        int subType = check event.get("subEventType").ensureType(int);
+                    // Check AccessControllerEvent exists
+                    if (accessControllerEvent is ()) {
+                        return createErrorResponse(400, "AccessControllerEvent is missing");
+                    }
+
+                    if(accessControllerEvent is error){
+                        return createErrorResponse(400, "Error in access AccessControllerEvent");
+                    }
+
+                    // Check dateTime exists
+                    if dateTimeJson is () {
+                        return createErrorResponse(400, "dateTime is missing");
+                    }
+
+                     
+                    if(dateTimeJson is string){
+                      dateTime = dateTimeJson.toString();
+                    }else{
+                        return createErrorResponse(400, "Invalid or missing dateTime");
+                    }
+
+                    
+                    
+                    AccessControllerEvent|error event = accessControllerEvent.fromJsonWithType(AccessControllerEvent);
+                    string userName="";
+                    int subType=0;
+                    if(event is AccessControllerEvent){
+                        if event?.name is string && event?.name != "" {
+                            userName = event?.name.toString();
+                        } else {
+                            return createErrorResponse(400, "name is missing in AccessControllerEvent");
+                        }
+
+                        if event?.subEventType is int {
+                            subType = event?.subEventType ?: 0;
+                        }else {
+                            return createErrorResponse(400, "subEventType is missing");
+                        }
+
+                    }
+
 
                         if subType == 75 || subType == 38 {
-                            // Registered User
-                            string name = event.get("name").toString();
-                            string empId = event.get("employeeNoString").toString();
 
-                            if name is string && empId is string && name.trim() != ""{
-                              io:println(string `Verified User: ${name}`);
+                            if userName is string && userName.trim() != ""{
+                              io:println(string `Verified User: ${userName}`);
 
                                 // ^.*-  Matches everything from the start up to the hyphen
                                 // \s* Matches any optional spaces
-                                string nic = re `^.*-\s*`.replace(name, "");
+                                string nic = re `^.*-\s*`.replace(userName, "");
                                 string formattedDateTime = formatDateTime(dateTime);
 
                                 GetPersonResponse|graphql:ClientError getPersonResponse = globalDataClient->getPerson(nic);
@@ -1077,12 +1114,12 @@ service / on new http:Listener(9091) {
                                                     if(addBiometricAttendanceResponse is AddBiometricAttendanceResponse) {
                                                         ActivityParticipantAttendance|error attendance_record = addBiometricAttendanceResponse.addBiometricAttendance.cloneWithType(ActivityParticipantAttendance);
                                                         if(attendance_record is ActivityParticipantAttendance) {
-                                                          log:printInfo("Biometric Attendance Marked Successfully.Person Name:"+name.toString());
+                                                          log:printInfo("Biometric Attendance Marked Successfully.Person Name:"+userName.toString());
                                                         }else{
-                                                          log:printError("Failed to record biometric attendance. Person Name:"+name.toString());
+                                                          log:printError("Failed to record biometric attendance. Person Name:"+userName.toString());
                                                         }   
                                                     }else {
-                                                        log:printError("Failed to record biometric attendance. Person Name:"+name.toString());
+                                                        log:printError("Failed to record biometric attendance. Person Name:"+userName.toString());
                                                         return error("Error while adding  biometric attendance: " + addBiometricAttendanceResponse.message() +
                                                             ":: Detail: " + addBiometricAttendanceResponse.detail().toString());
                                                     }                                     
@@ -1104,8 +1141,6 @@ service / on new http:Listener(9091) {
                             }
 
                         }
-                         
-                    }
                 } else if part.getContentType().startsWith("image/jpeg") {
                     // We acknowledge the image but don't print the binary mess
                     io:println("[System] Face Image Captured and Processed.");
