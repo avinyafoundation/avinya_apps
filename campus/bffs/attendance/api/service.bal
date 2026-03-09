@@ -1017,7 +1017,8 @@ service / on new http:Listener(9091) {
                     json|error payload = check part.getJson();
                     io:println("payload:",payload);
                     if(payload is error){
-                        return createErrorResponse(400,"Invalid JSON payload");
+                        log:printError("Invalid JSON payload");
+                       return createErrorResponse(200,"Invalid JSON payload");
                     }
 
                     // Access fields safely
@@ -1026,23 +1027,27 @@ service / on new http:Listener(9091) {
 
                     // Check AccessControllerEvent exists
                     if (accessControllerEvent is ()) {
-                        return createErrorResponse(400, "AccessControllerEvent is missing");
+                        log:printError("AccessControllerEvent is missing");
+                      return createErrorResponse(200, "AccessControllerEvent is missing");
                     }
 
                     if(accessControllerEvent is error){
-                        return createErrorResponse(400, "Error in access AccessControllerEvent");
+                        log:printError("Error in access AccessControllerEvent");
+                     return createErrorResponse(200, "Error in access AccessControllerEvent");
                     }
 
                     // Check dateTime exists
                     if dateTimeJson is () {
-                        return createErrorResponse(400, "dateTime is missing");
+                        log:printError("dateTime is missing");
+                       return createErrorResponse(200, "dateTime is missing");
                     }
 
                      
                     if(dateTimeJson is string){
                       dateTime = dateTimeJson.toString();
                     }else{
-                        return createErrorResponse(400, "Invalid or missing dateTime");
+                        log:printError("Invalid or missing dateTime");
+                        return createErrorResponse(200, "Invalid or missing dateTime");
                     }
 
                     
@@ -1054,13 +1059,15 @@ service / on new http:Listener(9091) {
                         if event?.name is string && event?.name != "" {
                             userName = event?.name.toString();
                         } else {
-                            return createErrorResponse(400, "name is missing in AccessControllerEvent");
+                            log:printError("name is missing in AccessControllerEvent");
+                           return createErrorResponse(200, "name is missing in AccessControllerEvent");
                         }
 
                         if event?.subEventType is int {
                             subType = event?.subEventType ?: 0;
                         }else {
-                            return createErrorResponse(400, "subEventType is missing");
+                            log:printError("subEventType is missing");
+                           return createErrorResponse(200, "subEventType is missing");
                         }
 
                     }
