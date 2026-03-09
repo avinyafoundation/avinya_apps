@@ -1010,13 +1010,11 @@ service / on new http:Listener(9091) {
 
         // Extract parts (JSON + Image)
         var bodyParts = req.getBodyParts();
-        json x = check req.getJsonPayload();
-        io:println(x);
         if bodyParts is mime:Entity[] {
             foreach var part in bodyParts {
                 if part.getContentType().startsWith("application/json") {
                     json payload = check part.getJson();
-                    
+                    io:println(payload);
                     // Drill down to the User Details
                     var event = payload.AccessControllerEvent;
                     var dateTime = payload.dateTime;
