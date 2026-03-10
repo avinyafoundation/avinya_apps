@@ -1012,7 +1012,7 @@ public type ImageUploadResponse record {
 public type WhatsAppImageRequest record {
     string to;
     string image_url;
-    string caption?;
+    string date;
 };
 
 public type WhatsAppMessageResponse record {

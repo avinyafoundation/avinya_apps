@@ -1264,15 +1264,14 @@ service / on new http:Listener(9091) {
         }
     }
 
-    // Send an image via WhatsApp
+    // Send an attendance report via WhatsApp using the attendance_report template
     resource function post whatsapp/send/image(@http:Payload WhatsAppImageRequest whatsAppRequest) returns json|ApiErrorResponse|error {
-        string caption = whatsAppRequest.caption ?: "";
-        json|error whatsappResponse = sendWhatsAppImage(whatsAppRequest.to, whatsAppRequest.image_url, caption);
+        json|error whatsappResponse = sendWhatsAppAttendanceReport(whatsAppRequest.to, whatsAppRequest.image_url, whatsAppRequest.date);
         if (whatsappResponse is json) {
             return whatsappResponse;
         } else {
-            log:printError("Error sending WhatsApp image", whatsappResponse);
-            return <ApiErrorResponse>{body: {message: "Error sending WhatsApp image"}};
+            log:printError("Error sending WhatsApp attendance report", whatsappResponse);
+            return <ApiErrorResponse>{body: {message: "Error sending WhatsApp attendance report"}};
         }
     }
 

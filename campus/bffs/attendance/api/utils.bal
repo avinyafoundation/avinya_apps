@@ -108,17 +108,40 @@ function createFormData(string name) returns mime:ContentDisposition {
     return cd;
 }
 
-// Send an image via WhatsApp using the Meta Graph API
-public function sendWhatsAppImage(string recipientPhone, string imageUrl, string caption) returns json|error {
+// Send an attendance report via WhatsApp using the attendance_report template
+public function sendWhatsAppAttendanceReport(string recipientPhone, string imageUrl, string date) returns json|error {
     http:Client whatsappClient = check new ("https://graph.facebook.com/v22.0/" + WHATSAPP_PHONE_NUMBER_ID);
 
     json payload = {
         "messaging_product": "whatsapp",
         "to": recipientPhone,
-        "type": "image",
-        "image": {
-            "link": imageUrl,
-            "caption": caption
+        "type": "template",
+        "template": {
+            "name": "attendance_report",
+            "language": {"code": "en_AE"},
+            "components": [
+                {
+                    "type": "header",
+                    "parameters": [
+                        {
+                            "type": "image",
+                            "image": {
+                                "link": imageUrl
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "body",
+                    "parameters": [
+                        {
+                            "type": "text",
+                            "parameter_name": "date",
+                            "text": date
+                        }
+                    ]
+                }
+            ]
         }
     };
 
