@@ -1220,4 +1220,59 @@ service / on new http:Listener(9091) {
         }
     }
 
+        // Upload image to Cloudinary using form data
+    resource function post upload/image(http:Request request) returns ImageUploadResponse|ApiErrorResponse|error {
+        // Extract multipart data from request
+        mime:Entity[]|http:ClientError bodyParts = request.getBodyParts();
+        
+        if (bodyParts is http:ClientError) {
+            log:printError("Error extracting body parts", bodyParts);
+            return <ApiErrorResponse>{body: {message: "Invalid multipart data"}};
+        }
+        
+        // Find the image part
+        byte[]? imageBytes = ();
+        foreach mime:Entity part in bodyParts {
+            mime:ContentDisposition contentDisposition = part.getContentDisposition();
+            if (contentDisposition.name == "image") {
+                byte[]|mime:ParserError imageBytesResult = part.getByteArray();
+                if (imageBytesResult is byte[]) {
+                    imageBytes = imageBytesResult;
+                    break;
+                } else {
+                    log:printError("Error reading image bytes", imageBytesResult);
+                    return <ApiErrorResponse>{body: {message: "Error reading image data"}};
+                }
+            }
+        }
+        
+        if (imageBytes is ()) {
+            return <ApiErrorResponse>{body: {message: "No image found in request. Use 'image' as the form field name."}};
+        }
+        
+        // Convert to base64 and upload to Cloudinary
+        string base64Image = imageBytes.toBase64();
+        json|error cloudinaryResponse = uploadToCloudinary(base64Image);
+        
+        if (cloudinaryResponse is json) {
+            string secureUrl = (check cloudinaryResponse.secure_url).toString();
+            string publicId = (check cloudinaryResponse.public_id).toString();
+            return {secure_url: secureUrl, public_id: publicId};
+        } else {
+            log:printError("Error uploading image to Cloudinary", cloudinaryResponse);
+            return <ApiErrorResponse>{body: {message: "Error uploading image to Cloudinary"}};
+        }
+    }
+
+    // Send an attendance report via WhatsApp using the attendance_report template
+    resource function post whatsapp/send/image(@http:Payload WhatsAppImageRequest whatsAppRequest) returns json|ApiErrorResponse|error {
+        json|error whatsappResponse = sendWhatsAppAttendanceReport(whatsAppRequest.to, whatsAppRequest.image_url, whatsAppRequest.date);
+        if (whatsappResponse is json) {
+            return whatsappResponse;
+        } else {
+            log:printError("Error sending WhatsApp attendance report", whatsappResponse);
+            return <ApiErrorResponse>{body: {message: "Error sending WhatsApp attendance report"}};
+        }
+    }
+
 }
