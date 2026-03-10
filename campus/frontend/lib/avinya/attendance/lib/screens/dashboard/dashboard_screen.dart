@@ -1461,13 +1461,14 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                                         int activityId =
                                             chartType == 'student' ? 4 : 1;
                                         int? parentId = chartType != 'student'
-                                            ? 2  // Use parent_org_id=2 for employees
+                                            ? 2 // Use parent_org_id=2 for employees
                                             : null;
                                         if (orgId != null) {
                                           names = await getDailyAbsenceSummary(
                                               orgId, activityId, rawDate,
                                               parentOrgId: parentId);
-                                          print('OrgId: $orgId, ActivityId: $activityId, Date: $rawDate, ParentId: $parentId');
+                                          print(
+                                              'OrgId: $orgId, ActivityId: $activityId, Date: $rawDate, ParentId: $parentId');
                                         }
                                       } catch (e) {
                                         print('Error fetching absentees: $e');
@@ -2035,7 +2036,7 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 58),
+          const SizedBox(height: 57),
 
           // Pie Chart and Legend
           Row(
