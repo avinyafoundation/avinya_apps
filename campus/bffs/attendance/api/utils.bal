@@ -58,7 +58,7 @@ public function uploadToCloudinary(string base64Image) returns json|error {
     http:Client cloudinaryClient = check new ("https://api.cloudinary.com/v1_1/" + CLOUDINARY_CLOUD_NAME);
 
     int timestamp = time:utcNow()[0];
-    string uploadPreset = "attendance";
+    string uploadPreset = "Bandaragama_Daily_Attendance";
     string publicId = "attendance_" + timestamp.toString();
     string filenameOverride = "attendance_" + timestamp.toString();
 
