@@ -1,0 +1,73 @@
+name: Daily Attendance Report
+
+on:
+  # 1. External Trigger (The "Poker")
+  repository_dispatch:
+    types: [trigger-attendance]
+
+  # 2. Scheduled trigger (Backup)
+  # 10:00 AM Sri Lanka time (UTC+5:30) = 04:30 AM UTC
+  # schedule:
+  #   - cron: '30 4 * * *'
+
+  # 3. Manual trigger
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Date to run for (YYYY-MM-DD). Leave empty for today.'
+        required: false
+        default: ''
+
+jobs:
+  run-pipeline:
+    name: Run Attendance Pipeline
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: campus/screenshot_service
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Node.js 20 (caches ~/.npm using package-lock.json as key)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: campus/screenshot_service/package-lock.json
+
+      # 3. Cache Puppeteer's Chromium download (~170 MB) – keyed by Puppeteer version
+      - name: Cache Puppeteer Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: puppeteer-${{ runner.os }}-${{ hashFiles('campus/screenshot_service/package-lock.json') }}
+          restore-keys: |
+            puppeteer-${{ runner.os }}-
+
+      # 4. Install dependencies (Puppeteer skips Chromium download on cache hit)
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Run the pipeline
+      - name: Run attendance pipeline
+        env:
+          ATTENDANCE_API_URL:  ${{ secrets.ATTENDANCE_API_URL }}
+          ATTENDANCE_API_KEY:  ${{ secrets.ATTENDANCE_API_KEY }}
+          WHATSAPP_TO_1:       ${{ secrets.WHATSAPP_TO_1 }}
+          WHATSAPP_TO_2:       ${{ secrets.WHATSAPP_TO_2 }}
+          PARENT_ORG_ID:       ${{ vars.PARENT_ORG_ID }}
+          ACTIVITY_ID:         ${{ vars.ACTIVITY_ID }}
+        run: |
+          DATE_ARG="${{ github.event.inputs.date }}"
+          if [ -n "$DATE_ARG" ]; then
+            echo "▶ Running pipeline for override date: $DATE_ARG"
+            node run.js "$DATE_ARG"
+          else
+            echo "▶ Running pipeline for today"
+            node run.js
+          fi
