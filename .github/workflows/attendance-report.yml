@@ -1,13 +1,16 @@
 name: Daily Attendance Report
 
 on:
-  # ── Scheduled trigger ─────────────────────────────────────────────────────
-  # 10:00 AM Sri Lanka time (UTC+5:30) = 04:30 AM UTC
-  # GitHub Actions cron uses UTC, 5-field format: 'minute hour dom month dow'
-  schedule:
-    - cron: '30 4 * * *'
+  # 1. External Trigger (The "Poker")
+  repository_dispatch:
+    types: [trigger-attendance]
 
-  # ── Manual trigger (from Actions tab) ─────────────────────────────────────
+  # 2. Scheduled trigger (Backup)
+  # 10:00 AM Sri Lanka time (UTC+5:30) = 04:30 AM UTC
+  # schedule:
+  #   - cron: '30 4 * * *'
+
+  # 3. Manual trigger
   workflow_dispatch:
     inputs:
       date:
