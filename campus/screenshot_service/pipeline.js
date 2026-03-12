@@ -3,6 +3,7 @@
 const puppeteer = require('puppeteer');
 const axios     = require('axios');
 const FormData  = require('form-data');
+const nodemailer = require('nodemailer');
 const config    = require('./config');
 const { generateReport } = require('./reportTemplate');
 
@@ -134,7 +135,39 @@ async function sendWhatsApp(imageUrl, date) {
 }
 
 // ─────────────────────────────────────────────
-// Master pipeline
+// Step 5: Send Email
+// ─────────────────────────────────────────────
+async function sendEmail(imageBuffer, date) {
+  log('📧', 'Sending email report...');
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: config.EMAIL_FROM,
+      pass: config.EMAIL_APP_PASSWORD,
+    },
+  });
+
+  const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  });
+
+  const recipients = [config.EMAIL_TO_1, config.EMAIL_TO_2].filter(Boolean).join(',');
+
+  await transporter.sendMail({
+    from:    `"Attendance Report" <${config.EMAIL_FROM}>`,
+    to:      recipients,
+    subject: `Attendance Report — ${formattedDate}`,
+    text:    `Please find the attendance report for ${formattedDate} attached.`,
+    attachments: [{
+      filename:    `attendance_${date}.png`,
+      content:     imageBuffer,
+      contentType: 'image/png',
+    }],
+  });
+
+  log('✅', `Email sent to ${recipients}`);
+}
 // ─────────────────────────────────────────────
 async function runPipeline(overrideDate) {
   const date = overrideDate || todayString();
@@ -150,6 +183,7 @@ async function runPipeline(overrideDate) {
     timestamp: new Date().toISOString(),
     cloudinaryUrl: null,
     whatsappSent:  false,
+    emailSent:     false,
     error: null,
     durationMs: 0,
   };
@@ -185,6 +219,10 @@ async function runPipeline(overrideDate) {
     // 5. WhatsApp
     await sendWhatsApp(cloudinaryUrl, date);
     result.whatsappSent = true;
+
+    // 6. Email
+    await sendEmail(imageBuffer, date);
+    result.emailSent = true;
 
     result.success = true;
     result.durationMs = Date.now() - started;
