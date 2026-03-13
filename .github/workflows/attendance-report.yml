@@ -64,6 +64,8 @@ jobs:
           EMAIL_APP_PASSWORD:  ${{ secrets.EMAIL_APP_PASSWORD }}
           EMAIL_TO_1:          ${{ secrets.EMAIL_TO_1 }}
           EMAIL_TO_2:          ${{ secrets.EMAIL_TO_2 }}
+          EMAIL_TO_3:          ${{ secrets.EMAIL_TO_3 }}
+          EMAIL_TO_4:          ${{ secrets.EMAIL_TO_4 }}
           PARENT_ORG_ID:       ${{ vars.PARENT_ORG_ID }}
           ACTIVITY_ID:         ${{ vars.ACTIVITY_ID }}
         run: |

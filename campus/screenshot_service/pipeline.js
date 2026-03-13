@@ -152,12 +152,12 @@ async function sendEmail(imageBuffer, date) {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
 
-  const recipients = [config.EMAIL_TO_1, config.EMAIL_TO_2].filter(Boolean).join(',');
+  const recipients = [config.EMAIL_TO_1, config.EMAIL_TO_2, config.EMAIL_TO_3, config.EMAIL_TO_4].filter(Boolean).join(',');
 
   await transporter.sendMail({
     from:    `"Avinya Academy" <${config.EMAIL_FROM}>`,
     to:      recipients,
-    subject: `Avinya Academy - Attendance Report — ${formattedDate}`,
+    subject: `Avinya Academy — Attendance Report — ${formattedDate}`,
     text:    `Please find the attendance report for ${formattedDate} attached.`,
     attachments: [{
       filename:    `attendance_${date}.png`,

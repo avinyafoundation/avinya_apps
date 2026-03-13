@@ -23,6 +23,8 @@ module.exports = {
   EMAIL_APP_PASSWORD: process.env.EMAIL_APP_PASSWORD,
   EMAIL_TO_1:         process.env.EMAIL_TO_1,
   EMAIL_TO_2:         process.env.EMAIL_TO_2,
+  EMAIL_TO_3:         process.env.EMAIL_TO_3,
+  EMAIL_TO_4:         process.env.EMAIL_TO_4,
 
   // Cron schedule — default: every day at 10:00 AM (Sri Lanka time)
   // Format: 'second minute hour dayOfMonth month dayOfWeek'
