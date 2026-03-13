@@ -4,6 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gallery/avinya/enrollment/lib/data/person.dart';
 import 'package:gallery/avinya/enrollment/lib/screens/student_create_screen.dart';
 import 'package:gallery/avinya/enrollment/lib/screens/student_update_screen.dart';
+import 'package:gallery/avinya/enrollment/lib/screens/bulk_import_screen.dart';
 import 'person_data_excel_report.dart';
 
 // ─── Enums & Constants ────────────────────────────────────────────────────────
@@ -534,6 +535,19 @@ class _StudentsState extends State<Students> {
             MaterialPageRoute(
                 builder: (_) => const StudentCreateScreen(id: null)),
           ),
+        ),
+        const SizedBox(width: 12),
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const BulkImportScreen(),
+              ),
+            );
+          },
+          icon: const Icon(Icons.upload_file),
+          label: const Text('Bulk Import'),
         ),
         const SizedBox(width: 12),
         Container(
