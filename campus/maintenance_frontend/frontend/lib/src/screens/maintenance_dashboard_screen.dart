@@ -593,8 +593,11 @@ class _MaintenanceDashboardScreenState
 
                       // Parse and format due date
                       String? formattedDue;
-                      // Check if task is in the overdue set from API
-                      bool isOverdue = activityId != null && _overdueTaskActivityIds.contains(activityId);
+                      // Check if task is in the overdue set AND person has overdue tasks
+                      bool isOverdue = personId != null && 
+                          _overduePersonIds.contains(personId) &&
+                          activityId != null && 
+                          _overdueTaskActivityIds.contains(activityId);
                       if (dueDate != null) {
                         try {
                           final dt = DateTime.parse(dueDate);
@@ -719,15 +722,22 @@ class _MaintenanceDashboardScreenState
                         ],
                       ),
                       if (_overduePersonIds.contains(personId))
-                        const Row(
-                          children: [
-                            Icon(Icons.warning_amber_rounded,
-                                size: 12, color: _red),
-                            SizedBox(width: 4),
-                            Text('Has overdue tasks',
-                                style: TextStyle(fontSize: 11,
-                                    fontWeight: FontWeight.w700, color: _red)),
-                          ],
+                        Visibility(
+                          visible: filtered.any((task) {
+                            final taskActivityId = task['id'] as int?;
+                            return taskActivityId != null &&
+                                _overdueTaskActivityIds.contains(taskActivityId);
+                          }),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.warning_amber_rounded,
+                                  size: 12, color: _red),
+                              SizedBox(width: 4),
+                              Text('Has overdue tasks',
+                                  style: TextStyle(fontSize: 11,
+                                      fontWeight: FontWeight.w700, color: _red)),
+                            ],
+                          ),
                         ),
                     ],
                   ),
@@ -1250,6 +1260,21 @@ class _MaintenanceDashboardScreenState
 
   // ── Staff Task Overview Card ─────────────────
   Widget _buildStaffTaskOverviewCard() {
+    // Count staff with actual overdue pending/in-progress tasks
+    int actualOverdueCount = 0;
+    for (var s in _staffTaskSummaries) {
+      final int personId = s['personId'] as int;
+      final personTasks = _staffTaskDetails[personId] ?? [];
+      final hasOverdue = personTasks.any((task) {
+        final taskActivityId = task['id'] as int?;
+        final status = task['status'] as String?;
+        return taskActivityId != null &&
+            _overdueTaskActivityIds.contains(taskActivityId) &&
+            (status == 'Pending' || status == 'InProgress');
+      });
+      if (hasOverdue) actualOverdueCount++;
+    }
+
     return _card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1260,7 +1285,7 @@ class _MaintenanceDashboardScreenState
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700,
                       letterSpacing: 1.5, color: _textMid)),
               const Spacer(),
-              if (_overduePersonIds.isNotEmpty)
+              if (actualOverdueCount > 0)
                 AnimatedBuilder(
                   animation: _glowAnimation,
                   builder: (_, __) => Container(
@@ -1279,7 +1304,7 @@ class _MaintenanceDashboardScreenState
                           blurRadius: 8, spreadRadius: 1)],
                     ),
                     child: Text(
-                      '⚠  ${_overduePersonIds.length} OVERDUE',
+                      '⚠  $actualOverdueCount OVERDUE',
                       style: const TextStyle(fontSize: 10, color: _red,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.3),
@@ -1323,8 +1348,17 @@ class _MaintenanceDashboardScreenState
                     itemCount: _staffTaskSummaries.length,
                     itemBuilder: (context, index) {
                       final s = _staffTaskSummaries[index];
-                      final bool hasOverdue =
-                          _overduePersonIds.contains(s['personId']);
+                      final int personId = s['personId'] as int;
+                      // Check if person has any overdue tasks in their task list
+                      final personTasks = _staffTaskDetails[personId] ?? [];
+                      final bool hasOverdue = personTasks.any((task) {
+                        final taskActivityId = task['id'] as int?;
+                        final status = task['status'] as String?;
+                        // Only count as overdue if their status is Pending/InProgress AND task is in overdue set
+                        return taskActivityId != null &&
+                            _overdueTaskActivityIds.contains(taskActivityId) &&
+                            (status == 'Pending' || status == 'InProgress');
+                      });
 
                       return AnimatedBuilder(
                         animation: _glowAnimation,
