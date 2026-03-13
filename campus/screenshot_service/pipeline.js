@@ -157,7 +157,7 @@ async function sendEmail(imageBuffer, date) {
   await transporter.sendMail({
     from:    `"Avinya Academy" <${config.EMAIL_FROM}>`,
     to:      recipients,
-    subject: `Avinya Academy — Attendance Report — ${formattedDate}`,
+    subject: `Avinya Academy Attendance Report — ${formattedDate}`,
     text:    `Please find the attendance report for ${formattedDate} attached.`,
     attachments: [{
       filename:    `attendance_${date}.png`,
