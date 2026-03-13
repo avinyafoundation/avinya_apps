@@ -60,6 +60,15 @@ jobs:
           ATTENDANCE_API_KEY:  ${{ secrets.ATTENDANCE_API_KEY }}
           WHATSAPP_TO_1:       ${{ secrets.WHATSAPP_TO_1 }}
           WHATSAPP_TO_2:       ${{ secrets.WHATSAPP_TO_2 }}
+          EMAIL_FROM:          ${{ secrets.EMAIL_FROM }}
+          EMAIL_APP_PASSWORD:  ${{ secrets.EMAIL_APP_PASSWORD }}
+          EMAIL_TO_1:          ${{ secrets.EMAIL_TO_1 }}
+          EMAIL_TO_2:          ${{ secrets.EMAIL_TO_2 }}
+          EMAIL_TO_3:          ${{ secrets.EMAIL_TO_3 }}
+          EMAIL_TO_4:          ${{ secrets.EMAIL_TO_4 }}
+          EMAIL_TO_5:          ${{ secrets.EMAIL_TO_5 }}
+          EMAIL_TO_6:          ${{ secrets.EMAIL_TO_6 }}
+          EMAIL_TO_7:          ${{ secrets.EMAIL_TO_7 }}
           PARENT_ORG_ID:       ${{ vars.PARENT_ORG_ID }}
           ACTIVITY_ID:         ${{ vars.ACTIVITY_ID }}
         run: |
