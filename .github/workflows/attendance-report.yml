@@ -66,6 +66,9 @@ jobs:
           EMAIL_TO_2:          ${{ secrets.EMAIL_TO_2 }}
           EMAIL_TO_3:          ${{ secrets.EMAIL_TO_3 }}
           EMAIL_TO_4:          ${{ secrets.EMAIL_TO_4 }}
+          EMAIL_TO_5:          ${{ secrets.EMAIL_TO_5 }}
+          EMAIL_TO_6:          ${{ secrets.EMAIL_TO_6 }}
+          EMAIL_TO_7:          ${{ secrets.EMAIL_TO_7 }}
           PARENT_ORG_ID:       ${{ vars.PARENT_ORG_ID }}
           ACTIVITY_ID:         ${{ vars.ACTIVITY_ID }}
         run: |

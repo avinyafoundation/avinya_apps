@@ -152,7 +152,7 @@ async function sendEmail(imageBuffer, date) {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
 
-  const recipients = [config.EMAIL_TO_1, config.EMAIL_TO_2, config.EMAIL_TO_3, config.EMAIL_TO_4].filter(Boolean).join(',');
+  const recipients = [config.EMAIL_TO_1, config.EMAIL_TO_2, config.EMAIL_TO_3, config.EMAIL_TO_4, config.EMAIL_TO_5, config.EMAIL_TO_6, config.EMAIL_TO_7].filter(Boolean).join(',');
 
   await transporter.sendMail({
     from:    `"Avinya Academy" <${config.EMAIL_FROM}>`,
