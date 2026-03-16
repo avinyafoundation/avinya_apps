@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../data/import_student_row.dart';
@@ -47,6 +48,20 @@ class _BulkImportScreenState extends State<BulkImportScreen>
   }
 
   // ── File picking ────────────────────────────────────────────────────────
+
+   static const String _templateGoogleDriveFileId = '1feZnBOAcJyQFoe1R9TcmfCYeYafxF2aB';
+
+  void _downloadTemplate() {
+    final downloadUrl =
+        'https://drive.google.com/uc?export=download&id=$_templateGoogleDriveFileId';
+
+    // Opens the Google Drive direct download URL in a new browser tab.
+    // The browser will immediately prompt the user to save the file.
+    html.AnchorElement(href: downloadUrl)
+      ..setAttribute('download', 'student_import_template.xlsx')
+      ..setAttribute('target', '_blank')
+      ..click();
+  }
 
   Future<void> _pickFile() async {
     setState(() => _parseError = null);
@@ -305,7 +320,7 @@ class _BulkImportScreenState extends State<BulkImportScreen>
             ),
             const SizedBox(height: 16),
             TextButton.icon(
-              onPressed: () {},
+              onPressed: _downloadTemplate,
               icon: const Icon(Icons.download),
               label: const Text('Download Template'),
             ),
