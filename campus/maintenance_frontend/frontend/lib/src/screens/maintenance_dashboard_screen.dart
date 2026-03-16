@@ -1480,12 +1480,12 @@ class _MaintenanceDashboardScreenState
   // ── Food Waste Card ──────────────────────────
   Widget _buildFoodWasteCard() {
     final List<Map<String, dynamic>> wasteData = [
-      {'day': '2/18', 'cost': 320.0,  'color': _orange},
-      {'day': '2/19', 'cost': 180.0,  'color': _orange},
-      {'day': '2/20', 'cost': 400.0,  'color': _orange},
-      {'day': '2/21', 'cost': 250.0,  'color': _orange},
-      {'day': '2/22', 'cost': 250.0,  'color': _orange},
-      {'day': '2/23', 'cost': 450.0,  'color': _orange},
+      {'day': '2/18', 'cost': 320.0, 'color': _orange},
+      {'day': '2/19', 'cost': 180.0, 'color': _orange},
+      {'day': '2/20', 'cost': 400.0, 'color': _orange},
+      {'day': '2/21', 'cost': 250.0, 'color': _orange},
+      {'day': '2/22', 'cost': 250.0, 'color': _orange},
+      {'day': '2/23', 'cost': 450.0, 'color': _orange},
       {'day': '2/24', 'cost': 1310.0, 'color': _orange},
     ];
 
@@ -1502,8 +1502,7 @@ class _MaintenanceDashboardScreenState
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700,
                       letterSpacing: 1.5, color: _textMid)),
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: _orange.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(4),
@@ -1530,12 +1529,20 @@ class _MaintenanceDashboardScreenState
                   ...List.generate(4, (i) {
                     final y = h - (i / 3) * h * 0.75 - h * 0.1;
                     return Positioned(
-                      top: y - 8, left: 0, right: 0,
-                      child: Container(height: 1, color: _divider),
+                      top: y - 8, 
+                      left: 0, 
+                      right: 0,
+                      child: Container(
+                        height: 1,
+                        color: _divider
+                      ),
                     );
                   }),
                   Positioned(
-                    left: 0, top: 0, right: 0, bottom: 0,
+                    left: 0,
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
                     child: CustomPaint(
                       painter: _LineChartPainter(
                         lineColor: _orange,
@@ -1550,13 +1557,14 @@ class _MaintenanceDashboardScreenState
                   ...List.generate(pointCount, (i) {
                     final cost = wasteData[i]['cost'] as double;
                     final x = i * (w / (pointCount - 1));
-                    final y =
-                        h - (cost / maxCost) * (h * 0.75) - h * 0.1;
+                    final y = h - (cost / maxCost) * (h * 0.75) - h * 0.1;
                     return Positioned(
-                      left: x - 20, top: y - 22,
+                      left: x - 20,
+                      top: y - 22,
                       child: SizedBox(
                         width: 40,
-                        child: Text('LKR ${cost.toInt()}',
+                        child: Text(
+                            'LKR ${cost.toInt()}',
                             textAlign: TextAlign.center,
                             style: const TextStyle(fontSize: 7,
                                 color: _textMid,
@@ -1567,13 +1575,14 @@ class _MaintenanceDashboardScreenState
                   ...List.generate(pointCount, (i) {
                     final x = i * (w / (pointCount - 1));
                     return Positioned(
-                      left: x - 16, bottom: 0,
+                      left: x - 16,
+                      bottom: 0,
                       child: SizedBox(
                         width: 32,
-                        child: Text(wasteData[i]['day'] as String,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontSize: 8, color: _textMid)),
+                        child: Text(
+                          wasteData[i]['day'] as String,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 8, color: _textMid)),
                       ),
                     );
                   }),
@@ -1630,8 +1639,9 @@ class _MaintenanceDashboardScreenState
         color: _bgCard,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: _divider),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05),
-            blurRadius: 10, offset: const Offset(0, 3))],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05),
+              blurRadius: 10, offset: const Offset(0, 3))],
       ),
       child: child,
     );
@@ -1668,11 +1678,9 @@ class _MaintenanceDashboardScreenState
     for (var item in data) {
       final value = item['value'] as int;
       final sweepAngle = (value / total) * 2 * pi;
-      if (hoverAngle >= currentAngle &&
-          hoverAngle < currentAngle + sweepAngle) {
+      if (hoverAngle >= currentAngle && hoverAngle < currentAngle + sweepAngle) {
         String label = '${item['label']}: $value students';
-        if (_hoveredPieSegment != label)
-          setState(() => _hoveredPieSegment = label);
+        if (_hoveredPieSegment != label) setState(() => _hoveredPieSegment = label);
         return;
       }
       currentAngle += sweepAngle;
@@ -1698,8 +1706,7 @@ class _MaintenanceDashboardScreenState
     for (var item in data) {
       final value = item['value'] as int;
       final sweepAngle = (value / total) * 2 * pi;
-      if (tapAngle >= currentAngle && tapAngle < currentAngle + sweepAngle)
-        return;
+      if (tapAngle >= currentAngle && tapAngle < currentAngle + sweepAngle) return;
       currentAngle += sweepAngle;
     }
   }
