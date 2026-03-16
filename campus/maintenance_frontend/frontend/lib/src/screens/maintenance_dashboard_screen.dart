@@ -70,16 +70,16 @@ class _MaintenanceDashboardScreenState
   ];
 
   static const List<Map<String, dynamic>> _worstAttendanceStudents = [
-    {'name': 'Malsha Bandara',    'class': 'Bears',     'percentage': 44.0},
-    {'name': 'Nuwan Rathnayake',  'class': 'Zebras',    'percentage': 38.0},
-    {'name': 'Chamodi Herath',    'class': 'Penguins',  'percentage': 34.0},
-    {'name': 'Isuru Sampath',     'class': 'Bees',      'percentage': 30.0},
-    {'name': 'Sachini Liyanage',  'class': 'Sharks',    'percentage': 28.0},
-    {'name': 'Dineth Wickramasinghe','class': 'Leopards','percentage': 26.0},
-    {'name': 'Kavya Nanayakkara', 'class': 'Eagles',    'percentage': 24.0},
-    {'name': 'Lahiru Pathirana',  'class': 'Bears',     'percentage': 22.0},
-    {'name': 'Sanduni Senevirathne','class': 'Dolphins','percentage': 20.0},
-    {'name': 'Roshan Karunaratne','class': 'Zebras',    'percentage': 18.0},
+    {'name': 'Malsha Bandara',    'class': 'Bears',     'percentage': 55.0},
+    {'name': 'Nuwan Rathnayake',  'class': 'Zebras',    'percentage': 58.0},
+    {'name': 'Chamodi Herath',    'class': 'Penguins',  'percentage': 60.0},
+    {'name': 'Isuru Sampath',     'class': 'Bees',      'percentage': 62.0},
+    {'name': 'Sachini Liyanage',  'class': 'Sharks',    'percentage': 64.0},
+    {'name': 'Dineth Wickramasinghe','class': 'Leopards','percentage': 65.0},
+    {'name': 'Kavya Nanayakkara', 'class': 'Eagles',    'percentage': 67.0},
+    {'name': 'Lahiru Pathirana',  'class': 'Bears',     'percentage': 68.0},
+    {'name': 'Sanduni Senevirathne','class': 'Dolphins','percentage': 70.0},
+    {'name': 'Roshan Karunaratne','class': 'Zebras',    'percentage': 72.0},
   ];
 
   // Light theme palette
