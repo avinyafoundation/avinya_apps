@@ -87,9 +87,9 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetPersonAttendanceTodayResponse> check performDataBinding(graphqlResponse, GetPersonAttendanceTodayResponse);
     }
-    remote isolated function getActivityEvaluations(int activity_id) returns GetActivityEvaluationsResponse|graphql:ClientError {
-        string query = string `query getActivityEvaluations($activity_id:Int!) {activity_evaluations(activity_id:$activity_id) {id evaluatee_id evaluator_id evaluation_criteria_id response notes grade activity_instance_id updated}}`;
-        map<anydata> variables = {"activity_id": activity_id};
+    remote isolated function getActivityEvaluations(string from_date, string to_date, int activity_id, int person_id) returns GetActivityEvaluationsResponse|graphql:ClientError {
+        string query = string `query getActivityEvaluations($person_id:Int!,$activity_id:Int!,$from_date:String!,$to_date:String!) {activity_evaluations(person_id:$person_id,activity_id:$activity_id,from_date:$from_date,to_date:$to_date) {id evaluatee_id response notes}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "activity_id": activity_id, "person_id": person_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetActivityEvaluationsResponse> check performDataBinding(graphqlResponse, GetActivityEvaluationsResponse);
     }
@@ -266,5 +266,17 @@ public isolated client class GraphqlClient {
         map<anydata> variables = {"date": date, "from_date": from_date, "to_date": to_date, "result_limit": result_limit, "organization_id": organization_id, "parent_organization_id": parent_organization_id, "activity_id": activity_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetDailyAbsenceSummaryResponse> check performDataBinding(graphqlResponse, GetDailyAbsenceSummaryResponse);
+    }
+    remote isolated function getStudentAttendanceRanking(string? from_date = (), string? to_date = (), int? organization_id = (), int? class_id = (), int? 'limit = (), string? sort = ()) returns GetStudentAttendanceRankingResponse|graphql:ClientError {
+        string query = string `query getStudentAttendanceRanking($organization_id:Int,$class_id:Int,$from_date:String,$to_date:String,$limit:Int,$sort:String) {studentAttendanceRanking(organization_id:$organization_id,class_id:$class_id,from_date:$from_date,to_date:$to_date,limit:$limit,sort:$sort) {id preferred_name organization {id name {name_en} description} attendance_percentage}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id, "class_id": class_id, "limit": 'limit, "sort": sort};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetStudentAttendanceRankingResponse> check performDataBinding(graphqlResponse, GetStudentAttendanceRankingResponse);
+    }
+    remote isolated function getClassOrStudentAttendancePercentage(string? from_date = (), string? to_date = (), int? organization_id = (), int? class_id = (), int? 'limit = (), string? sort = ()) returns GetClassOrStudentAttendancePercentageResponse|graphql:ClientError {
+        string query = string `query getClassOrStudentAttendancePercentage($organization_id:Int,$class_id:Int,$from_date:String,$to_date:String,$limit:Int,$sort:String) {calculateClassOrStudentAttendancePercentage(organization_id:$organization_id,class_id:$class_id,from_date:$from_date,to_date:$to_date,limit:$limit,sort:$sort) {id name {name_en} description attendance_percentage}}`;
+        map<anydata> variables = {"from_date": from_date, "to_date": to_date, "organization_id": organization_id, "class_id": class_id, "limit": 'limit, "sort": sort};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetClassOrStudentAttendancePercentageResponse> check performDataBinding(graphqlResponse, GetClassOrStudentAttendancePercentageResponse);
     }
 }

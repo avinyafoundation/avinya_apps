@@ -424,29 +424,29 @@ service / on new http:Listener(9091) {
         return  delete_count;
     }
 
-    resource function get activity_evaluations/[int activity_id]() returns Evaluation[]|error {
-        GetActivityEvaluationsResponse|graphql:ClientError getActivityEvaluationsResponse = globalDataClient->getActivityEvaluations(activity_id);
-        if(getActivityEvaluationsResponse is GetActivityEvaluationsResponse) {
-            Evaluation[] evaluations = [];
-            foreach var evaluation_record in getActivityEvaluationsResponse.activity_evaluations {
-                Evaluation|error evaluation = evaluation_record.cloneWithType(Evaluation);
-                if(evaluation is Evaluation) {
-                    evaluations.push(evaluation);
-                } else {
-                    log:printError("Error while processing Application record received", evaluation);
-                    return error("Error while processing Application record received: " + evaluation.message() + 
-                        ":: Detail: " + evaluation.detail().toString());
-                }
-            }
+    // resource function get activity_evaluations/[int activity_id]() returns Evaluation[]|error {
+    //     GetActivityEvaluationsResponse|graphql:ClientError getActivityEvaluationsResponse = globalDataClient->getActivityEvaluations(activity_id);
+    //     if(getActivityEvaluationsResponse is GetActivityEvaluationsResponse) {
+    //         Evaluation[] evaluations = [];
+    //         foreach var evaluation_record in getActivityEvaluationsResponse.activity_evaluations {
+    //             Evaluation|error evaluation = evaluation_record.cloneWithType(Evaluation);
+    //             if(evaluation is Evaluation) {
+    //                 evaluations.push(evaluation);
+    //             } else {
+    //                 log:printError("Error while processing Application record received", evaluation);
+    //                 return error("Error while processing Application record received: " + evaluation.message() + 
+    //                     ":: Detail: " + evaluation.detail().toString());
+    //             }
+    //         }
 
-            return evaluations;
+    //         return evaluations;
             
-        } else {
-            log:printError("Error while getting evaluations", getActivityEvaluationsResponse);
-            return error("Error while getting evaluations: " + getActivityEvaluationsResponse.message() + 
-                ":: Detail: " + getActivityEvaluationsResponse.detail().toString());
-        }
-    }
+    //     } else {
+    //         log:printError("Error while getting evaluations", getActivityEvaluationsResponse);
+    //         return error("Error while getting evaluations: " + getActivityEvaluationsResponse.message() + 
+    //             ":: Detail: " + getActivityEvaluationsResponse.detail().toString());
+    //     }
+    // }
 
     resource function get activity_instance_evaluations/[int activity_instancce_id]() returns Evaluation[]|error {
         GetActivityInstanceEvaluationsResponse|graphql:ClientError getActivityInstanceEvaluationsResponse = globalDataClient->getActivityInstanceEvaluations(activity_instancce_id);
@@ -1275,4 +1275,106 @@ service / on new http:Listener(9091) {
         }
     }
 
+    // Retrieves absence reasons for a specific student or employee within a given date range
+    // parent_organization_id = 2 [Avinya Academy Bandaragama]
+    resource function get organizations/[int parent_organization_id]/persons/[int person_id]/'absence\-reasons(
+        int activity_id = 4,
+        string from_date = "",
+        string to_date = ""
+    ) returns Evaluation[]|error {
+
+        GetActivityEvaluationsResponse|graphql:ClientError getActivityEvaluationsResponse = globalDataClient->getActivityEvaluations(from_date,to_date,activity_id,person_id);
+        if(getActivityEvaluationsResponse is GetActivityEvaluationsResponse){
+            Evaluation[] evaluations = [];
+            foreach var evaluation_record in getActivityEvaluationsResponse.activity_evaluations{
+                Evaluation|error evaluation = evaluation_record.cloneWithType(Evaluation);
+                if(evaluation is Evaluation){
+                    evaluations.push(evaluation);
+                }else{
+                    log:printError("Error while retrieving absence reasons for a specific student or employee within a given date range", evaluation);
+                    return error("Error while retrieving the late attendance summary list: " + evaluation.message() + 
+                        ":: Detail: " + evaluation.detail().toString());
+                }
+            }
+
+            return evaluations;
+        }else {
+            log:printError("Error while retrieving absence reasons for a specific student or employee within a given date range", getActivityEvaluationsResponse);
+            return error("Error while retrieving absence reasons for a specific student or employee within a given date range: " + getActivityEvaluationsResponse.message() + 
+                ":: Detail: " + getActivityEvaluationsResponse.detail().toString());
+        }
+    }
+    
+    // Retrieves student attendance ranking for an organization within a given date range
+    // parent_organization_id = 2 [Avinya Academy Bandaragama]
+    // organization_id = batch id
+    // class_id = class id in a particular batch
+    resource function get organizations/[int parent_organization_id]/students/'attendance\-ranking(
+        int? organization_id,
+        int? class_id,
+        string from_date = "",
+        string to_date = "",
+        int 'limit=10,
+        string? sort = "ASC"
+    ) returns Person[]|error {
+
+        GetStudentAttendanceRankingResponse|graphql:ClientError getStudentAttendanceRankingResponse = globalDataClient->getStudentAttendanceRanking(from_date,to_date,organization_id,class_id,'limit,sort);
+        if(getStudentAttendanceRankingResponse is GetStudentAttendanceRankingResponse){
+            Person[] persons = [];
+            foreach var person_record in getStudentAttendanceRankingResponse.studentAttendanceRanking{
+                Person|error person = person_record.cloneWithType(Person);
+                if(person is Person){
+                    persons.push(person);
+                }else{
+                    log:printError("Error", person);
+                    return error("Error: " + person.message() + 
+                        ":: Detail: " + person.detail().toString());
+                }
+            }
+            return persons;
+        }else {
+            log:printError("Error while retrieving  student attendance ranking data within a given date range", getStudentAttendanceRankingResponse);
+            return error("Error while retrieving student attendance ranking data within a given date range: " + getStudentAttendanceRankingResponse.message() + 
+                ":: Detail: " + getStudentAttendanceRankingResponse.detail().toString());
+        }
+    }
+
+     //Retrieves attendance percentage for each class  within a given date range
+    // parent_organization_id = 2 [Avinya Academy Bandaragama]
+    // organization_id - The unique identifier of the  batch.
+    // class_id - Optional filter to narrow results to a specific class.
+    // from_date - The start date for the attendance calculation (inclusive).
+    // to_date - The end date for the attendance calculation (inclusive).
+    // 'limit - The maximum number of  records to return.
+    /// sort - Sorting order for attendance percentage ("ASC" or "DESC").
+    resource function get organizations/[int parent_organization_id]/classes/attendance\-percentage(
+        int? organization_id,
+        int? class_id,
+        string from_date = "",
+        string to_date = "",
+        int 'limit=10,
+        string? sort = "ASC"
+    ) returns Organization[]|error {
+
+        GetClassOrStudentAttendancePercentageResponse|graphql:ClientError getClassOrStudentAttendancePercentageResponse = 
+                 globalDataClient->getClassOrStudentAttendancePercentage(from_date,to_date,organization_id,class_id,'limit,sort);
+        if(getClassOrStudentAttendancePercentageResponse is GetClassOrStudentAttendancePercentageResponse){
+            Organization[] organizationList = [];
+            foreach var org_record in getClassOrStudentAttendancePercentageResponse.calculateClassOrStudentAttendancePercentage{
+                Organization|error organization = org_record.cloneWithType(Organization);
+                if(organization is Organization){
+                    organizationList.push(organization);
+                }else{
+                    log:printError("Error", organization);
+                    return error("Error: " + organization.message() + 
+                        ":: Detail: " + organization.detail().toString());
+                }
+            }
+            return organizationList;
+        }else {
+            log:printError("Error occurred while retrieving the attendance percentage for each class within the specified date range.", getClassOrStudentAttendancePercentageResponse);
+            return error("Error occurred while retrieving the attendance percentage for each class within the specified date range: " + getClassOrStudentAttendancePercentageResponse.message() + 
+                ":: Detail: " + getClassOrStudentAttendancePercentageResponse.detail().toString());
+        }
+    }
 }
