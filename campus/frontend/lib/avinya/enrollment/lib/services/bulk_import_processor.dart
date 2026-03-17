@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gallery/avinya/enrollment/lib/data/person.dart';
 import '../data/import_student_row.dart';
 
+// This service processes the bulk import of students from a CSV file.
+
 /// Result of a single row import attempt
 class ImportRowResult {
   final int rowIndex;
