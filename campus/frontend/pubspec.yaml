@@ -33,7 +33,7 @@ dependencies:
   shrine_images: ^2.0.1
   url_launcher: ^6.2.4
   vector_math: ^2.1.2
-  http: ^0.13.5
+  http: ^1.1.0    # change from ^0.13.5
   jwt_decoder: ^2.0.1
   url_strategy: ^0.2.0
   openid_client: ^0.4.7
