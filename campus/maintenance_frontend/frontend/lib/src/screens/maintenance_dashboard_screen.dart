@@ -35,6 +35,12 @@ class _MaintenanceDashboardScreenState
 
   // Stores full task details per person: personId -> list of task maps
   Map<int, List<Map<String, dynamic>>> _staffTaskDetails = {};
+  
+  // Dynamic attendance data for Teacher View
+  List<Map<String, dynamic>> _bestAttendanceStudents = [];
+  List<Map<String, dynamic>> _worstAttendanceStudents = [];
+  String _attendanceFromDate = '2026-03-01';
+  String _attendanceToDate = '';
 
   Timer? _blinkTimer;
   bool _blinkOn = false;
@@ -54,33 +60,6 @@ class _MaintenanceDashboardScreenState
   Timer? _autoRefreshTimer;
   DateTime _now = DateTime.now();
   DateTime? _lastAutoRefresh;
-
-  // ── Hardcoded attendance data for Teacher View ──
-  static const List<Map<String, dynamic>> _bestAttendanceStudents = [
-    {'name': 'Amaya Perera',    'class': 'Dolphins',  'percentage': 96.0},
-    {'name': 'Sahan Fernando',  'class': 'Eagles',    'percentage': 94.0},
-    {'name': 'Dilini Jayasena', 'class': 'Bears',     'percentage': 94.0},
-    {'name': 'Ravindu Silva',   'class': 'Leopards',  'percentage': 92.0},
-    {'name': 'Thilini Kumara',  'class': 'Sharks',    'percentage': 92.0},
-    {'name': 'Kasun Madusanka', 'class': 'Zebras',    'percentage': 90.0},
-    {'name': 'Nethmi Dissanayake','class': 'Bees',    'percentage': 90.0},
-    {'name': 'Tharindu Rajapaksa','class': 'Penguins','percentage': 88.0},
-    {'name': 'Hasini Wickrama', 'class': 'Dolphins',  'percentage': 88.0},
-    {'name': 'Prabhath Gunawardena','class': 'Eagles','percentage': 86.0},
-  ];
-
-  static const List<Map<String, dynamic>> _worstAttendanceStudents = [
-    {'name': 'Malsha Bandara',    'class': 'Bears',     'percentage': 55.0},
-    {'name': 'Nuwan Rathnayake',  'class': 'Zebras',    'percentage': 58.0},
-    {'name': 'Chamodi Herath',    'class': 'Penguins',  'percentage': 60.0},
-    {'name': 'Isuru Sampath',     'class': 'Bees',      'percentage': 62.0},
-    {'name': 'Sachini Liyanage',  'class': 'Sharks',    'percentage': 64.0},
-    {'name': 'Dineth Wickramasinghe','class': 'Leopards','percentage': 65.0},
-    {'name': 'Kavya Nanayakkara', 'class': 'Eagles',    'percentage': 67.0},
-    {'name': 'Lahiru Pathirana',  'class': 'Bears',     'percentage': 68.0},
-    {'name': 'Sanduni Senevirathne','class': 'Dolphins','percentage': 70.0},
-    {'name': 'Roshan Karunaratne','class': 'Zebras',    'percentage': 72.0},
-  ];
 
   // Light theme palette
   static const Color _primary   = Color(0xFF1BB6E8);
@@ -362,6 +341,7 @@ class _MaintenanceDashboardScreenState
       totalAttendance   = calculateTotalAttendance(_fetchedPieChartData);
       _loadClassWiseData();
       await _fetchStaffTaskSummaries();
+      await _fetchAttendanceRanking();
     } catch (error) {
       print('Dashboard Load Error: $error');
     } finally {
@@ -449,6 +429,41 @@ class _MaintenanceDashboardScreenState
         .where((s) => (s['pending'] as int) > 0 || (s['progress'] as int) > 0)
         .toList();
   }
+
+  Future<void> _fetchAttendanceRanking() async {
+    try {
+      final now = DateTime.now();
+      final fromDate = '2026-03-01';
+      final toDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+      
+      final bestStudents = await getAttendanceRanking(
+        organizationId: 46,
+        sort: 'DESC',
+        fromDate: fromDate,
+        toDate: toDate,
+        limit: 10,
+      );
+      final worstStudents = await getAttendanceRanking(
+        organizationId: 46,
+        sort: 'ASC',
+        fromDate: fromDate,
+        toDate: toDate,
+        limit: 10,
+      );
+      
+      if (mounted) {
+        setState(() {
+          _bestAttendanceStudents = bestStudents;
+          _worstAttendanceStudents = worstStudents;
+          _attendanceFromDate = fromDate;
+          _attendanceToDate = toDate;
+        });
+      }
+    } catch (e) {
+      print('Error fetching attendance ranking: $e');
+    }
+  }
+
 
   void _loadClassWiseData() {
     Map<String, String> classEmojis = {
@@ -1778,8 +1793,8 @@ class _MaintenanceDashboardScreenState
                   children: [
                     Icon(Icons.calendar_today_rounded, size: 9, color: _primary),
                     const SizedBox(width: 4),
-                    const Text('Jan 1 - Mar 16',
-                        style: TextStyle(fontSize: 10, color: _primary, fontWeight: FontWeight.w700)),
+                    Text('${_formatDateRange(_attendanceFromDate)} - ${_formatDateRange(_attendanceToDate)}',
+                        style: const TextStyle(fontSize: 10, color: _primary, fontWeight: FontWeight.w700)),
                   ],
                 ),
               ),
@@ -2107,6 +2122,16 @@ class _MaintenanceDashboardScreenState
   }
 
   // ── Shared helpers ───────────────────────────
+  String _formatDateRange(String dateStr) {
+    if (dateStr.isEmpty) return '';
+    try {
+      final date = DateTime.parse(dateStr);
+      return DateFormat('MMM d').format(date);
+    } catch (_) {
+      return dateStr;
+    }
+  }
+
   Widget _legendDot(Color color, String label) {
     return Row(
       children: [
