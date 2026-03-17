@@ -340,6 +340,7 @@ class _MaintenanceDashboardScreenState
       totalStudentCount = calculateTotalStudentCount(_fetchedPieChartData);
       totalAttendance   = calculateTotalAttendance(_fetchedPieChartData);
       _loadClassWiseData();
+      await _fetchClassAttendanceRanking();
       await _fetchStaffTaskSummaries();
       await _fetchAttendanceRanking();
     } catch (error) {
@@ -464,6 +465,42 @@ class _MaintenanceDashboardScreenState
     }
   }
 
+  Future<void> _fetchClassAttendanceRanking() async {
+    try {
+      final now = DateTime.now();
+      final fromDate = '2026-03-01';
+      final toDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+      
+      final ranks = await getClassAttendanceRanking(
+        organizationId: 46,
+        sort: 'DESC',
+        fromDate: fromDate,
+        toDate: toDate,
+        limit: 10,
+      );
+      
+      if (mounted) {
+        setState(() {
+          if (_classData.isNotEmpty && ranks.isNotEmpty) {
+            for (var classItem in _classData) {
+              double? foundPercentage;
+              for (var rank in ranks) {
+                if (rank['id'] == classItem['organizationId']) {
+                  foundPercentage = rank['attendance_percentage'] as double;
+                  break;
+                }
+              }
+              classItem['attendance_percentage'] = foundPercentage ?? 0.0;
+            }
+            _classData.sort((a, b) => (b['attendance_percentage'] as double).compareTo(a['attendance_percentage'] as double));
+          }
+        });
+      }
+    } catch (e) {
+      print('Error fetching class attendance ranking: $e');
+    }
+  }
+
 
   void _loadClassWiseData() {
     Map<String, String> classEmojis = {
@@ -485,6 +522,7 @@ class _MaintenanceDashboardScreenState
         'total':          total,
         'present':        present,
         'organizationId': organizationId,
+        'attendance_percentage': 0.0,
       };
     }).toList();
   }
@@ -1487,12 +1525,69 @@ class _MaintenanceDashboardScreenState
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(c['name'],
-                                            style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight:
-                                                    FontWeight.w700,
-                                                color: _textDark)),
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              Flexible(
+                                                child: Text(c['name'],
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color: _textDark)),
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: ((c['attendance_percentage'] as double?) ?? 0) >= 0
+                                                      ? _green.withOpacity(0.1)
+                                                      : _red.withOpacity(0.1),
+                                                  borderRadius: BorderRadius.circular(3),
+                                                ),
+                                                child: Text(
+                                                  '${((c['attendance_percentage'] as double?) ?? 0).toStringAsFixed(1)}%',
+                                                  style: TextStyle(
+                                                      fontSize: 9,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: ((c['attendance_percentage'] as double?) ?? 0) >= 0
+                                                          ? _green
+                                                          : _red),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        if (index == 0) ...[
+                                          const SizedBox(width: 4),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                            decoration: BoxDecoration(color: _green.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
+                                            child: const Row(
+                                              children: [
+                                                Icon(Icons.star, size: 8, color: _green),
+                                                SizedBox(width: 2),
+                                                Text('Best Attendance', style: TextStyle(fontSize: 8, color: _green, fontWeight: FontWeight.bold)),
+                                              ]
+                                            ),
+                                          )
+                                        ],
+                                        if (index == _classData.length - 1 && _classData.length > 1) ...[
+                                          const SizedBox(width: 4),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                            decoration: BoxDecoration(color: _red.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
+                                            child: const Row(
+                                              children: [
+                                                Icon(Icons.warning_rounded, size: 8, color: _red),
+                                                SizedBox(width: 2),
+                                                Text('Worst Attendance', style: TextStyle(fontSize: 8, color: _red, fontWeight: FontWeight.bold)),
+                                              ]
+                                            ),
+                                          )
+                                        ],
+                                        const SizedBox(width: 8),
                                         Text(
                                             '${c['present']}/${c['total']}',
                                             style: const TextStyle(
@@ -1858,7 +1953,7 @@ class _MaintenanceDashboardScreenState
                         rank: index + 1,
                         name: student['name'] as String,
                         className: student['class'] as String,
-                        statLabel: '${percentage.toStringAsFixed(0)}%',
+                        statLabel: '${percentage.toStringAsFixed(1)}%',
                         pct: percentage / 100,
                         color: _green,
                         isBest: true,
@@ -1881,7 +1976,7 @@ class _MaintenanceDashboardScreenState
                         rank: index + 1,
                         name: student['name'] as String,
                         className: student['class'] as String,
-                        statLabel: '${percentage.toStringAsFixed(0)}%',
+                        statLabel: '${percentage.toStringAsFixed(1)}%',
                         pct: percentage / 100,
                         color: _red,
                         isBest: false,
