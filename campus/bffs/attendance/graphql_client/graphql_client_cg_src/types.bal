@@ -843,6 +843,7 @@ public type GetActivityEvaluationsResponse record {|
         int? evaluatee_id;
         string? response;
         string? notes;
+        string? created;
     |}[]? activity_evaluations;
 |};
 
