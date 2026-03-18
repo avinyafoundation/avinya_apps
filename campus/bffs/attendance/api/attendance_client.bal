@@ -152,9 +152,8 @@ public isolated client class GraphqlClient {
         return graphqlResponse;
     }
 
-
     remote isolated function getActivityEvaluations(string from_date, string to_date, int activity_id, int person_id) returns GetActivityEvaluationsResponse|graphql:ClientError {
-        string query = string `query getActivityEvaluations($person_id:Int!,$activity_id:Int!,$from_date:String!,$to_date:String!) {activity_evaluations(person_id:$person_id,activity_id:$activity_id,from_date:$from_date,to_date:$to_date) {id evaluatee_id response notes}}`;
+        string query = string `query getActivityEvaluations($person_id:Int!,$activity_id:Int!,$from_date:String!,$to_date:String!) {activity_evaluations(person_id:$person_id,activity_id:$activity_id,from_date:$from_date,to_date:$to_date) {id evaluatee_id response notes created}}`;
         map<anydata> variables = {"from_date": from_date, "to_date": to_date, "activity_id": activity_id, "person_id": person_id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetActivityEvaluationsResponse> check performDataBinding(graphqlResponse, GetActivityEvaluationsResponse);

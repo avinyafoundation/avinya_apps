@@ -140,12 +140,23 @@ query getPersonAttendanceToday($person_id: Int!, $activity_id: Int!) {
     }      
 }
 
-query getActivityEvaluations($person_id:Int!,$activity_id: Int!,$from_date: String!,$to_date: String!) {
-  activity_evaluations(person_id: $person_id, activity_id: $activity_id,from_date: $from_date,to_date:$to_date) {
+query getActivityEvaluations(
+  $person_id: Int!
+  $activity_id: Int!
+  $from_date: String!
+  $to_date: String!
+) {
+  activity_evaluations(
+    person_id: $person_id
+    activity_id: $activity_id
+    from_date: $from_date
+    to_date: $to_date
+  ) {
     id
     evaluatee_id
     response
     notes
+    created
   }
 }
 
