@@ -2352,7 +2352,8 @@ class _PieChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = min(size.width, size.height) / 2;
-    final innerRadius = radius * 0.6;
+    final bool isSingleItem = data.length == 1;
+    final innerRadius = isSingleItem ? 0.0 : radius * 0.6;
     int total = data.fold(0, (s, i) => s + (i['value'] as int));
     double startAngle = -pi / 2;
 
@@ -2361,27 +2362,38 @@ class _PieChartPainter extends CustomPainter {
       final paint = Paint()
         ..color = item['color']
         ..style = PaintingStyle.fill;
-      final path = Path()
-        ..moveTo(center.dx + innerRadius * cos(startAngle),
-            center.dy + innerRadius * sin(startAngle))
-        ..lineTo(center.dx + radius * cos(startAngle),
-            center.dy + radius * sin(startAngle))
-        ..arcTo(Rect.fromCircle(center: center, radius: radius),
-            startAngle, sweepAngle, false)
-        ..lineTo(
-            center.dx + innerRadius * cos(startAngle + sweepAngle),
-            center.dy + innerRadius * sin(startAngle + sweepAngle))
-        ..arcTo(Rect.fromCircle(center: center, radius: innerRadius),
-            startAngle + sweepAngle, -sweepAngle, false)
-        ..close();
+      
+      final Path path;
+      if (isSingleItem) {
+        // For single item, draw a ring without center fill
+        path = Path()
+          ..addOval(Rect.fromCircle(center: center, radius: radius))
+          ..fillType = PathFillType.evenOdd
+          ..addOval(Rect.fromCircle(center: center, radius: radius * 0.6));
+      } else {
+        // For multiple items, draw the donut segment
+        path = Path()
+          ..moveTo(center.dx + innerRadius * cos(startAngle),
+              center.dy + innerRadius * sin(startAngle))
+          ..lineTo(center.dx + radius * cos(startAngle),
+              center.dy + radius * sin(startAngle))
+          ..arcTo(Rect.fromCircle(center: center, radius: radius),
+              startAngle, sweepAngle, false)
+          ..lineTo(
+              center.dx + innerRadius * cos(startAngle + sweepAngle),
+              center.dy + innerRadius * sin(startAngle + sweepAngle))
+          ..arcTo(Rect.fromCircle(center: center, radius: innerRadius),
+              startAngle + sweepAngle, -sweepAngle, false)
+          ..close();
+        
+        final gapPaint = Paint()
+          ..color = gapColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2;
+        canvas.drawPath(path, gapPaint);
+      }
+      
       canvas.drawPath(path, paint);
-
-      final gapPaint = Paint()
-        ..color = gapColor
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2;
-      canvas.drawPath(path, gapPaint);
-
       startAngle += sweepAngle;
     }
   }
