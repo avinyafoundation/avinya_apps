@@ -296,3 +296,97 @@ Future<Map<String, dynamic>> getDailyAbsenceSummary(
     throw Exception('Failed to get Daily Absence Summary');
   }
 }
+
+Future<List<Map<String, dynamic>>> getAttendanceRanking({
+  required int organizationId,
+  required String sort,
+  String? fromDate,
+  String? toDate,
+  int limit = 10,
+}) async {
+  final now = DateTime.now();
+  final todayStr = toDate ?? '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+  final monthAgoStr = fromDate ?? '2026-03-01';
+
+  final uri = Uri.parse(
+    '${AppConfig.campusAttendanceBffApiUrl}/organizations/2/students/attendance-ranking'
+    '?organization_id=$organizationId'
+    '&from_date=$monthAgoStr'
+    '&to_date=$todayStr'
+    '&limit=$limit'
+    '&sort=$sort',
+  );
+
+  try {
+    final response = await http.get(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'accept': 'application/json',
+        'api-key': AppConfig.attendanceAppBffApiKey,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body) as List<dynamic>;
+      return data.map((item) => {
+        'percentage': item['attendance_percentage'] as double,
+        'name': item['preferred_name'] as String,
+        'class': (item['organization']['description'] as String?) ?? 'Unknown',
+      }).toList();
+    } else {
+      throw Exception('Failed to load attendance ranking: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error fetching attendance ranking: $e');
+    return [];
+  }
+}
+
+Future<List<Map<String, dynamic>>> getClassAttendanceRanking({
+  required int organizationId,
+  required String sort,
+  String? fromDate,
+  String? toDate,
+  int limit = 10,
+}) async {
+  final now = DateTime.now();
+  final todayStr = toDate ?? '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+  final monthAgoStr = fromDate ?? '2026-03-01';
+
+  final uri = Uri.parse(
+    '${AppConfig.campusAttendanceBffApiUrl}/organizations/2/classes/attendance-percentage'
+    '?organization_id=$organizationId'
+    '&from_date=$monthAgoStr'
+    '&to_date=$todayStr'
+    '&limit=$limit'
+    '&sort=$sort',
+  );
+
+  try {
+    final response = await http.get(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+        'accept': 'application/json',
+        'api-key': AppConfig.attendanceAppBffApiKey,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body) as List<dynamic>;
+      return data.map((item) => {
+        'id': item['id'] as int,
+        'description': item['description'] as String,
+        'attendance_percentage': item['attendance_percentage'] is num 
+            ? (item['attendance_percentage'] as num).toDouble() 
+            : 0.0,
+      }).toList();
+    } else {
+      throw Exception('Failed to load class attendance ranking: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error fetching class attendance ranking: $e');
+    return [];
+  }
+}

@@ -7,6 +7,9 @@ import '../data/activity_attendance.dart';
 import '../data/task_item.dart';
 import 'kanban_screen.dart';
 
+
+enum DashboardView { management, teacher }
+
 class MaintenanceDashboardScreen extends StatefulWidget {
   const MaintenanceDashboardScreen({Key? key}) : super(key: key);
 
@@ -17,6 +20,10 @@ class MaintenanceDashboardScreen extends StatefulWidget {
 
 class _MaintenanceDashboardScreenState
     extends State<MaintenanceDashboardScreen> with TickerProviderStateMixin {
+  // --- View Mode ---
+  DashboardView _currentView = DashboardView.management;
+  bool _viewSelected = false; // whether the startup picker has been dismissed
+
   // --- Data States ---
   bool _isFetching = true;
   List<dynamic> _fetchedPieChartData = [];
@@ -28,12 +35,22 @@ class _MaintenanceDashboardScreenState
 
   // Stores full task details per person: personId -> list of task maps
   Map<int, List<Map<String, dynamic>>> _staffTaskDetails = {};
+  
+  // Dynamic attendance data for Teacher View
+  List<Map<String, dynamic>> _bestAttendanceStudents = [];
+  List<Map<String, dynamic>> _worstAttendanceStudents = [];
+  String _attendanceFromDate = '2026-03-01';
+  String _attendanceToDate = '';
 
   Timer? _blinkTimer;
   bool _blinkOn = false;
 
   late AnimationController _glowController;
   late Animation<double> _glowAnimation;
+
+  // For view switch animation
+  late AnimationController _viewSwitchController;
+  late Animation<double> _viewSwitchAnimation;
 
   int totalStudentCount = 0;
   int totalAttendance = 0;
@@ -66,6 +83,16 @@ class _MaintenanceDashboardScreenState
     )..repeat(reverse: true);
     _glowAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_glowController);
 
+    _viewSwitchController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 350),
+    );
+    _viewSwitchAnimation = CurvedAnimation(
+      parent: _viewSwitchController,
+      curve: Curves.easeInOut,
+    );
+    _viewSwitchController.forward();
+
     _blinkTimer = Timer.periodic(const Duration(milliseconds: 600), (t) {
       if (!mounted) return;
       setState(() => _blinkOn = !_blinkOn);
@@ -78,6 +105,11 @@ class _MaintenanceDashboardScreenState
 
     _startAutoRefreshTimer();
     _loadAllDashboardData();
+
+    // Show view picker on first launch
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _showViewPickerDialog();
+    });
   }
 
   void _startAutoRefreshTimer() {
@@ -127,7 +159,148 @@ class _MaintenanceDashboardScreenState
     _clockTimer?.cancel();
     _autoRefreshTimer?.cancel();
     _glowController.dispose();
+    _viewSwitchController.dispose();
     super.dispose();
+  }
+
+  void _switchView(DashboardView view) {
+    if (view == _currentView) return;
+    _viewSwitchController.reverse().then((_) {
+      if (!mounted) return;
+      setState(() => _currentView = view);
+      _viewSwitchController.forward();
+    });
+  }
+
+  // ─────────────────────────────────────────────
+  //  Startup View Picker Dialog
+  // ─────────────────────────────────────────────
+  void _showViewPickerDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.45),
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(28, 32, 28, 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icon + title
+                Container(
+                  width: 56, height: 56,
+                  decoration: BoxDecoration(
+                    color: _primary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.dashboard_rounded,
+                      color: _primary, size: 28),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Choose Your View',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: _textDark,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'Select the dashboard view that matches your role.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 12, color: _textMid),
+                ),
+                const SizedBox(height: 28),
+
+                // Management option
+                _viewPickerOption(
+                  ctx: ctx,
+                  icon: Icons.business_center_rounded,
+                  title: 'Management View',
+                  color: _primary,
+                  view: DashboardView.management,
+                ),
+                const SizedBox(height: 12),
+
+                // Teacher option
+                _viewPickerOption(
+                  ctx: ctx,
+                  icon: Icons.school_rounded,
+                  title: 'Teacher View',
+                  color: _green,
+                  view: DashboardView.teacher,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _viewPickerOption({
+    required BuildContext ctx,
+    required IconData icon,
+    required String title,
+    required Color color,
+    required DashboardView view,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          Navigator.of(ctx).pop();
+          setState(() {
+            _currentView = view;
+            _viewSelected = true;
+          });
+          _viewSwitchController.forward(from: 0);
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: color.withOpacity(0.25), width: 1.5),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44, height: 44,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 22),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: color)),
+                    const SizedBox(height: 3),
+                  ],
+                ),
+              ),
+              Icon(Icons.arrow_forward_ios_rounded, size: 14, color: color),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   // --- Logic ---
@@ -167,7 +340,9 @@ class _MaintenanceDashboardScreenState
       totalStudentCount = calculateTotalStudentCount(_fetchedPieChartData);
       totalAttendance   = calculateTotalAttendance(_fetchedPieChartData);
       _loadClassWiseData();
+      await _fetchClassAttendanceRanking();
       await _fetchStaffTaskSummaries();
+      await _fetchAttendanceRanking();
     } catch (error) {
       print('Dashboard Load Error: $error');
     } finally {
@@ -256,6 +431,77 @@ class _MaintenanceDashboardScreenState
         .toList();
   }
 
+  Future<void> _fetchAttendanceRanking() async {
+    try {
+      final now = DateTime.now();
+      final fromDate = '2026-03-01';
+      final toDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+      
+      final bestStudents = await getAttendanceRanking(
+        organizationId: 46,
+        sort: 'DESC',
+        fromDate: fromDate,
+        toDate: toDate,
+        limit: 10,
+      );
+      final worstStudents = await getAttendanceRanking(
+        organizationId: 46,
+        sort: 'ASC',
+        fromDate: fromDate,
+        toDate: toDate,
+        limit: 10,
+      );
+      
+      if (mounted) {
+        setState(() {
+          _bestAttendanceStudents = bestStudents;
+          _worstAttendanceStudents = worstStudents;
+          _attendanceFromDate = fromDate;
+          _attendanceToDate = toDate;
+        });
+      }
+    } catch (e) {
+      print('Error fetching attendance ranking: $e');
+    }
+  }
+
+  Future<void> _fetchClassAttendanceRanking() async {
+    try {
+      final now = DateTime.now();
+      final fromDate = '2026-03-01';
+      final toDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+      
+      final ranks = await getClassAttendanceRanking(
+        organizationId: 46,
+        sort: 'DESC',
+        fromDate: fromDate,
+        toDate: toDate,
+        limit: 10,
+      );
+      
+      if (mounted) {
+        setState(() {
+          if (_classData.isNotEmpty && ranks.isNotEmpty) {
+            for (var classItem in _classData) {
+              double? foundPercentage;
+              for (var rank in ranks) {
+                if (rank['id'] == classItem['organizationId']) {
+                  foundPercentage = rank['attendance_percentage'] as double;
+                  break;
+                }
+              }
+              classItem['attendance_percentage'] = foundPercentage ?? 0.0;
+            }
+            _classData.sort((a, b) => (b['attendance_percentage'] as double).compareTo(a['attendance_percentage'] as double));
+          }
+        });
+      }
+    } catch (e) {
+      print('Error fetching class attendance ranking: $e');
+    }
+  }
+
+
   void _loadClassWiseData() {
     Map<String, String> classEmojis = {
       'Bees': '🐝', 'Zebras': '🦓', 'Dolphins': '🐬', 'Leopards': '🐆',
@@ -276,6 +522,7 @@ class _MaintenanceDashboardScreenState
         'total':          total,
         'present':        present,
         'organizationId': organizationId,
+        'attendance_percentage': 0.0,
       };
     }).toList();
   }
@@ -765,7 +1012,12 @@ class _MaintenanceDashboardScreenState
               children: [
                 _buildHeader(),
                 const SizedBox(height: 10),
-                Expanded(child: _buildMainGrid()),
+                Expanded(
+                  child: FadeTransition(
+                    opacity: _viewSwitchAnimation,
+                    child: _buildMainGrid(),
+                  ),
+                ),
               ],
             ),
           ),
@@ -798,6 +1050,10 @@ class _MaintenanceDashboardScreenState
         ),
         const Spacer(),
 
+        // ── View Toggle ──
+        _buildViewToggle(),
+        const SizedBox(width: 14),
+
         // Clock
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -829,8 +1085,9 @@ class _MaintenanceDashboardScreenState
         ),
         const SizedBox(width: 10),
 
-        // Manage Tasks
-        ElevatedButton.icon(
+        // Manage Tasks — hidden in Teacher view
+        if (_currentView == DashboardView.management)
+          ElevatedButton.icon(
           onPressed: () {
             Navigator.of(context)
                 .push(MaterialPageRoute(builder: (context) => const KanbanScreen()))
@@ -848,6 +1105,76 @@ class _MaintenanceDashboardScreenState
           ),
         ),
       ],
+    );
+  }
+
+  // ── View Toggle Widget ──────────────────────
+  Widget _buildViewToggle() {
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: _bgCard,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _divider),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04),
+            blurRadius: 6, offset: const Offset(0, 2))],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _viewToggleButton(
+            label: 'Management',
+            icon: Icons.business_center_rounded,
+            isActive: _currentView == DashboardView.management,
+            onTap: () => _switchView(DashboardView.management),
+          ),
+          const SizedBox(width: 2),
+          _viewToggleButton(
+            label: 'Teacher',
+            icon: Icons.school_rounded,
+            isActive: _currentView == DashboardView.teacher,
+            onTap: () => _switchView(DashboardView.teacher),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _viewToggleButton({
+    required String label,
+    required IconData icon,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          color: isActive ? _primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(7),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon,
+                size: 13,
+                color: isActive ? Colors.white : _textMid),
+            const SizedBox(width: 5),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.3,
+                color: isActive ? Colors.white : _textMid,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -878,7 +1205,11 @@ class _MaintenanceDashboardScreenState
           flex: 4,
           child: Column(
             children: [
-              Expanded(child: _buildStaffTaskOverviewCard()),
+              Expanded(
+                child: _currentView == DashboardView.management
+                    ? _buildStaffTaskOverviewCard()
+                    : _buildStudentAttendanceRankCard(),
+              ),
               const SizedBox(height: 10),
               Expanded(child: _buildFoodWasteCard()),
             ],
@@ -1194,12 +1525,69 @@ class _MaintenanceDashboardScreenState
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(c['name'],
-                                            style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight:
-                                                    FontWeight.w700,
-                                                color: _textDark)),
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              Flexible(
+                                                child: Text(c['name'],
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color: _textDark)),
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                decoration: BoxDecoration(
+                                                  color: ((c['attendance_percentage'] as double?) ?? 0) >= 0
+                                                      ? _green.withOpacity(0.1)
+                                                      : _red.withOpacity(0.1),
+                                                  borderRadius: BorderRadius.circular(3),
+                                                ),
+                                                child: Text(
+                                                  '${((c['attendance_percentage'] as double?) ?? 0).toStringAsFixed(1)}%',
+                                                  style: TextStyle(
+                                                      fontSize: 9,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: ((c['attendance_percentage'] as double?) ?? 0) >= 0
+                                                          ? _green
+                                                          : _red),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        if (index == 0) ...[
+                                          const SizedBox(width: 4),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                            decoration: BoxDecoration(color: _green.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
+                                            child: const Row(
+                                              children: [
+                                                Icon(Icons.star, size: 8, color: _green),
+                                                SizedBox(width: 2),
+                                                Text('Best Attendance', style: TextStyle(fontSize: 8, color: _green, fontWeight: FontWeight.bold)),
+                                              ]
+                                            ),
+                                          )
+                                        ],
+                                        if (index == _classData.length - 1 && _classData.length > 1) ...[
+                                          const SizedBox(width: 4),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                            decoration: BoxDecoration(color: _red.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
+                                            child: const Row(
+                                              children: [
+                                                Icon(Icons.warning_rounded, size: 8, color: _red),
+                                                SizedBox(width: 2),
+                                                Text('Worst Attendance', style: TextStyle(fontSize: 8, color: _red, fontWeight: FontWeight.bold)),
+                                              ]
+                                            ),
+                                          )
+                                        ],
+                                        const SizedBox(width: 8),
                                         Text(
                                             '${c['present']}/${c['total']}',
                                             style: const TextStyle(
@@ -1477,6 +1865,236 @@ class _MaintenanceDashboardScreenState
     );
   }
 
+  // ── Student Attendance Rank Card (Teacher View) ──
+  Widget _buildStudentAttendanceRankCard() {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('STUDENT ATTENDANCE',
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700,
+                      letterSpacing: 1.5, color: _textMid)),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: _primary.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today_rounded, size: 9, color: _primary),
+                    const SizedBox(width: 4),
+                    Text('${_formatDateRange(_attendanceFromDate)} - ${_formatDateRange(_attendanceToDate)}',
+                        style: const TextStyle(fontSize: 10, color: _primary, fontWeight: FontWeight.w700)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // Column headers
+          Row(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 8, height: 8,
+                      decoration: BoxDecoration(
+                          color: _green, shape: BoxShape.circle),
+                    ),
+                    const SizedBox(width: 5),
+                    const Text('Best Attendance',
+                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700,
+                            color: _green)),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 8, height: 8,
+                      decoration: BoxDecoration(
+                          color: _red, shape: BoxShape.circle),
+                    ),
+                    const SizedBox(width: 5),
+                    const Text('Worst Attendance',
+                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700,
+                            color: _red)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Divider(height: 1, color: _divider),
+          const SizedBox(height: 8),
+
+          // Two scrollable columns
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Best attendance column
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _bestAttendanceStudents.length,
+                    itemBuilder: (context, index) {
+                      final student = _bestAttendanceStudents[index];
+                      final double percentage = student['percentage'] as double;
+                      return _attendanceRankRow(
+                        rank: index + 1,
+                        name: student['name'] as String,
+                        className: student['class'] as String,
+                        statLabel: '${percentage.toStringAsFixed(1)}%',
+                        pct: percentage / 100,
+                        color: _green,
+                        isBest: true,
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Divider
+                Container(width: 1, color: _divider),
+                const SizedBox(width: 8),
+                // Worst attendance column
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _worstAttendanceStudents.length,
+                    itemBuilder: (context, index) {
+                      final student = _worstAttendanceStudents[index];
+                      final double percentage = student['percentage'] as double;
+                      return _attendanceRankRow(
+                        rank: index + 1,
+                        name: student['name'] as String,
+                        className: student['class'] as String,
+                        statLabel: '${percentage.toStringAsFixed(1)}%',
+                        pct: percentage / 100,
+                        color: _red,
+                        isBest: false,
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _attendanceRankRow({
+    required int rank,
+    required String name,
+    required String className,
+    required String statLabel,
+    required double pct,
+    required Color color,
+    required bool isBest,
+  }) {
+    final bool isTopThree = rank <= 3;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+      decoration: BoxDecoration(
+        color: isTopThree
+            ? color.withOpacity(0.06)
+            : const Color(0xFFF7FAFC),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isTopThree ? color.withOpacity(0.2) : _divider,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              // Rank badge
+              Container(
+                width: 18, height: 18,
+                decoration: BoxDecoration(
+                  color: isTopThree ? color : color.withOpacity(0.08),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    '$rank',
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                      color: isTopThree ? Colors.white : color,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  name,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: isTopThree ? _textDark : _textMid,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          // Class name chip
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                decoration: BoxDecoration(
+                  color: _primary.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+                child: Text(
+                  className,
+                  style: const TextStyle(fontSize: 8,
+                      fontWeight: FontWeight.w700, color: _primary),
+                ),
+              ),
+              Text(
+                statLabel,
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          // Progress bar
+          ClipRRect(
+            borderRadius: BorderRadius.circular(3),
+            child: LinearProgressIndicator(
+              value: pct,
+              minHeight: 3,
+              backgroundColor: color.withOpacity(0.1),
+              valueColor: AlwaysStoppedAnimation<Color>(color),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // ── Food Waste Card ──────────────────────────
   Widget _buildFoodWasteCard() {
     final List<Map<String, dynamic>> wasteData = [
@@ -1599,6 +2217,16 @@ class _MaintenanceDashboardScreenState
   }
 
   // ── Shared helpers ───────────────────────────
+  String _formatDateRange(String dateStr) {
+    if (dateStr.isEmpty) return '';
+    try {
+      final date = DateTime.parse(dateStr);
+      return DateFormat('MMM d').format(date);
+    } catch (_) {
+      return dateStr;
+    }
+  }
+
   Widget _legendDot(Color color, String label) {
     return Row(
       children: [
@@ -1724,7 +2352,8 @@ class _PieChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = min(size.width, size.height) / 2;
-    final innerRadius = radius * 0.6;
+    final bool isSingleItem = data.length == 1;
+    final innerRadius = isSingleItem ? 0.0 : radius * 0.6;
     int total = data.fold(0, (s, i) => s + (i['value'] as int));
     double startAngle = -pi / 2;
 
@@ -1733,27 +2362,38 @@ class _PieChartPainter extends CustomPainter {
       final paint = Paint()
         ..color = item['color']
         ..style = PaintingStyle.fill;
-      final path = Path()
-        ..moveTo(center.dx + innerRadius * cos(startAngle),
-            center.dy + innerRadius * sin(startAngle))
-        ..lineTo(center.dx + radius * cos(startAngle),
-            center.dy + radius * sin(startAngle))
-        ..arcTo(Rect.fromCircle(center: center, radius: radius),
-            startAngle, sweepAngle, false)
-        ..lineTo(
-            center.dx + innerRadius * cos(startAngle + sweepAngle),
-            center.dy + innerRadius * sin(startAngle + sweepAngle))
-        ..arcTo(Rect.fromCircle(center: center, radius: innerRadius),
-            startAngle + sweepAngle, -sweepAngle, false)
-        ..close();
+      
+      final Path path;
+      if (isSingleItem) {
+        // For single item, draw a ring without center fill
+        path = Path()
+          ..addOval(Rect.fromCircle(center: center, radius: radius))
+          ..fillType = PathFillType.evenOdd
+          ..addOval(Rect.fromCircle(center: center, radius: radius * 0.6));
+      } else {
+        // For multiple items, draw the donut segment
+        path = Path()
+          ..moveTo(center.dx + innerRadius * cos(startAngle),
+              center.dy + innerRadius * sin(startAngle))
+          ..lineTo(center.dx + radius * cos(startAngle),
+              center.dy + radius * sin(startAngle))
+          ..arcTo(Rect.fromCircle(center: center, radius: radius),
+              startAngle, sweepAngle, false)
+          ..lineTo(
+              center.dx + innerRadius * cos(startAngle + sweepAngle),
+              center.dy + innerRadius * sin(startAngle + sweepAngle))
+          ..arcTo(Rect.fromCircle(center: center, radius: innerRadius),
+              startAngle + sweepAngle, -sweepAngle, false)
+          ..close();
+        
+        final gapPaint = Paint()
+          ..color = gapColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2;
+        canvas.drawPath(path, gapPaint);
+      }
+      
       canvas.drawPath(path, paint);
-
-      final gapPaint = Paint()
-        ..color = gapColor
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2;
-      canvas.drawPath(path, gapPaint);
-
       startAngle += sweepAngle;
     }
   }
