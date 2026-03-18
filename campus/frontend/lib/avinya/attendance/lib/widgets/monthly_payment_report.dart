@@ -64,6 +64,9 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
   late double _dailyAmount = 0.0;
   List<String> monthDateList = [];
 
+  // Absence reasons cache - maps person_id to list of absence reasons
+  Map<int, List<Map<String, dynamic>>> _absenceReasonsCache = {};
+
   List<String?> classes = [];
   Set<String> fetchedLeaveDates = {};
 
@@ -202,25 +205,62 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
       if (hasAttendance) presentSet.add(date);
     }
 
-    // demo data: hardcoded absence reasons
-    final Map<String, Map<String, String?>> demoAbsentReasons = {
-      DateFormat('yyyy-MM-dd')
-          .format(DateTime(monthDate.year, monthDate.month, 3)): {
-        'reason': 'Illness',
-        'notes': null,
-      },
-      DateFormat('yyyy-MM-dd')
-          .format(DateTime(monthDate.year, monthDate.month, 6)): {
-        'reason': 'Family emergency',
-        'notes': 'Parent informed — family event', // example optional note
-      },
-      DateFormat('yyyy-MM-dd')
-          .format(DateTime(monthDate.year, monthDate.month, 13)): {
-        'reason': 'Medical appointment',
-        'notes': null,
-      },
-    };
+    // Fetch absence reasons and show dialog
+    _fetchAndShowStudentDetails(
+        context, person, monthDate, leaveSet, presentSet);
+  }
 
+  Future<void> _fetchAndShowStudentDetails(BuildContext context, Person person,
+      DateTime monthDate, Set<String> leaveSet, Set<String> presentSet) async {
+    // Build absence reasons map
+    Map<String, Map<String, String?>> absentReasonsMap = {};
+
+    try {
+      // Check cache first
+      if (!_absenceReasonsCache.containsKey(person.id)) {
+        final String fromDate = DateFormat('yyyy-MM-dd')
+            .format(DateTime(monthDate.year, monthDate.month, 1));
+        final String toDate = DateFormat('yyyy-MM-dd')
+            .format(DateTime(monthDate.year, monthDate.month + 1, 0));
+
+        final List<Map<String, dynamic>> absenceReasons =
+            await getAbsenceReasons(
+                organization_id, person.id!, activityId, fromDate, toDate);
+
+        _absenceReasonsCache[person.id!] = absenceReasons;
+      }
+
+      // Convert absence reasons to a map by date
+      for (final reason in _absenceReasonsCache[person.id] ?? []) {
+        final String created = reason['created'] ?? '';
+        if (created.isNotEmpty) {
+          final String dateStr = created.split(' ')[0]; // yyyy-MM-dd format
+          absentReasonsMap[dateStr] = {
+            'reason': reason['response'] ?? 'No reason provided',
+            'notes': reason['notes'],
+          };
+        }
+      }
+    } catch (e) {
+      print('Error fetching absence reasons: $e');
+      // Continue with empty map on error
+      absentReasonsMap = {};
+    }
+
+    if (!context.mounted) return;
+
+    // Show the calendar dialog with fetched data
+    _showStudentMonthDetailsDialog(
+        context, person, monthDate, leaveSet, presentSet, absentReasonsMap);
+  }
+
+  void _showStudentMonthDetailsDialog(
+      BuildContext context,
+      Person person,
+      DateTime monthDate,
+      Set<String> leaveSet,
+      Set<String> presentSet,
+      Map<String, Map<String, String?>> absentReasons) {
     // 2. Calendar Metadata
     final firstDay = DateTime(monthDate.year, monthDate.month, 1);
     final daysInMonth = DateTime(monthDate.year, monthDate.month + 1, 0).day;
@@ -328,13 +368,13 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
                         textColor = const Color(0xFFE74C3C); // Dark Red
                       }
 
-                      final Map<String, String?>? demoEntry =
+                      final Map<String, String?>? reasonEntry =
                           (!leaveSet.contains(dateStr) &&
                                   !presentSet.contains(dateStr))
-                              ? demoAbsentReasons[dateStr]
+                              ? absentReasons[dateStr]
                               : null;
-                      final String? demoReason = demoEntry?['reason'];
-                      final String? demoNotes = demoEntry?['notes'];
+                      final String? reason = reasonEntry?['reason'];
+                      final String? notes = reasonEntry?['notes'];
 
                       final bool isAbsent = !leaveSet.contains(dateStr) &&
                           !presentSet.contains(dateStr);
@@ -364,12 +404,11 @@ class _MonthlyPaymentReportState extends State<MonthlyPaymentReport> {
 
                       // If the day is absent, show a hover tooltip only (no add/edit from this screen).
                       if (isAbsent) {
-                        return demoReason != null
+                        return reason != null
                             ? Tooltip(
-                                message:
-                                    demoNotes != null && demoNotes!.isNotEmpty
-                                        ? '$demoReason\n\nNotes: ${demoNotes}'
-                                        : demoReason!,
+                                message: notes != null && notes!.isNotEmpty
+                                    ? '$reason\n\nNotes: ${notes}'
+                                    : reason!,
                                 decoration: BoxDecoration(
                                   color: const Color(0xFF2C3E50),
                                   borderRadius: BorderRadius.circular(6),

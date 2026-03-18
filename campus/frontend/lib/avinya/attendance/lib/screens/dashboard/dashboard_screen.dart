@@ -896,12 +896,14 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
     if (studentNames != null && studentNames.isNotEmpty) {
       absentStudents = studentNames.map((n) => {'name': n, 'id': ''}).toList();
     } else {
-      // Dummy data for absent students
+      // Dummy data for absent students/employees
+      String entityType = title.contains('Employee') ? 'Employee' : 'Student';
+      String idPrefix = title.contains('Employee') ? 'EMP' : 'ST';
       absentStudents = List.generate(
         absentCount,
         (index) => {
-          'name': 'Student ${index + 1}',
-          'id': 'ST${(1000 + index).toString()}',
+          'name': '$entityType ${index + 1}',
+          'id': '$idPrefix${(1000 + index).toString()}',
         },
       );
     }
@@ -939,9 +941,21 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            date != null
-                                ? '$absentCount students absent'
-                                : '$absentCount students absent today',
+                            () {
+                              String entityType = title.contains('Employee')
+                                  ? 'employee'
+                                  : 'student';
+                              String entityTypePlural =
+                                  title.contains('Employee')
+                                      ? 'employees'
+                                      : 'students';
+                              String countText = absentCount == 1
+                                  ? '1 $entityType'
+                                  : '$absentCount $entityTypePlural';
+                              return date != null
+                                  ? '$countText absent'
+                                  : '$countText absent today';
+                            }(),
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -975,7 +989,13 @@ class _AttendanceDashboardScreenState extends State<AttendanceDashboardScreen> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'All students are present!',
+                                () {
+                                  String entityTypePlural =
+                                      title.contains('Employee')
+                                          ? 'employees'
+                                          : 'students';
+                                  return 'All $entityTypePlural are present!';
+                                }(),
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.grey[600],

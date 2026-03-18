@@ -882,3 +882,22 @@ Future<List<String>> getDailyAbsenceSummary(
         'Failed to fetch daily absence summary for organization $organization_id');
   }
 }
+
+Future<List<Map<String, dynamic>>> getAbsenceReasons(int organization_id,
+    int person_id, int activity_id, String from_date, String to_date) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/organizations/$organization_id/persons/$person_id/absence-reasons?activity_id=$activity_id&from_date=$from_date&to_date=$to_date'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
+  if (response.statusCode > 199 && response.statusCode < 300) {
+    List<dynamic> results = json.decode(response.body);
+    return results.cast<Map<String, dynamic>>();
+  } else {
+    throw Exception('Failed to fetch absence reasons for person $person_id');
+  }
+}
