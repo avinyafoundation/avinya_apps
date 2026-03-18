@@ -11,6 +11,8 @@ import '../widgets/import_preview_table.dart';
 
 enum _ImportStage { upload, resolving, preview, importing, done }
 
+//Bulk import screen with multiple stages: upload, resolving, preview, importing, done
+
 class BulkImportScreen extends StatefulWidget {
   const BulkImportScreen({Key? key}) : super(key: key);
 
