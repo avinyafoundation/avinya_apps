@@ -269,3 +269,30 @@ Future<List<Map<String, dynamic>>> getLateAttendanceSummary(
     throw Exception('Failed to get Late Attendance Summary');
   }
 }
+
+Future<Map<String, dynamic>> getDailyAbsenceSummary(
+  int organizationId,
+  int activityId,
+) async {
+  final String dateStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusAttendanceBffApiUrl}/organizations/$organizationId/daily-absence-summary?activity_id=$activityId&date=$dateStr&organization_id=$organizationId'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'api-key': AppConfig.attendanceAppBffApiKey,
+    },
+  );
+
+  if (response.statusCode >= 200 && response.statusCode < 300) {
+    final responseBody = json.decode(response.body);
+    if (responseBody is List && responseBody.isNotEmpty) {
+      return responseBody[0] as Map<String, dynamic>;
+    }
+    return {};
+  } else {
+    throw Exception('Failed to get Daily Absence Summary');
+  }
+}

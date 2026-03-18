@@ -140,12 +140,23 @@ query getPersonAttendanceToday($person_id: Int!, $activity_id: Int!) {
     }      
 }
 
-query getActivityEvaluations($person_id:Int!,$activity_id: Int!,from_date: String!,to_date: $to_date) {
-  activity_evaluations(person_id: $person_id, activity_id: $activity_id,from_date: $from_date,to_date:$to_date) {
+query getActivityEvaluations(
+  $person_id: Int!
+  $activity_id: Int!
+  $from_date: String!
+  $to_date: String!
+) {
+  activity_evaluations(
+    person_id: $person_id
+    activity_id: $activity_id
+    from_date: $from_date
+    to_date: $to_date
+  ) {
     id
     evaluatee_id
     response
     notes
+    created
   }
 }
 
@@ -525,4 +536,32 @@ query getDailyAbsenceSummary($organization_id: Int,$parent_organization_id: Int,
     absent_count
     absent_names
   }
+}
+
+query getStudentAttendanceRanking($organization_id: Int,$class_id:Int,
+        $from_date:String,$to_date:String,$limit:Int,$sort:String) {
+    studentAttendanceRanking(organization_id:$organization_id,class_id:$class_id,from_date:$from_date,to_date:$to_date,limit:$limit,sort:$sort) {
+        id
+        preferred_name
+        organization{
+            id
+            name{
+                name_en
+            }
+            description
+        }
+        attendance_percentage
+    }       
+}
+
+query getClassOrStudentAttendancePercentage($organization_id: Int,$class_id:Int,$from_date:String,
+         $to_date:String,$limit:Int,$sort:String) {
+    calculateClassOrStudentAttendancePercentage(organization_id:$organization_id,class_id:$class_id,from_date:$from_date,to_date:$to_date,limit:$limit,sort:$sort) {
+        id
+        name{
+            name_en
+        }
+        description
+        attendance_percentage
+    }       
 }

@@ -23,7 +23,11 @@ class _MaintenanceDashboardScreenState
   List<Map<String, dynamic>> _classData = [];
   List<Map<String, dynamic>> _staffTaskSummaries = [];
   Set<int> _overduePersonIds = {};
+  Set<int> _overdueTaskActivityIds = {}; // Store activity IDs of overdue tasks
   List<Map<String, dynamic>> _lateAttendanceData = [];
+
+  // Stores full task details per person: personId -> list of task maps
+  Map<int, List<Map<String, dynamic>>> _staffTaskDetails = {};
 
   Timer? _blinkTimer;
   bool _blinkOn = false;
@@ -48,8 +52,8 @@ class _MaintenanceDashboardScreenState
   static const Color _textMid   = Color(0xFF5A7184);
   static const Color _textLight = Color(0xFF8EA8BC);
   static const Color _green     = Color(0xFF27AE60);
-  static const Color _red       = Color(0xFFE74C3C);
-  static const Color _orange    = Color(0xFFF39C12);
+  static const Color _red       = Color(0xFFD32F2F);
+  static const Color _orange    = Color(0xFFFFC107);
   static const Color _divider   = Color(0xFFE4EBF0);
 
   @override
@@ -173,10 +177,17 @@ class _MaintenanceDashboardScreenState
 
   Future<void> _fetchStaffTaskSummaries() async {
     _overduePersonIds.clear();
+    _overdueTaskActivityIds.clear();
+    _staffTaskDetails.clear();
+
     try {
       List<dynamic> overdueTasks = await getOverdueTasks(2);
       if (mounted) {
         for (var task in overdueTasks) {
+          final activityId = task['id'] as int?;
+          if (activityId != null) {
+            _overdueTaskActivityIds.add(activityId);
+          }
           final participants = task['activity_participants'] as List<dynamic>;
           for (var p in participants) {
             _overduePersonIds.add(p['person']['id'] as int);
@@ -203,6 +214,13 @@ class _MaintenanceDashboardScreenState
     Map<int, Map<String, dynamic>> staffTaskMap = {};
     for (var task in tasks) {
       final activityParticipants = task['activity_participants'] as List<dynamic>;
+      // Extract task info from nested task object
+      final taskObj = task['task'] as Map<String, dynamic>? ?? {};
+      final String taskTitle       = taskObj['title'] as String? ?? 'Untitled Task';
+      final String? taskDescription = taskObj['description'] as String?;
+      final String? taskEndTime    = task['end_time'] as String?;
+      final String? taskStartTime  = task['start_time'] as String?;
+
       for (var participant in activityParticipants) {
         final personId   = participant['person']['id'] as int;
         final personName = participant['person']['preferred_name'] as String;
@@ -214,12 +232,22 @@ class _MaintenanceDashboardScreenState
             'pending':  0,
             'progress': 0,
           };
+          _staffTaskDetails[personId] = [];
         }
         if (status == 'Pending') {
           staffTaskMap[personId]!['pending'] = (staffTaskMap[personId]!['pending'] as int) + 1;
         } else if (status == 'InProgress') {
           staffTaskMap[personId]!['progress'] = (staffTaskMap[personId]!['progress'] as int) + 1;
         }
+
+        // Store task detail for the popup with correct field names
+        _staffTaskDetails[personId]!.add({
+          'id':          task['id'], // Store activity ID for overdue check
+          'title':       taskTitle,
+          'status':      status,
+          'due_date':    taskEndTime,
+          'description': taskDescription,
+        });
       }
     }
 
@@ -234,26 +262,492 @@ class _MaintenanceDashboardScreenState
       'Bears': '🐻', 'Eagles': '🦅', 'Sharks': '🦈', 'Penguins': '🐧',
     };
     _classData = _fetchedPieChartData.map((item) {
-      String className = (item is ActivityAttendance ? item.description : item['description']) ?? 'Unknown';
-      int total   = (item is ActivityAttendance ? item.total_student_count : item['total_student_count']) ?? 0;
-      int present = (item is ActivityAttendance ? item.present_count : item['present_count']) ?? 0;
+      String className = (item is ActivityAttendance
+          ? item.description : item['description']) ?? 'Unknown';
+      int total   = (item is ActivityAttendance
+          ? item.total_student_count : item['total_student_count']) ?? 0;
+      int present = (item is ActivityAttendance
+          ? item.present_count : item['present_count']) ?? 0;
+      int organizationId = (item is ActivityAttendance
+          ? item.id : item['id']) ?? 53;
       return {
-        'name':    className,
-        'emoji':   classEmojis[className] ?? '📚',
-        'total':   total,
-        'present': present,
+        'name':           className,
+        'emoji':          classEmojis[className] ?? '📚',
+        'total':          total,
+        'present':        present,
+        'organizationId': organizationId,
       };
     }).toList();
   }
 
   int calculateTotalStudentCount(List<dynamic> data) {
     return data.fold(0, (sum, a) =>
-        sum + ((a is ActivityAttendance ? a.total_student_count : a['total_student_count'] as int?) ?? 0));
+        sum + ((a is ActivityAttendance
+            ? a.total_student_count
+            : a['total_student_count'] as int?) ?? 0));
   }
 
   int calculateTotalAttendance(List<dynamic> data) {
     return data.fold(0, (sum, a) =>
-        sum + ((a is ActivityAttendance ? a.present_count : a['present_count'] as int?) ?? 0));
+        sum + ((a is ActivityAttendance
+            ? a.present_count
+            : a['present_count'] as int?) ?? 0));
+  }
+
+  // ─────────────────────────────────────────────
+  //  Absent Students Popup
+  // ─────────────────────────────────────────────
+  void _showAbsentStudentsPopup(
+      BuildContext context, Map<String, dynamic> classData) {
+    final int organizationId = classData['organizationId'] as int;
+    final int total = classData['total'] as int;
+    final int present = classData['present'] as int;
+    final String className = classData['name'] as String;
+    final String emoji = classData['emoji'] as String;
+    final int activityId = 4; // Fixed activity ID for attendance tracking
+
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.35),
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 380, maxHeight: 480),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(emoji,
+                        style: const TextStyle(fontSize: 24)),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(className,
+                              style: const TextStyle(fontSize: 16,
+                                  fontWeight: FontWeight.w800, color: _textDark)),
+                          FutureBuilder<Map<String, dynamic>>(
+                            future: getDailyAbsenceSummary(organizationId, activityId),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Text('Loading absent students...',
+                                    style: TextStyle(fontSize: 11, color: _textMid));
+                              } else if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}',
+                                    style: const TextStyle(fontSize: 11, color: _red));
+                              } else {
+                                final absenceData = snapshot.data ?? {};
+                                final absentCount = absenceData['absent_count'] as int? ?? 0;
+                                return Text(
+                                  '$absentCount student${absentCount > 1 ? 's' : ''} absent today',
+                                  style: const TextStyle(fontSize: 11, color: _red),
+                                );
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.of(ctx).pop(),
+                      icon: const Icon(Icons.close_rounded,
+                          size: 18, color: _textLight),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const Divider(height: 1, color: _divider),
+                const SizedBox(height: 14),
+                Expanded(
+                  child: FutureBuilder<Map<String, dynamic>>(
+                    future: getDailyAbsenceSummary(organizationId, activityId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: SpinKitFadingCircle(
+                            color: _primary,
+                            size: 30,
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            'Failed to load absent students',
+                            style: const TextStyle(fontSize: 13, color: _red),
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      } else {
+                        final absenceData = snapshot.data ?? {};
+                        final absentNamesStr = absenceData['absent_names'] as String? ?? '';
+                        final absentList = absentNamesStr.isNotEmpty
+                            ? absentNamesStr.split(',').map((e) => e.trim()).toList()
+                            : <String>[];
+
+                        if (absentList.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              'No absent students',
+                              style: TextStyle(fontSize: 13, color: _green),
+                            ),
+                          );
+                        }
+
+                        return ListView.separated(
+                          shrinkWrap: true,
+                          itemCount: absentList.length,
+                          separatorBuilder: (_, __) =>
+                              const Divider(height: 1, color: _divider),
+                          itemBuilder: (_, i) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 32, height: 32,
+                                  decoration: BoxDecoration(
+                                      color: _red.withOpacity(0.1),
+                                      shape: BoxShape.circle),
+                                  child: Center(
+                                    child: Text(absentList[i][0].toUpperCase(),
+                                        style: const TextStyle(fontSize: 13,
+                                            fontWeight: FontWeight.w800, color: _red)),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(absentList[i],
+                                      style: const TextStyle(fontSize: 13,
+                                          fontWeight: FontWeight.w600, color: _textDark)),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: _red.withOpacity(0.08),
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(color: _red.withOpacity(0.2)),
+                                  ),
+                                  child: const Text('Absent',
+                                      style: TextStyle(fontSize: 10,
+                                          fontWeight: FontWeight.w700, color: _red)),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                      color: _bgPage, borderRadius: BorderRadius.circular(8)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Present: $present/$total',
+                          style: const TextStyle(fontSize: 11,
+                              fontWeight: FontWeight.w700, color: _green)),
+                      FutureBuilder<Map<String, dynamic>>(
+                        future: getDailyAbsenceSummary(organizationId, activityId),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final absenceData = snapshot.data ?? {};
+                            final absentCount = absenceData['absent_count'] as int? ?? 0;
+                            return Text('Absent: $absentCount',
+                                style: const TextStyle(fontSize: 11,
+                                    fontWeight: FontWeight.w700, color: _red));
+                          }
+                          return const Text('Absent: --',
+                              style: TextStyle(fontSize: 11,
+                                  fontWeight: FontWeight.w700, color: _red));
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────────
+  //  Staff Task Details Popup
+  // ─────────────────────────────────────────────
+  void _showStaffTaskDetailsPopup(
+    BuildContext context,
+    Map<String, dynamic> staffSummary,
+    String filterStatus, // 'Pending' or 'InProgress'
+  ) {
+    final int personId       = staffSummary['personId'] as int;
+    final String personName  = staffSummary['name'] as String;
+    final List<Map<String, dynamic>> allTasks =
+        _staffTaskDetails[personId] ?? [];
+    final List<Map<String, dynamic>> filtered =
+        allTasks.where((t) => t['status'] == filterStatus).toList();
+
+    if (filtered.isEmpty) return;
+
+    final bool isPending   = filterStatus == 'Pending';
+    final Color chipColor  = isPending ? _orange : _primary;
+    final String statusLabel = isPending ? 'Pending' : 'In Progress';
+    final IconData statusIcon =
+        isPending ? Icons.hourglass_empty_rounded : Icons.autorenew_rounded;
+
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.35),
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420, maxHeight: 520),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Header ──
+                Row(
+                  children: [
+                    Container(
+                      width: 38, height: 38,
+                      decoration: BoxDecoration(
+                          color: chipColor.withOpacity(0.12),
+                          shape: BoxShape.circle),
+                      child: Center(
+                        child: Text(
+                          personName.isNotEmpty
+                              ? personName[0].toUpperCase() : '?',
+                          style: TextStyle(fontSize: 16,
+                              fontWeight: FontWeight.w800, color: chipColor),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(personName,
+                              style: const TextStyle(fontSize: 15,
+                                  fontWeight: FontWeight.w800, color: _textDark)),
+                          Row(
+                            children: [
+                              Icon(statusIcon, size: 11, color: chipColor),
+                              const SizedBox(width: 4),
+                              Text('$statusLabel Tasks (${filtered.length})',
+                                  style: TextStyle(fontSize: 11,
+                                      color: chipColor,
+                                      fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.of(ctx).pop(),
+                      icon: const Icon(Icons.close_rounded,
+                          size: 18, color: _textLight),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const Divider(height: 1, color: _divider),
+                const SizedBox(height: 12),
+
+                // ── Task list ──
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: filtered.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 8),
+                    itemBuilder: (_, i) {
+                      final task        = filtered[i];
+                      final String title = task['title'] as String? ?? 'Untitled';
+                      final String? dueDate =
+                          task['due_date'] as String?;
+                      final String? description =
+                          task['description'] as String?;
+                      final int? activityId = task['id'] as int?;
+
+                      // Parse and format due date
+                      String? formattedDue;
+                      // Check if task is in the overdue set AND person has overdue tasks
+                      bool isOverdue = personId != null && 
+                          _overduePersonIds.contains(personId) &&
+                          activityId != null && 
+                          _overdueTaskActivityIds.contains(activityId);
+                      if (dueDate != null) {
+                        try {
+                          final dt = DateTime.parse(dueDate);
+                          formattedDue = DateFormat('d MMM yyyy').format(dt);
+                        } catch (_) {
+                          formattedDue = dueDate;
+                        }
+                      }
+
+                      final Color rowColor = isOverdue ? _red : chipColor;
+
+                      return Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: rowColor.withOpacity(0.04),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              color: rowColor.withOpacity(0.18)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Title row
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(top: 3),
+                                  width: 7, height: 7,
+                                  decoration: BoxDecoration(
+                                      color: rowColor,
+                                      shape: BoxShape.circle),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(title,
+                                      style: const TextStyle(fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                          color: _textDark)),
+                                ),
+                                const SizedBox(width: 8),
+                                // Status badge
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 7, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: rowColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(
+                                        color: rowColor.withOpacity(0.25)),
+                                  ),
+                                  child: Text(
+                                    isOverdue ? 'Overdue' : statusLabel,
+                                    style: TextStyle(fontSize: 9,
+                                        fontWeight: FontWeight.w700,
+                                        color: rowColor),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // Description
+                            if (description != null &&
+                                description.trim().isNotEmpty) ...[
+                              const SizedBox(height: 6),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 15),
+                                child: Text(description,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                        fontSize: 11, color: _textMid)),
+                              ),
+                            ],
+
+                            // Due date
+                            if (formattedDue != null) ...[
+                              const SizedBox(height: 7),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 15),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.calendar_today_rounded,
+                                        size: 10, color: rowColor),
+                                    const SizedBox(width: 4),
+                                    Text('Due: $formattedDue',
+                                        style: TextStyle(fontSize: 10,
+                                            fontWeight: FontWeight.w600,
+                                            color: rowColor)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // ── Footer ──
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                      color: _bgPage,
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(statusIcon, size: 12, color: chipColor),
+                          const SizedBox(width: 5),
+                          Text('$statusLabel: ${filtered.length}',
+                              style: TextStyle(fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: chipColor)),
+                        ],
+                      ),
+                      if (_overduePersonIds.contains(personId))
+                        Visibility(
+                          visible: filtered.any((task) {
+                            final taskActivityId = task['id'] as int?;
+                            return taskActivityId != null &&
+                                _overdueTaskActivityIds.contains(taskActivityId);
+                          }),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.warning_amber_rounded,
+                                  size: 12, color: _red),
+                              SizedBox(width: 4),
+                              Text('Has overdue tasks',
+                                  style: TextStyle(fontSize: 11,
+                                      fontWeight: FontWeight.w700, color: _red)),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   // ─────────────────────────────────────────────
@@ -406,33 +900,26 @@ class _MaintenanceDashboardScreenState
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              width: 150,
-              height: 150,
+              width: 150, height: 150,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Background circle
                   SizedBox(
-                    width: 140,
-                    height: 140,
+                    width: 140, height: 140,
                     child: CircularProgressIndicator(
-                      value: 1,
-                      strokeWidth: 16,
+                      value: 1, strokeWidth: 16,
                       backgroundColor: const Color(0xFFECF0F1),
-                      valueColor:
-                          const AlwaysStoppedAnimation(Color(0xFFECF0F1)),
+                      valueColor: const AlwaysStoppedAnimation(
+                          Color(0xFFECF0F1)),
                     ),
                   ),
-                  // Progress circle
                   SizedBox(
-                    width: 140,
-                    height: 140,
+                    width: 140, height: 140,
                     child: CircularProgressIndicator(
-                      value: percentage / 100,
-                      strokeWidth: 16,
+                      value: percentage / 100, strokeWidth: 16,
                       backgroundColor: Colors.transparent,
-                      valueColor:
-                          const AlwaysStoppedAnimation(Color(0xFF1BB6E8)),
+                      valueColor: const AlwaysStoppedAnimation(
+                          Color(0xFF1BB6E8)),
                       strokeCap: StrokeCap.round,
                     ),
                   ),
@@ -440,50 +927,33 @@ class _MaintenanceDashboardScreenState
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        '$totalAttendance',
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF2C3E50),
-                        ),
-                      ),
-                      Text(
-                        'of $totalStudentCount',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
+                      Text('$totalAttendance',
+                          style: const TextStyle(fontSize: 32,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF2C3E50))),
+                      Text('of $totalStudentCount',
+                          style: TextStyle(
+                              fontSize: 12, color: Colors.grey[600])),
                     ],
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 12),
-            Text(
-              'Students Present',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
-            ),
+            Text('Students Present',
+                style: TextStyle(fontSize: 12, color: Colors.grey[600])),
             const SizedBox(height: 1),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 20, vertical: 2),
               decoration: BoxDecoration(
                 color: const Color(0xFFE8F8F5),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
-                '${percentage.toStringAsFixed(2)}%',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF27AE60),
-                ),
-              ),
+              child: Text('${percentage.toStringAsFixed(2)}%',
+                  style: const TextStyle(fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF27AE60))),
             ),
           ],
         ),
@@ -493,9 +963,7 @@ class _MaintenanceDashboardScreenState
   // ── Late Analysis Card ───────────────────────
   Widget _buildLateAnalysisCard() {
     final List<Map<String, dynamic>> lateAttendanceData =
-        _lateAttendanceData.isNotEmpty
-            ? _lateAttendanceData
-            : [];
+        _lateAttendanceData.isNotEmpty ? _lateAttendanceData : [];
     if (lateAttendanceData.isEmpty) {
       return _card(
         child: Center(
@@ -504,7 +972,8 @@ class _MaintenanceDashboardScreenState
         ),
       );
     }
-    int totalLate = lateAttendanceData.fold(0, (s, i) => s + (i['value'] as int));
+    int totalLate =
+        lateAttendanceData.fold(0, (s, i) => s + (i['value'] as int));
 
     return _card(
       child: Column(
@@ -518,33 +987,38 @@ class _MaintenanceDashboardScreenState
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Donut
                 Expanded(
                   flex: 4,
                   child: Center(
                     child: SizedBox(
                       width: 150, height: 150,
                       child: GestureDetector(
-                        onTapUp: (d) =>
-                            _handlePieChartTap(d.localPosition, lateAttendanceData, 150),
+                        onTapUp: (d) => _handlePieChartTap(
+                            d.localPosition, lateAttendanceData, 150),
                         child: MouseRegion(
                           cursor: SystemMouseCursors.click,
-                          onHover: (e) =>
-                              _handlePieChartHover(e.localPosition, lateAttendanceData, 150),
-                          onExit: (_) => setState(() => _hoveredPieSegment = null),
+                          onHover: (e) => _handlePieChartHover(
+                              e.localPosition, lateAttendanceData, 150),
+                          onExit: (_) =>
+                              setState(() => _hoveredPieSegment = null),
                           child: Stack(
                             children: [
                               CustomPaint(
-                                painter: _PieChartPainter(lateAttendanceData, Colors.white),
+                                painter: _PieChartPainter(
+                                    lateAttendanceData, Colors.white),
                                 child: Center(
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text('$totalAttendance',
-                                          style: const TextStyle(fontSize: 26,
-                                              fontWeight: FontWeight.w800, color: _textDark)),
+                                          style: const TextStyle(
+                                              fontSize: 26,
+                                              fontWeight: FontWeight.w800,
+                                              color: _textDark)),
                                       const Text('Students',
-                                          style: TextStyle(fontSize: 10, color: _textMid)),
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              color: _textMid)),
                                     ],
                                   ),
                                 ),
@@ -558,14 +1032,19 @@ class _MaintenanceDashboardScreenState
                                           horizontal: 10, vertical: 5),
                                       decoration: BoxDecoration(
                                         color: _textDark,
-                                        borderRadius: BorderRadius.circular(6),
+                                        borderRadius:
+                                            BorderRadius.circular(6),
                                         boxShadow: [BoxShadow(
-                                            color: Colors.black.withOpacity(0.15),
+                                            color: Colors.black
+                                                .withOpacity(0.15),
                                             blurRadius: 4)],
                                       ),
                                       child: Text(_hoveredPieSegment!,
-                                          style: const TextStyle(color: Colors.white,
-                                              fontSize: 10, fontWeight: FontWeight.w600)),
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                              fontWeight:
+                                                  FontWeight.w600)),
                                     ),
                                   ),
                                 ),
@@ -583,7 +1062,8 @@ class _MaintenanceDashboardScreenState
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: lateAttendanceData.map((item) {
-                      double pct = (item['value'] as int) / totalLate * 100;
+                      double pct =
+                          (item['value'] as int) / totalLate * 100;
                       final color = item['color'] as Color;
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10),
@@ -592,7 +1072,8 @@ class _MaintenanceDashboardScreenState
                             Container(
                               width: 9, height: 9,
                               decoration: BoxDecoration(
-                                  color: color, borderRadius: BorderRadius.circular(2)),
+                                  color: color,
+                                  borderRadius: BorderRadius.circular(2)),
                             ),
                             const SizedBox(width: 8),
                             Expanded(
@@ -600,15 +1081,21 @@ class _MaintenanceDashboardScreenState
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(item['label'] as String,
-                                      style: const TextStyle(fontSize: 11,
-                                          color: _textDark, fontWeight: FontWeight.w500)),
+                                      style: const TextStyle(
+                                          fontSize: 11,
+                                          color: _textDark,
+                                          fontWeight: FontWeight.w500)),
                                   const SizedBox(height: 3),
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(4),
                                     child: LinearProgressIndicator(
-                                      value: pct / 100, minHeight: 5,
-                                      backgroundColor: const Color(0xFFE8F0F5),
-                                      valueColor: AlwaysStoppedAnimation<Color>(color),
+                                      value: pct / 100,
+                                      minHeight: 5,
+                                      backgroundColor:
+                                          const Color(0xFFE8F0F5),
+                                      valueColor:
+                                          AlwaysStoppedAnimation<Color>(
+                                              color),
                                     ),
                                   ),
                                 ],
@@ -616,8 +1103,10 @@ class _MaintenanceDashboardScreenState
                             ),
                             const SizedBox(width: 8),
                             Text('${item['value']}',
-                                style: TextStyle(fontSize: 12,
-                                    fontWeight: FontWeight.w700, color: color)),
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: color)),
                           ],
                         ),
                       );
@@ -668,54 +1157,97 @@ class _MaintenanceDashboardScreenState
                       final pct = c['total'] > 0
                           ? (c['present'] as int) / (c['total'] as int)
                           : 0.0;
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF7FAFC),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: _divider),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 4, height: 32,
-                              decoration: BoxDecoration(
-                                  color: _primary,
-                                  borderRadius: BorderRadius.circular(2)),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(c['emoji'], style: const TextStyle(fontSize: 18)),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(c['name'],
-                                          style: const TextStyle(fontSize: 12,
-                                              fontWeight: FontWeight.w700, color: _textDark)),
-                                      Text('${c['present']}/${c['total']}',
-                                          style: const TextStyle(fontSize: 11,
-                                              fontWeight: FontWeight.w700, color: _primary)),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(4),
-                                    child: LinearProgressIndicator(
-                                      value: pct, minHeight: 4,
-                                      backgroundColor: const Color(0xFFDEEDF5),
-                                      valueColor: const AlwaysStoppedAnimation<Color>(_primary),
-                                    ),
-                                  ),
-                                ],
+                      final absentCount = c['total'] - c['present'];
+
+                      return InkWell(
+                        onTap: () => _showAbsentStudentsPopup(context, c),
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF7FAFC),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: _divider),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 4, height: 32,
+                                decoration: BoxDecoration(
+                                    color: _primary,
+                                    borderRadius:
+                                        BorderRadius.circular(2)),
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 10),
+                              Text(c['emoji'],
+                                  style:
+                                      const TextStyle(fontSize: 18)),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(c['name'],
+                                            style: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight:
+                                                    FontWeight.w700,
+                                                color: _textDark)),
+                                        Text(
+                                            '${c['present']}/${c['total']}',
+                                            style: const TextStyle(
+                                                fontSize: 11,
+                                                fontWeight:
+                                                    FontWeight.w700,
+                                                color: _primary)),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.circular(4),
+                                      child: LinearProgressIndicator(
+                                        value: pct,
+                                        minHeight: 4,
+                                        backgroundColor:
+                                            const Color(0xFFDEEDF5),
+                                        valueColor:
+                                            const AlwaysStoppedAnimation<
+                                                Color>(_primary),
+                                      ),
+                                    ),
+                                    if (absentCount > 0) ...[
+                                      const SizedBox(height: 6),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Absent ($absentCount)',
+                                            style: const TextStyle(
+                                                fontSize: 9,
+                                                fontWeight:
+                                                    FontWeight.w600,
+                                                color: _red),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          const Icon(
+                                              Icons.open_in_new_rounded,
+                                              size: 11,
+                                              color: _red),
+                                        ],
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
@@ -728,6 +1260,21 @@ class _MaintenanceDashboardScreenState
 
   // ── Staff Task Overview Card ─────────────────
   Widget _buildStaffTaskOverviewCard() {
+    // Count staff with actual overdue pending/in-progress tasks
+    int actualOverdueCount = 0;
+    for (var s in _staffTaskSummaries) {
+      final int personId = s['personId'] as int;
+      final personTasks = _staffTaskDetails[personId] ?? [];
+      final hasOverdue = personTasks.any((task) {
+        final taskActivityId = task['id'] as int?;
+        final status = task['status'] as String?;
+        return taskActivityId != null &&
+            _overdueTaskActivityIds.contains(taskActivityId) &&
+            (status == 'Pending' || status == 'InProgress');
+      });
+      if (hasOverdue) actualOverdueCount++;
+    }
+
     return _card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -738,29 +1285,29 @@ class _MaintenanceDashboardScreenState
                   style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700,
                       letterSpacing: 1.5, color: _textMid)),
               const Spacer(),
-              if (_overduePersonIds.isNotEmpty)
+              if (actualOverdueCount > 0)
                 AnimatedBuilder(
                   animation: _glowAnimation,
                   builder: (_, __) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: Color.lerp(
-                          const Color(0xFFFFE5E5), const Color(0xFFFFCCCC),
-                          _glowAnimation.value),
+                      color: Color.lerp(const Color(0xFFFFE5E5),
+                          const Color(0xFFFFCCCC), _glowAnimation.value),
                       borderRadius: BorderRadius.circular(4),
                       border: Border.all(
-                          color: _red.withOpacity(0.4 + _glowAnimation.value * 0.3)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: _red.withOpacity(_glowAnimation.value * 0.25),
-                          blurRadius: 8, spreadRadius: 1,
-                        ),
-                      ],
+                          color: _red.withOpacity(
+                              0.4 + _glowAnimation.value * 0.3)),
+                      boxShadow: [BoxShadow(
+                          color: _red.withOpacity(
+                              _glowAnimation.value * 0.25),
+                          blurRadius: 8, spreadRadius: 1)],
                     ),
                     child: Text(
-                      '⚠  ${_overduePersonIds.length} OVERDUE',
+                      '⚠  $actualOverdueCount OVERDUE',
                       style: const TextStyle(fontSize: 10, color: _red,
-                          fontWeight: FontWeight.w800, letterSpacing: 0.3),
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.3),
                     ),
                   ),
                 ),
@@ -779,7 +1326,6 @@ class _MaintenanceDashboardScreenState
             ],
           ),
           const SizedBox(height: 10),
-
           Expanded(
             child: _staffTaskSummaries.isEmpty
                 ? const Center(
@@ -790,9 +1336,11 @@ class _MaintenanceDashboardScreenState
                         SizedBox(height: 8),
                         Text('All caught up!',
                             style: TextStyle(color: _green,
-                                fontWeight: FontWeight.w700, fontSize: 14)),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14)),
                         Text('No Ongoing tasks',
-                            style: TextStyle(color: _textLight, fontSize: 11)),
+                            style: TextStyle(
+                                color: _textLight, fontSize: 11)),
                       ],
                     ),
                   )
@@ -800,8 +1348,17 @@ class _MaintenanceDashboardScreenState
                     itemCount: _staffTaskSummaries.length,
                     itemBuilder: (context, index) {
                       final s = _staffTaskSummaries[index];
-                      final bool hasOverdue =
-                          _overduePersonIds.contains(s['personId']);
+                      final int personId = s['personId'] as int;
+                      // Check if person has any overdue tasks in their task list
+                      final personTasks = _staffTaskDetails[personId] ?? [];
+                      final bool hasOverdue = personTasks.any((task) {
+                        final taskActivityId = task['id'] as int?;
+                        final status = task['status'] as String?;
+                        // Only count as overdue if their status is Pending/InProgress AND task is in overdue set
+                        return taskActivityId != null &&
+                            _overdueTaskActivityIds.contains(taskActivityId) &&
+                            (status == 'Pending' || status == 'InProgress');
+                      });
 
                       return AnimatedBuilder(
                         animation: _glowAnimation,
@@ -811,8 +1368,10 @@ class _MaintenanceDashboardScreenState
                               horizontal: 10, vertical: 8),
                           decoration: BoxDecoration(
                             color: hasOverdue
-                                ? Color.lerp(const Color(0xFFFFF5F5),
-                                    const Color(0xFFFFEBEB), _glowAnimation.value)
+                                ? Color.lerp(
+                                    const Color(0xFFFFF5F5),
+                                    const Color(0xFFFFEBEB),
+                                    _glowAnimation.value)
                                 : const Color(0xFFF7FAFC),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
@@ -823,13 +1382,10 @@ class _MaintenanceDashboardScreenState
                               width: 1.5,
                             ),
                             boxShadow: hasOverdue
-                                ? [
-                                    BoxShadow(
-                                      color: _red.withOpacity(
-                                          _glowAnimation.value * 0.15),
-                                      blurRadius: 8,
-                                    ),
-                                  ]
+                                ? [BoxShadow(
+                                    color: _red.withOpacity(
+                                        _glowAnimation.value * 0.15),
+                                    blurRadius: 8)]
                                 : [],
                           ),
                           child: Row(
@@ -846,54 +1402,69 @@ class _MaintenanceDashboardScreenState
                                 child: Center(
                                   child: Text(
                                     (s['name'] as String).isNotEmpty
-                                        ? (s['name'] as String)[0].toUpperCase()
+                                        ? (s['name'] as String)[0]
+                                            .toUpperCase()
                                         : '?',
                                     style: TextStyle(
-                                      fontSize: 12, fontWeight: FontWeight.w800,
-                                      color: hasOverdue ? _red : _primary,
-                                    ),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w800,
+                                        color: hasOverdue
+                                            ? _red : _primary),
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 8),
 
-                              // Name + hint
+                              // Name
                               Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                child: Row(
                                   children: [
-                                    Row(
-                                      children: [
-                                        Flexible(
-                                          child: Text(
-                                            s['name'],
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 11,
-                                              color: hasOverdue
-                                                  ? (_blinkOn ? _red : const Color(0xFFC0392B))
-                                                  : _textDark,
-                                            ),
-                                          ),
+                                    Flexible(
+                                      child: Text(
+                                        s['name'],
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 11,
+                                          color: hasOverdue
+                                              ? (_blinkOn
+                                                  ? _red
+                                                  : const Color(
+                                                      0xFFC0392B))
+                                              : _textDark,
                                         ),
-                                        if (hasOverdue) ...[
-                                          const SizedBox(width: 4),
-                                          Text(_blinkOn ? '⚠' : ' ',
-                                              style: const TextStyle(fontSize: 11)),
-                                        ],
-                                      ],
+                                      ),
                                     ),
+                                    if (hasOverdue) ...[
+                                      const SizedBox(width: 4),
+                                      Text(_blinkOn ? '⚠' : ' ',
+                                          style: const TextStyle(
+                                              fontSize: 11)),
+                                    ],
                                   ],
                                 ),
                               ),
 
-                              // Chips
+                              // ── Clickable chips ──
                               if ((s['pending'] as int) > 0)
-                                _taskChip('${s['pending']} Pending', _orange),
+                                GestureDetector(
+                                  onTap: () =>
+                                      _showStaffTaskDetailsPopup(
+                                          context, s, 'Pending'),
+                                  child: _taskChip(
+                                      '${s['pending']} Pending',
+                                      _orange),
+                                ),
                               const SizedBox(width: 4),
                               if ((s['progress'] as int) > 0)
-                                _taskChip('${s['progress']} Ongoing', _primary),
+                                GestureDetector(
+                                  onTap: () =>
+                                      _showStaffTaskDetailsPopup(
+                                          context, s, 'InProgress'),
+                                  child: _taskChip(
+                                      '${s['progress']} Ongoing',
+                                      _primary),
+                                ),
                             ],
                           ),
                         ),
@@ -906,10 +1477,8 @@ class _MaintenanceDashboardScreenState
     );
   }
 
-  // ── Shared helpers ───────────────────────────
   // ── Food Waste Card ──────────────────────────
   Widget _buildFoodWasteCard() {
-    // Hardcoded last-7-days data
     final List<Map<String, dynamic>> wasteData = [
       {'day': '2/18', 'cost': 320.0, 'color': _orange},
       {'day': '2/19', 'cost': 180.0, 'color': _orange},
@@ -957,21 +1526,18 @@ class _MaintenanceDashboardScreenState
               return Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  // Horizontal grid lines (no value labels)
                   ...List.generate(4, (i) {
                     final y = h - (i / 3) * h * 0.75 - h * 0.1;
                     return Positioned(
-                      top: y - 8,
-                      left: 0,
+                      top: y - 8, 
+                      left: 0, 
                       right: 0,
                       child: Container(
                         height: 1,
-                        color: _divider,
+                        color: _divider
                       ),
                     );
                   }),
-
-                  // Chart area (full width)
                   Positioned(
                     left: 0,
                     top: 0,
@@ -998,12 +1564,11 @@ class _MaintenanceDashboardScreenState
                       child: SizedBox(
                         width: 40,
                         child: Text(
-                          'LKR ${cost.toInt()}',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              fontSize: 7, color: _textMid,
-                              fontWeight: FontWeight.w600),
-                        ),
+                            'LKR ${cost.toInt()}',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 7,
+                                color: _textMid,
+                                fontWeight: FontWeight.w600)),
                       ),
                     );
                   }),
@@ -1017,8 +1582,7 @@ class _MaintenanceDashboardScreenState
                         child: Text(
                           wasteData[i]['day'] as String,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 8, color: _textMid),
-                        ),
+                          style: const TextStyle(fontSize: 8, color: _textMid)),
                       ),
                     );
                   }),
@@ -1026,7 +1590,6 @@ class _MaintenanceDashboardScreenState
               );
             }),
           ),
-
           const SizedBox(height: 10),
           const Divider(height: 1, color: _divider),
           const SizedBox(height: 8),
@@ -1035,6 +1598,7 @@ class _MaintenanceDashboardScreenState
     );
   }
 
+  // ── Shared helpers ───────────────────────────
   Widget _legendDot(Color color, String label) {
     return Row(
       children: [
@@ -1055,9 +1619,16 @@ class _MaintenanceDashboardScreenState
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(4),
           border: Border.all(color: color.withOpacity(0.25))),
-      child: Text(text,
-          style: TextStyle(color: color, fontSize: 10,
-              fontWeight: FontWeight.w800)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(text,
+              style: TextStyle(color: color, fontSize: 10,
+                  fontWeight: FontWeight.w800)),
+          const SizedBox(width: 3),
+          Icon(Icons.arrow_forward_ios_rounded, size: 8, color: color),
+        ],
+      ),
     );
   }
 
@@ -1070,8 +1641,7 @@ class _MaintenanceDashboardScreenState
         border: Border.all(color: _divider),
         boxShadow: [
           BoxShadow(color: Colors.black.withOpacity(0.05),
-              blurRadius: 10, offset: const Offset(0, 3))
-        ],
+              blurRadius: 10, offset: const Offset(0, 3))],
       ),
       child: child,
     );
@@ -1170,7 +1740,8 @@ class _PieChartPainter extends CustomPainter {
             center.dy + radius * sin(startAngle))
         ..arcTo(Rect.fromCircle(center: center, radius: radius),
             startAngle, sweepAngle, false)
-        ..lineTo(center.dx + innerRadius * cos(startAngle + sweepAngle),
+        ..lineTo(
+            center.dx + innerRadius * cos(startAngle + sweepAngle),
             center.dy + innerRadius * sin(startAngle + sweepAngle))
         ..arcTo(Rect.fromCircle(center: center, radius: innerRadius),
             startAngle + sweepAngle, -sweepAngle, false)
