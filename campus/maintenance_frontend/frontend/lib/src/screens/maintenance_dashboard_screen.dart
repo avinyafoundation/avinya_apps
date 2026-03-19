@@ -39,7 +39,7 @@ class _MaintenanceDashboardScreenState
   // Dynamic attendance data for Teacher View
   List<Map<String, dynamic>> _bestAttendanceStudents = [];
   List<Map<String, dynamic>> _worstAttendanceStudents = [];
-  String _attendanceFromDate = '2026-03-01';
+  String _attendanceFromDate = '2026-01-01';
   String _attendanceToDate = '';
 
   Timer? _blinkTimer;
@@ -434,7 +434,7 @@ class _MaintenanceDashboardScreenState
   Future<void> _fetchAttendanceRanking() async {
     try {
       final now = DateTime.now();
-      final fromDate = '2026-03-01';
+      final fromDate = '2026-01-01';
       final toDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
       
       final bestStudents = await getAttendanceRanking(
@@ -442,14 +442,14 @@ class _MaintenanceDashboardScreenState
         sort: 'DESC',
         fromDate: fromDate,
         toDate: toDate,
-        limit: 10,
+        limit: 120,
       );
       final worstStudents = await getAttendanceRanking(
         organizationId: 46,
         sort: 'ASC',
         fromDate: fromDate,
         toDate: toDate,
-        limit: 10,
+        limit: 120,
       );
       
       if (mounted) {
@@ -468,7 +468,7 @@ class _MaintenanceDashboardScreenState
   Future<void> _fetchClassAttendanceRanking() async {
     try {
       final now = DateTime.now();
-      final fromDate = '2026-03-01';
+      final fromDate = '2026-01-01';
       final toDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
       
       final ranks = await getClassAttendanceRanking(
