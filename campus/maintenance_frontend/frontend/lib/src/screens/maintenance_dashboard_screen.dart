@@ -20,8 +20,12 @@ class MaintenanceDashboardScreen extends StatefulWidget {
 
 class _MaintenanceDashboardScreenState
     extends State<MaintenanceDashboardScreen> with TickerProviderStateMixin {
+  // --- Environment Configuration ---
+  static const String _roleEnvironment = String.fromEnvironment('ROLE', defaultValue: '');
+  static final bool _roleFixed = _roleEnvironment.isNotEmpty;
+  
   // --- View Mode ---
-  DashboardView _currentView = DashboardView.management;
+  late DashboardView _currentView;
   bool _viewSelected = false; // whether the startup picker has been dismissed
 
   // --- Data States ---
@@ -77,6 +81,16 @@ class _MaintenanceDashboardScreenState
   void initState() {
     super.initState();
 
+    // Initialize view based on ROLE environment variable
+    if (_roleFixed) {
+      _currentView = _roleEnvironment.toLowerCase() == 'teacher'
+          ? DashboardView.teacher
+          : DashboardView.management;
+      _viewSelected = true; // Skip picker if role is fixed
+    } else {
+      _currentView = DashboardView.management;
+    }
+
     _glowController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
@@ -106,9 +120,9 @@ class _MaintenanceDashboardScreenState
     _startAutoRefreshTimer();
     _loadAllDashboardData();
 
-    // Show view picker on first launch
+    // Show view picker on first launch only if role is not fixed
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _showViewPickerDialog();
+      if (mounted && !_roleFixed) _showViewPickerDialog();
     });
   }
 
@@ -1051,8 +1065,10 @@ class _MaintenanceDashboardScreenState
         const Spacer(),
 
         // ── View Toggle ──
-        _buildViewToggle(),
-        const SizedBox(width: 14),
+        if (!_roleFixed) ...[
+          _buildViewToggle(),
+          const SizedBox(width: 14),
+        ],
 
         // Clock
         Container(
@@ -1110,6 +1126,11 @@ class _MaintenanceDashboardScreenState
 
   // ── View Toggle Widget ──────────────────────
   Widget _buildViewToggle() {
+    // Hide view toggle if role is fixed via environment variable
+    if (_roleFixed) {
+      return const SizedBox.shrink();
+    }
+
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
@@ -1547,7 +1568,7 @@ class _MaintenanceDashboardScreenState
                                                   borderRadius: BorderRadius.circular(3),
                                                 ),
                                                 child: Text(
-                                                  '${((c['attendance_percentage'] as double?) ?? 0).toStringAsFixed(1)}%',
+                                                  'Y.T.D - ${((c['attendance_percentage'] as double?) ?? 0).toStringAsFixed(1)}%',
                                                   style: TextStyle(
                                                       fontSize: 9,
                                                       fontWeight: FontWeight.w700,
@@ -1566,7 +1587,7 @@ class _MaintenanceDashboardScreenState
                                             decoration: BoxDecoration(color: _green.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
                                             child: const Row(
                                               children: [
-                                                Icon(Icons.star, size: 8, color: _green),
+                                                Text('😊', style: TextStyle(fontSize: 10)),
                                                 SizedBox(width: 2),
                                                 Text('Best Attendance', style: TextStyle(fontSize: 8, color: _green, fontWeight: FontWeight.bold)),
                                               ]
@@ -1580,7 +1601,7 @@ class _MaintenanceDashboardScreenState
                                             decoration: BoxDecoration(color: _red.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
                                             child: const Row(
                                               children: [
-                                                Icon(Icons.warning_rounded, size: 8, color: _red),
+                                                Text('😞', style: TextStyle(fontSize: 10)),
                                                 SizedBox(width: 2),
                                                 Text('Worst Attendance', style: TextStyle(fontSize: 8, color: _red, fontWeight: FontWeight.bold)),
                                               ]
@@ -2098,13 +2119,13 @@ class _MaintenanceDashboardScreenState
   // ── Food Waste Card ──────────────────────────
   Widget _buildFoodWasteCard() {
     final List<Map<String, dynamic>> wasteData = [
-      {'day': '2/18', 'cost': 320.0, 'color': _orange},
-      {'day': '2/19', 'cost': 180.0, 'color': _orange},
-      {'day': '2/20', 'cost': 400.0, 'color': _orange},
-      {'day': '2/21', 'cost': 250.0, 'color': _orange},
-      {'day': '2/22', 'cost': 250.0, 'color': _orange},
-      {'day': '2/23', 'cost': 450.0, 'color': _orange},
-      {'day': '2/24', 'cost': 1310.0, 'color': _orange},
+      {'day': '2/18', 'cost': 0.0, 'color': _orange},
+      {'day': '2/19', 'cost': 0.0, 'color': _orange},
+      {'day': '2/20', 'cost': 0.0, 'color': _orange},
+      {'day': '2/21', 'cost': 0.0, 'color': _orange},
+      {'day': '2/22', 'cost': 0.0, 'color': _orange},
+      {'day': '2/23', 'cost': 0.0, 'color': _orange},
+      {'day': '2/24', 'cost': 0.0, 'color': _orange},
     ];
 
     final maxCost = wasteData.map((d) => d['cost'] as double).reduce(max);
