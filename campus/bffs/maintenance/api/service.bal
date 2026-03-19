@@ -266,7 +266,7 @@ service / on new http:Listener(9097) {
     //Get tasks by month, year and status
     resource function get organizations/[int organizationId]/reports/monthly/[int year]/[int month]/tasks(
         string? overallTaskStatus = (),
-        int 'limit = 10,
+        int 'limit = 1000,
         int offset = 0
     ) returns ActivityInstance[] | error {
 
