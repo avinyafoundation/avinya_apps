@@ -1117,6 +1117,7 @@ input Organization {
   description: String
   notes: String
   active: Int
+  attendance_percentage: Decimal
   name_en: String
   name_ta: String
   name_si: String
@@ -1137,6 +1138,7 @@ type OrganizationData {
   vacancies: [VacancyData!]
   organization_metadata: [OrganizationMetaData!]
   active: Int
+  attendance_percentage: Decimal
 }
 
 input OrganizationLocation {
@@ -1210,6 +1212,8 @@ input Person {
   updated_by: Int
   is_graduated: Boolean
   profile_picture_folder_id: String
+  attendance_percentage: Decimal
+  rank_position: Int!
 }
 
 input PersonCv {
@@ -1280,6 +1284,7 @@ type PersonData {
   alumni_work_experience: [AlumniWorkExperienceData!]
   profile_picture: PersonProfilePictureData
   profile_picture_folder_id: String
+  attendance_percentage: Decimal
 }
 
 input PersonFcmToken {
@@ -1408,7 +1413,7 @@ type Query {
   project_tasks(activity_id: Int!): [ActivityData!]
   student_applicant(jwt_sub_id: String): PersonData
   all_evaluations: [EvaluationData!]!
-  activity_evaluations(activity_id: Int!): [EvaluationData!]
+  activity_evaluations(person_id: Int, activity_id: Int!, from_date: String = "", to_date: String = ""): [EvaluationData!]
   activity_instance_evaluations(activity_instance_id: Int!): [EvaluationData!]
   evaluation_meta_data(meta_evaluation_id: Int!): EvaluationMetadataData
   evaluationCriteria(prompt: String, id: Int): EvaluationCriteriaData!
@@ -1453,6 +1458,8 @@ type Query {
   attendance_missed_by_security(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceMissedBySecurityData!]
   daily_students_attendance_by_parent_org(parent_organization_id: Int, date: String): [DailyActivityParticipantAttendanceByParentOrgData!]
   total_attendance_count_by_date(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [TotalActivityParticipantAttendanceCountByDateData!]
+  studentAttendanceRanking(organization_id: Int, class_id: Int, from_date: String = "", to_date: String = "", limit: Int, sort: String): [PersonData!]
+  calculateClassOrStudentAttendancePercentage(organization_id: Int, class_id: Int, from_date: String = "", to_date: String = "", limit: Int, sort: String): [OrganizationData!]
   daily_attendance_summary_report(parent_organization_id: Int, organization_id: Int, avinya_type_id: Int, from_date: String = "", to_date: String = ""): [DailyActivityParticipantAttendanceSummaryReportData!]
   inventory_data_by_organization(organization_id: Int, date: String = ""): [InventoryData!]
   consumable_weekly_report(organization_id: Int, from_date: String = "", to_date: String = ""): [InventoryData!]
