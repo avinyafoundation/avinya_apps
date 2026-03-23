@@ -1,26 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../widgets/common/page_title.dart';
-import '../widgets/common/stat_card.dart';
-import '../widgets/common/date_picker.dart';
-import '../widgets/common/button.dart';
-
-/// Simple model representing an inspection task
-class InspectionTask {
-  final int id;
-  final String description;
-  final DateTime completedDate;
-  final List<String> assignees;
-  bool? inspected; // null = not yet reviewed, true = passed, false = failed
-
-  InspectionTask({
-    required this.id,
-    required this.description,
-    required this.completedDate,
-    required this.assignees,
-    this.inspected,
-  });
-}
+import '../widgets/task_details_dialog.dart';
+import '../data/activity_instance.dart';
+import '../data/activity_participant.dart';
+import '../data/person.dart';
+import '../data/maintenance_task.dart';
+import 'package:gallery/config/app_config.dart';
+import 'package:gallery/data/campus_apps_portal.dart';
 
 class InspectionScreen extends StatefulWidget {
   const InspectionScreen({Key? key}) : super(key: key);
@@ -31,8 +18,9 @@ class InspectionScreen extends StatefulWidget {
 
 class _InspectionScreenState extends State<InspectionScreen> {
   DateTime _selectedDate = DateTime.now();
-  List<InspectionTask> _allTasks = [];
-  List<InspectionTask> _filteredTasks = [];
+  List<ActivityInstance> _allActivities = [];
+  List<ActivityInstance> _filteredActivities = [];
+  bool _isLoading = true;
 
   // --- THEME CONSTANTS ---
   final Color _primaryText = const Color(0xFF172B4D);
@@ -40,145 +28,206 @@ class _InspectionScreenState extends State<InspectionScreen> {
   final Color _bgLight = const Color(0xFFF4F5F7);
   final Color _accentBlue = const Color(0xFF0052CC);
   final Color _successGreen = const Color(0xFF36B37E);
-  final Color _errorRed = const Color(0xFFDE350B);
+  final Color _warningOrange = const Color(0xFFFFA500);
   final double _cardRadius = 12.0;
 
   @override
   void initState() {
     super.initState();
-    // Populate with dummy data spread across a few days
+    _loadActivities();
+  }
+
+  Future<void> _loadActivities() async {
+    try {
+      // Use mock data for testing
+      setState(() {
+        _allActivities = _generateMockActivities();
+        _isLoading = false;
+      });
+      _filterActivities();
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading activities: $e')),
+        );
+      }
+    }
+  }
+
+  List<ActivityInstance> _generateMockActivities() {
     final now = DateTime.now();
-    _allTasks = List.generate(20, (i) {
-      // Spread tasks across today, yesterday, and 2 days ago
-      final daysAgo = i % 3;
-      final date = DateTime(
+    final mockParticipants = [
+      'John Silva',
+      'Maria Fernando',
+      'David Perera',
+      'Priya Jayasinghe',
+      'Michael De Silva',
+    ];
+
+    final mockTasks = [
+      {
+        'title': 'Fire Extinguisher Inspection',
+        'description':
+            'Check pressure and expiration dates of all fire extinguishers',
+        'location': 'Main Building'
+      },
+      {
+        'title': 'HVAC Filter Replacement',
+        'description': 'Replace HVAC filters in all zones',
+        'location': 'Building A'
+      },
+      {
+        'title': 'Emergency Lighting Test',
+        'description': 'Test all emergency lighting systems',
+        'location': 'Entire Campus'
+      },
+      {
+        'title': 'Roof Drainage Clearance',
+        'description': 'Clear debris from roof drains',
+        'location': 'Rooftop'
+      },
+      {
+        'title': 'Electrical Panel Audit',
+        'description': 'Inspect and document electrical panel conditions',
+        'location': 'Basement'
+      },
+    ];
+
+    List<ActivityInstance> activities = [];
+    int id = 1;
+
+    for (var i = 0; i < 8; i++) {
+      final daysAgo = i ~/ 2; // Spread across past few days
+      final completionDate = DateTime(
         now.year,
         now.month,
         now.day - daysAgo,
-        8 + (i % 9), // vary the hour
+        9 + (i % 6), // Vary the hour
       );
-      return InspectionTask(
-        id: i + 1,
-        description: _taskDescriptions[i % _taskDescriptions.length],
-        completedDate: date,
-        assignees: _generateAssignees(i),
+
+      final taskData = mockTasks[i % mockTasks.length];
+
+      // Create participants with mixed statuses
+      final numParticipants = (i % 3) + 2; // 2-4 participants per task
+      final participants = <ActivityParticipant>[];
+
+      for (int p = 0; p < numParticipants; p++) {
+        // Mix of completed and pending statuses
+        final isCompleted = p < (numParticipants ~/ 2) + (i % 2);
+
+        participants.add(
+          ActivityParticipant(
+            id: id + p,
+            person: Person(
+              id: id + p,
+              preferred_name:
+                  mockParticipants[(i + p) % mockParticipants.length],
+            ),
+            status: isCompleted
+                ? ProgressStatus.completed
+                : ProgressStatus.inProgress,
+          ),
+        );
+      }
+
+      activities.add(
+        ActivityInstance(
+          id: id,
+          activity_id: i + 1,
+          name: taskData['title'],
+          description: taskData['description'],
+          end_time:
+              '${completionDate.year}-${completionDate.month.toString().padLeft(2, '0')}-${completionDate.day.toString().padLeft(2, '0')} ${completionDate.hour.toString().padLeft(2, '0')}:00:00',
+          activityParticipants: participants,
+          maintenanceTask: MaintenanceTask(
+            id: i + 1,
+            title: taskData['title']!,
+            description: taskData['description'],
+          ),
+        ),
       );
-    });
-    _filterTasks();
-  }
 
-  static const List<String> _taskDescriptions = [
-    'Fire extinguisher pressure check',
-    'HVAC filter replacement',
-    'Emergency lighting test',
-    'Boiler pressure inspection',
-    'Roof drainage clearance',
-    'Elevator safety inspection',
-    'Electrical panel audit',
-    'Plumbing leak inspection',
-    'Security camera functionality',
-    'Sprinkler system test',
-  ];
-
-  static const List<String> _assigneeNames = [
-    'John Silva',
-    'Maria Fernando',
-    'David Perera',
-    'Priya Jayasinghe',
-    'Michael De Silva',
-    'Sarah Wickramasinghe',
-    'Robert Gunasekara',
-    'Ayesha Rathnayake',
-    'Kevin Mendis',
-    'Nimal Rajapakse',
-  ];
-
-  static List<String> _generateAssignees(int taskIndex) {
-    // Generate 2-4 assignees per task
-    final numAssignees = (taskIndex % 3) + 2;
-    final assignees = <String>[];
-    for (int i = 0; i < numAssignees; i++) {
-      final assigneeIndex = (taskIndex + i) % _assigneeNames.length;
-      assignees.add(_assigneeNames[assigneeIndex]);
+      id += numParticipants + 1;
     }
-    return assignees;
+
+    return activities;
   }
 
-  void _filterTasks() {
+  void _filterActivities() {
     setState(() {
-      _filteredTasks = _allTasks.where((task) {
-        return DateUtils.isSameDay(task.completedDate, _selectedDate);
+      // Filter activities where at least one participant has marked task as completed
+      // on the selected date
+      _filteredActivities = _allActivities.where((activity) {
+        if (activity.activityParticipants == null ||
+            activity.activityParticipants!.isEmpty) {
+          return false;
+        }
+
+        // Check if any participant has completed status and the end_time matches the selected date
+        return activity.activityParticipants!.any((participant) {
+          if (participant.status == null) return false;
+
+          // Parse end_time to check if it matches selected date
+          if (activity.end_time == null) return false;
+
+          try {
+            final completionDate = DateTime.parse(activity.end_time!);
+            return participant.status.toString() ==
+                    'ProgressStatus.completed' &&
+                DateUtils.isSameDay(completionDate, _selectedDate);
+          } catch (e) {
+            return false;
+          }
+        });
       }).toList();
     });
   }
 
-  void _onDateSelected(String dateString) {
-    // Parse the date string and update _selectedDate
-    try {
-      final DateTime? parsed = DateTime.tryParse(dateString);
-      if (parsed != null) {
-        setState(() {
-          _selectedDate = parsed;
-        });
-        _filterTasks();
-      }
-    } catch (e) {
-      // Handle parsing error
-      print('Error parsing date: $e');
-    }
-  }
-
-  void _setInspectionResult(InspectionTask task, bool passed) {
+  void _onDateSelected(DateTime date) {
     setState(() {
-      task.inspected = passed;
+      _selectedDate = date;
     });
+    _filterActivities();
   }
-
-  Color _statusColor(bool? inspected) {
-    if (inspected == null) return _secondaryText;
-    return inspected ? _successGreen : _errorRed;
-  }
-
-  int get _pendingCount =>
-      _filteredTasks.where((t) => t.inspected == null).length;
-  int get _passedCount =>
-      _filteredTasks.where((t) => t.inspected == true).length;
-  int get _failedCount =>
-      _filteredTasks.where((t) => t.inspected == false).length;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _bgLight,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          bool isMobile = constraints.maxWidth <= 800;
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                bool isMobile = constraints.maxWidth <= 800;
 
-          return SingleChildScrollView(
-            padding: EdgeInsets.all(isMobile ? 12 : 16),
-            child: Center(
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 1400),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // --- 1. HEADER ---
-                    _buildHeader(isMobile),
-                    const SizedBox(height: 20),
+                return SingleChildScrollView(
+                  padding: EdgeInsets.all(isMobile ? 12 : 16),
+                  child: Center(
+                    child: Container(
+                      constraints: const BoxConstraints(maxWidth: 1400),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // --- 1. HEADER ---
+                          _buildHeader(isMobile),
+                          const SizedBox(height: 20),
 
-                    // --- 2. DATE SELECTOR ---
-                    _buildDateSelector(),
-                    const SizedBox(height: 20),
+                          // --- 2. DATE SELECTOR ---
+                          _buildDateSelector(),
+                          const SizedBox(height: 20),
 
-                    // --- 3. TASK LIST ---
-                    _buildTaskList(),
-                  ],
-                ),
-              ),
+                          // --- 3. ACTIVITY LIST ---
+                          _buildActivityList(),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 
@@ -216,12 +265,35 @@ class _InspectionScreenState extends State<InspectionScreen> {
           const Icon(Icons.calendar_today, color: Color(0xFF6B778C), size: 20),
           const SizedBox(width: 12),
           Expanded(
-            child: CustomDatePicker(
-              label: "Completed Date",
-              selectedDateString:
-                  DateFormat('yyyy-MM-dd').format(_selectedDate),
-              onDateSelected: _onDateSelected,
-              initialDate: _selectedDate,
+            child: GestureDetector(
+              onTap: () async {
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: _selectedDate,
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime.now(),
+                );
+                if (picked != null) {
+                  _onDateSelected(picked);
+                }
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.grey[200]!),
+                ),
+                child: Text(
+                  DateFormat('MMMM d, yyyy').format(_selectedDate),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: _primaryText,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -229,29 +301,8 @@ class _InspectionScreenState extends State<InspectionScreen> {
     );
   }
 
-  Widget _buildSummaryGrid(bool isMobile) {
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 300),
-        child: _buildStatCard(
-            'Total Tasks', _filteredTasks.length.toString(), _accentBlue),
-      ),
-    );
-  }
-
-  Widget _buildStatCard(String title, String value, Color accentColor) {
-    return StatCard(
-      title: title,
-      value: value,
-      accentColor: accentColor,
-      primaryText: _primaryText,
-      secondaryText: _secondaryText,
-      cardRadius: _cardRadius,
-    );
-  }
-
-  Widget _buildTaskList() {
-    if (_filteredTasks.isEmpty) {
+  Widget _buildActivityList() {
+    if (_filteredActivities.isEmpty) {
       return _buildEmptyState();
     }
 
@@ -283,24 +334,21 @@ class _InspectionScreenState extends State<InspectionScreen> {
           ),
           const Divider(height: 1),
 
-          // Task list
+          // Activity list
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: _filteredTasks.length,
+            itemCount: _filteredActivities.length,
             separatorBuilder: (_, __) => const Divider(height: 1),
             itemBuilder: (context, index) {
-              final task = _filteredTasks[index];
-              return _TaskListItem(
-                task: task,
-                onPass: () => _setInspectionResult(task, true),
-                onFail: () => _setInspectionResult(task, false),
-                onReset: () => setState(() => task.inspected = null),
-                statusColor: _statusColor(task.inspected),
+              final activity = _filteredActivities[index];
+              return _ActivityListItem(
+                activity: activity,
+                onTap: () => _showActivityDetailsDialog(context, activity),
                 primaryText: _primaryText,
                 secondaryText: _secondaryText,
                 successColor: _successGreen,
-                errorColor: _errorRed,
+                warningColor: _warningOrange,
               );
             },
           ),
@@ -347,52 +395,69 @@ class _InspectionScreenState extends State<InspectionScreen> {
       ),
     );
   }
+
+  void _showActivityDetailsDialog(
+      BuildContext context, ActivityInstance activity) {
+    showDialog(
+      context: context,
+      builder: (context) => TaskDetailsDialog(
+        activityInstance: activity,
+        onSave: () {
+          _loadActivities(); // Refresh the list after save
+        },
+      ),
+    );
+  }
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Task List Item Widget
+// Activity List Item Widget
 // ──────────────────────────────────────────────────────────────────────────────
 
-class _TaskListItem extends StatefulWidget {
-  final InspectionTask task;
-  final VoidCallback onPass;
-  final VoidCallback onFail;
-  final VoidCallback onReset;
-  final Color statusColor;
+class _ActivityListItem extends StatefulWidget {
+  final ActivityInstance activity;
+  final VoidCallback onTap;
   final Color primaryText;
   final Color secondaryText;
   final Color successColor;
-  final Color errorColor;
+  final Color warningColor;
 
-  const _TaskListItem({
-    required this.task,
-    required this.onPass,
-    required this.onFail,
-    required this.onReset,
-    required this.statusColor,
+  const _ActivityListItem({
+    required this.activity,
+    required this.onTap,
     required this.primaryText,
     required this.secondaryText,
     required this.successColor,
-    required this.errorColor,
+    required this.warningColor,
   });
 
   @override
-  State<_TaskListItem> createState() => _TaskListItemState();
+  State<_ActivityListItem> createState() => _ActivityListItemState();
 }
 
-class _TaskListItemState extends State<_TaskListItem> {
+class _ActivityListItemState extends State<_ActivityListItem> {
   bool _isHovered = false;
 
   @override
   Widget build(BuildContext context) {
-    final timeLabel = DateFormat('h:mm a').format(widget.task.completedDate);
-    final isReviewed = widget.task.inspected != null;
+    final taskTitle = widget.activity.maintenanceTask?.title ?? "Unknown Task";
+    final participants = widget.activity.activityParticipants ?? [];
+
+    // Count completed and pending statuses
+    final completedCount = participants
+        .where((p) => p.status.toString() == 'ProgressStatus.completed')
+        .length;
+    final totalCount = participants.length;
+
+    // Get partially completed status
+    final hasPartialCompletion =
+        completedCount > 0 && completedCount < totalCount;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: InkWell(
-        onTap: () => _showTaskDetailsDialog(context),
+        onTap: widget.onTap,
         borderRadius: BorderRadius.circular(8),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
@@ -400,176 +465,126 @@ class _TaskListItemState extends State<_TaskListItem> {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              // Status indicator
+              // Status indicator bar
               Container(
                 width: 4,
-                height: 48,
+                height: 56,
                 decoration: BoxDecoration(
-                  color: widget.statusColor,
+                  color: hasPartialCompletion
+                      ? widget.warningColor
+                      : widget.successColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
               const SizedBox(width: 16),
 
-              // Task info
+              // Activity info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: widget.primaryText.withOpacity(0.08),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            'Task #${widget.task.id}',
-                            style: TextStyle(
-                              color: widget.primaryText,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Icon(Icons.access_time,
-                            size: 14, color: widget.secondaryText),
-                        const SizedBox(width: 4),
-                        Text(
-                          timeLabel,
-                          style: TextStyle(
-                            color: widget.secondaryText,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      widget.task.description,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: widget.primaryText,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Icon(Icons.person,
-                            size: 14, color: widget.secondaryText),
-                        const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            widget.task.assignees.join(', '),
+                            taskTitle,
                             style: TextStyle(
-                              color: widget.secondaryText,
-                              fontSize: 13,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: widget.primaryText,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        const SizedBox(width: 12),
+                        _buildCompletionBadge(
+                          completedCount,
+                          totalCount,
+                          hasPartialCompletion,
+                        ),
                       ],
                     ),
-                    if (isReviewed) ...[
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(
-                            widget.task.inspected!
-                                ? Icons.check_circle
-                                : Icons.error,
-                            size: 16,
-                            color: widget.statusColor,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            widget.task.inspected!
-                                ? 'Inspection Passed'
-                                : 'Inspection Failed',
-                            style: TextStyle(
-                              color: widget.statusColor,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
+                    const SizedBox(height: 8),
+                    // Description
+                    if (widget.activity.maintenanceTask?.description != null)
+                      Text(
+                        widget.activity.maintenanceTask!.description!,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: widget.secondaryText,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    const SizedBox(height: 8),
+                    // Participants list
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: participants.take(3).map((participant) {
+                        final isCompleted = participant.status.toString() ==
+                            'ProgressStatus.completed';
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: isCompleted
+                                ? widget.successColor.withOpacity(0.15)
+                                : widget.secondaryText.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(
+                              color: isCompleted
+                                  ? widget.successColor.withOpacity(0.3)
+                                  : Colors.transparent,
+                              width: 1,
                             ),
                           ),
-                          const Spacer(),
-                          // Undo button
-                          InkWell(
-                            onTap: widget.onReset,
-                            borderRadius: BorderRadius.circular(4),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              child: Text(
-                                'Reset',
-                                style: TextStyle(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (isCompleted)
+                                Icon(
+                                  Icons.check,
+                                  size: 12,
+                                  color: widget.successColor,
+                                )
+                              else
+                                Icon(
+                                  Icons.schedule,
+                                  size: 12,
                                   color: widget.secondaryText,
+                                ),
+                              const SizedBox(width: 4),
+                              Text(
+                                participant.person?.preferred_name ?? "Unknown",
+                                style: TextStyle(
                                   fontSize: 12,
-                                  decoration: TextDecoration.underline,
+                                  color: widget.primaryText,
+                                  fontWeight: isCompleted
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
+                        );
+                      }).toList(),
+                    ),
+                    if (participants.length > 3)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          '+${participants.length - 3} more',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: widget.secondaryText,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
                       ),
-                    ],
                   ],
                 ),
               ),
-
-              const SizedBox(width: 16),
-
-              // Action buttons
-              if (!isReviewed)
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: widget.onPass,
-                      icon: Icon(Icons.check, color: Colors.white),
-                      style: IconButton.styleFrom(
-                        backgroundColor: widget.successColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        padding: EdgeInsets.all(8),
-                      ),
-                      tooltip: 'Mark as passed',
-                    ),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      onPressed: widget.onFail,
-                      icon: Icon(Icons.close, color: Colors.white),
-                      style: IconButton.styleFrom(
-                        backgroundColor: widget.errorColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        padding: EdgeInsets.all(8),
-                      ),
-                      tooltip: 'Mark as failed',
-                    ),
-                  ],
-                )
-              else
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: widget.statusColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(6),
-                    border:
-                        Border.all(color: widget.statusColor.withOpacity(0.3)),
-                  ),
-                  child: Icon(
-                    widget.task.inspected! ? Icons.check : Icons.close,
-                    color: widget.statusColor,
-                    size: 20,
-                  ),
-                ),
             ],
           ),
         ),
@@ -577,246 +592,31 @@ class _TaskListItemState extends State<_TaskListItem> {
     );
   }
 
-  void _showTaskDetailsDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => _InspectionTaskDetailsDialog(
-        task: widget.task,
-        onPass: widget.onPass,
-        onFail: widget.onFail,
-        onReset: widget.onReset,
-        successColor: widget.successColor,
-        errorColor: widget.errorColor,
-        primaryText: widget.primaryText,
-        secondaryText: widget.secondaryText,
+  Widget _buildCompletionBadge(
+    int completed,
+    int total,
+    bool isPartial,
+  ) {
+    String label = isPartial ? '$completed/$total Completed' : 'Completed';
+    Color bgColor = isPartial
+        ? widget.warningColor.withOpacity(0.15)
+        : widget.successColor.withOpacity(0.15);
+    Color textColor = isPartial ? widget.warningColor : widget.successColor;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: textColor.withOpacity(0.3), width: 1),
       ),
-    );
-  }
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Inspection Task Details Dialog
-// ──────────────────────────────────────────────────────────────────────────────
-
-class _InspectionTaskDetailsDialog extends StatelessWidget {
-  final InspectionTask task;
-  final VoidCallback onPass;
-  final VoidCallback onFail;
-  final VoidCallback onReset;
-  final Color successColor;
-  final Color errorColor;
-  final Color primaryText;
-  final Color secondaryText;
-
-  const _InspectionTaskDetailsDialog({
-    required this.task,
-    required this.onPass,
-    required this.onFail,
-    required this.onReset,
-    required this.successColor,
-    required this.errorColor,
-    required this.primaryText,
-    required this.secondaryText,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final timeLabel = DateFormat('h:mm a').format(task.completedDate);
-    final dateLabel = DateFormat('MMMM d, yyyy').format(task.completedDate);
-    final isReviewed = task.inspected != null;
-
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        width: 500,
-        constraints: BoxConstraints(
-          maxWidth: 600,
-          maxHeight: MediaQuery.of(context).size.height * 0.8,
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: textColor,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Task #${task.id} Details',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: primaryText,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            ),
-            const Divider(),
-            const SizedBox(height: 16),
-
-            // Task Details
-            Flexible(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildDetailRow(
-                        Icons.description, 'Description', task.description),
-                    _buildDetailRow(
-                        Icons.calendar_today, 'Completion Date', dateLabel),
-                    _buildDetailRow(
-                        Icons.access_time, 'Completion Time', timeLabel),
-                    _buildDetailRow(
-                        Icons.people, 'Assignees', task.assignees.join(', ')),
-                    if (isReviewed)
-                      _buildDetailRow(
-                        task.inspected! ? Icons.check_circle : Icons.error,
-                        'Inspection Status',
-                        task.inspected! ? 'Passed' : 'Failed',
-                        statusColor:
-                            task.inspected! ? successColor : errorColor,
-                      ),
-                    const SizedBox(height: 24),
-
-                    // Action Buttons
-                    if (!isReviewed)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              onPass();
-                              Navigator.of(context).pop();
-                            },
-                            icon: const Icon(Icons.check, color: Colors.white),
-                            style: IconButton.styleFrom(
-                              backgroundColor: successColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: const EdgeInsets.all(12),
-                            ),
-                            tooltip: 'Mark as passed',
-                          ),
-                          const SizedBox(width: 12),
-                          IconButton(
-                            onPressed: () {
-                              onFail();
-                              Navigator.of(context).pop();
-                            },
-                            icon: const Icon(Icons.close, color: Colors.white),
-                            style: IconButton.styleFrom(
-                              backgroundColor: errorColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: const EdgeInsets.all(12),
-                            ),
-                            tooltip: 'Mark as failed',
-                          ),
-                        ],
-                      )
-                    else
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color:
-                                  (task.inspected! ? successColor : errorColor)
-                                      .withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: (task.inspected!
-                                        ? successColor
-                                        : errorColor)
-                                    .withOpacity(0.3),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  task.inspected! ? Icons.check : Icons.close,
-                                  color: task.inspected!
-                                      ? successColor
-                                      : errorColor,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  task.inspected!
-                                      ? 'Inspection Passed'
-                                      : 'Inspection Failed',
-                                  style: TextStyle(
-                                    color: task.inspected!
-                                        ? successColor
-                                        : errorColor,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              onReset();
-                              Navigator.of(context).pop();
-                            },
-                            child: Text(
-                              'Reset Inspection',
-                              style: TextStyle(color: secondaryText),
-                            ),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDetailRow(IconData icon, String label, String value,
-      {Color? statusColor}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 20, color: statusColor ?? secondaryText),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 120,
-            child: Text(
-              label,
-              style: TextStyle(
-                color: secondaryText,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                color: statusColor ?? primaryText,
-                fontWeight:
-                    statusColor != null ? FontWeight.w600 : FontWeight.normal,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
