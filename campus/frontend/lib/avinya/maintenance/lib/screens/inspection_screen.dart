@@ -147,6 +147,9 @@ class _InspectionScreenState extends State<InspectionScreen> {
             title: taskData['title']!,
             description: taskData['description'],
           ),
+          overallTaskStatus: i % 3 == 0
+              ? 'completed'
+              : (i % 3 == 1 ? 'inprogress' : 'pending'),
         ),
       );
 
@@ -345,6 +348,8 @@ class _InspectionScreenState extends State<InspectionScreen> {
               return _ActivityListItem(
                 activity: activity,
                 onTap: () => _showActivityDetailsDialog(context, activity),
+                onTaskStatusChanged: (status) =>
+                    _updateTaskStatus(activity, status),
                 primaryText: _primaryText,
                 secondaryText: _secondaryText,
                 successColor: _successGreen,
@@ -408,6 +413,19 @@ class _InspectionScreenState extends State<InspectionScreen> {
       ),
     );
   }
+
+  void _updateTaskStatus(ActivityInstance activity, String newStatus) {
+    setState(() {
+      activity.overallTaskStatus = newStatus;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Task status updated to $newStatus'),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -417,6 +435,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
 class _ActivityListItem extends StatefulWidget {
   final ActivityInstance activity;
   final VoidCallback onTap;
+  final Function(String) onTaskStatusChanged;
   final Color primaryText;
   final Color secondaryText;
   final Color successColor;
@@ -425,6 +444,7 @@ class _ActivityListItem extends StatefulWidget {
   const _ActivityListItem({
     required this.activity,
     required this.onTap,
+    required this.onTaskStatusChanged,
     required this.primaryText,
     required this.secondaryText,
     required this.successColor,
@@ -502,6 +522,8 @@ class _ActivityListItemState extends State<_ActivityListItem> {
                           totalCount,
                           hasPartialCompletion,
                         ),
+                        const SizedBox(width: 12),
+                        _buildTaskStatusDropdown(),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -618,6 +640,70 @@ class _ActivityListItemState extends State<_ActivityListItem> {
           color: textColor,
         ),
       ),
+    );
+  }
+
+  Widget _buildTaskStatusDropdown() {
+    final currentStatus = widget.activity.overallTaskStatus ?? 'pending';
+    final statusOptions = ['pending', 'inprogress', 'completed'];
+
+    return DropdownButton<String>(
+      value: currentStatus,
+      onChanged: (newStatus) {
+        if (newStatus != null) {
+          setState(() {
+            widget.activity.overallTaskStatus = newStatus;
+          });
+          widget.onTaskStatusChanged(newStatus);
+        }
+      },
+      items: statusOptions.map((status) {
+        Color statusColor;
+        IconData statusIcon;
+        String displayLabel;
+
+        switch (status) {
+          case 'pending':
+            statusColor = Colors.orange;
+            statusIcon = Icons.pending_actions;
+            displayLabel = 'Pending';
+            break;
+          case 'inprogress':
+            statusColor = Colors.blue;
+            statusIcon = Icons.hourglass_top;
+            displayLabel = 'In Progress';
+            break;
+          case 'completed':
+            statusColor = widget.successColor;
+            statusIcon = Icons.check_circle;
+            displayLabel = 'Completed';
+            break;
+          default:
+            statusColor = Colors.grey;
+            statusIcon = Icons.help;
+            displayLabel = status;
+        }
+
+        return DropdownMenuItem<String>(
+          value: status,
+          child: Row(
+            children: [
+              Icon(statusIcon, size: 16, color: statusColor),
+              const SizedBox(width: 6),
+              Text(
+                displayLabel,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: statusColor,
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+      underline: Container(),
+      isDense: true,
     );
   }
 }
