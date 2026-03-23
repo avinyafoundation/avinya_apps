@@ -260,7 +260,7 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
                       textStyle: MaterialStateProperty.all(
                           const TextStyle(fontSize: 20)),
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.deepPurpleAccent),
+                          MaterialStateProperty.all<Color>(Colors.blueAccent),
                       foregroundColor:
                           MaterialStateProperty.all<Color>(Colors.white),
                     ),
@@ -358,7 +358,7 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
         return  Container(
                         margin: EdgeInsets.only(top: 10),
                         child: SpinKitCircle(
-                          color: (Colors.deepPurpleAccent), // Customize the color of the indicator
+                          color: (Colors.blueAccent), // Customize the color of the indicator
                           size: 70, // Customize the size of the indicator
                         ),
             );

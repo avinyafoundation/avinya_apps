@@ -123,63 +123,66 @@ class _LeaveDatePickerState extends State<LeaveDatePicker> {
       appBar: AppBar(
         title: const Text("Select Leave Dates"),
       ),
-      body: Column(
-        children: [
-          TableCalendar(
-            firstDay: DateTime.utc(2020, 1, 1),
-            lastDay: DateTime.utc(2030, 12, 31),
-            focusedDay: _focusedDay,
-            selectedDayPredicate: (day) =>
-                _selectedDates.any((d) => _isSameDay(d.date, day)),
-            onDaySelected: _onDaySelected,
-            calendarStyle: CalendarStyle(
-              isTodayHighlighted: true,
-              selectedDecoration: const BoxDecoration(
-                color: Colors.blue,
-                shape: BoxShape.circle,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            TableCalendar(
+              firstDay: DateTime.utc(2020, 1, 1),
+              lastDay: DateTime.utc(2030, 12, 31),
+              focusedDay: _focusedDay,
+              startingDayOfWeek: StartingDayOfWeek.monday,
+              selectedDayPredicate: (day) =>
+                  _selectedDates.any((d) => _isSameDay(d.date, day)),
+              onDaySelected: _onDaySelected,
+              calendarStyle: CalendarStyle(
+                isTodayHighlighted: true,
+                selectedDecoration: const BoxDecoration(
+                  color: Colors.blue,
+                  shape: BoxShape.circle,
+                ),
+                todayDecoration: const BoxDecoration(
+                  color: Colors.orange,
+                  shape: BoxShape.circle,
+                ),
               ),
-              todayDecoration: const BoxDecoration(
-                color: Colors.orange,
-                shape: BoxShape.circle,
+              onPageChanged: (focusedDay) {
+                setState(() {
+                  _focusedDay = focusedDay;
+                  _year = focusedDay.year;
+                  _month = focusedDay.month;
+                });
+                _fetchLeaveDates(_year, _month);
+              },
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              "Selected Leave Days",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Wrap(
+                spacing: 10,
+                children: _selectedDates
+                    .map((leaveDate) => Chip(
+                          label: Text(
+                            leaveDate.date.day.toString(),
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ))
+                    .toList(),
               ),
             ),
-            onPageChanged: (focusedDay) {
-              setState(() {
-                _focusedDay = focusedDay;
-                _year = focusedDay.year;
-                _month = focusedDay.month;
-              });
-              _fetchLeaveDates(_year, _month);
-            },
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            "Selected Leave Days",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Wrap(
-              spacing: 10,
-              children: _selectedDates
-                  .map((leaveDate) => Chip(
-                        label: Text(
-                          leaveDate.date.day.toString(),
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ))
-                  .toList(),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _saveOrUpdateLeaveDates,
+              child:
+                  Text(_isUpdate ? "Update Leave Dates" : "Save Leave Dates"),
             ),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: _saveOrUpdateLeaveDates,
-            child:
-                Text(_isUpdate ? "Update Leave Dates" : "Save Leave Dates"),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

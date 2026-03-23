@@ -11,6 +11,7 @@ class StatCard extends StatefulWidget {
   final double cardRadius;
   final Color primaryText;
   final Color secondaryText;
+  final bool isLoading;
 
   const StatCard({
     super.key,
@@ -24,6 +25,7 @@ class StatCard extends StatefulWidget {
     this.cardRadius = 12.0,
     this.primaryText = const Color(0xFF172B4D),
     this.secondaryText = const Color(0xFF6B778C),
+    this.isLoading = false,
   });
 
   @override
@@ -35,36 +37,50 @@ class _StatCardState extends State<StatCard> {
 
   @override
   Widget build(BuildContext context) {
-    final isClickable = widget.onTap != null;
+    final isClickable = widget.onTap != null && !widget.isLoading;
     final hasIcon = widget.icon != null;
+    final showLoading = widget.isLoading;
 
     return MouseRegion(
       cursor: isClickable ? SystemMouseCursors.click : SystemMouseCursors.basic,
       onEnter: isClickable ? (_) => setState(() => _isHovered = true) : null,
       onExit: isClickable ? (_) => setState(() => _isHovered = false) : null,
       child: GestureDetector(
-        onTap: widget.onTap,
+        onTap: isClickable ? widget.onTap : null,
         child: AnimatedScale(
           scale: isClickable && _isHovered ? 1.02 : 1.0,
           duration: const Duration(milliseconds: 200),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             width: widget.width ?? double.infinity,
-            padding: hasIcon 
-                ? const EdgeInsets.all(16) 
+            padding: hasIcon
+                ? const EdgeInsets.all(16)
                 : const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(widget.cardRadius),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(isClickable && _isHovered ? 0.12 : 0.04),
+                  color: Colors.black
+                      .withOpacity(isClickable && _isHovered ? 0.12 : 0.04),
                   blurRadius: isClickable && _isHovered ? 28 : 20,
                   offset: Offset(0, isClickable && _isHovered ? 8 : 4),
                 ),
               ],
             ),
-            child: hasIcon ? _buildWithIcon() : _buildSimple(),
+            child: showLoading
+                ? Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(widget.primaryText),
+                      ),
+                    ),
+                  )
+                : (hasIcon ? _buildWithIcon() : _buildSimple()),
           ),
         ),
       ),

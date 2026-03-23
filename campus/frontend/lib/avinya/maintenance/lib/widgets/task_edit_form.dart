@@ -511,8 +511,8 @@ class TaskEditFormState extends State<TaskEditForm> {
                                 if (int.tryParse(value) == null) {
                                   return "Enter a valid number";
                                 }
-                                if (int.parse(value) <= 0) {
-                                  return "Value must be greater than 0";
+                                if (int.parse(value) < 0) {
+                                  return "Value must not be negative";
                                 }
                                 return null;
                               },

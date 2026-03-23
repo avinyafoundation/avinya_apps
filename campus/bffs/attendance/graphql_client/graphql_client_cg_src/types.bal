@@ -13,6 +13,7 @@ public type Activity record {
 
 public type ActivityInstance record {
     string? notes?;
+    ActivityParticipant[]? activity_participants?;
     string? created?;
     int? weekly_sequence?;
     string? end_time?;
@@ -22,6 +23,7 @@ public type ActivityInstance record {
     string? record_type?;
     int? monthly_sequence?;
     string? start_time?;
+    MaintenanceTask? task?;
     int? organization_id?;
     string? overall_task_status?;
     int? activity_id?;
@@ -30,6 +32,7 @@ public type ActivityInstance record {
     int? id?;
     string? updated?;
     int? place_id?;
+    MaintenanceFinance? finance?;
 };
 
 public type ActivityInstanceEvaluation record {
@@ -52,6 +55,7 @@ public type ActivityParticipant record {
     int? is_attending?;
     string? record_type?;
     int? activity_instance_id?;
+    Person? person?;
     int? organization_id?;
     int? id?;
     string? updated?;
@@ -68,6 +72,7 @@ public type ActivityParticipantAttendance record {
     string? out_marked_by?;
     string? updated?;
     string? record_type?;
+    string? event_time?;
     int? person_id?;
     string? sign_out_time?;
 };
@@ -361,16 +366,17 @@ public type JobPost record {
 };
 
 public type MaintenanceFinance record {
-    int? activity_instance_id?;
     anydata? labour_cost?;
     string? reviewed_by?;
+    anydata? total_cost?;
     string? created?;
+    MaterialCost[]? materialCosts?;
+    string? record_type?;
+    int? activity_instance_id?;
     anydata? estimated_cost?;
     string? rejection_reason?;
-    MaterialCost[]? materialCosts?;
     int? id?;
     string? updated?;
-    string? record_type?;
     string? reviewed_date?;
     string? status?;
 };
@@ -431,6 +437,7 @@ public type Organization record {
     int? active?;
     int[]? child_organizations_for_dashboard?;
     string? record_type?;
+    anydata? attendance_percentage?;
     int[]? parent_organizations?;
     int? phone?;
     int? id?;
@@ -455,11 +462,13 @@ public type Person record {
     string? date_of_birth?;
     int? parent_organization_id?;
     int? avinya_type_id?;
+    int rank_position?;
     Address? permanent_address?;
     boolean? is_graduated?;
     int? mailing_address_id?;
     Alumni? alumni?;
     string? profile_picture_folder_id?;
+    anydata? attendance_percentage?;
     string? id_no?;
     string? jwt_email?;
     string? bank_name?;
@@ -832,13 +841,9 @@ public type GetActivityEvaluationsResponse record {|
     record {|
         int? id;
         int? evaluatee_id;
-        int? evaluator_id;
-        int? evaluation_criteria_id;
         string? response;
         string? notes;
-        int? grade;
-        int? activity_instance_id;
-        string? updated;
+        string? created;
     |}[]? activity_evaluations;
 |};
 
@@ -1080,6 +1085,7 @@ public type GetAttendanceMissedBySecurityByParentOrgResponse record {|
 public type GetDailyStudentsAttendanceByParentOrgResponse record {|
     map<json?> __extensions?;
     record {|
+        int? id;
         string? description;
         int? present_count;
         int? total_student_count;
@@ -1186,4 +1192,74 @@ public type GetBatchPaymentPlanByOrgIdResponse record {|
         int? batch_id;
         anydata? monthly_payment_amount;
     |}? batch_payment_plan_by_org_id;
+|};
+
+public type GetPersonResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? full_name;
+        string? sex;
+        int? phone;
+        int? organization_id;
+        int? avinya_type_id;
+        string? nic_no;
+        string? email;
+    |}? person_by_digital_id_or_nic;
+|};
+
+public type AddBiometricAttendanceResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? created;
+    |}? addBiometricAttendance;
+|};
+
+public type GetStudentLateAttendanceByTimeRangeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? label;
+        int? student_count;
+        string? student_name;
+    |}[]? late_attendance_report;
+|};
+
+public type GetDailyAbsenceSummaryResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? absent_count;
+        string? absent_names;
+    |}[]? absent_report;
+|};
+
+public type GetStudentAttendanceRankingResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? preferred_name;
+        record {|
+            int? id;
+            record {|
+                string? name_en;
+            |} name;
+            string? description;
+        |}? organization;
+        anydata? attendance_percentage;
+    |}[]? studentAttendanceRanking;
+|};
+
+public type GetClassOrStudentAttendancePercentageResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string? name_en;
+        |} name;
+        string? description;
+        anydata? attendance_percentage;
+    |}[]? calculateClassOrStudentAttendancePercentage;
 |};

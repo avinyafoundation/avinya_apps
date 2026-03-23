@@ -17,334 +17,22 @@ class SMSScaffold extends StatefulWidget {
 }
 
 class _SMSScaffoldState extends State<SMSScaffold> {
-  bool isAttendanceSectionHovered = false;
   bool isDutySectionHovered = false;
   bool isReportSectionHovered = false;
   bool isDashboardHovered = false;
+  bool isSelfAttendanceHovered = false;
+  bool isBulkAttendanceHovered = false;
+  bool isDutyAttendanceHovered = false;
 
   @override
   Widget build(BuildContext context) {
     final routeState = RouteStateScope.of(context);
 
-    List<Material> attendanceMarkerDestinations = [];
-    List<Material> dutyDestinations = [];
-    List<Material> reportDestinations = [];
-
-    if (campusAppsPortalInstance.isTeacher ||
-        campusAppsPortalInstance.isSecurity ||
-        campusAppsPortalInstance.isFoundation) {
-      attendanceMarkerDestinations = [
-        Material(
-          type: MaterialType.transparency,
-          child: Container(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
-            child: ListTile(
-              hoverColor: Colors.white.withOpacity(0.3),
-              leading: Icon(Icons.person_2_outlined,
-                  color: Colors.white, size: 20.0),
-              title: Container(
-                margin: EdgeInsets.only(left: 12.0),
-                transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                child: Text(
-                  "Self Attendance Marker",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                routeState.go('/attendance_marker');
-              },
-            ),
-          ),
-        ),
-        Material(
-          type: MaterialType.transparency,
-          child: Container(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
-            child: ListTile(
-              hoverColor: Colors.white.withOpacity(0.3),
-              leading:
-                  Icon(Icons.people_outline, color: Colors.white, size: 20.0),
-              title: Container(
-                margin: EdgeInsets.only(left: 12.0),
-                transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                child: Text(
-                  "Bulk Attendance Marker",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                routeState.go('/bulk_attendance_marker/classes');
-              },
-            ),
-          ),
-        ),
-      ];
-
-      reportDestinations = [
-        Material(
-          type: MaterialType.transparency,
-          child: Container(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
-            child: ListTile(
-              hoverColor: Colors.white.withOpacity(0.3),
-              leading: Icon(Icons.summarize_outlined,
-                  color: Colors.white, size: 20.0),
-              title: Container(
-                margin: EdgeInsets.only(left: 12.0),
-                transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                child: Text(
-                  "Daily Attendance Report",
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                routeState.go('/daily_attendance_report');
-              },
-            ),
-          ),
-        ),
-        Material(
-          type: MaterialType.transparency,
-          child: Container(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
-            child: ListTile(
-              hoverColor: Colors.white.withOpacity(0.3),
-              leading:
-                  Icon(Icons.summarize_sharp, color: Colors.white, size: 20.0),
-              title: Container(
-                margin: EdgeInsets.only(left: 12.0),
-                transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                child: Text(
-                  "Daily Attendance Summary Report",
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                routeState.go('/daily_attendance_summary_report');
-              },
-            ),
-          ),
-        ),
-        Material(
-          type: MaterialType.transparency,
-          child: Container(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
-            child: ListTile(
-              hoverColor: Colors.white.withOpacity(0.3),
-              leading: Icon(Icons.watch_later_outlined,
-                  color: Colors.white, size: 20.0),
-              title: Container(
-                margin: EdgeInsets.only(left: 12.0),
-                transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                child: Text(
-                  "Late Attendance Report",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                routeState.go('/late_attendance_report');
-              },
-            ),
-          ),
-        ),
-        // Material(
-        //   type: MaterialType.transparency,
-        //   child: Container(
-        //     padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
-        //     child: ListTile(
-        //       hoverColor: Colors.white.withOpacity(0.3),
-        //       leading:
-        //           Icon(Icons.paid_outlined, color: Colors.white, size: 20.0),
-        //       title: Container(
-        //         margin: EdgeInsets.only(left: 12.0),
-        //         transform: Matrix4.translationValues(-25, 0.0, 0.0),
-        //         child: Text(
-        //           "Weekly Payment Report",
-        //           style: TextStyle(color: Colors.white, fontSize: 12),
-        //         ),
-        //       ),
-        //       onTap: () {
-        //         Navigator.pop(context); // Close the drawer
-        //         routeState.go('/weekly_payment_report');
-        //       },
-        //     ),
-        //   ),
-        // ),
-        Material(
-          type: MaterialType.transparency,
-          child: Container(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
-            child: ListTile(
-              hoverColor: Colors.white.withOpacity(0.3),
-              leading:
-                  Icon(Icons.paid_outlined, color: Colors.white, size: 20.0),
-              title: Container(
-                margin: EdgeInsets.only(left: 12.0),
-                transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                child: Text(
-                  "Monthly Payment Report",
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                routeState.go('/monthly_payment_report');
-              },
-            ),
-          ),
-        ),
-        Material(
-          type: MaterialType.transparency,
-          child: Container(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
-            child: ListTile(
-              hoverColor: Colors.white.withOpacity(0.3),
-              leading: Icon(Icons.work_history_outlined,
-                  color: Colors.white, size: 20.0),
-              title: Container(
-                margin: EdgeInsets.only(left: 12.0),
-                transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                child: Text(
-                  "Duty Attendance Report",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                routeState.go('/daily_duty_attendance_report');
-              },
-            ),
-          ),
-        ),
-      ];
-
-      dutyDestinations = [
-        Material(
-          type: MaterialType.transparency,
-          child: Container(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
-            child: ListTile(
-              hoverColor: Colors.white.withOpacity(0.3),
-              leading: Icon(Icons.person_add_alt_1_outlined,
-                  color: Colors.white, size: 20.0),
-              title: Container(
-                margin: EdgeInsets.only(left: 12.0),
-                transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                child: Text(
-                  "Assign duties",
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                routeState.go('/duty_participants');
-              },
-            ),
-          ),
-        ),
-      ];
-    } else if (campusAppsPortalInstance.isStudent &&
-        (campusAppsPortalInstance.getLeaderParticipant().role == 'leader' ||
-            campusAppsPortalInstance.getLeaderParticipant().role ==
-                'assistant-leader')) {
-      attendanceMarkerDestinations = [
-        Material(
-          type: MaterialType.transparency,
-          child: Container(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
-            child: ListTile(
-              hoverColor: Colors.white.withOpacity(0.3),
-              leading: Icon(Icons.person_2_outlined,
-                  color: Colors.white, size: 20.0),
-              title: Container(
-                margin: EdgeInsets.only(left: 12.0),
-                transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                child: Text(
-                  "Self Attendance Marker",
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                routeState.go('/attendance_marker');
-              },
-            ),
-          ),
-        ),
-        Material(
-          type: MaterialType.transparency,
-          child: Container(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
-            child: ListTile(
-              hoverColor: Colors.white.withOpacity(0.3),
-              leading:
-                  Icon(Icons.people_outline, color: Colors.white, size: 20.0),
-              title: Container(
-                margin: EdgeInsets.only(left: 12.0),
-                transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                child: Text(
-                  "Duty Attendance Marker",
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                routeState.go('/duty_attendance_marker');
-              },
-            ),
-          ),
-        ),
-      ];
-    } else {
-      attendanceMarkerDestinations = [
-        Material(
-          type: MaterialType.transparency,
-          child: Container(
-            padding: EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
-            child: ListTile(
-              hoverColor: Colors.white.withOpacity(0.3),
-              leading: Icon(Icons.person_2_outlined,
-                  color: Colors.white, size: 20.0),
-              title: Container(
-                margin: EdgeInsets.only(left: 12.0),
-                transform: Matrix4.translationValues(-25, 0.0, 0.0),
-                child: Text(
-                  "Self Attendance Marker",
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                routeState.go('/attendance_marker');
-              },
-            ),
-          ),
-        ),
-      ];
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Avinya Academy - Campus Attendance Portal",
             style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurpleAccent,
+        backgroundColor: Colors.blueAccent,
         iconTheme: IconThemeData(color: Colors.white),
         actions: <Widget>[
           IconButton(
@@ -374,7 +62,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                       child: SelectableText.rich(TextSpan(
                         text:
                             "If you need help, write to us at admissions-help@avinyafoundation.org",
-                        style: new TextStyle(color: Colors.deepPurpleAccent),
+                        style: new TextStyle(color: Colors.blueAccent),
                         recognizer: new TapGestureRecognizer()
                           ..onTap = () {
                             launchUrl(Uri(
@@ -395,7 +83,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
       ),
       drawer: Drawer(
         width: 270.0,
-        backgroundColor: Colors.deepPurpleAccent,
+        backgroundColor: Colors.blueAccent,
         child: SafeArea(
             child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -447,110 +135,158 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                   // ),
                 ),
               ),
-              MouseRegion(
-                onEnter: (_) {
-                  setState(() {
-                    isAttendanceSectionHovered = true;
-                  });
-                },
-                onExit: (_) {
-                  setState(() {
-                    isAttendanceSectionHovered = false;
-                  });
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isAttendanceSectionHovered
-                        ? Colors.white.withOpacity(0.3)
-                        : null,
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  margin: EdgeInsets.all(8.0),
-                  child: ExpansionTile(
-                    trailing: Icon(Icons.keyboard_arrow_down, size: 20.0),
-                    backgroundColor: Colors.deepPurple.shade600,
-                    collapsedIconColor: Colors.white,
-                    iconColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    title: Container(
-                      margin: EdgeInsets.only(left: 12.0),
-                      transform: Matrix4.translationValues(-21, 0.0, 0.0),
-                      child: Text(
-                        "Attendance Marker",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                    leading: Icon(
-                      Icons.person_2_outlined,
-                      color: Colors.white,
-                      size: 20.0,
-                    ),
-                    //childrenPadding: EdgeInsets.only(left: 25.0),
-                    children: attendanceMarkerDestinations,
-                  ),
-                  //),
-                ),
-              ),
-              if (campusAppsPortalInstance.isTeacher ||
-                  campusAppsPortalInstance.isSecurity ||
-                  campusAppsPortalInstance.isFoundation)
+              // Self Attendance Marker (hide for foundation users)
+              if (!campusAppsPortalInstance.isFoundation)
                 MouseRegion(
                   onEnter: (_) {
                     setState(() {
-                      isDutySectionHovered = true;
+                      isSelfAttendanceHovered = true;
                     });
                   },
                   onExit: (_) {
                     setState(() {
-                      isDutySectionHovered = false;
+                      isSelfAttendanceHovered = false;
                     });
                   },
                   child: Container(
                     decoration: BoxDecoration(
-                      color: isDutySectionHovered
+                      color: isSelfAttendanceHovered
                           ? Colors.white.withOpacity(0.3)
                           : null,
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                     margin: EdgeInsets.all(8.0),
-                    child: ExpansionTile(
-                      trailing: Icon(Icons.keyboard_arrow_down, size: 20.0),
-                      backgroundColor: Colors.deepPurple.shade600,
-                      collapsedIconColor: Colors.white,
-                      iconColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      title: Container(
-                        margin: EdgeInsets.only(left: 12.0),
-                        transform: Matrix4.translationValues(-21, 0.0, 0.0),
-                        child: Text(
-                          "Duty",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: Container(
+                        child: ListTile(
+                          leading: Icon(Icons.assignment_ind,
+                              color: Colors.white, size: 20.0),
+                          title: Container(
+                            margin: EdgeInsets.only(left: 12.0),
+                            transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                            child: Text(
+                              "View Self Attendance",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
                           ),
+                          onTap: () {
+                            Navigator.pop(context); // Close the drawer
+                            routeState.go('/attendance_marker');
+                          },
                         ),
                       ),
-                      leading: Icon(
-                        Icons.work_outline,
-                        color: Colors.white,
-                        size: 20.0,
-                      ),
-                      //childrenPadding: EdgeInsets.only(left: 25.0),
-                      children: dutyDestinations,
                     ),
-                    // ),
+                  ),
+                ),
+              // Bulk Attendance Marker (for teachers/security/foundation)
+              if (campusAppsPortalInstance.isTeacher ||
+                  campusAppsPortalInstance.isSecurity ||
+                  campusAppsPortalInstance.isOperations ||
+                  campusAppsPortalInstance.isFinance)
+                MouseRegion(
+                  onEnter: (_) {
+                    setState(() {
+                      isBulkAttendanceHovered = true;
+                    });
+                  },
+                  onExit: (_) {
+                    setState(() {
+                      isBulkAttendanceHovered = false;
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isBulkAttendanceHovered
+                          ? Colors.white.withOpacity(0.3)
+                          : null,
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    margin: EdgeInsets.all(8.0),
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: Container(
+                        child: ListTile(
+                          leading: Icon(Icons.fact_check,
+                              color: Colors.white, size: 20.0),
+                          title: Container(
+                            margin: EdgeInsets.only(left: 12.0),
+                            transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                            child: Text(
+                              "Bulk Attendance Marker",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.pop(context); // Close the drawer
+                            routeState.go('/bulk_attendance_marker/classes');
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              // Duty Attendance Marker (for student leaders)
+              if (campusAppsPortalInstance.isStudent &&
+                  (campusAppsPortalInstance.getLeaderParticipant().role ==
+                          'leader' ||
+                      campusAppsPortalInstance.getLeaderParticipant().role ==
+                          'assistant-leader'))
+                MouseRegion(
+                  onEnter: (_) {
+                    setState(() {
+                      isDutyAttendanceHovered = true;
+                    });
+                  },
+                  onExit: (_) {
+                    setState(() {
+                      isDutyAttendanceHovered = false;
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isDutyAttendanceHovered
+                          ? Colors.white.withOpacity(0.3)
+                          : null,
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    margin: EdgeInsets.all(8.0),
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: Container(
+                        child: ListTile(
+                          leading: Icon(Icons.people_outline,
+                              color: Colors.white, size: 20.0),
+                          title: Container(
+                            margin: EdgeInsets.only(left: 12.0),
+                            transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                            child: Text(
+                              "Duty Attendance Marker",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.pop(context); // Close the drawer
+                            routeState.go('/duty_attendance_marker');
+                          },
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               if (campusAppsPortalInstance.isTeacher ||
-                  campusAppsPortalInstance.isSecurity ||
-                  campusAppsPortalInstance.isFoundation)
+                  campusAppsPortalInstance.isFoundation ||
+                  campusAppsPortalInstance.isOperations ||
+                  campusAppsPortalInstance.isFinance)
                 MouseRegion(
                   onEnter: (_) {
                     setState(() {
@@ -563,39 +299,37 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                     });
                   },
                   child: Container(
-                    margin: EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       color: isReportSectionHovered
                           ? Colors.white.withOpacity(0.3)
                           : null,
                       borderRadius: BorderRadius.circular(15.0),
                     ),
-                    child: ExpansionTile(
-                        trailing: Icon(Icons.keyboard_arrow_down, size: 20.0),
-                        backgroundColor: Colors.deepPurple.shade600,
-                        collapsedIconColor: Colors.white,
-                        iconColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        title: Container(
-                          margin: EdgeInsets.only(left: 12.0),
-                          transform: Matrix4.translationValues(-21, 0.0, 0.0),
-                          child: Text(
-                            "Reports",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
+                    margin: EdgeInsets.all(8.0),
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: Container(
+                        child: ListTile(
+                          leading: Icon(Icons.summarize_outlined,
+                              color: Colors.white, size: 20.0),
+                          title: Container(
+                            margin: EdgeInsets.only(left: 12.0),
+                            transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                            child: Text(
+                              "Attendance Report",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
+                          onTap: () {
+                            Navigator.pop(context); // Close the drawer
+                            routeState.go('/monthly_payment_report');
+                          },
                         ),
-                        leading: Icon(
-                          Icons.summarize_outlined,
-                          color: Colors.white,
-                          size: 20.0,
-                        ),
-                        //childrenPadding: EdgeInsets.only(left: 25.0),
-                        children: reportDestinations),
+                      ),
+                    ),
                   ),
                 ),
             ],
@@ -608,7 +342,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
             child: Text(
               'About',
               style: TextStyle(
-                color: Colors.deepPurpleAccent,
+                color: Colors.blueAccent,
                 fontSize: 12,
               ),
             ),

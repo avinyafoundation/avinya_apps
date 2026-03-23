@@ -140,18 +140,24 @@ query getPersonAttendanceToday($person_id: Int!, $activity_id: Int!) {
     }      
 }
 
-query getActivityEvaluations($activity_id: Int!) {
-    activity_evaluations(activity_id:$activity_id) {
-        id
-        evaluatee_id
-        evaluator_id
-        evaluation_criteria_id
-        response
-        notes
-        grade
-        activity_instance_id
-        updated
-    }      
+query getActivityEvaluations(
+  $person_id: Int!
+  $activity_id: Int!
+  $from_date: String!
+  $to_date: String!
+) {
+  activity_evaluations(
+    person_id: $person_id
+    activity_id: $activity_id
+    from_date: $from_date
+    to_date: $to_date
+  ) {
+    id
+    evaluatee_id
+    response
+    notes
+    created
+  }
 }
 
 query getActivityInstanceEvaluations($activity_instance_id: Int!) {
@@ -365,8 +371,9 @@ query getAttendanceMissedBySecurityByParentOrg($parent_organization_id: Int!, $f
     }      
 }
 
-query getDailyStudentsAttendanceByParentOrg($parent_organization_id: Int!) {
-    daily_students_attendance_by_parent_org(parent_organization_id: $parent_organization_id) {
+query getDailyStudentsAttendanceByParentOrg($parent_organization_id: Int!,$date: String!) {
+    daily_students_attendance_by_parent_org(parent_organization_id: $parent_organization_id,date:$date) {
+        id
         description
         present_count
         total_student_count
@@ -390,12 +397,14 @@ query getTotalAttendanceCountByParentOrg($parent_organization_id: Int!, $from_da
 }
 
 query getDailyAttendanceSummaryReport(
-  $organization_id: Int!
-  $avinya_type_id: Int!
+  $parent_organization_id: Int
+  $organization_id: Int
+  $avinya_type_id: Int
   $from_date: String!
   $to_date: String!
 ) {
   daily_attendance_summary_report(
+    parent_organization_id: $parent_organization_id
     organization_id: $organization_id
     avinya_type_id: $avinya_type_id
     from_date: $from_date
@@ -486,4 +495,73 @@ query getBatchPaymentPlanByOrgId(
     batch_id
     monthly_payment_amount
   }
+}
+
+query getPerson($nic: String!) {
+  person_by_digital_id_or_nic(nic: $nic) {
+    id
+    full_name
+    sex
+    phone
+    organization_id
+    avinya_type_id
+    nic_no
+    email
+  }
+}
+
+mutation addBiometricAttendance($attendance: ActivityParticipantAttendance!) {
+  addBiometricAttendance(attendance: $attendance) {
+    id
+    activity_instance_id
+    sign_in_time
+    sign_out_time
+    created
+  }
+}
+
+query getStudentLateAttendanceByTimeRange($parent_organization_id:Int!,$activity_id:Int!,$date:String!) {
+    late_attendance_report(parent_organization_id:$parent_organization_id,activity_id:$activity_id,date:$date) {
+      label
+      student_count
+      student_name
+    }
+}
+
+query getDailyAbsenceSummary($organization_id: Int,$parent_organization_id: Int,$activity_id: Int!,
+                             $result_limit: Int,$date: String!,$from_date: String,$to_date: String) {
+    absent_report(organization_id: $organization_id,parent_organization_id: $parent_organization_id,
+                  activity_id: $activity_id,result_limit: $result_limit,date: $date,
+                  from_date: $from_date,to_date: $to_date) {
+    absent_count
+    absent_names
+  }
+}
+
+query getStudentAttendanceRanking($organization_id: Int,$class_id:Int,
+        $from_date:String,$to_date:String,$limit:Int,$sort:String) {
+    studentAttendanceRanking(organization_id:$organization_id,class_id:$class_id,from_date:$from_date,to_date:$to_date,limit:$limit,sort:$sort) {
+        id
+        preferred_name
+        organization{
+            id
+            name{
+                name_en
+            }
+            description
+        }
+        attendance_percentage
+    }       
+}
+
+query getClassOrStudentAttendancePercentage($organization_id: Int,$class_id:Int,$from_date:String,
+         $to_date:String,$limit:Int,$sort:String) {
+    calculateClassOrStudentAttendancePercentage(organization_id:$organization_id,class_id:$class_id,from_date:$from_date,to_date:$to_date,limit:$limit,sort:$sort) {
+        id
+        name{
+            name_en
+        }
+        description
+        attendance_percentage
+    }       
 }

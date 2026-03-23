@@ -33,6 +33,7 @@ class _StudentCreateState extends State<StudentCreate> {
   bool isDistrictsDataLoaded = false;
   bool isOrganizationsDataLoaded = false;
   bool isAvinyaTypesDataLoaded = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -110,7 +111,7 @@ class _StudentCreateState extends State<StudentCreate> {
         width: 850,
         child: Stepper(
             connectorColor:
-                WidgetStateProperty.all(Color.fromARGB(255, 74, 161, 70)),
+                WidgetStateProperty.all(Colors.lightBlueAccent),
             type: StepperType.vertical,
             currentStep: _currentStep,
             onStepContinue: _nextStep,
@@ -163,7 +164,7 @@ class _StudentCreateState extends State<StudentCreate> {
                                       margin: EdgeInsets.only(top: 10),
                                       child: SpinKitCircle(
                                         color:
-                                            (Color.fromARGB(255, 74, 161, 70)),
+                                            (Colors.lightBlueAccent),
                                         size: 70,
                                       ),
                                     );
@@ -199,7 +200,7 @@ class _StudentCreateState extends State<StudentCreate> {
                             _buildEditableField(
                                 'Personal Email', userPerson.email, (value) {
                               userPerson.email = value;
-                            }), // Email format validation
+                            }, validator: _validateEmail), // Email format validation
 
                             _buildEditableField(
                                 'Phone', userPerson.phone?.toString() ?? '',
@@ -227,7 +228,7 @@ class _StudentCreateState extends State<StudentCreate> {
                                       margin: EdgeInsets.only(top: 10),
                                       child: SpinKitCircle(
                                         color:
-                                            (Color.fromARGB(255, 74, 161, 70)),
+                                            (Colors.lightBlueAccent),
                                         size: 70,
                                       ),
                                     );
@@ -281,7 +282,7 @@ class _StudentCreateState extends State<StudentCreate> {
                                       margin: EdgeInsets.only(top: 10),
                                       child: SpinKitCircle(
                                         color:
-                                            (Color.fromARGB(255, 74, 161, 70)),
+                                            (Colors.lightBlueAccent),
                                         size: 70,
                                       ),
                                     );
@@ -487,25 +488,57 @@ class _StudentCreateState extends State<StudentCreate> {
     bool isEnabled = isDistrictsDataLoaded &&
         isOrganizationsDataLoaded &&
         isAvinyaTypesDataLoaded;
-    print('is enabled:${isEnabled}');
+
     if (_currentStep == 0 && isEnabled) {
+      if (selectedDateOfBirth == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Date of Birth is required')),
+        );
+        return;
+      }
+
       if (_formKey.currentState!.validate()) {
         _formKey.currentState!.save();
-        createdPerson = await createPerson(context, userPerson);
-        if (createdPerson.id != null) {
-          setState(() {
-            _currentStep += 1;
-          });
+
+        setState(() => _isLoading = true); // show loading
+
+        try {
+          createdPerson = await createPerson(context, userPerson);
+          if (createdPerson.id != null) {
+            setState(() {
+              _currentStep += 1;
+            });
+          }
+        } catch (e) {
+          // Extract clean message from "Exception: Person already exists."
+          String errorMessage = e.toString().replaceFirst('Exception: ', '');
+
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Row(
+                children: [
+                  Icon(Icons.error_outline, color: Colors.red),
+                  SizedBox(width: 8),
+                  Text('Error'),
+                ],
+              ),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } finally {
+          setState(() => _isLoading = false); // hide loading
         }
       }
     } else if (_currentStep == 1) {
       Navigator.pop(context);
     }
-    // } else if (_currentStep < 1 && isEnabled) {
-    //   setState(() {
-    //     _currentStep += 1;
-    //   });
-    // }
   }
 
   //   Widget _buildSaveButton(bool isDistrictsDataLoaded,
@@ -542,7 +575,7 @@ class _StudentCreateState extends State<StudentCreate> {
 
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Email is required';
+      return null;
     }
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
     if (!emailRegex.hasMatch(value)) {
@@ -644,6 +677,10 @@ class _StudentCreateState extends State<StudentCreate> {
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
               ),
+              validator: (value) {
+                if (value == null) return 'Sex is required';
+                return null;
+              },
             ),
           ),
         ],
@@ -687,6 +724,10 @@ class _StudentCreateState extends State<StudentCreate> {
                 labelText: 'Select District',
                 border: OutlineInputBorder(),
               ),
+              validator: (value) {
+                if (value == null) return 'District is required';
+                return null;
+              },
             ),
           ),
         ],
@@ -750,6 +791,10 @@ class _StudentCreateState extends State<StudentCreate> {
                 labelText: 'Select City',
                 border: OutlineInputBorder(),
               ),
+              validator: (value) {
+                if (value == null) return 'City is required';
+                return null;
+              },
             ),
           ),
         ],

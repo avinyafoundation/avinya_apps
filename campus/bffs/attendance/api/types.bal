@@ -1,3 +1,23 @@
+import ballerina/http;
+
+public type AccessControllerEvent record {
+    string? deviceName?;
+    string? name?;
+    int? majorEventType?;
+    int? subEventType?;
+    int? cardReaderKind?;
+    int? verifyNo?;
+    int? InternetAccess?;
+    int? serialNo?;
+    string? currentVerifyMode?;
+    int? frontSerialNo?;
+    string? attendanceStatus?;
+    string? label?;
+    int? statusValue?;
+    string? mask?;
+    boolean? purePwdVerifyEnable?;
+};
+
 public type Activity record {
     string? notes?;
     Activity[]? parent_activities?;
@@ -44,18 +64,51 @@ public type ActivityParticipant record {
 
 public type ActivityParticipantAttendance record {
     int? activity_instance_id?;
+    string? in_marked_by?;
     string? created?;
     string? sign_in_time?;
     int? id?;
+    string? out_marked_by?;
     string? updated?;
     string? record_type?;
+    string? event_time?;
     int? person_id?;
     string? sign_out_time?;
-    string? in_marked_by?;
-    string? out_marked_by?;
-    string? description?;
-    string? preferred_name?;
-    string? digital_id?;
+};
+public type ActivityParticipantAttendanceForLateAttendance record {|
+    readonly string? record_type = "activity_participant_attendance";
+    int id?;
+    int? person_id;
+    int? activity_instance_id;
+    string? sign_in_time;
+    string? sign_out_time;
+    string? in_marked_by;
+    string? out_marked_by;
+    string? created;
+    string? updated;
+    string? description;
+    string? preferred_name;
+    string? digital_id;
+    string? label; //The label for the time range (e.g."07:30 - 07:45")
+    int studentCount; // Total number of unique students in this range(e.g."07:30 - 07:45")
+    string? studentNames; //List of names of students who signed in during this range
+|};
+
+public type Alumni record {
+    string? created?;
+    string? linkedin_id?;
+    string? record_type?;
+    string? facebook_id?;
+    string? instagram_id?;
+    string? canva_cv_url?;
+    string? company_name?;
+    string? tiktok_id?;
+    string? updated_by?;
+    int? id?;
+    string? job_title?;
+    int? person_count?;
+    string? updated?;
+    string? status?;
 };
 
 public type ActivityParticipantAttendanceSummary record {
@@ -171,6 +224,7 @@ public type Organization record {
     int? active?;
     int[]? child_organizations_for_dashboard?;
     string? record_type?;
+    anydata? attendance_percentage?;
     int[]? parent_organizations?;
     int? phone?;
     int? id?;
@@ -179,23 +233,32 @@ public type Organization record {
 public type Person record {
     int? permanent_address_id?;
     string? street_address?;
+    string? bank_branch?;
     string? bank_account_number?;
     string? notes?;
     int[]? parent_student?;
     string? date_of_birth?;
+    int? parent_organization_id?;
     int? avinya_type_id?;
+    int rank_position?;
     Address? permanent_address?;
+    boolean? is_graduated?;
     int? mailing_address_id?;
+    Alumni? alumni?;
+    string? profile_picture_folder_id?;
+    anydata? attendance_percentage?;
     string? id_no?;
     string? jwt_email?;
     string? bank_name?;
-    string? bank_branch?;
+    int? alumni_id?;
     int? id?;
     string? email?;
     string? created?;
     string? digital_id?;
     string? sex?;
     string? passport_no?;
+    string? current_job?;
+    int? created_by?;
     string? record_type?;
     Address? mailing_address?;
     string? branch_code?;
@@ -206,14 +269,15 @@ public type Person record {
     string? nic_no?;
     int? phone?;
     int? organization_id?;
+    int? updated_by?;
     string? academy_org_name?;
     string? asgardeo_id?;
+    int? documents_id?;
     string? updated?;
     string? preferred_name?;
     string? jwt_sub_id?;
     int? academy_org_id?;
 };
-
 public type Prospect record {
     string? street_address?;
     boolean? contacted?;
@@ -541,13 +605,9 @@ public type GetActivityEvaluationsResponse record {|
     record {|
         int? id;
         int? evaluatee_id;
-        int? evaluator_id;
-        int? evaluation_criteria_id;
         string? response;
         string? notes;
-        int? grade;
-        int? activity_instance_id;
-        string? updated;
+        string? created;
     |}[] activity_evaluations;
 |};
 
@@ -783,6 +843,7 @@ public type GetAttendanceMissedBySecurityByParentOrgResponse record {|
 public type GetDailyStudentsAttendanceByParentOrgResponse record {|
     map<json?> __extensions?;
     record {|
+        int? id;
         string? description;
         int? present_count;
         int? total_student_count;
@@ -919,4 +980,102 @@ public type GetOrganizationsByAvinyaTypeAndStatusResponse record {|
             string? value;
         |}[]? organization_metadata;
     |}[] organizations_by_avinya_type_and_status;
+|};
+
+public type GetPersonResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? full_name;
+        string? sex;
+        int? phone;
+        int? organization_id;
+        int? avinya_type_id;
+        string? nic_no;
+        string? email;
+    |}? person_by_digital_id_or_nic;
+|};
+
+public type AddBiometricAttendanceResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        int? activity_instance_id;
+        string? sign_in_time;
+        string? sign_out_time;
+        string? created;
+    |}? addBiometricAttendance;
+|};
+
+public type GetStudentLateAttendanceByTimeRangeResponse record {|
+    map<json?> __extensions?;
+    record {|
+        string? label;
+        int? student_count;
+        string? student_name;
+    |}[] late_attendance_report;
+|};
+
+public type GetDailyAbsenceSummaryResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? absent_count;
+        string? absent_names;
+    |}[] absent_report;
+|};
+
+public type ImageUploadRequest record {
+    string image;
+};
+
+public type ImageUploadResponse record {
+    string secure_url;
+    string public_id;
+};
+
+public type WhatsAppImageRequest record {
+    string to;
+    string image_url;
+    string date;
+};
+
+public type WhatsAppMessageResponse record {
+    string messaging_product;
+    json[] contacts;
+    json[] messages;
+};
+
+public type ApiErrorResponse record {|
+    *http:BadRequest;
+    record {
+        string message;
+    } body;
+|};
+
+public type GetStudentAttendanceRankingResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        string? preferred_name;
+        record {|
+            int? id;
+            record {|
+                string? name_en;
+            |} name;
+            string? description;
+        |}? organization;
+        anydata? attendance_percentage;
+    |}[] studentAttendanceRanking;
+|};
+
+public type GetClassOrStudentAttendancePercentageResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            string? name_en;
+        |} name;
+        string? description;
+        anydata? attendance_percentage;
+    |}[] calculateClassOrStudentAttendancePercentage;
 |};

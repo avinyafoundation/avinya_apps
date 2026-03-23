@@ -49,7 +49,7 @@ service / on new http:Listener(9090) {
 
         GetPersonResponse|graphql:ClientError getPersonResponse = globalDataClient->getPerson(digital_id);
         if(getPersonResponse is GetPersonResponse) {
-            Person|error person_record = getPersonResponse.person_by_digital_id.cloneWithType(Person);
+            Person|error person_record = getPersonResponse.person_by_digital_id_or_nic.cloneWithType(Person);
             if(person_record is Person) {
                 return person_record;
             } else {
