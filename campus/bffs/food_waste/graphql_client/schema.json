@@ -4350,6 +4350,19 @@
                             "name": "meal_servings",
                             "args": [
                                 {
+                                    "name": "organizationId",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
                                     "name": "id",
                                     "type": {
                                         "kind": "SCALAR",

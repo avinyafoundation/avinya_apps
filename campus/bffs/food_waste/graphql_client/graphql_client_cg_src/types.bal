@@ -723,6 +723,9 @@ public type GetMealServingsResponse record {|
         int? id;
         string serving_date;
         string meal_type;
+        int served_count;
+        int? organization_id;
+        string? notes;
     |}[] meal_servings;
 |};
 

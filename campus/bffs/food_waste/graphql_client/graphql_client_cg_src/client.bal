@@ -45,9 +45,9 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <UpdateFoodItemResponse> check performDataBinding(graphqlResponse, UpdateFoodItemResponse);
     }
-    remote isolated function GetMealServings(int offset, int 'limit, string? fromDate = (), string? toDate = (), int? id = ()) returns GetMealServingsResponse|graphql:ClientError {
-        string query = string `query GetMealServings($id:Int,$fromDate:String,$toDate:String,$limit:Int!,$offset:Int!) {meal_servings(id:$id,fromDate:$fromDate,toDate:$toDate,limit:$limit,offset:$offset) {id serving_date meal_type}}`;
-        map<anydata> variables = {"fromDate": fromDate, "offset": offset, "toDate": toDate, "limit": 'limit, "id": id};
+    remote isolated function GetMealServings(int organizationId, string? fromDate = (), int? offset = (), string? toDate = (), int? 'limit = (), int? id = ()) returns GetMealServingsResponse|graphql:ClientError {
+        string query = string `query GetMealServings($organizationId:Int!,$id:Int,$fromDate:String,$toDate:String,$limit:Int,$offset:Int) {meal_servings(organizationId:$organizationId,id:$id,fromDate:$fromDate,toDate:$toDate,limit:$limit,offset:$offset) {id serving_date meal_type served_count organization_id notes}}`;
+        map<anydata> variables = {"organizationId": organizationId, "fromDate": fromDate, "offset": offset, "toDate": toDate, "limit": 'limit, "id": id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetMealServingsResponse> check performDataBinding(graphqlResponse, GetMealServingsResponse);
     }

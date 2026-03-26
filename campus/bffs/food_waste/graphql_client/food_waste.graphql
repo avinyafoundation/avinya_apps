@@ -33,11 +33,14 @@ mutation UpdateFoodItem($id: Int!, $name: String!, $costPerPortion: Decimal!, $m
 }
 
 
-query GetMealServings($id: Int, $fromDate: String, $toDate: String, $limit: Int!, $offset: Int!) {
-  meal_servings(id: $id, fromDate: $fromDate, toDate: $toDate, limit: $limit, offset: $offset) {
+query GetMealServings($organizationId: Int!, $id: Int, $fromDate: String, $toDate: String, $limit: Int, $offset: Int) {
+  meal_servings(organizationId: $organizationId, id: $id, fromDate: $fromDate, toDate: $toDate, limit: $limit, offset: $offset) {
     id
     serving_date
     meal_type
+    served_count
+    organization_id
+    notes
   }
 }
 
