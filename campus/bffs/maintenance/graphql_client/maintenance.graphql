@@ -274,3 +274,18 @@ query GetMaintenanceTasksByStatus(
     }
   }
 }
+
+mutation updateTaskInstance($taskActivityInstance: ActivityInstance!) {
+  updateTaskInstance(taskActivityInstance: $taskActivityInstance) {
+    id
+    task {
+      id
+      title
+    }
+    start_time
+    end_time
+    overall_task_status
+    created
+    updated
+  }
+}

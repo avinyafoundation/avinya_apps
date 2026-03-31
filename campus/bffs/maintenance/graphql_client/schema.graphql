@@ -115,11 +115,17 @@ input ActivityParticipant {
   person: Person
 }
 
+type ActivityParticipantAbsentData {
+  absent_count: Int
+  absent_names: String
+}
+
 input ActivityParticipantAttendance {
   record_type: String = "activity_participant_attendance"
   id: Int
   person_id: Int
   activity_instance_id: Int
+  event_time: String
   sign_in_time: String
   sign_out_time: String
   in_marked_by: String
@@ -151,6 +157,9 @@ type ActivityParticipantAttendanceDataForLateAttendance {
   preferred_name: String
   digital_id: String
   sign_out_time: String
+  label: String
+  student_count: Int
+  student_name: String
   created: String
   updated: String
   in_marked_by: String
@@ -218,6 +227,16 @@ type AddressData {
   street_address: String
   phone: Int
   id: Int
+}
+
+type AgeDistributionData {
+  age_groups: [AgeGroupData!]!
+  total_students: Int!
+}
+
+type AgeGroupData {
+  age_group: String!
+  count: Int!
 }
 
 input Alumni {
@@ -515,6 +534,7 @@ type CvRequestData {
 }
 
 type DailyActivityParticipantAttendanceByParentOrgData {
+  id: Int
   description: String
   present_count: Int
   total_student_count: Int
@@ -540,6 +560,16 @@ type DistrictData {
   id: Int
   province: ProvinceData!
   cities: [CityData!]!
+}
+
+type DistrictDistributionData {
+  districts: [DistrictStudentCount!]!
+  total_students: Int!
+}
+
+type DistrictStudentCount {
+  district_name: String!
+  count: Int!
 }
 
 type DocumentsData {
@@ -1005,6 +1035,7 @@ type Mutation {
   add_prospect(prospect: Prospect!): ProspectData
   add_organization(org: Organization!): OrganizationData
   add_attendance(attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
+  addBiometricAttendance(attendance: ActivityParticipantAttendance!): ActivityParticipantAttendanceData
   delete_attendance(id: Int!): Int
   delete_person_attendance(person_id: Int!): Int
   add_empower_parent(person: Person!): PersonData
@@ -1070,6 +1101,7 @@ type Mutation {
   createMaintenanceTask(organizationId: Int, maintenanceTask: MaintenanceTask!, finance: MaintenanceFinance, materialCosts: [MaterialCost!]): MaintenanceTaskData
   updateMaintenanceTask(organizationId: Int!, maintenanceTaskActivityInstance: ActivityInstance!, maintenanceTask: MaintenanceTask!, maintenanceTaskParticipantList: [Int!]!, finance: MaintenanceFinance, materialCosts: [MaterialCost!]): ActivityInstanceData
   updateTaskProgress(activityInstanceId: Int!, taskParticipantId: Int!, taskParticipant: ActivityParticipant!): ActivityParticipantData
+  updateTaskInstance(taskActivityInstance: ActivityInstance!): ActivityInstanceData
   softDeactivateMaintenanceTask(taskId: Int!, modifiedBy: String!): MaintenanceTaskData
   updateMaintenanceFinance(financeId: Int!, maintenanceFinance: MaintenanceFinance!): MaintenanceFinanceData
 }
@@ -1086,6 +1118,7 @@ input Organization {
   description: String
   notes: String
   active: Int
+  attendance_percentage: Decimal
   name_en: String
   name_ta: String
   name_si: String
@@ -1106,6 +1139,7 @@ type OrganizationData {
   vacancies: [VacancyData!]
   organization_metadata: [OrganizationMetaData!]
   active: Int
+  attendance_percentage: Decimal
 }
 
 input OrganizationLocation {
@@ -1179,6 +1213,9 @@ input Person {
   updated_by: Int
   is_graduated: Boolean
   profile_picture_folder_id: String
+  attendance_percentage: Decimal
+  attendance_percentage_raw: Decimal
+  rank_position: Int
 }
 
 input PersonCv {
@@ -1249,6 +1286,7 @@ type PersonData {
   alumni_work_experience: [AlumniWorkExperienceData!]
   profile_picture: PersonProfilePictureData
   profile_picture_folder_id: String
+  attendance_percentage: Decimal
 }
 
 input PersonFcmToken {
@@ -1359,7 +1397,8 @@ type Query {
   organizations_by_avinya_type_and_status(avinya_type: Int, active: Int): [OrganizationData!]
   student_list_by_parent(parent_organization_id: Int, batch_id: Int): [PersonData!]
   person(name: String, id: Int): PersonData
-  person_by_digital_id(id: String): PersonData
+  person_by_digital_id_or_nic(id: String, nic: String): PersonData
+  validatePin(pin: String): PersonData
   prospect(email: String, phone: Int): ProspectData
   applicant_consent(email: String, phone: Int): ApplicantConsentData
   application(person_id: Int!): ApplicationData
@@ -1376,7 +1415,7 @@ type Query {
   project_tasks(activity_id: Int!): [ActivityData!]
   student_applicant(jwt_sub_id: String): PersonData
   all_evaluations: [EvaluationData!]!
-  activity_evaluations(activity_id: Int!): [EvaluationData!]
+  activity_evaluations(person_id: Int, activity_id: Int!, from_date: String = "", to_date: String = ""): [EvaluationData!]
   activity_instance_evaluations(activity_instance_id: Int!): [EvaluationData!]
   evaluation_meta_data(meta_evaluation_id: Int!): EvaluationMetadataData
   evaluationCriteria(prompt: String, id: Int): EvaluationCriteriaData!
@@ -1390,7 +1429,8 @@ type Query {
   person_attendance_today(person_id: Int, activity_id: Int): [ActivityParticipantAttendanceData!]
   person_attendance_report(person_id: Int, activity_id: Int, result_limit: Int = 0): [ActivityParticipantAttendanceData!]
   class_attendance_report(batch_id: Int, organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceData!]
-  late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceDataForLateAttendance!]
+  absent_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, date: String, from_date: String, to_date: String): [ActivityParticipantAbsentData!]
+  late_attendance_report(organization_id: Int, parent_organization_id: Int, activity_id: Int, result_limit: Int = 0, date: String, from_date: String, to_date: String): [ActivityParticipantAttendanceDataForLateAttendance!]
   asset(id: Int, avinya_type_id: Int): [AssetData!]
   assets: [AssetData!]!
   supplier(id: Int!): SupplierData
@@ -1418,14 +1458,19 @@ type Query {
   duty_participant(person_id: Int): DutyParticipantData
   attendance_dashboard_data_by_date(organization_id: Int, parent_organization_id: Int, activity_id: Int, from_date: String = "", to_date: String = ""): [AttendanceDashboardDataMain!]
   attendance_missed_by_security(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [ActivityParticipantAttendanceMissedBySecurityData!]
-  daily_students_attendance_by_parent_org(parent_organization_id: Int): [DailyActivityParticipantAttendanceByParentOrgData!]
+  daily_students_attendance_by_parent_org(parent_organization_id: Int, date: String): [DailyActivityParticipantAttendanceByParentOrgData!]
   total_attendance_count_by_date(organization_id: Int, parent_organization_id: Int, from_date: String = "", to_date: String = ""): [TotalActivityParticipantAttendanceCountByDateData!]
-  daily_attendance_summary_report(organization_id: Int, avinya_type_id: Int, from_date: String = "", to_date: String = ""): [DailyActivityParticipantAttendanceSummaryReportData!]
+  studentAttendanceRanking(organization_id: Int, class_id: Int, from_date: String = "", to_date: String = "", limit: Int, sort: String): [PersonData!]
+  calculateClassOrStudentAttendancePercentage(organization_id: Int, class_id: Int, from_date: String = "", to_date: String = "", limit: Int, sort: String): [OrganizationData!]
+  daily_attendance_summary_report(parent_organization_id: Int, organization_id: Int, avinya_type_id: Int, from_date: String = "", to_date: String = ""): [DailyActivityParticipantAttendanceSummaryReportData!]
   inventory_data_by_organization(organization_id: Int, date: String = ""): [InventoryData!]
   consumable_weekly_report(organization_id: Int, from_date: String = "", to_date: String = ""): [InventoryData!]
   consumable_monthly_report(organization_id: Int, year: Int, month: Int): [InventoryData!]
   consumable_yearly_report(organization_id: Int, consumable_id: Int, year: Int): [InventoryData!]
-  persons(organization_id: Int, avinya_type_id: Int): [PersonData!]
+  studentCountByOrganization(organization_id: Int!): StudentCountData!
+  studentAgeDistribution(organization_id: Int!): AgeDistributionData!
+  studentDistrictDistribution(organization_id: Int!): DistrictDistributionData!
+  persons(organization_id: Int, avinya_type_id: Int, limit: Int, offset: Int, class_id: Int, search: String): [PersonData!]
   person_by_id(id: Int): PersonData
   document_list(id: Int!): [DocumentsData!]
   districts: [DistrictData!]
@@ -1505,6 +1550,13 @@ type ResourcePropertyData {
   consumable: ConsumableData
   property: String
   value: String
+}
+
+type StudentCountData {
+  current_student_count: Int!
+  male_student_count: Int!
+  female_student_count: Int!
+  dropout_student_count: Int!
 }
 
 input Supplier {
