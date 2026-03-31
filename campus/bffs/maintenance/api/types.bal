@@ -524,3 +524,19 @@ public type ValidatePinResponse record {|
         string? preferred_name;
     |}? validatePin;
 |};
+
+public type UpdateTaskInstanceResponse record {|
+    map<json?> __extensions?;
+    record {|
+        int? id;
+        record {|
+            int? id;
+            string? title;
+        |}? task;
+        string? start_time;
+        string? end_time;
+        string? overall_task_status;
+        string? created;
+        string? updated;
+    |}? updateTaskInstance;
+|};

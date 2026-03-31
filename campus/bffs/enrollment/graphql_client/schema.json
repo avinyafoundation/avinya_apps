@@ -541,10 +541,19 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "person_by_digital_id",
+                            "name": "person_by_digital_id_or_nic",
                             "args": [
                                 {
                                     "name": "id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "nic",
                                     "type": {
                                         "kind": "SCALAR",
                                         "name": "String",
@@ -1061,6 +1070,15 @@
                             "name": "activity_evaluations",
                             "args": [
                                 {
+                                    "name": "person_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
                                     "name": "activity_id",
                                     "type": {
                                         "kind": "NON_NULL",
@@ -1072,6 +1090,24 @@
                                         }
                                     },
                                     "defaultValue": null
+                                },
+                                {
+                                    "name": "from_date",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": "\"\""
+                                },
+                                {
+                                    "name": "to_date",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": "\"\""
                                 }
                             ],
                             "type": {
@@ -1557,6 +1593,89 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "absent_report",
+                            "args": [
+                                {
+                                    "name": "organization_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "parent_organization_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "activity_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "result_limit",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": "0"
+                                },
+                                {
+                                    "name": "date",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "from_date",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "to_date",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "ActivityParticipantAbsentData",
+                                        "ofType": null
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "late_attendance_report",
                             "args": [
                                 {
@@ -1596,13 +1715,22 @@
                                     "defaultValue": "0"
                                 },
                                 {
+                                    "name": "date",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
                                     "name": "from_date",
                                     "type": {
                                         "kind": "SCALAR",
                                         "name": "String",
                                         "ofType": null
                                     },
-                                    "defaultValue": "\"\""
+                                    "defaultValue": null
                                 },
                                 {
                                     "name": "to_date",
@@ -1611,7 +1739,7 @@
                                         "name": "String",
                                         "ofType": null
                                     },
-                                    "defaultValue": "\"\""
+                                    "defaultValue": null
                                 }
                             ],
                             "type": {
@@ -2459,6 +2587,15 @@
                                         "ofType": null
                                     },
                                     "defaultValue": null
+                                },
+                                {
+                                    "name": "date",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
                                 }
                             ],
                             "type": {
@@ -2534,8 +2671,165 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "studentAttendanceRanking",
+                            "args": [
+                                {
+                                    "name": "organization_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "class_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "from_date",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": "\"\""
+                                },
+                                {
+                                    "name": "to_date",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": "\"\""
+                                },
+                                {
+                                    "name": "limit",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "sort",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "PersonData",
+                                        "ofType": null
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "calculateClassOrStudentAttendancePercentage",
+                            "args": [
+                                {
+                                    "name": "organization_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "class_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "from_date",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": "\"\""
+                                },
+                                {
+                                    "name": "to_date",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": "\"\""
+                                },
+                                {
+                                    "name": "limit",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "sort",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "OrganizationData",
+                                        "ofType": null
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "daily_attendance_summary_report",
                             "args": [
+                                {
+                                    "name": "parent_organization_id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
                                 {
                                     "name": "organization_id",
                                     "type": {
@@ -5792,6 +6086,17 @@
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
+                        },
+                        {
+                            "name": "attendance_percentage",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Decimal",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
                         }
                     ],
                     "inputFields": null,
@@ -7102,6 +7407,33 @@
                                 "ofType": null
                             },
                             "defaultValue": null
+                        },
+                        {
+                            "name": "attendance_percentage",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Decimal",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "attendance_percentage_raw",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Decimal",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "rank_position",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
                         }
                     ],
                     "interfaces": null,
@@ -7671,6 +8003,15 @@
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "attendance_percentage",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Decimal",
                                 "ofType": null
                             },
                             "defaultValue": null
@@ -9246,6 +9587,38 @@
                     "possibleTypes": null
                 },
                 {
+                    "kind": "OBJECT",
+                    "name": "ActivityParticipantAbsentData",
+                    "fields": [
+                        {
+                            "name": "absent_count",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "absent_names",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        }
+                    ],
+                    "inputFields": null,
+                    "interfaces": [],
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
                     "kind": "INPUT_OBJECT",
                     "name": "Supplier",
                     "fields": null,
@@ -10257,6 +10630,39 @@
                         },
                         {
                             "name": "sign_out_time",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "label",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "student_count",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "student_name",
                             "args": [],
                             "type": {
                                 "kind": "SCALAR",
@@ -11464,6 +11870,17 @@
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "attendance_percentage",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Decimal",
                                 "ofType": null
                             },
                             "isDeprecated": false,
@@ -15564,6 +15981,31 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "addBiometricAttendance",
+                            "args": [
+                                {
+                                    "name": "attendance",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "INPUT_OBJECT",
+                                            "name": "ActivityParticipantAttendance",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "ActivityParticipantAttendanceData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "delete_attendance",
                             "args": [
                                 {
@@ -17707,6 +18149,31 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "updateTaskInstance",
+                            "args": [
+                                {
+                                    "name": "taskActivityInstance",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "INPUT_OBJECT",
+                                            "name": "ActivityInstance",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "ActivityInstanceData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "softDeactivateMaintenanceTask",
                             "args": [
                                 {
@@ -17927,6 +18394,15 @@
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "event_time",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
                                 "ofType": null
                             },
                             "defaultValue": null
@@ -18353,6 +18829,17 @@
                     "kind": "OBJECT",
                     "name": "DailyActivityParticipantAttendanceByParentOrgData",
                     "fields": [
+                        {
+                            "name": "id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
                         {
                             "name": "description",
                             "args": [],
