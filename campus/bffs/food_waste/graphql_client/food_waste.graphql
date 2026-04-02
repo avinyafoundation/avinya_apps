@@ -41,6 +41,16 @@ query GetMealServings($organizationId: Int!, $id: Int, $fromDate: String, $toDat
     served_count
     organization_id
     notes
+    food_wastes {
+      id
+      food_item_id
+      wasted_portions
+      food_item {
+        id
+        name
+        meal_type
+      }
+    }
   }
 }
 

@@ -726,6 +726,16 @@ public type GetMealServingsResponse record {|
         int served_count;
         int? organization_id;
         string? notes;
+        record {|
+            int? id;
+            int food_item_id;
+            int wasted_portions;
+            record {|
+                int? id;
+                string name;
+                string meal_type;
+            |} food_item;
+        |}[] food_wastes;
     |}[] meal_servings;
 |};
 
