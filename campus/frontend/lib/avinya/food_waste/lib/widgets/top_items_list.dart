@@ -14,7 +14,7 @@ class _TopItemsListState extends State<TopItemsList> {
   @override
   void initState() {
     super.initState();
-    _topWastedItemsFuture = AnalyticsService.fetchTopWastedItems(limit: 5);
+    _topWastedItemsFuture = AnalyticsService.fetchTopWastedItems(limit: 3);
   }
 
   @override
