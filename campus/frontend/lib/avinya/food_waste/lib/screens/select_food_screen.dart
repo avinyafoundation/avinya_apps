@@ -24,9 +24,9 @@ class _SelectFoodScreenState extends State<SelectFoodScreen> {
 
   void _loadFoodItems() {
     if (widget.mealType.toLowerCase() == 'breakfast') {
-      _foodItemsFuture = FoodItemService.fetchMockBreakfastItems();
+      _foodItemsFuture = FoodItemService.fetchBreakfastItems();
     } else {
-      _foodItemsFuture = FoodItemService.fetchMockLunchItems();
+      _foodItemsFuture = FoodItemService.fetchLunchItems();
     }
   }
 

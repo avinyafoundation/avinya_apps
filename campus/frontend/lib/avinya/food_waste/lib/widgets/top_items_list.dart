@@ -14,12 +14,11 @@ class _TopItemsListState extends State<TopItemsList> {
   @override
   void initState() {
     super.initState();
-    _topWastedItemsFuture = AnalyticsService.fetchMockTopWastedItems();
+    _topWastedItemsFuture = AnalyticsService.fetchTopWastedItems(limit: 5);
   }
 
   @override
   Widget build(BuildContext context) {
-    
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -58,7 +57,8 @@ class _TopItemsListState extends State<TopItemsList> {
                           const SizedBox(height: 4),
                           Text(
                             snapshot.error.toString(),
-                            style: const TextStyle(color: Colors.grey, fontSize: 12),
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 12),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -89,13 +89,15 @@ class _TopItemsListState extends State<TopItemsList> {
                     final item = entry.value;
 
                     return Padding(
-                      padding: EdgeInsets.only(bottom: index < topWastedItems.length - 1 ? 8 : 0),
+                      padding: EdgeInsets.only(
+                          bottom: index < topWastedItems.length - 1 ? 8 : 0),
                       child: _buildWasteItem(
                         '${index + 1}',
                         item.foodName,
                         '${item.totalPortions} portions',
                         'LKR ${item.totalCost.toStringAsFixed(1)}',
-                        colors[index < colors.length ? index : colors.length - 1],
+                        colors[
+                            index < colors.length ? index : colors.length - 1],
                       ),
                     );
                   }).toList(),
@@ -108,7 +110,8 @@ class _TopItemsListState extends State<TopItemsList> {
     );
   }
 
-  Widget _buildWasteItem(String rank, String item, String portions, String cost, Color color) {
+  Widget _buildWasteItem(
+      String rank, String item, String portions, String cost, Color color) {
     return Row(
       children: [
         CircleAvatar(

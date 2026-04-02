@@ -36,9 +36,9 @@ class TopWastedItem {
 
   factory TopWastedItem.fromJson(Map<String, dynamic> json) {
     return TopWastedItem(
-      foodId: json['food_id'],
-      foodName: json['food_name'],
-      totalPortions: json['total_portions'],
+      foodId: json['food_item_id'] ?? 0,
+      foodName: json['food_name'] ?? '',
+      totalPortions: json['total_portions'] ?? 0,
       totalCost: (json['total_cost'] ?? 0.0).toDouble(),
     );
   }
@@ -80,14 +80,18 @@ class DailyWasteData {
 class AnalyticsService {
   static String baseUrl = AppConfig.campusFoodWasteBffApiUrl;
 
-  static Future<AnalyticsData> fetchAnalytics() async {
+  static Future<AnalyticsData> fetchAnalytics({int days = 30}) async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/analytics'));
+      final uri = Uri.parse('$baseUrl/analytics/summary')
+          .replace(queryParameters: {'days': days.toString()});
+      final response = await http.get(uri).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-        print('Fetched analytics data: $data');
-        return AnalyticsData.fromJson(data);
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final Map<String, dynamic> analyticsData =
+            responseData['getAnalyticsData'] ?? {};
+        print('Fetched analytics data: $analyticsData');
+        return AnalyticsData.fromJson(analyticsData);
       } else {
         print('API Error: Status ${response.statusCode}');
         throw Exception(
@@ -99,18 +103,21 @@ class AnalyticsService {
     }
   }
 
-  static Future<List<TopWastedItem>> fetchTopWastedItems() async {
+  static Future<List<TopWastedItem>> fetchTopWastedItems(
+      {int limit = 5}) async {
     try {
-      final response =
-          await http.get(Uri.parse('$baseUrl/analytics/top_wasted'));
+      final uri = Uri.parse('$baseUrl/analytics/top_wasted')
+          .replace(queryParameters: {'limit': limit.toString()});
+      final response = await http.get(uri).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final List<dynamic> items =
+            responseData['top_wasted_items_recent_week'] ?? [];
         final topWastedItems =
-            data.map((json) => TopWastedItem.fromJson(json)).toList();
-        final top3Items = topWastedItems.take(3).toList();
-        print('Fetched top wasted items: $top3Items');
-        return top3Items;
+            items.map((json) => TopWastedItem.fromJson(json)).toList();
+        print('Fetched top wasted items: ${topWastedItems.length} items');
+        return topWastedItems;
       } else {
         print('API Error: Status ${response.statusCode}');
         throw Exception(
@@ -141,6 +148,29 @@ class AnalyticsService {
     } catch (e) {
       print('Exception caught: $e');
       throw Exception('Error fetching last 7 days waste data: $e');
+    }
+  }
+
+  static Future<List<DailyWasteData>> fetchDailyWaste({int days = 7}) async {
+    try {
+      final uri = Uri.parse('$baseUrl/analytics/waste')
+          .replace(queryParameters: {'days': days.toString()});
+      final response = await http.get(uri).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final List<dynamic> items = responseData['daily_waste'] ?? [];
+        final wasteData =
+            items.map((json) => DailyWasteData.fromJson(json)).toList();
+        print('Fetched $days days waste data: ${items.length} entries');
+        return wasteData;
+      } else {
+        print('API Error: Status ${response.statusCode}');
+        throw Exception('Failed to load waste data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception caught: $e');
+      throw Exception('Error fetching waste data: $e');
     }
   }
 

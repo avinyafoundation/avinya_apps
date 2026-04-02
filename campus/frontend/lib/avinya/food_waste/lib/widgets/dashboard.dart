@@ -23,7 +23,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _loadAnalytics() {
-    _analyticsFuture = AnalyticsService.fetchMockAnalytics();
+    _analyticsFuture = AnalyticsService.fetchAnalytics(days: 30);
   }
 
   @override

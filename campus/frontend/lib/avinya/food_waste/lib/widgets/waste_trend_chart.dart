@@ -25,7 +25,7 @@ class _WasteTrendChartState extends State<WasteTrendChart> {
   }
 
   void _loadWasteData() {
-    _wasteDataFuture = AnalyticsService.fetchMockLast7DaysWaste();
+    _wasteDataFuture = AnalyticsService.fetchDailyWaste(days: 7);
   }
 
   String _formatDate(String dateString) {
@@ -78,7 +78,8 @@ class _WasteTrendChartState extends State<WasteTrendChart> {
                           const SizedBox(height: 4),
                           Text(
                             snapshot.error.toString(),
-                            style: const TextStyle(color: Colors.grey, fontSize: 12),
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 12),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -97,10 +98,12 @@ class _WasteTrendChartState extends State<WasteTrendChart> {
 
                   return CustomPaint(
                     painter: _WasteAmountTrendPainter(
-                      reversedData.map((data) => _ChartDataPoint(
-                        date: _formatDate(data.date),
-                        amount: data.totalWaste,
-                      )).toList(),
+                      reversedData
+                          .map((data) => _ChartDataPoint(
+                                date: _formatDate(data.date),
+                                amount: data.totalWaste,
+                              ))
+                          .toList(),
                     ),
                     child: Container(),
                   );
@@ -150,13 +153,15 @@ class _WasteAmountTrendPainter extends CustomPainter {
     final maxAmount = data.map((d) => d.amount).reduce((a, b) => a > b ? a : b);
     final minAmount = data.map((d) => d.amount).reduce((a, b) => a < b ? a : b);
     final range = maxAmount - minAmount;
-    
+
     // Calculate points
     final points = <Offset>[];
     for (int i = 0; i < data.length; i++) {
       final x = (i / (data.length - 1)) * size.width;
-      final normalizedAmount = range > 0 ? (data[i].amount - minAmount) / range : 0.5;
-      final y = size.height - (normalizedAmount * size.height * 0.8 + size.height * 0.1);
+      final normalizedAmount =
+          range > 0 ? (data[i].amount - minAmount) / range : 0.5;
+      final y = size.height -
+          (normalizedAmount * size.height * 0.8 + size.height * 0.1);
       points.add(Offset(x, y));
     }
 
@@ -165,11 +170,11 @@ class _WasteAmountTrendPainter extends CustomPainter {
       final path = Path();
       path.moveTo(points.first.dx, size.height);
       path.lineTo(points.first.dx, points.first.dy);
-      
+
       for (int i = 1; i < points.length; i++) {
         path.lineTo(points[i].dx, points[i].dy);
       }
-      
+
       path.lineTo(points.last.dx, size.height);
       path.close();
       canvas.drawPath(path, gradientPaint);
@@ -197,13 +202,16 @@ class _WasteAmountTrendPainter extends CustomPainter {
     for (int i = 0; i < points.length; i++) {
       // Draw circle
       canvas.drawCircle(points[i], 4, pointPaint);
-      
+
       // Draw border
-      canvas.drawCircle(points[i], 4, Paint()
-        ..color = Colors.white
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2);
-      
+      canvas.drawCircle(
+          points[i],
+          4,
+          Paint()
+            ..color = Colors.white
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 2);
+
       // Draw cost value above point
       if (data[i].amount > 0) {
         textPainter.text = TextSpan(
@@ -215,15 +223,15 @@ class _WasteAmountTrendPainter extends CustomPainter {
           ),
         );
         textPainter.layout();
-        
+
         final textOffset = Offset(
           points[i].dx - textPainter.width / 2,
           points[i].dy - textPainter.height - 8,
         );
-        
+
         textPainter.paint(canvas, textOffset);
       }
-      
+
       // Draw date below point
       textPainter.text = TextSpan(
         text: data[i].date,
@@ -234,12 +242,12 @@ class _WasteAmountTrendPainter extends CustomPainter {
         ),
       );
       textPainter.layout();
-      
+
       final dateOffset = Offset(
         points[i].dx - textPainter.width / 2,
         points[i].dy + 12,
       );
-      
+
       textPainter.paint(canvas, dateOffset);
     }
   }
