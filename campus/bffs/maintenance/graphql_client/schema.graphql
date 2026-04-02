@@ -1498,6 +1498,7 @@ type Query {
   monthlyCostSummary(year: Int!, organizationId: Int!): MonthlyCostSummaryData
   maintenanceTasksByStatus(organizationId: Int!, personId: Int, fromDate: String, toDate: String, taskType: String, location: Int): GroupedTasks!
   monthlyTaskCostReport(organizationId: Int!, year: Int!, month: Int!): MaintenanceMonthlyTaskCostReportData!
+  activityInstancesByParticipantEndDate(endDate: String!): [ActivityInstanceData!]
 }
 
 input ResourceAllocation {

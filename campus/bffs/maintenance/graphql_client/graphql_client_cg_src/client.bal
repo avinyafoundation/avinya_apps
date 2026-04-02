@@ -93,4 +93,10 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <UpdateTaskInstanceResponse> check performDataBinding(graphqlResponse, UpdateTaskInstanceResponse);
     }
+    remote isolated function GetActivityInstancesByParticipantEndDate(string endDate) returns GetActivityInstancesByParticipantEndDateResponse|graphql:ClientError {
+        string query = string `query GetActivityInstancesByParticipantEndDate($endDate:String!) {activityInstancesByParticipantEndDate(endDate:$endDate) {id start_time end_time overall_task_status task {id title description task_type frequency exception_deadline location {id location_name}} activity_participants {id participant_task_status person {id preferred_name}} finance {id estimated_cost labour_cost total_cost material_costs {id item quantity unit unit_cost} status rejection_reason reviewed_by reviewed_date}}}`;
+        map<anydata> variables = {"endDate": endDate};
+        json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
+        return <GetActivityInstancesByParticipantEndDateResponse> check performDataBinding(graphqlResponse, GetActivityInstancesByParticipantEndDateResponse);
+    }
 }
