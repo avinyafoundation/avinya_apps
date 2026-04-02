@@ -1,0 +1,106 @@
+query GetFoodItems($mealType: String) {
+  food_items(meal_type: $mealType) {
+    id
+    name
+    cost_per_portion
+    meal_type
+    created
+    updated
+  }
+}
+
+mutation AddFoodItem($name: String!, $costPerPortion: Decimal!, $mealType: String!) {
+  add_food_item(food_item: {name: $name, cost_per_portion: $costPerPortion, meal_type: $mealType}) {
+    id
+    name
+    cost_per_portion
+    meal_type
+    created
+    updated
+  }
+}
+
+mutation UpdateFoodItem($id: Int!, $name: String!, $costPerPortion: Decimal!, $mealType: String!) {
+  update_food_item(food_item: {id: $id, name: $name, cost_per_portion: $costPerPortion, meal_type: $mealType}) {
+    id
+    name
+    cost_per_portion
+    meal_type
+    is_deleted
+    created
+    updated
+  }
+}
+
+
+query GetMealServings($organizationId: Int!, $id: Int, $fromDate: String, $toDate: String, $limit: Int, $offset: Int) {
+  meal_servings(organizationId: $organizationId, id: $id, fromDate: $fromDate, toDate: $toDate, limit: $limit, offset: $offset) {
+    id
+    serving_date
+    meal_type
+    served_count
+    organization_id
+    notes
+  }
+}
+
+mutation AddMealServing($servingDate: String!, $mealType: String!, $servedCount: Int!, $organizationId: Int!, $notes: String) {
+  add_meal_serving(meal_serving: {serving_date: $servingDate, meal_type: $mealType, served_count: $servedCount, organization_id: $organizationId, notes: $notes}) {
+    id
+    serving_date
+    meal_type
+    served_count
+    organization_id
+    notes
+    created
+    updated
+  }
+}
+
+mutation UpdateMealServing($id: Int!, $servingDate: String!, $mealType: String!, $servedCount: Int!, $notes: String) {
+  update_meal_serving(meal_serving: {id: $id, serving_date: $servingDate, meal_type: $mealType, served_count: $servedCount, notes: $notes}) {
+    id
+    serving_date
+    meal_type
+    served_count
+    organization_id
+    notes
+    created
+    updated
+  }
+}
+
+
+mutation AddFoodWaste($mealServingId: Int!, $foodItemId: Int!, $wastedPortions: Int!) {
+  add_food_waste(food_waste: {meal_serving_id: $mealServingId, food_item_id: $foodItemId, wasted_portions: $wastedPortions}) {
+    id
+    meal_serving_id
+    food_item_id
+    wasted_portions
+    created
+    updated
+  }
+}
+
+query GetWasteData($days: Int!) {
+  daily_waste(days: $days) {
+    date
+    total_waste
+  }
+}
+
+query GetTopWastedItemsRecentWeek($limit: Int!) {
+  top_wasted_items_recent_week(limit: $limit) {
+    food_item_id
+    food_name
+    total_portions
+    total_cost
+  }
+}
+
+query GetAnalytics($days: Int) {
+  getAnalyticsData(days: $days) {
+    average_daily_waste_cost
+    weekly_total_cost
+  }
+}
