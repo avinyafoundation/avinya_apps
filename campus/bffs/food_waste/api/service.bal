@@ -32,7 +32,7 @@ final GraphqlClient globalDataClient = check new (GLOBAL_DATA_API_URL,
     }
 }
 
-service / on new http:Listener(9099) {
+service / on new http:Listener(9098) {
     private final GraphqlClient graphqlClient;
 
     function init() returns error? {
