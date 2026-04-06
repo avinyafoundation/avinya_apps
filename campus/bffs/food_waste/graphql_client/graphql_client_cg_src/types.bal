@@ -492,7 +492,7 @@ public type Person record {
     string? date_of_birth?;
     int? parent_organization_id?;
     int? avinya_type_id?;
-    int rank_position?;
+    int? rank_position?;
     Address? permanent_address?;
     boolean? is_graduated?;
     int? mailing_address_id?;
@@ -734,6 +734,7 @@ public type GetMealServingsResponse record {|
                 int? id;
                 string name;
                 string meal_type;
+                anydata cost_per_portion;
             |} food_item;
         |}[] food_wastes;
     |}[] meal_servings;
@@ -787,7 +788,7 @@ public type GetWasteDataResponse record {|
     |}[] daily_waste;
 |};
 
-public type GetTopWastedItemsRecentWeekResponse record {|
+public type GetTopWastedItemsResponse record {|
     map<json?> __extensions?;
     record {|
         int food_item_id;

@@ -22,14 +22,15 @@ class MealServing {
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'date': date,
+    final map = <String, dynamic>{
+      'serving_date': date,
       'meal_type': mealType,
       'served_count': servedCount,
       'notes': notes,
       'food_wastes': foodWastes.map((w) => w.toJson()).toList(),
     };
+    if (id != null) map['id'] = id;
+    return map;
   }
 
   factory MealServing.fromJson(Map<String, dynamic> json) {
@@ -38,9 +39,9 @@ class MealServing {
         .toList();
     return MealServing(
       id: json['id'],
-      date: json['date'],
-      mealType: json['meal_type'],
-      servedCount: json['served_count'],
+      date: json['serving_date'] ?? json['date'] ?? '',
+      mealType: json['meal_type'] ?? 'BREAKFAST',
+      servedCount: json['served_count'] ?? 0,
       notes: json['notes'],
       foodWastes: foodWastes,
     );
@@ -63,13 +64,14 @@ class FoodWaste {
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'meal_serving_id': mealServingId,
-      'food_id': foodId,
-      'portions': portions,
+    final map = <String, dynamic>{
+      'food_item_id': foodId,
+      'wasted_portions': portions,
       'food_item': foodItem.toJson(),
     };
+    if (id != null) map['id'] = id;
+    if (mealServingId != null) map['meal_serving_id'] = mealServingId;
+    return map;
   }
 
   factory FoodWaste.fromJson(Map<String, dynamic> json) {
@@ -77,7 +79,7 @@ class FoodWaste {
     final foodItem = json['food_item'] != null
         ? FoodItem.fromJson(json['food_item'])
         : FoodItem(
-            id: json['food_id'],
+            id: json['food_item_id'] ?? json['food_id'],
             name: 'Unknown',
             costPerPortion: 0.0,
             mealType: 'BREAKFAST',
@@ -85,8 +87,8 @@ class FoodWaste {
     return FoodWaste(
       id: json['id'],
       mealServingId: json['meal_serving_id'],
-      foodId: json['food_id'] ?? foodItem.id ?? 0,
-      portions: json['portions'],
+      foodId: json['food_item_id'] ?? json['food_id'] ?? foodItem.id ?? 0,
+      portions: json['wasted_portions'] ?? json['portions'] ?? 0,
       foodItem: foodItem,
     );
   }
@@ -96,42 +98,82 @@ class FoodWaste {
 class MealServingService {
   static String baseUrl = AppConfig.campusFoodWasteBffApiUrl;
 
-  static Future<List<MealServing>> fetchMealServings() async {
+  static Future<List<MealServing>> fetchMealServings({
+    int organizationId = 2,
+    int offset = 0,
+    int limit = 100,
+    String? fromDate,
+    String? toDate,
+  }) async {
     try {
-      final response = await http
-          .get(Uri.parse('$baseUrl/meal_servings'))
-          .timeout(const Duration(seconds: 10));
+      final Map<String, String> queryParams = {
+        'offset': offset.toString(),
+        'limit': limit.toString(),
+      };
+
+      if (fromDate != null) queryParams['from_date'] = fromDate;
+      if (toDate != null) queryParams['to_date'] = toDate;
+
+      final endpoint = '$baseUrl/meal_servings/organizations/$organizationId';
+      final uri = Uri.parse(endpoint);
+      final uriWithParams = uri.replace(queryParameters: queryParams);
+
+      final response =
+          await http.get(uriWithParams).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+        final decodedData = json.decode(response.body);
+
+        // Handle both wrapped and direct array responses
+        List<dynamic> mealServingsData;
+        if (decodedData is Map<String, dynamic>) {
+          mealServingsData = decodedData['meal_servings'] ?? [];
+        } else if (decodedData is List) {
+          mealServingsData = decodedData;
+        } else {
+          mealServingsData = [];
+        }
+
         final mealServings =
-            data.map((json) => MealServing.fromJson(json)).toList();
+            mealServingsData.map((json) => MealServing.fromJson(json)).toList();
+        print('Fetched ${mealServings.length} meal servings');
         return mealServings;
       } else {
         throw Exception('Failed to load meal servings: ${response.statusCode}');
       }
     } catch (e) {
+      print('Error fetching meal servings: $e');
       throw Exception('Error fetching meal servings: $e');
     }
   }
 
-  static Future<MealServing> createMealServing(MealServing serving) async {
+  static Future<MealServing> createMealServing(MealServing serving,
+      {int organizationId = 2}) async {
     try {
-      final createData = serving.toJson()
+      final Map<String, dynamic> createData = serving.toJson()
         ..remove('id')
         ..remove('food_wastes');
 
-      final response = await http.post(
-        Uri.parse('$baseUrl/meal_servings'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode(createData),
-      );
+      createData['organization_id'] = organizationId;
+      createData['meal_type'] = serving.mealType.toLowerCase();
+
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/meal_servings'),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: json.encode(createData),
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-        final createdItem = MealServing.fromJson(data);
+
+        // Handle wrapper if present
+        final Map<String, dynamic> itemData = data['meal_serving'] ?? data;
+        final createdItem = MealServing.fromJson(itemData);
+
         print('Created meal serving with ID: ${createdItem.id}');
         return createdItem;
       } else {
@@ -149,18 +191,23 @@ class MealServingService {
     try {
       final createData = item.toJson()
         ..remove('id')
-        ..remove('food_item');
+        ..remove('food_item')
+        ..remove('food_wastes');
 
-      final response = await http.post(
-        Uri.parse('$baseUrl/food_waste'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode(createData),
-      );
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/food_waste'),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: json.encode(createData),
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final Map<String, dynamic> data =
+            responseData['food_waste'] ?? responseData;
         final createdItem = FoodWaste.fromJson(data);
         print('Created food waste with ID: ${createdItem.id}');
         return createdItem;
@@ -176,15 +223,19 @@ class MealServingService {
 
   static Future<void> updateMealServing(MealServing serving) async {
     try {
-      final updateData = serving.toJson()..remove('food_wastes');
+      final updateData = serving.toJson()
+        ..remove('id')
+        ..remove('food_wastes');
 
-      final response = await http.put(
-        Uri.parse('$baseUrl/meal_servings'),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode(updateData),
-      );
+      final response = await http
+          .put(
+            Uri.parse('$baseUrl/meal_servings/${serving.id}'),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: json.encode(updateData),
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200 || response.statusCode == 204) {
         print('Successfully updated meal serving with ID: ${serving.id}');
@@ -201,9 +252,11 @@ class MealServingService {
 
   static Future<void> deleteMealServing(int id) async {
     try {
-      final response = await http.put(
-        Uri.parse('$baseUrl/delete_meal_serving/$id'),
-      );
+      final response = await http
+          .delete(
+            Uri.parse('$baseUrl/meal_servings/$id'),
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200 || response.statusCode == 204) {
         print('Deleted meal serving with ID: $id');
@@ -220,9 +273,11 @@ class MealServingService {
 
   static Future<void> deleteFoodWaste(int id) async {
     try {
-      final response = await http.put(
-        Uri.parse('$baseUrl/delete_food_waste/$id'),
-      );
+      final response = await http
+          .delete(
+            Uri.parse('$baseUrl/food_waste/$id'),
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200 || response.statusCode == 204) {
         print('Deleted food waste with ID: $id');
@@ -234,64 +289,5 @@ class MealServingService {
       print('Exception caught: $e');
       throw Exception('Error deleting food waste: $e');
     }
-  }
-
-  static Future<MealServing> fetchMealServingById(int id) async {
-    try {
-      final response = await http
-          .get(Uri.parse('$baseUrl/meal_serving_by_id/$id'))
-          .timeout(const Duration(seconds: 10));
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-        print('Fetched meal serving with ID: ${data['id']}');
-        return MealServing.fromJson(data);
-      } else {
-        print('API Error: Status ${response.statusCode}');
-        throw Exception('Failed to load meal serving: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error in fetchMealServingById: $e');
-      throw Exception('Error fetching meal serving: $e');
-    }
-  }
-
-  static Future<List<MealServing>> fetchMealServingsByDate(String date) async {
-    try {
-      final response = await http
-          .get(Uri.parse('$baseUrl/meal_serving_by_date/$date'))
-          .timeout(const Duration(seconds: 10));
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        print('Parsed ${data.length} meal servings from response');
-        return data.map((json) => MealServing.fromJson(json)).toList();
-      } else {
-        print('API Error: Status ${response.statusCode}');
-        throw Exception(
-            'Failed to load meal servings by date: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error in fetchMealServingsByDate: $e');
-      throw Exception('Error fetching meal servings by date: $e');
-    }
-  }
-
-  static fetchMockMealServingsByDate(String date) async {
-    await Future.delayed(Duration(seconds: 1));
-    final List<dynamic> data = json.decode(mealServingByDateResponse);
-    return data.map((json) => MealServing.fromJson(json)).toList();
-  }
-
-  static fetchMockMealServingById(int id) async {
-    await Future.delayed(Duration(seconds: 1));
-    final Map<String, dynamic> data = json.decode(mealServingByIdResponse);
-    return MealServing.fromJson(data);
-  }
-
-  static Future<List<MealServing>> fetchMockMealServings() async {
-    await Future.delayed(const Duration(seconds: 1));
-    final List<dynamic> data = json.decode(mealServingsListResponse);
-    return data.map((json) => MealServing.fromJson(json)).toList();
   }
 }

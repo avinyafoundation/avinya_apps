@@ -78,6 +78,8 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
     }
   }
 
+  int? _existingMealServingId;
+
   Future<void> _loadTodaysMealServings() async {
     print('Loading todays meal servings for date: $_selectedDate');
     try {
@@ -87,13 +89,19 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
       print('Formatted date string: $dateStr');
 
       // Use the service instead of provider
-      print('Calling MealServingService.fetchMealServingsByDate...');
-      final mealServings =
-          await MealServingService.fetchMockMealServingsByDate(dateStr);
+      print('Calling MealServingService.fetchMealServings...');
+      final mealServings = await MealServingService.fetchMealServings(
+        organizationId: 2,
+        offset: 0,
+        limit: 100,
+        fromDate: dateStr,
+        toDate: dateStr,
+      );
       print('Received ${mealServings.length} meal servings');
 
       setState(() {
         _addedWasteItems.clear();
+        _existingMealServingId = null;
 
         // Filter meal servings by current meal type
         final filteredServings = mealServings
@@ -105,6 +113,8 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
 
         // Convert meal servings to the format expected by the UI
         for (final serving in filteredServings) {
+          _existingMealServingId = serving.id;
+
           for (final waste in serving.foodWastes) {
             _addedWasteItems.add({
               'foodName': waste.foodItem.name,
@@ -936,9 +946,10 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
         }
       } else {
         // CREATE MODE: Check if meal serving already exists for this date/meal type
-        final existingMealServingId = _addedWasteItems.isNotEmpty
-            ? _addedWasteItems.first['mealServingId'] as int?
-            : null;
+        final existingMealServingId = _existingMealServingId ??
+            (_addedWasteItems.isNotEmpty
+                ? _addedWasteItems.first['mealServingId'] as int?
+                : null);
 
         if (existingMealServingId != null) {
           // Update existing meal serving found from date
@@ -999,7 +1010,14 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
 
       if (mounted) {
         widget.onSave?.call();
-        Navigator.pop(context);
+
+        if (widget.logData != null) {
+          Navigator.pop(context);
+        } else {
+          // If we're on the main screen, just refresh the data to reflect changes
+          _loadTodaysMealServings();
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(_editingMealServingId != null

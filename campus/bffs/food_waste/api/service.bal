@@ -113,9 +113,9 @@ service / on new http:Listener(9098) {
     }
 
     // Analytics Endpoints
-    resource function get analytics/waste(int days) returns GetWasteDataResponse|error {
+    resource function get analytics/organizations/[int organization_id]/waste(int days) returns GetWasteDataResponse|error {
         do {
-            GetWasteDataResponse response = check self.graphqlClient->GetWasteData(days);
+            GetWasteDataResponse response = check self.graphqlClient->GetWasteData(organization_id, days);
             return response;
         } on fail var e {
             log:printError("Error fetching waste data", e);
@@ -123,9 +123,9 @@ service / on new http:Listener(9098) {
         }
     }
 
-    resource function get analytics/top_wasted(int 'limit) returns GetTopWastedItemsRecentWeekResponse|error {
+    resource function get analytics/organizations/[int organization_id]/top_wasted(int 'limit) returns GetTopWastedItemsResponse|error {
         do {
-            GetTopWastedItemsRecentWeekResponse response = check self.graphqlClient->GetTopWastedItemsRecentWeek('limit);
+            GetTopWastedItemsResponse response = check self.graphqlClient->GetTopWastedItems(organization_id, 'limit);
             return response;
         } on fail var e {
             log:printError("Error fetching top wasted items", e);
@@ -133,9 +133,9 @@ service / on new http:Listener(9098) {
         }
     }
 
-    resource function get analytics/summary(int? days = ()) returns GetAnalyticsResponse|error {
+    resource function get analytics/organizations/[int organization_id]/summary(int? days = ()) returns GetAnalyticsResponse|error {
         do {
-            GetAnalyticsResponse response = check self.graphqlClient->GetAnalytics(days);
+            GetAnalyticsResponse response = check self.graphqlClient->GetAnalytics(organization_id, days);
             return response;
         } on fail var e {
             log:printError("Error fetching analytics", e);

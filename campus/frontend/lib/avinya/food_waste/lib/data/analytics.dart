@@ -80,10 +80,12 @@ class DailyWasteData {
 class AnalyticsService {
   static String baseUrl = AppConfig.campusFoodWasteBffApiUrl;
 
-  static Future<AnalyticsData> fetchAnalytics({int days = 30}) async {
+  static Future<AnalyticsData> fetchAnalytics(
+      {int organizationId = 2, int days = 30}) async {
     try {
-      final uri = Uri.parse('$baseUrl/analytics/summary')
-          .replace(queryParameters: {'days': days.toString()});
+      final uri =
+          Uri.parse('$baseUrl/analytics/organizations/$organizationId/summary')
+              .replace(queryParameters: {'days': days.toString()});
       final response = await http.get(uri).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
@@ -104,9 +106,10 @@ class AnalyticsService {
   }
 
   static Future<List<TopWastedItem>> fetchTopWastedItems(
-      {int limit = 5}) async {
+      {int organizationId = 2, int limit = 3}) async {
     try {
-      final uri = Uri.parse('$baseUrl/analytics/top_wasted')
+      final uri = Uri.parse(
+              '$baseUrl/analytics/organizations/$organizationId/top_wasted')
           .replace(queryParameters: {'limit': limit.toString()});
       final response = await http.get(uri).timeout(const Duration(seconds: 10));
 
@@ -151,10 +154,12 @@ class AnalyticsService {
     }
   }
 
-  static Future<List<DailyWasteData>> fetchDailyWaste({int days = 7}) async {
+  static Future<List<DailyWasteData>> fetchDailyWaste(
+      {int organizationId = 2, int days = 7}) async {
     try {
-      final uri = Uri.parse('$baseUrl/analytics/waste')
-          .replace(queryParameters: {'days': days.toString()});
+      final uri =
+          Uri.parse('$baseUrl/analytics/organizations/$organizationId/waste')
+              .replace(queryParameters: {'days': days.toString()});
       final response = await http.get(uri).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {

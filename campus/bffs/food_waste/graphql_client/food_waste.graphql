@@ -49,6 +49,7 @@ query GetMealServings($organizationId: Int!, $id: Int, $fromDate: String, $toDat
         id
         name
         meal_type
+        cost_per_portion
       }
     }
   }
@@ -92,15 +93,15 @@ mutation AddFoodWaste($mealServingId: Int!, $foodItemId: Int!, $wastedPortions: 
   }
 }
 
-query GetWasteData($days: Int!) {
-  daily_waste(days: $days) {
+query GetWasteData($organizationId: Int!, $days: Int!) {
+  daily_waste(organizationId: $organizationId, days: $days) {
     date
     total_waste
   }
 }
 
-query GetTopWastedItemsRecentWeek($limit: Int!) {
-  top_wasted_items_recent_week(limit: $limit) {
+query GetTopWastedItems($organizationId: Int!, $limit: Int!) {
+  top_wasted_items_recent_week(organizationId: $organizationId, limit: $limit) {
     food_item_id
     food_name
     total_portions
@@ -108,8 +109,8 @@ query GetTopWastedItemsRecentWeek($limit: Int!) {
   }
 }
 
-query GetAnalytics($days: Int) {
-  getAnalyticsData(days: $days) {
+query GetAnalytics($organizationId: Int!, $days: Int) {
+  getAnalyticsData(organizationId: $organizationId, days: $days) {
     average_daily_waste_cost
     weekly_total_cost
   }

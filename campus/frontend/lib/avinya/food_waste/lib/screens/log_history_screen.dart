@@ -21,7 +21,16 @@ class _LogHistoryScreenState extends State<LogHistoryScreen> {
   }
 
   void _loadMealServings() {
-    _mealServingsFuture = MealServingService.fetchMockMealServings();
+    final today = DateTime.now();
+    final todayStr =
+        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+    _mealServingsFuture = MealServingService.fetchMealServings(
+      organizationId: 2,
+      offset: 0,
+      limit: 100,
+      fromDate: '2025-01-01',
+      toDate: todayStr,
+    );
   }
 
   void _refresh() {
