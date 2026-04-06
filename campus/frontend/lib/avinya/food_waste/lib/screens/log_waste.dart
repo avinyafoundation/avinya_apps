@@ -776,12 +776,6 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
     setState(() {
       _addedWasteItems.removeAt(index);
     });
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Waste item removed')),
-      );
-    }
   }
 
   Future<void> _addWasteItem(
