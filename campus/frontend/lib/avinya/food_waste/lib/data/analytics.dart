@@ -109,11 +109,14 @@ class AnalyticsService {
   }
 
   static Future<List<TopWastedItem>> fetchTopWastedItems(
-      {int organizationId = 2, int limit = 3}) async {
+      {int organizationId = 2, int limit = 3, int days = 7}) async {
     try {
       final uri = Uri.parse(
               '$baseUrl/analytics/organizations/$organizationId/top_wasted')
-          .replace(queryParameters: {'limit': limit.toString()});
+          .replace(queryParameters: {
+        'limit': limit.toString(),
+        'days': days.toString(),
+      });
       final response = await http.get(
         uri,
         headers: {'Authorization': 'Bearer ' + AppConfig.campusBffApiKey},
@@ -121,8 +124,7 @@ class AnalyticsService {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        final List<dynamic> items =
-            responseData['top_wasted_items_recent_week'] ?? [];
+        final List<dynamic> items = responseData['top_wasted_items'] ?? [];
         final topWastedItems =
             items.map((json) => TopWastedItem.fromJson(json)).toList();
         print('Fetched top wasted items: ${topWastedItems.length} items');

@@ -75,9 +75,9 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetWasteDataResponse> check performDataBinding(graphqlResponse, GetWasteDataResponse);
     }
-    remote isolated function GetTopWastedItems(int organizationId, int 'limit) returns GetTopWastedItemsResponse|graphql:ClientError {
-        string query = string `query GetTopWastedItems($organizationId:Int!,$limit:Int!) {top_wasted_items_recent_week(organizationId:$organizationId,limit:$limit) {food_item_id food_name total_portions total_cost}}`;
-        map<anydata> variables = {"organizationId": organizationId, "limit": 'limit};
+    remote isolated function GetTopWastedItems(int organizationId, int 'limit, int days) returns GetTopWastedItemsResponse|graphql:ClientError {
+        string query = string `query GetTopWastedItems($organizationId:Int!,$days:Int!,$limit:Int!) {top_wasted_items(organizationId:$organizationId,days:$days,limit:$limit) {food_item_id food_name total_portions total_cost}}`;
+        map<anydata> variables = {"organizationId": organizationId, "limit": 'limit, "days": days};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetTopWastedItemsResponse> check performDataBinding(graphqlResponse, GetTopWastedItemsResponse);
     }

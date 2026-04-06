@@ -112,9 +112,9 @@ service / on new http:Listener(9098) {
         }
     }
 
-    resource function get analytics/organizations/[int organization_id]/top_wasted(int 'limit) returns GetTopWastedItemsResponse|error {
+    resource function get analytics/organizations/[int organization_id]/top_wasted(int 'limit, int days) returns GetTopWastedItemsResponse|error {
         do {
-            GetTopWastedItemsResponse response = check self.graphqlClient->GetTopWastedItems(organization_id, 'limit);
+            GetTopWastedItemsResponse response = check self.graphqlClient->GetTopWastedItems(organization_id, 'limit, days);
             return response;
         } on fail var e {
             log:printError("Error fetching top wasted items", e);

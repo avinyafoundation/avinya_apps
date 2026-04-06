@@ -4479,7 +4479,7 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "top_wasted_items_recent_week",
+                            "name": "top_wasted_items",
                             "args": [
                                 {
                                     "name": "organizationId",
@@ -4493,6 +4493,19 @@
                                         }
                                     },
                                     "defaultValue": null
+                                },
+                                {
+                                    "name": "days",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": "7"
                                 },
                                 {
                                     "name": "limit",

@@ -125,8 +125,8 @@ query GetWasteData($organizationId: Int!, $days: Int!) {
   }
 }
 
-query GetTopWastedItems($organizationId: Int!, $limit: Int!) {
-  top_wasted_items_recent_week(organizationId: $organizationId, limit: $limit) {
+query GetTopWastedItems($organizationId: Int!, $days: Int!, $limit: Int!) {
+  top_wasted_items(organizationId: $organizationId, days: $days, limit: $limit) {
     food_item_id
     food_name
     total_portions

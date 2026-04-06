@@ -807,7 +807,7 @@ public type GetTopWastedItemsResponse record {|
         string food_name;
         int total_portions;
         anydata total_cost;
-    |}[] top_wasted_items_recent_week;
+    |}[] top_wasted_items;
 |};
 
 public type GetAnalyticsResponse record {|
