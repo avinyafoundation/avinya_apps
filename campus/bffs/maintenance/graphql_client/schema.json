@@ -4312,6 +4312,253 @@
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
+                        },
+                        {
+                            "name": "activityInstancesByParticipantEndDate",
+                            "args": [
+                                {
+                                    "name": "endDate",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "String",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "OBJECT",
+                                        "name": "ActivityInstanceData",
+                                        "ofType": null
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "food_items",
+                            "args": [
+                                {
+                                    "name": "meal_type",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "LIST",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "OBJECT",
+                                            "name": "FoodItemData",
+                                            "ofType": null
+                                        }
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "meal_servings",
+                            "args": [
+                                {
+                                    "name": "organizationId",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "id",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "fromDate",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "toDate",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "String",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "limit",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
+                                    "name": "offset",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "LIST",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "OBJECT",
+                                            "name": "MealServingData",
+                                            "ofType": null
+                                        }
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "daily_waste",
+                            "args": [
+                                {
+                                    "name": "days",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": "7"
+                                }
+                            ],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "LIST",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "OBJECT",
+                                            "name": "DailyWaste",
+                                            "ofType": null
+                                        }
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "top_wasted_items_recent_week",
+                            "args": [
+                                {
+                                    "name": "limit",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": "3"
+                                }
+                            ],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "LIST",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "OBJECT",
+                                            "name": "TopWastedFood",
+                                            "ofType": null
+                                        }
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "getAnalyticsData",
+                            "args": [
+                                {
+                                    "name": "days",
+                                    "type": {
+                                        "kind": "SCALAR",
+                                        "name": "Int",
+                                        "ofType": null
+                                    },
+                                    "defaultValue": "30"
+                                }
+                            ],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "OBJECT",
+                                    "name": "AnalyticsData",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
                         }
                     ],
                     "inputFields": null,
@@ -7880,6 +8127,46 @@
                     "possibleTypes": null
                 },
                 {
+                    "kind": "OBJECT",
+                    "name": "AnalyticsData",
+                    "fields": [
+                        {
+                            "name": "average_daily_waste_cost",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Decimal",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "weekly_total_cost",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Decimal",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        }
+                    ],
+                    "inputFields": null,
+                    "interfaces": [],
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
                     "kind": "INPUT_OBJECT",
                     "name": "Organization",
                     "fields": null,
@@ -9103,6 +9390,124 @@
                         }
                     ],
                     "interfaces": null,
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "OBJECT",
+                    "name": "FoodWasteData",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "meal_serving_id",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Int",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "food_item_id",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Int",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "wasted_portions",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Int",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "created",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "updated",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "food_item",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "OBJECT",
+                                    "name": "FoodItemData",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "meal_serving",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "OBJECT",
+                                    "name": "MealServingData",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        }
+                    ],
+                    "inputFields": null,
+                    "interfaces": [],
                     "enumValues": null,
                     "possibleTypes": null
                 },
@@ -10823,6 +11228,76 @@
                 },
                 {
                     "kind": "OBJECT",
+                    "name": "TopWastedFood",
+                    "fields": [
+                        {
+                            "name": "food_item_id",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Int",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "food_name",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "total_portions",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Int",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "total_cost",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Decimal",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        }
+                    ],
+                    "inputFields": null,
+                    "interfaces": [],
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "OBJECT",
                     "name": "OrganizationStructureData",
                     "fields": [
                         {
@@ -12100,6 +12575,100 @@
                     "possibleTypes": null
                 },
                 {
+                    "kind": "INPUT_OBJECT",
+                    "name": "MealServing",
+                    "fields": null,
+                    "inputFields": [
+                        {
+                            "name": "id",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "serving_date",
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "meal_type",
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "served_count",
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Int",
+                                    "ofType": null
+                                }
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "organization_id",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "notes",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "created",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "updated",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        }
+                    ],
+                    "interfaces": null,
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
                     "kind": "OBJECT",
                     "name": "__EnumValue",
                     "fields": [
@@ -13277,6 +13846,139 @@
                 },
                 {
                     "kind": "OBJECT",
+                    "name": "MealServingData",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "serving_date",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "meal_type",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "organization_id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "served_count",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Int",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "notes",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "created",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "updated",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "food_wastes",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "LIST",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "OBJECT",
+                                            "name": "FoodWasteData",
+                                            "ofType": null
+                                        }
+                                    }
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        }
+                    ],
+                    "inputFields": null,
+                    "interfaces": [],
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "OBJECT",
                     "name": "ActivityParticipantAttendanceMissedBySecurityData",
                     "fields": [
                         {
@@ -14417,6 +15119,105 @@
                         }
                     ],
                     "interfaces": null,
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "OBJECT",
+                    "name": "FoodItemData",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "name",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "cost_per_portion",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Decimal",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "meal_type",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "created",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "updated",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "is_deleted",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        }
+                    ],
+                    "inputFields": null,
+                    "interfaces": [],
                     "enumValues": null,
                     "possibleTypes": null
                 },
@@ -18248,6 +19049,218 @@
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
+                        },
+                        {
+                            "name": "add_food_item",
+                            "args": [
+                                {
+                                    "name": "food_item",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "INPUT_OBJECT",
+                                            "name": "FoodItem",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "FoodItemData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "update_food_item",
+                            "args": [
+                                {
+                                    "name": "food_item",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "INPUT_OBJECT",
+                                            "name": "FoodItem",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "FoodItemData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "delete_food_item",
+                            "args": [
+                                {
+                                    "name": "id",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Boolean",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "add_meal_serving",
+                            "args": [
+                                {
+                                    "name": "meal_serving",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "INPUT_OBJECT",
+                                            "name": "MealServing",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "MealServingData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "update_meal_serving",
+                            "args": [
+                                {
+                                    "name": "meal_serving",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "INPUT_OBJECT",
+                                            "name": "MealServing",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "MealServingData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "delete_meal_serving",
+                            "args": [
+                                {
+                                    "name": "id",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Boolean",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "add_food_waste",
+                            "args": [
+                                {
+                                    "name": "food_waste",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "INPUT_OBJECT",
+                                            "name": "FoodWaste",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "FoodWasteData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "delete_food_waste",
+                            "args": [
+                                {
+                                    "name": "id",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Boolean",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
                         }
                     ],
                     "inputFields": null,
@@ -18898,6 +19911,91 @@
                     ],
                     "inputFields": null,
                     "interfaces": [],
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "INPUT_OBJECT",
+                    "name": "FoodItem",
+                    "fields": null,
+                    "inputFields": [
+                        {
+                            "name": "id",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "name",
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "cost_per_portion",
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Decimal",
+                                    "ofType": null
+                                }
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "meal_type",
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "created",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "updated",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "is_deleted",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        }
+                    ],
+                    "interfaces": null,
                     "enumValues": null,
                     "possibleTypes": null
                 },
@@ -20195,6 +21293,82 @@
                     "possibleTypes": null
                 },
                 {
+                    "kind": "INPUT_OBJECT",
+                    "name": "FoodWaste",
+                    "fields": null,
+                    "inputFields": [
+                        {
+                            "name": "id",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "meal_serving_id",
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Int",
+                                    "ofType": null
+                                }
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "food_item_id",
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Int",
+                                    "ofType": null
+                                }
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "wasted_portions",
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "Int",
+                                    "ofType": null
+                                }
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "created",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "updated",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        }
+                    ],
+                    "interfaces": null,
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
                     "kind": "OBJECT",
                     "name": "EvaluationCriteriaData",
                     "fields": [
@@ -20635,6 +21809,42 @@
                             "type": {
                                 "kind": "SCALAR",
                                 "name": "String",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        }
+                    ],
+                    "inputFields": null,
+                    "interfaces": [],
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "OBJECT",
+                    "name": "DailyWaste",
+                    "fields": [
+                        {
+                            "name": "date",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "total_waste",
+                            "args": [],
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "Decimal",
                                 "ofType": null
                             },
                             "isDeprecated": false,
