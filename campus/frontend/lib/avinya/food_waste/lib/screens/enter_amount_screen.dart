@@ -6,12 +6,14 @@ class EnterAmountScreen extends StatefulWidget {
   final String foodItem;
   final int? foodId;
   final double? costPerPortion;
+  final int? initialPortions;
 
   const EnterAmountScreen({
     super.key,
     required this.foodItem,
     this.foodId,
     this.costPerPortion,
+    this.initialPortions,
   });
 
   @override
@@ -24,6 +26,9 @@ class _EnterAmountScreenState extends State<EnterAmountScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialPortions != null) {
+      _portionsController.text = widget.initialPortions.toString();
+    }
     _portionsController.addListener(_onPortionsChanged);
   }
 

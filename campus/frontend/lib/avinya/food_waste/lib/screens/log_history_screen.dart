@@ -14,22 +14,33 @@ class LogHistoryScreen extends StatefulWidget {
 class _LogHistoryScreenState extends State<LogHistoryScreen> {
   late Future<List<MealServing>> _mealServingsFuture;
 
+  late DateTime _startDate;
+  late DateTime _endDate;
+  int _limit = 10;
+  int _offset = 0;
+
   @override
   void initState() {
     super.initState();
+    _endDate = DateTime.now();
+    _startDate = _endDate.subtract(const Duration(days: 10));
     _loadMealServings();
   }
 
+  String _formatDate(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
   void _loadMealServings() {
-    final today = DateTime.now();
-    final todayStr =
-        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+    String fromDateStr = _formatDate(_startDate);
+    String toDateStr = _formatDate(_endDate);
+
     _mealServingsFuture = MealServingService.fetchMealServings(
       organizationId: 2,
-      offset: 0,
-      limit: 100,
-      fromDate: '2025-01-01',
-      toDate: todayStr,
+      offset: _offset,
+      limit: _limit,
+      fromDate: fromDateStr,
+      toDate: toDateStr,
     );
   }
 
@@ -37,6 +48,22 @@ class _LogHistoryScreenState extends State<LogHistoryScreen> {
     setState(() {
       _loadMealServings();
     });
+  }
+
+  void _nextPage() {
+    setState(() {
+      _offset += _limit;
+      _loadMealServings();
+    });
+  }
+
+  void _previousPage() {
+    if (_offset >= _limit) {
+      setState(() {
+        _offset -= _limit;
+        _loadMealServings();
+      });
+    }
   }
 
   @override
@@ -143,6 +170,56 @@ class _LogHistoryScreenState extends State<LogHistoryScreen> {
                           color: Colors.blue[700],
                           borderRadius: BorderRadius.circular(2),
                         ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Filters
+                      Wrap(
+                        spacing: 16,
+                        runSpacing: 16,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          OutlinedButton.icon(
+                            onPressed: () async {
+                              final date = await showDatePicker(
+                                context: context,
+                                initialDate: _startDate,
+                                firstDate: DateTime(2020),
+                                lastDate: DateTime.now(),
+                              );
+                              if (date != null) {
+                                setState(() {
+                                  _startDate = date;
+                                  _offset = 0;
+                                  _loadMealServings();
+                                });
+                              }
+                            },
+                            icon: const Icon(Icons.calendar_today, size: 18),
+                            label: Text(_formatDate(_startDate)),
+                          ),
+                          const Text('to',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          OutlinedButton.icon(
+                            onPressed: () async {
+                              final date = await showDatePicker(
+                                context: context,
+                                initialDate: _endDate,
+                                firstDate: DateTime(2020),
+                                lastDate: DateTime.now(),
+                              );
+                              if (date != null) {
+                                setState(() {
+                                  _endDate = date;
+                                  _offset = 0;
+                                  _loadMealServings();
+                                });
+                              }
+                            },
+                            icon: const Icon(Icons.calendar_today, size: 18),
+                            label: Text(_formatDate(_endDate)),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 24),
 
@@ -441,6 +518,77 @@ class _LogHistoryScreenState extends State<LogHistoryScreen> {
                             ],
                           ),
                         ),
+                      if (mealServings.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Showing page ${(_offset / _limit).ceil() + 1}',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  height: 40,
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 8),
+                                  margin: const EdgeInsets.only(right: 12),
+                                  decoration: BoxDecoration(
+                                    border:
+                                        Border.all(color: Colors.grey.shade300),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<int>(
+                                      value: _limit,
+                                      style: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 14),
+                                      items: [5, 10, 20, 30].map((int value) {
+                                        return DropdownMenuItem<int>(
+                                          value: value,
+                                          child: Text('$value'),
+                                        );
+                                      }).toList(),
+                                      onChanged: (value) {
+                                        if (value != null) {
+                                          setState(() {
+                                            _limit = value;
+                                            _offset = 0;
+                                            _loadMealServings();
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                OutlinedButton(
+                                  onPressed:
+                                      _offset >= _limit ? _previousPage : null,
+                                  child: const Text('Previous'),
+                                ),
+                                const SizedBox(width: 12),
+                                ElevatedButton(
+                                  onPressed: mealServings.length == _limit
+                                      ? _nextPage
+                                      : null,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue[700],
+                                    foregroundColor: Colors.white,
+                                    disabledBackgroundColor: Colors.grey[300],
+                                    disabledForegroundColor: Colors.grey[500],
+                                  ),
+                                  child: const Text('Next'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
                       const SizedBox(height: 40),
                     ],
                   ),

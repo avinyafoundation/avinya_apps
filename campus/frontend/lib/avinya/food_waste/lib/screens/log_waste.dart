@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../routing.dart';
 import '../data/food_waste.dart';
 import '../data/food_item.dart';
 import '../widgets/common/page_title.dart';
@@ -413,11 +414,21 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
                                   Button(
                                     label: 'Add Wasted Item',
                                     onPressed: () async {
+                                      final existingItems = <int, int>{};
+                                      for (final item in _addedWasteItems) {
+                                        if (item['foodId'] != null) {
+                                          existingItems[item['foodId'] as int] =
+                                              item['portions'] as int;
+                                        }
+                                      }
+
                                       final result = await Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) => SelectFoodScreen(
-                                              mealType: _mealType),
+                                            mealType: _mealType,
+                                            existingItems: existingItems,
+                                          ),
                                         ),
                                       );
 
@@ -697,7 +708,14 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
                           children: [
                             Button(
                               label: 'Cancel',
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: () {
+                                if (ModalRoute.of(context)?.isFirst == true) {
+                                  RouteStateScope.of(context)
+                                      .go('/food_wastage_dashboard');
+                                } else {
+                                  Navigator.pop(context);
+                                }
+                              },
                               buttonColor: Colors.grey[100],
                               textColor: Colors.grey[800],
                               height: 40,
@@ -753,50 +771,15 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
     // If user cancelled, return early
     if (confirmed != true) return;
 
-    // Remote delete if already persisted
-    if (foodWasteId != null) {
-      try {
-        if (!mounted) return;
-        await MealServingService.deleteFoodWaste(foodWasteId);
-        // Remove from local list
-        setState(() {
-          _addedWasteItems.removeAt(index);
-        });
-
-        // Add small delay to ensure database operation completes
-        await Future.delayed(const Duration(milliseconds: 100));
-
-        // Refresh details screen immediately if editing
-        if (_editingMealServingId != null) {
-          widget.onSave?.call();
-        }
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Waste item deleted')),
-          );
-        }
-        return;
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error deleting item: $e')),
-          );
-        }
-        return;
-      }
-    }
-
-    // Local removal for unsaved items
+    // Just remove from local list. It will be removed from the server
+    // when updating the MealServing.
     setState(() {
       _addedWasteItems.removeAt(index);
     });
-    // Refresh details screen immediately if editing
-    if (_editingMealServingId != null) {
-      widget.onSave?.call();
-    }
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unsaved waste item removed')),
+        const SnackBar(content: Text('Waste item removed')),
       );
     }
   }
@@ -804,63 +787,22 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
   Future<void> _addWasteItem(
       String foodName, int portions, double estimatedCost,
       {int? foodId}) async {
-    // If editing existing log, save the new item immediately
-    if (_editingMealServingId != null && foodId != null) {
-      try {
-        final foodWaste = FoodWaste(
-          mealServingId: _editingMealServingId!,
-          foodId: foodId,
-          portions: portions,
-          foodItem: FoodItem(
-            id: foodId,
-            name: foodName,
-            costPerPortion: estimatedCost / portions,
-            mealType: _mealType,
-          ),
-        );
-
-        final createdWaste =
-            await MealServingService.createFoodWaste(foodWaste);
-
-        setState(() {
-          _addedWasteItems.add({
-            'foodWasteId': createdWaste.id,
-            'foodName': foodName,
-            'foodId': foodId,
-            'portions': portions,
-            'estimatedCost': estimatedCost,
-          });
-        });
-
-        // Add small delay to ensure database operation completes
-        await Future.delayed(const Duration(milliseconds: 100));
-
-        // Refresh details screen immediately
-        widget.onSave?.call();
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Waste item added')),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error adding item: $e')),
-          );
-        }
-      }
-    } else {
-      // For new logs or unsaved items, just add locally
-      setState(() {
+    // Just update locally. It will be saved when updating/creating the MealServing.
+    setState(() {
+      final existingIndex =
+          _addedWasteItems.indexWhere((item) => item['foodId'] == foodId);
+      if (existingIndex >= 0) {
+        _addedWasteItems[existingIndex]['portions'] = portions;
+        _addedWasteItems[existingIndex]['estimatedCost'] = estimatedCost;
+      } else {
         _addedWasteItems.add({
           'foodName': foodName,
           'foodId': foodId,
           'portions': portions,
           'estimatedCost': estimatedCost,
         });
-      });
-    }
+      }
+    });
   }
 
   void _selectDate() async {
@@ -907,8 +849,25 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
       final dateStr =
           '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}';
 
+      // Map local items to FoodWaste objects
+      final List<FoodWaste> foodWastes =
+          _addedWasteItems.where((item) => item['foodId'] != null).map((item) {
+        final foodId = item['foodId'] as int;
+        return FoodWaste(
+          id: item['foodWasteId'] as int?,
+          foodId: foodId,
+          portions: item['portions'] as int,
+          foodItem: FoodItem(
+            id: foodId,
+            name: item['foodName'],
+            costPerPortion:
+                (item['estimatedCost'] as double) / (item['portions'] as int),
+            mealType: _mealType,
+          ),
+        );
+      }).toList();
+
       MealServing mealServing;
-      int mealServingId;
 
       if (_editingMealServingId != null) {
         // UPDATE MODE: Update existing meal serving
@@ -918,32 +877,12 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
           mealType: _mealType.toLowerCase(),
           servedCount: peopleServed,
           notes: _notesController.text.isEmpty ? null : _notesController.text,
+          foodWastes: foodWastes,
         );
 
         // Check if still mounted before each async operation
         if (!mounted) return;
         await MealServingService.updateMealServing(mealServing);
-        mealServingId = _editingMealServingId!;
-
-        // Handle food waste item changes for editing mode
-        final originalWastes =
-            (widget.logData?['food_wastes'] as List<dynamic>? ?? []);
-        final originalWasteIds = originalWastes
-            .map((w) => w['id'] as int?)
-            .where((id) => id != null)
-            .toSet();
-        final currentWasteIds = _addedWasteItems
-            .where((item) => item['foodWasteId'] != null)
-            .map((item) => item['foodWasteId'] as int)
-            .toSet();
-
-        // Delete removed items
-        for (final originalId in originalWasteIds) {
-          if (!currentWasteIds.contains(originalId)) {
-            if (!mounted) return;
-            await MealServingService.deleteFoodWaste(originalId!);
-          }
-        }
       } else {
         // CREATE MODE: Check if meal serving already exists for this date/meal type
         final existingMealServingId = _existingMealServingId ??
@@ -959,10 +898,10 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
             mealType: _mealType.toLowerCase(),
             servedCount: peopleServed,
             notes: _notesController.text.isEmpty ? null : _notesController.text,
+            foodWastes: foodWastes,
           );
           if (!mounted) return;
           await MealServingService.updateMealServing(mealServing);
-          mealServingId = existingMealServingId;
         } else {
           // Create new meal serving
           mealServing = MealServing(
@@ -970,39 +909,11 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
             mealType: _mealType.toLowerCase(),
             servedCount: peopleServed,
             notes: _notesController.text.isEmpty ? null : _notesController.text,
+            foodWastes: foodWastes,
           );
           if (!mounted) return;
-          final created =
-              await MealServingService.createMealServing(mealServing);
-          mealServingId = created.id!;
+          await MealServingService.createMealServing(mealServing);
         }
-      }
-
-      // Add all NEW food waste items (skip already saved ones)
-      for (final item in _addedWasteItems) {
-        // Check if still mounted before each operation
-        if (!mounted) return;
-
-        // Skip if already saved (has foodWasteId from database)
-        if (item['foodWasteId'] != null) continue;
-
-        final foodId = item['foodId'] as int?;
-        if (foodId == null) continue;
-
-        final foodWaste = FoodWaste(
-          mealServingId: mealServingId,
-          foodId: foodId,
-          portions: item['portions'] as int,
-          foodItem: FoodItem(
-            id: foodId,
-            name: item['foodName'],
-            costPerPortion:
-                (item['estimatedCost'] as double) / (item['portions'] as int),
-            mealType: _mealType,
-          ),
-        );
-
-        await MealServingService.createFoodWaste(foodWaste);
       }
 
       // Add small delay to ensure database operation completes

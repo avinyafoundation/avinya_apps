@@ -5,8 +5,13 @@ import 'enter_amount_screen.dart';
 
 class SelectFoodScreen extends StatefulWidget {
   final String mealType;
+  final Map<int, int>? existingItems;
 
-  const SelectFoodScreen({super.key, required this.mealType});
+  const SelectFoodScreen({
+    super.key,
+    required this.mealType,
+    this.existingItems,
+  });
 
   @override
   State<SelectFoodScreen> createState() => _SelectFoodScreenState();
@@ -298,6 +303,8 @@ class _SelectFoodScreenState extends State<SelectFoodScreen> {
                                                   foodId: item.id,
                                                   costPerPortion:
                                                       item.costPerPortion,
+                                                  initialPortions: widget
+                                                      .existingItems?[item.id],
                                                 ),
                                               ),
                                             );

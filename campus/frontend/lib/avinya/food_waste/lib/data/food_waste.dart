@@ -150,12 +150,20 @@ class MealServingService {
   static Future<MealServing> createMealServing(MealServing serving,
       {int organizationId = 2}) async {
     try {
-      final Map<String, dynamic> createData = serving.toJson()
-        ..remove('id')
-        ..remove('food_wastes');
+      final Map<String, dynamic> createData = serving.toJson()..remove('id');
 
       createData['organization_id'] = organizationId;
       createData['meal_type'] = serving.mealType.toLowerCase();
+
+      if (createData.containsKey('food_wastes')) {
+        createData['food_wastes'] =
+            (createData['food_wastes'] as List).map((fw) {
+          final cleanFw = Map<String, dynamic>.from(fw as Map);
+          cleanFw.remove('food_item');
+          cleanFw.remove('meal_serving_id');
+          return cleanFw;
+        }).toList();
+      }
 
       final response = await http
           .post(
@@ -187,45 +195,19 @@ class MealServingService {
     }
   }
 
-  static Future<FoodWaste> createFoodWaste(FoodWaste item) async {
-    try {
-      final createData = item.toJson()
-        ..remove('id')
-        ..remove('food_item')
-        ..remove('food_wastes');
-
-      final response = await http
-          .post(
-            Uri.parse('$baseUrl/food_waste'),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: json.encode(createData),
-          )
-          .timeout(const Duration(seconds: 10));
-
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final Map<String, dynamic> data =
-            responseData['food_waste'] ?? responseData;
-        final createdItem = FoodWaste.fromJson(data);
-        print('Created food waste with ID: ${createdItem.id}');
-        return createdItem;
-      } else {
-        print('API Error: Status ${response.statusCode}');
-        throw Exception('Failed to create food waste: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Exception caught: $e');
-      throw Exception('Error creating food waste: $e');
-    }
-  }
-
   static Future<void> updateMealServing(MealServing serving) async {
     try {
-      final updateData = serving.toJson()
-        ..remove('id')
-        ..remove('food_wastes');
+      final updateData = serving.toJson()..remove('id');
+
+      if (updateData.containsKey('food_wastes')) {
+        updateData['food_wastes'] =
+            (updateData['food_wastes'] as List).map((fw) {
+          final cleanFw = Map<String, dynamic>.from(fw as Map);
+          cleanFw.remove('food_item');
+          cleanFw.remove('meal_serving_id');
+          return cleanFw;
+        }).toList();
+      }
 
       final response = await http
           .put(
@@ -268,26 +250,6 @@ class MealServingService {
     } catch (e) {
       print('Exception caught: $e');
       throw Exception('Error deleting meal serving: $e');
-    }
-  }
-
-  static Future<void> deleteFoodWaste(int id) async {
-    try {
-      final response = await http
-          .delete(
-            Uri.parse('$baseUrl/food_waste/$id'),
-          )
-          .timeout(const Duration(seconds: 10));
-
-      if (response.statusCode == 200 || response.statusCode == 204) {
-        print('Deleted food waste with ID: $id');
-      } else {
-        print('API Error: Status ${response.statusCode}');
-        throw Exception('Failed to delete food waste: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Exception caught: $e');
-      throw Exception('Error deleting food waste: $e');
     }
   }
 }
