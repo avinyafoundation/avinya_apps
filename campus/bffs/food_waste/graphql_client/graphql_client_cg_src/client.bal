@@ -51,15 +51,15 @@ public isolated client class GraphqlClient {
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <GetMealServingsResponse> check performDataBinding(graphqlResponse, GetMealServingsResponse);
     }
-    remote isolated function AddMealServing(int organizationId, int servedCount, string servingDate, string mealType, string? notes = ()) returns AddMealServingResponse|graphql:ClientError {
-        string query = string `mutation AddMealServing($servingDate:String!,$mealType:String!,$servedCount:Int!,$organizationId:Int!,$notes:String) {add_meal_serving(meal_serving:{serving_date:$servingDate,meal_type:$mealType,served_count:$servedCount,organization_id:$organizationId,notes:$notes}) {id serving_date meal_type served_count organization_id notes created updated}}`;
-        map<anydata> variables = {"organizationId": organizationId, "servedCount": servedCount, "servingDate": servingDate, "notes": notes, "mealType": mealType};
+    remote isolated function AddMealServing(int organizationId, int servedCount, string servingDate, string mealType, string? notes = (), FoodWaste[]? foodWastes = ()) returns AddMealServingResponse|graphql:ClientError {
+        string query = string `mutation AddMealServing($servingDate:String!,$mealType:String!,$servedCount:Int!,$organizationId:Int!,$notes:String,$foodWastes:[FoodWaste!]) {add_meal_serving(meal_serving:{serving_date:$servingDate,meal_type:$mealType,served_count:$servedCount,organization_id:$organizationId,notes:$notes,food_wastes:$foodWastes}) {id serving_date meal_type served_count organization_id notes food_wastes {id food_item_id wasted_portions food_item {name}}}}`;
+        map<anydata> variables = {"organizationId": organizationId, "servedCount": servedCount, "servingDate": servingDate, "notes": notes, "foodWastes": foodWastes, "mealType": mealType};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <AddMealServingResponse> check performDataBinding(graphqlResponse, AddMealServingResponse);
     }
-    remote isolated function UpdateMealServing(int servedCount, string servingDate, string mealType, int id, string? notes = ()) returns UpdateMealServingResponse|graphql:ClientError {
-        string query = string `mutation UpdateMealServing($id:Int!,$servingDate:String!,$mealType:String!,$servedCount:Int!,$notes:String) {update_meal_serving(meal_serving:{id:$id,serving_date:$servingDate,meal_type:$mealType,served_count:$servedCount,notes:$notes}) {id serving_date meal_type served_count organization_id notes created updated}}`;
-        map<anydata> variables = {"servedCount": servedCount, "servingDate": servingDate, "notes": notes, "mealType": mealType, "id": id};
+    remote isolated function UpdateMealServing(int servedCount, string servingDate, string mealType, int id, string? notes = (), FoodWaste[]? foodWastes = ()) returns UpdateMealServingResponse|graphql:ClientError {
+        string query = string `mutation UpdateMealServing($id:Int!,$servingDate:String!,$mealType:String!,$servedCount:Int!,$notes:String,$foodWastes:[FoodWaste!]) {update_meal_serving(meal_serving:{id:$id,serving_date:$servingDate,meal_type:$mealType,served_count:$servedCount,notes:$notes,food_wastes:$foodWastes}) {id serving_date meal_type served_count organization_id notes food_wastes {id food_item_id wasted_portions} created updated}}`;
+        map<anydata> variables = {"servedCount": servedCount, "servingDate": servingDate, "notes": notes, "foodWastes": foodWastes, "mealType": mealType, "id": id};
         json graphqlResponse = check self.graphqlClient->executeWithType(query, variables);
         return <UpdateMealServingResponse> check performDataBinding(graphqlResponse, UpdateMealServingResponse);
     }

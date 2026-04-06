@@ -4432,6 +4432,19 @@
                             "name": "daily_waste",
                             "args": [
                                 {
+                                    "name": "organizationId",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
                                     "name": "days",
                                     "type": {
                                         "kind": "NON_NULL",
@@ -4469,6 +4482,19 @@
                             "name": "top_wasted_items_recent_week",
                             "args": [
                                 {
+                                    "name": "organizationId",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
+                                {
                                     "name": "limit",
                                     "type": {
                                         "kind": "NON_NULL",
@@ -4505,6 +4531,19 @@
                         {
                             "name": "getAnalyticsData",
                             "args": [
+                                {
+                                    "name": "organizationId",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "SCALAR",
+                                            "name": "Int",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                },
                                 {
                                     "name": "days",
                                     "type": {
@@ -7643,13 +7682,9 @@
                         {
                             "name": "rank_position",
                             "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "Int",
-                                    "ofType": null
-                                }
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
                             },
                             "defaultValue": null
                         }
@@ -12631,6 +12666,23 @@
                                 "kind": "SCALAR",
                                 "name": "String",
                                 "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "food_wastes",
+                            "type": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "INPUT_OBJECT",
+                                        "name": "FoodWaste",
+                                        "ofType": null
+                                    }
+                                }
                             },
                             "defaultValue": null
                         }
@@ -18921,6 +18973,31 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "updateTaskInstance",
+                            "args": [
+                                {
+                                    "name": "taskActivityInstance",
+                                    "type": {
+                                        "kind": "NON_NULL",
+                                        "name": null,
+                                        "ofType": {
+                                            "kind": "INPUT_OBJECT",
+                                            "name": "ActivityInstance",
+                                            "ofType": null
+                                        }
+                                    },
+                                    "defaultValue": null
+                                }
+                            ],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "ActivityInstanceData",
+                                "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "softDeactivateMaintenanceTask",
                             "args": [
                                 {
@@ -21255,13 +21332,9 @@
                         {
                             "name": "meal_serving_id",
                             "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "Int",
-                                    "ofType": null
-                                }
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
                             },
                             "defaultValue": null
                         },

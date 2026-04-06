@@ -339,7 +339,7 @@ public type FoodWaste record {
     int food_item_id?;
     string? created?;
     int wasted_portions?;
-    int meal_serving_id?;
+    int? meal_serving_id?;
     int? id?;
     string? updated?;
 };
@@ -437,6 +437,7 @@ public type MealServing record {
     int? organization_id?;
     int? id?;
     string serving_date?;
+    FoodWaste[]? food_wastes?;
     string? updated?;
 };
 
@@ -749,8 +750,14 @@ public type AddMealServingResponse record {|
         int served_count;
         int? organization_id;
         string? notes;
-        string? created;
-        string? updated;
+        record {|
+            int? id;
+            int food_item_id;
+            int wasted_portions;
+            record {|
+                string name;
+            |} food_item;
+        |}[] food_wastes;
     |}? add_meal_serving;
 |};
 
@@ -763,6 +770,11 @@ public type UpdateMealServingResponse record {|
         int served_count;
         int? organization_id;
         string? notes;
+        record {|
+            int? id;
+            int food_item_id;
+            int wasted_portions;
+        |}[] food_wastes;
         string? created;
         string? updated;
     |}? update_meal_serving;
@@ -839,6 +851,7 @@ public type MealServingInput record {|
     string serving_date;
     string meal_type;
     string? notes;
+    FoodWaste[]? food_wastes = ();
 |};
 
 public type MealServingUpdateInput record {|
@@ -846,6 +859,7 @@ public type MealServingUpdateInput record {|
     string serving_date;
     string meal_type;
     string? notes;
+    FoodWaste[]? food_wastes = ();
 |};
 
 public type FoodWasteInput record {|
