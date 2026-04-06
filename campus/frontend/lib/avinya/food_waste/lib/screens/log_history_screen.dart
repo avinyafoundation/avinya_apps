@@ -23,7 +23,7 @@ class _LogHistoryScreenState extends State<LogHistoryScreen> {
   void initState() {
     super.initState();
     _endDate = DateTime.now();
-    _startDate = _endDate.subtract(const Duration(days: 10));
+    _startDate = _endDate.subtract(const Duration(days: 14));
     _loadMealServings();
   }
 
