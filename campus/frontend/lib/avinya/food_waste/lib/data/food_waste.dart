@@ -118,8 +118,10 @@ class MealServingService {
       final uri = Uri.parse(endpoint);
       final uriWithParams = uri.replace(queryParameters: queryParams);
 
-      final response =
-          await http.get(uriWithParams).timeout(const Duration(seconds: 10));
+      final response = await http.get(
+        uriWithParams,
+        headers: {'Authorization': 'Bearer ' + AppConfig.campusBffApiKey},
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final decodedData = json.decode(response.body);
@@ -170,6 +172,7 @@ class MealServingService {
             Uri.parse('$baseUrl/meal_servings'),
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
             },
             body: json.encode(createData),
           )
@@ -214,6 +217,7 @@ class MealServingService {
             Uri.parse('$baseUrl/meal_servings/${serving.id}'),
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
             },
             body: json.encode(updateData),
           )
@@ -234,11 +238,10 @@ class MealServingService {
 
   static Future<void> deleteMealServing(int id) async {
     try {
-      final response = await http
-          .delete(
-            Uri.parse('$baseUrl/meal_servings/$id'),
-          )
-          .timeout(const Duration(seconds: 10));
+      final response = await http.delete(
+        Uri.parse('$baseUrl/meal_servings/$id'),
+        headers: {'Authorization': 'Bearer ' + AppConfig.campusBffApiKey},
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200 || response.statusCode == 204) {
         print('Deleted meal serving with ID: $id');

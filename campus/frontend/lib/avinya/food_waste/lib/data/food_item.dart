@@ -50,9 +50,10 @@ class FoodItemService {
 
   static Future<List<FoodItem>> fetchBreakfastItems() async {
     try {
-      final response = await http
-          .get(Uri.parse('$baseUrl/food_items?meal_type=breakfast'))
-          .timeout(const Duration(seconds: 10));
+      final response = await http.get(
+        Uri.parse('$baseUrl/food_items?meal_type=breakfast'),
+        headers: {'Authorization': 'Bearer ' + AppConfig.campusBffApiKey},
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -72,9 +73,10 @@ class FoodItemService {
 
   static Future<List<FoodItem>> fetchLunchItems() async {
     try {
-      final response = await http
-          .get(Uri.parse('$baseUrl/food_items?meal_type=lunch'))
-          .timeout(const Duration(seconds: 10));
+      final response = await http.get(
+        Uri.parse('$baseUrl/food_items?meal_type=lunch'),
+        headers: {'Authorization': 'Bearer ' + AppConfig.campusBffApiKey},
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -102,6 +104,7 @@ class FoodItemService {
         Uri.parse('$baseUrl/food_items'),
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
         },
         body: json.encode(createData),
       );
@@ -140,6 +143,7 @@ class FoodItemService {
         Uri.parse('$baseUrl/food_items/${item.id}'),
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
         },
         body: json.encode(updateData),
       );
@@ -162,6 +166,7 @@ class FoodItemService {
         Uri.parse('$baseUrl/food_items/$id'),
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + AppConfig.campusBffApiKey,
         },
       ).timeout(const Duration(seconds: 10));
 
@@ -175,29 +180,5 @@ class FoodItemService {
       print('Exception caught while deleting: $e');
       throw Exception('Failed to delete food item: $e');
     }
-  }
-
-  static Future<List<FoodItem>> fetchMockFoodItems() async {
-    await Future.delayed(Duration(seconds: 1));
-    final List<dynamic> data = json.decode(foodItemsResponse);
-    return data.map((json) => FoodItem.fromJson(json)).toList();
-  }
-
-  static Future<List<FoodItem>> fetchMockBreakfastItems() async {
-    await Future.delayed(Duration(seconds: 1));
-    final List<dynamic> data = json.decode(foodItemsResponse);
-    return data
-        .map((json) => FoodItem.fromJson(json))
-        .where((item) => item.mealType == 'BREAKFAST')
-        .toList();
-  }
-
-  static Future<List<FoodItem>> fetchMockLunchItems() async {
-    await Future.delayed(Duration(seconds: 1));
-    final List<dynamic> data = json.decode(foodItemsResponse);
-    return data
-        .map((json) => FoodItem.fromJson(json))
-        .where((item) => item.mealType == 'LUNCH')
-        .toList();
   }
 }

@@ -86,7 +86,10 @@ class AnalyticsService {
       final uri =
           Uri.parse('$baseUrl/analytics/organizations/$organizationId/summary')
               .replace(queryParameters: {'days': days.toString()});
-      final response = await http.get(uri).timeout(const Duration(seconds: 10));
+      final response = await http.get(
+        uri,
+        headers: {'Authorization': 'Bearer ' + AppConfig.campusBffApiKey},
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
@@ -111,7 +114,10 @@ class AnalyticsService {
       final uri = Uri.parse(
               '$baseUrl/analytics/organizations/$organizationId/top_wasted')
           .replace(queryParameters: {'limit': limit.toString()});
-      final response = await http.get(uri).timeout(const Duration(seconds: 10));
+      final response = await http.get(
+        uri,
+        headers: {'Authorization': 'Bearer ' + AppConfig.campusBffApiKey},
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
@@ -132,35 +138,16 @@ class AnalyticsService {
     }
   }
 
-  static Future<List<DailyWasteData>> fetchLast7DaysWaste() async {
-    try {
-      final response =
-          await http.get(Uri.parse('$baseUrl/analytics/last_7_days'));
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        final wasteData =
-            data.map((json) => DailyWasteData.fromJson(json)).toList();
-        print('Fetched last 7 days waste data: $wasteData');
-        return wasteData;
-      } else {
-        print('API Error: Status ${response.statusCode}');
-        throw Exception(
-            'Failed to load last 7 days waste data: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Exception caught: $e');
-      throw Exception('Error fetching last 7 days waste data: $e');
-    }
-  }
-
   static Future<List<DailyWasteData>> fetchDailyWaste(
       {int organizationId = 2, int days = 7}) async {
     try {
       final uri =
           Uri.parse('$baseUrl/analytics/organizations/$organizationId/waste')
               .replace(queryParameters: {'days': days.toString()});
-      final response = await http.get(uri).timeout(const Duration(seconds: 10));
+      final response = await http.get(
+        uri,
+        headers: {'Authorization': 'Bearer ' + AppConfig.campusBffApiKey},
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
@@ -177,23 +164,5 @@ class AnalyticsService {
       print('Exception caught: $e');
       throw Exception('Error fetching waste data: $e');
     }
-  }
-
-  static Future<AnalyticsData> fetchMockAnalytics() async {
-    await Future.delayed(Duration(seconds: 1));
-    final Map<String, dynamic> data = json.decode(analyticsResponse);
-    return AnalyticsData.fromJson(data);
-  }
-
-  static Future<List<DailyWasteData>> fetchMockLast7DaysWaste() async {
-    await Future.delayed(Duration(seconds: 1));
-    final List<dynamic> data = json.decode(last7DaysWasteResponse);
-    return data.map((json) => DailyWasteData.fromJson(json)).toList();
-  }
-
-  static Future<List<TopWastedItem>> fetchMockTopWastedItems() async {
-    await Future.delayed(Duration(seconds: 1));
-    final List<dynamic> data = json.decode(topWastedItemsResponse);
-    return data.map((json) => TopWastedItem.fromJson(json)).toList();
   }
 }
