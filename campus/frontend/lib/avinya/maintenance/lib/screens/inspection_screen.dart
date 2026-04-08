@@ -38,18 +38,32 @@ class _InspectionScreenState extends State<InspectionScreen> {
   }
 
   Future<void> _loadActivities() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
-      // Use mock data for testing
-      setState(() {
-        _allActivities = _generateMockActivities();
-        _isLoading = false;
-      });
-      _filterActivities();
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
+      final activities = await fetchActivityInstancesByDate(
+        campusAppsPortalInstance.getUserPerson().organization!.id!,
+        dateStr,
+      );
+
       if (mounted) {
+        setState(() {
+          _allActivities = activities;
+          // We no longer need to manually filter since the API returns tasks for this specific date
+          _filteredActivities = activities;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _allActivities = [];
+          _filteredActivities = [];
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error loading activities: $e')),
         );
@@ -57,143 +71,11 @@ class _InspectionScreenState extends State<InspectionScreen> {
     }
   }
 
-  List<ActivityInstance> _generateMockActivities() {
-    final now = DateTime.now();
-    final mockParticipants = [
-      'John Silva',
-      'Maria Fernando',
-      'David Perera',
-      'Priya Jayasinghe',
-      'Michael De Silva',
-    ];
-
-    final mockTasks = [
-      {
-        'title': 'Fire Extinguisher Inspection',
-        'description':
-            'Check pressure and expiration dates of all fire extinguishers',
-        'location': 'Main Building'
-      },
-      {
-        'title': 'HVAC Filter Replacement',
-        'description': 'Replace HVAC filters in all zones',
-        'location': 'Building A'
-      },
-      {
-        'title': 'Emergency Lighting Test',
-        'description': 'Test all emergency lighting systems',
-        'location': 'Entire Campus'
-      },
-      {
-        'title': 'Roof Drainage Clearance',
-        'description': 'Clear debris from roof drains',
-        'location': 'Rooftop'
-      },
-      {
-        'title': 'Electrical Panel Audit',
-        'description': 'Inspect and document electrical panel conditions',
-        'location': 'Basement'
-      },
-    ];
-
-    List<ActivityInstance> activities = [];
-    int id = 1;
-
-    for (var i = 0; i < 8; i++) {
-      final daysAgo = i ~/ 2; // Spread across past few days
-      final completionDate = DateTime(
-        now.year,
-        now.month,
-        now.day - daysAgo,
-        9 + (i % 6), // Vary the hour
-      );
-
-      final taskData = mockTasks[i % mockTasks.length];
-
-      // Create participants with mixed statuses
-      final numParticipants = (i % 3) + 2; // 2-4 participants per task
-      final participants = <ActivityParticipant>[];
-
-      for (int p = 0; p < numParticipants; p++) {
-        // Mix of completed and pending statuses
-        final isCompleted = p < (numParticipants ~/ 2) + (i % 2);
-
-        participants.add(
-          ActivityParticipant(
-            id: id + p,
-            person: Person(
-              id: id + p,
-              preferred_name:
-                  mockParticipants[(i + p) % mockParticipants.length],
-            ),
-            status: isCompleted
-                ? ProgressStatus.completed
-                : ProgressStatus.inProgress,
-          ),
-        );
-      }
-
-      activities.add(
-        ActivityInstance(
-          id: id,
-          activity_id: i + 1,
-          name: taskData['title'],
-          description: taskData['description'],
-          end_time:
-              '${completionDate.year}-${completionDate.month.toString().padLeft(2, '0')}-${completionDate.day.toString().padLeft(2, '0')} ${completionDate.hour.toString().padLeft(2, '0')}:00:00',
-          activityParticipants: participants,
-          maintenanceTask: MaintenanceTask(
-            id: i + 1,
-            title: taskData['title']!,
-            description: taskData['description'],
-          ),
-          overallTaskStatus: i % 3 == 0
-              ? 'completed'
-              : (i % 3 == 1 ? 'inprogress' : 'pending'),
-        ),
-      );
-
-      id += numParticipants + 1;
-    }
-
-    return activities;
-  }
-
-  void _filterActivities() {
-    setState(() {
-      // Filter activities where at least one participant has marked task as completed
-      // on the selected date
-      _filteredActivities = _allActivities.where((activity) {
-        if (activity.activityParticipants == null ||
-            activity.activityParticipants!.isEmpty) {
-          return false;
-        }
-
-        // Check if any participant has completed status and the end_time matches the selected date
-        return activity.activityParticipants!.any((participant) {
-          if (participant.status == null) return false;
-
-          // Parse end_time to check if it matches selected date
-          if (activity.end_time == null) return false;
-
-          try {
-            final completionDate = DateTime.parse(activity.end_time!);
-            return participant.status.toString() ==
-                    'ProgressStatus.completed' &&
-                DateUtils.isSameDay(completionDate, _selectedDate);
-          } catch (e) {
-            return false;
-          }
-        });
-      }).toList();
-    });
-  }
-
   void _onDateSelected(DateTime date) {
     setState(() {
       _selectedDate = date;
     });
-    _filterActivities();
+    _loadActivities();
   }
 
   @override
@@ -236,6 +118,7 @@ class _InspectionScreenState extends State<InspectionScreen> {
 
   Widget _buildHeader(bool isMobile) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
           child: PageTitle(
@@ -243,6 +126,17 @@ class _InspectionScreenState extends State<InspectionScreen> {
             fontSize: isMobile ? 20 : 24,
             fontWeight: FontWeight.w700,
             color: _primaryText,
+          ),
+        ),
+        IconButton(
+          onPressed: _loadActivities,
+          icon: const Icon(Icons.refresh),
+          tooltip: 'Refresh',
+          style: IconButton.styleFrom(
+            backgroundColor: Colors.grey[100],
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
         ),
       ],
@@ -415,16 +309,34 @@ class _InspectionScreenState extends State<InspectionScreen> {
   }
 
   void _updateTaskStatus(ActivityInstance activity, String newStatus) {
+    if (activity.id == null) return;
+
+    // Optimistically update UI
     setState(() {
       activity.overallTaskStatus = newStatus;
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Task status updated to $newStatus'),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+
+    // Call API to persist the change
+    updateActivityInstanceStatus(activity.id!, newStatus)
+        .then((updatedActivity) {
+      if (mounted) {
+        _loadActivities(); // Refresh the page after successful update
+      }
+    }).catchError((error) {
+      if (mounted) {
+        // Revert UI on error
+        setState(() {
+          activity.overallTaskStatus = activity.overallTaskStatus;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update task status: $error'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    });
   }
 }
 
@@ -473,6 +385,13 @@ class _ActivityListItemState extends State<_ActivityListItem> {
     final hasPartialCompletion =
         completedCount > 0 && completedCount < totalCount;
 
+    // Determine indicator bar color based on overall task status
+    final overallStatus =
+        (widget.activity.overallTaskStatus ?? 'Pending').toLowerCase();
+    final indicatorColor = overallStatus.contains('completed')
+        ? widget.successColor
+        : widget.warningColor;
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
@@ -490,9 +409,7 @@ class _ActivityListItemState extends State<_ActivityListItem> {
                 width: 4,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: hasPartialCompletion
-                      ? widget.warningColor
-                      : widget.successColor,
+                  color: indicatorColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -644,8 +561,22 @@ class _ActivityListItemState extends State<_ActivityListItem> {
   }
 
   Widget _buildTaskStatusDropdown() {
-    final currentStatus = widget.activity.overallTaskStatus ?? 'pending';
-    final statusOptions = ['pending', 'inprogress', 'completed'];
+    // Normalize various status formats to match dropdown values
+    final rawStatus = widget.activity.overallTaskStatus ?? 'Pending';
+    String currentStatus;
+
+    // Handle different API response formats
+    if (rawStatus.toLowerCase().contains('inprogress')) {
+      currentStatus = 'InProgress';
+    } else if (rawStatus.toLowerCase() == 'completed') {
+      currentStatus = 'Completed';
+    } else if (rawStatus.toLowerCase() == 'pending') {
+      currentStatus = 'Pending';
+    } else {
+      currentStatus = 'Pending'; // default
+    }
+
+    final statusOptions = ['Pending', 'InProgress', 'Completed'];
 
     return DropdownButton<String>(
       value: currentStatus,
@@ -663,17 +594,17 @@ class _ActivityListItemState extends State<_ActivityListItem> {
         String displayLabel;
 
         switch (status) {
-          case 'pending':
+          case 'Pending':
             statusColor = Colors.orange;
             statusIcon = Icons.pending_actions;
             displayLabel = 'Pending';
             break;
-          case 'inprogress':
+          case 'InProgress':
             statusColor = Colors.blue;
             statusIcon = Icons.hourglass_top;
             displayLabel = 'In Progress';
             break;
-          case 'completed':
+          case 'Completed':
             statusColor = widget.successColor;
             statusIcon = Icons.check_circle;
             displayLabel = 'Completed';
