@@ -339,7 +339,7 @@ public type FoodWaste record {
     int food_item_id?;
     string? created?;
     int wasted_portions?;
-    int meal_serving_id?;
+    int? meal_serving_id?;
     int? id?;
     string? updated?;
 };
@@ -437,6 +437,7 @@ public type MealServing record {
     int? organization_id?;
     int? id?;
     string serving_date?;
+    FoodWaste[]? food_wastes?;
     string? updated?;
 };
 
@@ -492,7 +493,7 @@ public type Person record {
     string? date_of_birth?;
     int? parent_organization_id?;
     int? avinya_type_id?;
-    int rank_position?;
+    int? rank_position?;
     Address? permanent_address?;
     boolean? is_graduated?;
     int? mailing_address_id?;
@@ -726,6 +727,17 @@ public type GetMealServingsResponse record {|
         int served_count;
         int? organization_id;
         string? notes;
+        record {|
+            int? id;
+            int food_item_id;
+            int wasted_portions;
+            record {|
+                int? id;
+                string name;
+                string meal_type;
+                anydata cost_per_portion;
+            |} food_item;
+        |}[] food_wastes;
     |}[] meal_servings;
 |};
 
@@ -738,8 +750,14 @@ public type AddMealServingResponse record {|
         int served_count;
         int? organization_id;
         string? notes;
-        string? created;
-        string? updated;
+        record {|
+            int? id;
+            int food_item_id;
+            int wasted_portions;
+            record {|
+                string name;
+            |} food_item;
+        |}[] food_wastes;
     |}? add_meal_serving;
 |};
 
@@ -752,6 +770,11 @@ public type UpdateMealServingResponse record {|
         int served_count;
         int? organization_id;
         string? notes;
+        record {|
+            int? id;
+            int food_item_id;
+            int wasted_portions;
+        |}[] food_wastes;
         string? created;
         string? updated;
     |}? update_meal_serving;
@@ -777,14 +800,14 @@ public type GetWasteDataResponse record {|
     |}[] daily_waste;
 |};
 
-public type GetTopWastedItemsRecentWeekResponse record {|
+public type GetTopWastedItemsResponse record {|
     map<json?> __extensions?;
     record {|
         int food_item_id;
         string food_name;
         int total_portions;
         anydata total_cost;
-    |}[] top_wasted_items_recent_week;
+    |}[] top_wasted_items;
 |};
 
 public type GetAnalyticsResponse record {|

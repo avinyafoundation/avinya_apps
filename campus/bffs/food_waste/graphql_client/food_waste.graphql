@@ -41,30 +41,66 @@ query GetMealServings($organizationId: Int!, $id: Int, $fromDate: String, $toDat
     served_count
     organization_id
     notes
+    food_wastes {
+      id
+      food_item_id
+      wasted_portions
+      food_item {
+        id
+        name
+        meal_type
+        cost_per_portion
+      }
+    }
   }
 }
 
-mutation AddMealServing($servingDate: String!, $mealType: String!, $servedCount: Int!, $organizationId: Int!, $notes: String) {
-  add_meal_serving(meal_serving: {serving_date: $servingDate, meal_type: $mealType, served_count: $servedCount, organization_id: $organizationId, notes: $notes}) {
+mutation AddMealServing($servingDate: String!, $mealType: String!, $servedCount: Int!, $organizationId: Int!, $notes: String, $foodWastes: [FoodWaste!]) {
+  add_meal_serving(meal_serving: {
+    serving_date: $servingDate
+    meal_type: $mealType
+    served_count: $servedCount
+    organization_id: $organizationId
+    notes: $notes
+    food_wastes: $foodWastes
+  }) {
     id
     serving_date
     meal_type
     served_count
     organization_id
     notes
-    created
-    updated
+    food_wastes {
+      id
+      food_item_id
+      wasted_portions
+      food_item {
+        name
+      }
+    }
   }
 }
 
-mutation UpdateMealServing($id: Int!, $servingDate: String!, $mealType: String!, $servedCount: Int!, $notes: String) {
-  update_meal_serving(meal_serving: {id: $id, serving_date: $servingDate, meal_type: $mealType, served_count: $servedCount, notes: $notes}) {
+mutation UpdateMealServing($id: Int!, $servingDate: String!, $mealType: String!, $servedCount: Int!, $notes: String, $foodWastes: [FoodWaste!]) {
+  update_meal_serving(meal_serving: {
+    id: $id
+    serving_date: $servingDate
+    meal_type: $mealType
+    served_count: $servedCount
+    notes: $notes
+    food_wastes: $foodWastes
+  }) {
     id
     serving_date
     meal_type
     served_count
     organization_id
     notes
+    food_wastes {
+      id
+      food_item_id
+      wasted_portions
+    }
     created
     updated
   }
@@ -82,15 +118,15 @@ mutation AddFoodWaste($mealServingId: Int!, $foodItemId: Int!, $wastedPortions: 
   }
 }
 
-query GetWasteData($days: Int!) {
-  daily_waste(days: $days) {
+query GetWasteData($organizationId: Int!, $days: Int!) {
+  daily_waste(organizationId: $organizationId, days: $days) {
     date
     total_waste
   }
 }
 
-query GetTopWastedItemsRecentWeek($limit: Int!) {
-  top_wasted_items_recent_week(limit: $limit) {
+query GetTopWastedItems($organizationId: Int!, $days: Int!, $limit: Int!) {
+  top_wasted_items(organizationId: $organizationId, days: $days, limit: $limit) {
     food_item_id
     food_name
     total_portions
@@ -98,8 +134,8 @@ query GetTopWastedItemsRecentWeek($limit: Int!) {
   }
 }
 
-query GetAnalytics($days: Int) {
-  getAnalyticsData(days: $days) {
+query GetAnalytics($organizationId: Int!, $days: Int) {
+  getAnalyticsData(organizationId: $organizationId, days: $days) {
     average_daily_waste_cost
     weekly_total_cost
   }

@@ -32,7 +32,7 @@ final GraphqlClient globalDataClient = check new (GLOBAL_DATA_API_URL,
     }
 }
 
-service / on new http:Listener(9099) {
+service / on new http:Listener(9098) {
     private final GraphqlClient graphqlClient;
 
     function init() returns error? {
@@ -83,7 +83,7 @@ service / on new http:Listener(9099) {
 
     resource function post meal_servings(MealServingInput mealServing) returns AddMealServingResponse|error {
         do {
-            AddMealServingResponse response = check self.graphqlClient->AddMealServing(mealServing.organization_id, mealServing.served_count, mealServing.serving_date, mealServing.meal_type, mealServing.notes);
+            AddMealServingResponse response = check self.graphqlClient->AddMealServing(mealServing.organization_id, mealServing.served_count, mealServing.serving_date, mealServing.meal_type, mealServing.notes, mealServing.food_wastes);
             return response;
         } on fail var e {
             log:printError("Error adding meal serving", e);
@@ -93,7 +93,7 @@ service / on new http:Listener(9099) {
 
     resource function put meal_servings/[int id](MealServingUpdateInput mealServing) returns UpdateMealServingResponse|error {
         do {
-            UpdateMealServingResponse response = check self.graphqlClient->UpdateMealServing(mealServing.served_count, mealServing.serving_date, mealServing.meal_type, id, mealServing.notes);
+            UpdateMealServingResponse response = check self.graphqlClient->UpdateMealServing(mealServing.served_count, mealServing.serving_date, mealServing.meal_type, id, mealServing.notes, mealServing.food_wastes);
             return response;
         } on fail var e {
             log:printError("Error updating meal serving", e);
@@ -101,21 +101,10 @@ service / on new http:Listener(9099) {
         }
     }
 
-    // Food Waste Endpoints
-    resource function post food_waste(FoodWasteInput foodWaste) returns AddFoodWasteResponse|error {
-        do {
-            AddFoodWasteResponse response = check self.graphqlClient->AddFoodWaste(foodWaste.meal_serving_id, foodWaste.food_item_id, foodWaste.wasted_portions);
-            return response;
-        } on fail var e {
-            log:printError("Error adding food waste", e);
-            return e;
-        }
-    }
-
     // Analytics Endpoints
-    resource function get analytics/waste(int days) returns GetWasteDataResponse|error {
+    resource function get analytics/organizations/[int organization_id]/waste(int days) returns GetWasteDataResponse|error {
         do {
-            GetWasteDataResponse response = check self.graphqlClient->GetWasteData(days);
+            GetWasteDataResponse response = check self.graphqlClient->GetWasteData(organization_id, days);
             return response;
         } on fail var e {
             log:printError("Error fetching waste data", e);
@@ -123,9 +112,9 @@ service / on new http:Listener(9099) {
         }
     }
 
-    resource function get analytics/top_wasted(int 'limit) returns GetTopWastedItemsRecentWeekResponse|error {
+    resource function get analytics/organizations/[int organization_id]/top_wasted(int 'limit, int days) returns GetTopWastedItemsResponse|error {
         do {
-            GetTopWastedItemsRecentWeekResponse response = check self.graphqlClient->GetTopWastedItemsRecentWeek('limit);
+            GetTopWastedItemsResponse response = check self.graphqlClient->GetTopWastedItems(organization_id, 'limit, days);
             return response;
         } on fail var e {
             log:printError("Error fetching top wasted items", e);
@@ -133,9 +122,9 @@ service / on new http:Listener(9099) {
         }
     }
 
-    resource function get analytics/summary(int? days = ()) returns GetAnalyticsResponse|error {
+    resource function get analytics/organizations/[int organization_id]/summary(int? days = ()) returns GetAnalyticsResponse|error {
         do {
-            GetAnalyticsResponse response = check self.graphqlClient->GetAnalytics(days);
+            GetAnalyticsResponse response = check self.graphqlClient->GetAnalytics(organization_id, days);
             return response;
         } on fail var e {
             log:printError("Error fetching analytics", e);
@@ -152,10 +141,5 @@ service / on new http:Listener(9099) {
     resource function delete meal_servings/[int id]() returns json|error {
         json|error delete_result = self.graphqlClient->DeleteMealServing(id);
         return delete_result;
-    }
-
-    resource function delete food_waste/[int id]() returns json|error {
-        json|error delete_result = self.graphqlClient->DeleteFoodWaste(id);
-        return delete_result;
-    }    
+    }   
 }
