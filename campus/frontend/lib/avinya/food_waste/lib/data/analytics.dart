@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:gallery/config/app_config.dart';
-import 'dummy_data.dart';
 
 class AnalyticsData {
   final double averageDailyWasteCost;

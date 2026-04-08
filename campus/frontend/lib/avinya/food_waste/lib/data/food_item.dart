@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
-import 'dummy_data.dart';
 
 class FoodItem {
   final int? id;
@@ -48,10 +47,10 @@ class FoodItem {
 class FoodItemService {
   static String baseUrl = AppConfig.campusFoodWasteBffApiUrl;
 
-  static Future<List<FoodItem>> fetchBreakfastItems() async {
+  static Future<List<FoodItem>> fetchFoodItems(String mealType) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/food_items?meal_type=breakfast'),
+        Uri.parse('$baseUrl/food_items?meal_type=$mealType'),
         headers: {'Authorization': 'Bearer ' + AppConfig.campusBffApiKey},
       ).timeout(const Duration(seconds: 10));
 
@@ -59,37 +58,15 @@ class FoodItemService {
         final Map<String, dynamic> data = json.decode(response.body);
         final List<dynamic> items = data['food_items'] ?? [];
         final foodItems = items.map((json) => FoodItem.fromJson(json)).toList();
-        print('Successfully fetched breakfast items: ${foodItems.length}');
+        print('Successfully fetched $mealType items: ${foodItems.length}');
         return foodItems;
       } else {
         print('API Error: Status ${response.statusCode}');
         throw Exception(
-            'Failed to load breakfast items: ${response.statusCode}');
+            'Failed to load $mealType items: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error fetching breakfast items: $e');
-    }
-  }
-
-  static Future<List<FoodItem>> fetchLunchItems() async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/food_items?meal_type=lunch'),
-        headers: {'Authorization': 'Bearer ' + AppConfig.campusBffApiKey},
-      ).timeout(const Duration(seconds: 10));
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-        final List<dynamic> items = data['food_items'] ?? [];
-        final foodItems = items.map((json) => FoodItem.fromJson(json)).toList();
-        print('Successfully fetched lunch items: ${foodItems.length}');
-        return foodItems;
-      } else {
-        print('API Error: Status ${response.statusCode}');
-        throw Exception('Failed to load lunch items: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Error fetching lunch items: $e');
+      throw Exception('Error fetching $mealType items: $e');
     }
   }
 

@@ -25,9 +25,8 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
   Future<void> _loadFoodItems() async {
     setState(() => _isLoading = true);
     try {
-      final items = _selectedMealType == 'Breakfast'
-          ? await FoodItemService.fetchBreakfastItems()
-          : await FoodItemService.fetchLunchItems();
+      final items =
+          await FoodItemService.fetchFoodItems(_selectedMealType.toLowerCase());
       setState(() {
         _foodItems = items;
         _isLoading = false;

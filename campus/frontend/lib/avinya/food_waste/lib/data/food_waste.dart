@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'package:gallery/config/app_config.dart';
 import 'package:http/http.dart' as http;
 import 'food_item.dart';
-import 'dummy_data.dart';
-
 class MealServing {
   final int? id;
   final String date;
