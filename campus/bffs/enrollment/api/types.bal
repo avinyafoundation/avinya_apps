@@ -84,15 +84,18 @@ public type Person record {
     string? date_of_birth?;
     int? parent_organization_id?;
     int? avinya_type_id?;
+    int? rank_position?;
     Address? permanent_address?;
     boolean? is_graduated?;
     int? mailing_address_id?;
     Alumni? alumni?;
     string? profile_picture_folder_id?;
+    anydata? attendance_percentage?;
     string? id_no?;
     string? jwt_email?;
     string? bank_name?;
     int? alumni_id?;
+    anydata? attendance_percentage_raw?;
     int? id?;
     string? email?;
     string? created?;
