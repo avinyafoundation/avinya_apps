@@ -4,6 +4,7 @@ import ballerina/log;
 public function initClientConfig() returns ConnectionConfig {
     ConnectionConfig _clientConig = {};
     if (GLOBAL_DATA_USE_AUTH) {
+        log:printInfo("Initializing GraphQL client with OAuth2 Client Credentials Grant");
         _clientConig.oauth2ClientCredentialsGrantConfig = {
             tokenUrl: CHOREO_TOKEN_URL,
             clientId: GLOBAL_DATA_CLIENT_ID,
@@ -12,13 +13,13 @@ public function initClientConfig() returns ConnectionConfig {
     } else {
         _clientConig = {};
     }
-    // log:printDebug("debug log");
-    // log:printError("error log");
-    // log:printInfo("info log");
-    // log:printWarn("warn log");
-    // log:printInfo("CHOREO_TOKEN_URL: " + CHOREO_TOKEN_URL);
-    // log:printInfo("GLOBAL_DATA_CLIENT_ID: " + GLOBAL_DATA_CLIENT_ID);
-    // log:printInfo("GLOBAL_DATA_CLIENT_SECRET: " + GLOBAL_DATA_CLIENT_SECRET);
+    log:printDebug("debug log");
+    log:printError("error log");
+    log:printInfo("info log");
+    log:printWarn("warn log");
+    log:printInfo("CHOREO_TOKEN_URL: " + CHOREO_TOKEN_URL);
+    log:printInfo("GLOBAL_DATA_CLIENT_ID: " + GLOBAL_DATA_CLIENT_ID);
+    log:printInfo("GLOBAL_DATA_CLIENT_SECRET: " + GLOBAL_DATA_CLIENT_SECRET);
     return _clientConig;
 }
 
