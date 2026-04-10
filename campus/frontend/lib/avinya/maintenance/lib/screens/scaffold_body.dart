@@ -3,6 +3,7 @@ import 'package:gallery/avinya/maintenance/lib/app_routes/app_routes.dart';
 import 'package:gallery/avinya/maintenance/lib/data.dart';
 import 'package:gallery/avinya/maintenance/lib/screens/add_location_screen.dart';
 import 'package:gallery/avinya/maintenance/lib/screens/finance_approvals_screen.dart';
+import 'package:gallery/avinya/maintenance/lib/screens/inspection_screen.dart';
 import 'package:gallery/avinya/maintenance/lib/screens/kanban_screen.dart';
 import 'package:gallery/avinya/maintenance/lib/screens/add_task_screen.dart';
 import 'package:gallery/avinya/maintenance/lib/screens/maintenance_dashboard_screen.dart';
@@ -64,6 +65,12 @@ class SMSScaffoldBody extends StatelessWidget {
           const FadeTransitionPage<void>(
             key: ValueKey('finance_approvals_screen'),
             child: FinanceApprovalsScreen(),
+          )  
+        else if (currentRoute.pathTemplate
+                .startsWith(AppRoutes.inspectionRoute) )
+          const FadeTransitionPage<void>(
+            key: ValueKey('inspection_screen'),
+            child: InspectionScreen(),
           )  
         // else if (currentRoute.pathTemplate.startsWith(AppRoutes.alumniAdminRoute))
         //   const FadeTransitionPage<void>(
