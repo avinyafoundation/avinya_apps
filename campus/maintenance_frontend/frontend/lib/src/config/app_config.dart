@@ -8,8 +8,10 @@ class AppConfig {
   static String campusMaintenanceBffApiUrl = '';
   static String campusAttendanceBffApiUrl = '';
   static String campusProfileBffApiUrl = '';
+  static String campusFoodWasteBffApiUrl = '';
   static String maintenanceAppBffApiKey = '';
   static String attendanceAppBffApiKey = '';
+  static String foodWasteBffApiKey = '';
   static String refreshToken = '';
   static String choreoSTSEndpoint = "";
   static String choreoSTSClientID = "x23_1tY7kAUtLUH9il9I3YwyrJca";
@@ -41,7 +43,9 @@ class AppConfig {
     campusAttendanceBffApiUrl = json['campusAttendanceBffApiUrl'];
     maintenanceAppBffApiKey = ApiKey.maintenanceAppBffApiKey;
     attendanceAppBffApiKey = ApiKey.attendanceBffApiKey;
+    foodWasteBffApiKey = ApiKey.foodWasteBffApiKey;
     campusProfileBffApiUrl = json['campusProfileBffApiUrl'];
+    campusFoodWasteBffApiUrl = json['campusFoodWasteBffApiUrl'];
     choreoSTSEndpoint = json['choreo_sts_endpoint'];
     asgardeoTokenEndpoint = json['asgardeo_token_endpoint'];
     asgardeoLogoutUrl = json['logout_url'];

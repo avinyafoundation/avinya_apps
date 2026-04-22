@@ -46,6 +46,9 @@ class _MaintenanceDashboardScreenState
   String _attendanceFromDate = '2026-01-01';
   String _attendanceToDate = '';
 
+  // Food waste data
+  List<Map<String, dynamic>> _foodWasteData = [];
+
   Timer? _blinkTimer;
   bool _blinkOn = false;
 
@@ -342,11 +345,18 @@ class _MaintenanceDashboardScreenState
       };
       _lateAttendanceData = rawLateData.map<Map<String, dynamic>>((item) {
         final label = item['label'] as String? ?? '';
+        final rawNames = item['student_name'] as String? ?? '';
+        final List<String> students = rawNames
+            .split(',')
+            .map((s) => s.trim())
+            .where((s) => s.isNotEmpty)
+            .toList();
         return {
           'label': label,
           'value': item['student_count'] as int? ?? 0,
           'color': colorByLabel[label] ??
               palette[_lateAttendanceData.length % palette.length],
+          'students': students,
         };
       }).toList();
 
@@ -357,6 +367,7 @@ class _MaintenanceDashboardScreenState
       await _fetchClassAttendanceRanking();
       await _fetchStaffTaskSummaries();
       await _fetchAttendanceRanking();
+      await _fetchFoodWasteData();
     } catch (error) {
       print('Dashboard Load Error: $error');
     } finally {
@@ -512,6 +523,35 @@ class _MaintenanceDashboardScreenState
       }
     } catch (e) {
       print('Error fetching class attendance ranking: $e');
+    }
+  }
+
+  Future<void> _fetchFoodWasteData() async {
+    try {
+      final wasteDataRaw = await getFoodWasteData(2, 7);
+      if (mounted) {
+        setState(() {
+          // Reverse the data so oldest date appears first
+          final reversedData = wasteDataRaw.reversed.toList();
+          _foodWasteData = reversedData.map<Map<String, dynamic>>((item) {
+            final dateStr = item['date'] as String? ?? '';
+            String dayLabel = '';
+            try {
+              final date = DateTime.parse(dateStr);
+              dayLabel = '${date.month}/${date.day}';
+            } catch (_) {
+              dayLabel = dateStr;
+            }
+            return {
+              'day': dayLabel,
+              'cost': item['total_waste'] as double? ?? 0.0,
+              'color': _orange,
+            };
+          }).toList();
+        });
+      }
+    } catch (e) {
+      print('Error fetching food waste data: $e');
     }
   }
 
@@ -1417,49 +1457,57 @@ class _MaintenanceDashboardScreenState
                       double pct =
                           (item['value'] as int) / totalLate * 100;
                       final color = item['color'] as Color;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 9, height: 9,
-                              decoration: BoxDecoration(
-                                  color: color,
-                                  borderRadius: BorderRadius.circular(2)),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(item['label'] as String,
-                                      style: const TextStyle(
-                                          fontSize: 11,
-                                          color: _textDark,
-                                          fontWeight: FontWeight.w500)),
-                                  const SizedBox(height: 3),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(4),
-                                    child: LinearProgressIndicator(
-                                      value: pct / 100,
-                                      minHeight: 5,
-                                      backgroundColor:
-                                          const Color(0xFFE8F0F5),
-                                      valueColor:
-                                          AlwaysStoppedAnimation<Color>(
-                                              color),
-                                    ),
+                      final label = item['label'] as String;
+                      final value = item['value'] as int;
+                      return GestureDetector(
+                        onTap: () => _showStudentsByTimeRange(label, value),
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 9, height: 9,
+                                  decoration: BoxDecoration(
+                                      color: color,
+                                      borderRadius: BorderRadius.circular(2)),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(label,
+                                          style: const TextStyle(
+                                              fontSize: 11,
+                                              color: _textDark,
+                                              fontWeight: FontWeight.w500)),
+                                      const SizedBox(height: 3),
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: LinearProgressIndicator(
+                                          value: pct / 100,
+                                          minHeight: 5,
+                                          backgroundColor:
+                                              const Color(0xFFE8F0F5),
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  color),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text('$value',
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: color)),
+                              ],
                             ),
-                            const SizedBox(width: 8),
-                            Text('${item['value']}',
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                    color: color)),
-                          ],
+                          ),
                         ),
                       );
                     }).toList(),
@@ -2118,15 +2166,18 @@ class _MaintenanceDashboardScreenState
 
   // ── Food Waste Card ──────────────────────────
   Widget _buildFoodWasteCard() {
-    final List<Map<String, dynamic>> wasteData = [
-      {'day': '2/18', 'cost': 0.0, 'color': _orange},
-      {'day': '2/19', 'cost': 0.0, 'color': _orange},
-      {'day': '2/20', 'cost': 0.0, 'color': _orange},
-      {'day': '2/21', 'cost': 0.0, 'color': _orange},
-      {'day': '2/22', 'cost': 0.0, 'color': _orange},
-      {'day': '2/23', 'cost': 0.0, 'color': _orange},
-      {'day': '2/24', 'cost': 0.0, 'color': _orange},
-    ];
+    final List<Map<String, dynamic>> wasteData = _foodWasteData.isNotEmpty 
+        ? _foodWasteData 
+        : [];
+
+    if (wasteData.isEmpty) {
+      return _card(
+        child: Center(
+          child: Text('No food waste data',
+              style: TextStyle(fontSize: 12, color: _textLight)),
+        ),
+      );
+    }
 
     final maxCost = wasteData.map((d) => d['cost'] as double).reduce(max);
 
@@ -2355,9 +2406,173 @@ class _MaintenanceDashboardScreenState
     for (var item in data) {
       final value = item['value'] as int;
       final sweepAngle = (value / total) * 2 * pi;
-      if (tapAngle >= currentAngle && tapAngle < currentAngle + sweepAngle) return;
+      if (tapAngle >= currentAngle && tapAngle < currentAngle + sweepAngle) {
+        // Show students for this time range
+        _showStudentsByTimeRange(item['label'] as String, value);
+        return;
+      }
       currentAngle += sweepAngle;
     }
+  }
+
+  void _showStudentsByTimeRange(String timeRange, int studentCount) {
+    // Get student names for this time range from late attendance data
+    List<String> names = [];
+    for (var entry in _lateAttendanceData) {
+      if (entry['label'] == timeRange) {
+        if (entry['students'] is List<String>) {
+          names = List<String>.from(entry['students']);
+        }
+        break;
+      }
+    }
+
+    // Convert names to student list format
+    List<Map<String, String>> students;
+    if (names.isNotEmpty) {
+      students = names.map((n) => {'name': n, 'id': ''}).toList();
+    } else {
+      students = [];
+    }
+
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.35),
+      builder: (BuildContext ctx) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          backgroundColor: Colors.white,
+          elevation: 0,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500, maxHeight: 500),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Header ──
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Late Students - $timeRange',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: _textDark,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '$studentCount students in this time range',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: _textMid,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        color: _textLight,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Divider(height: 1, color: _divider),
+                  const SizedBox(height: 12),
+
+                  // ── Student List ──
+                  Expanded(
+                    child: students.isEmpty
+                        ? Center(
+                            child: Text(
+                              'No student data available',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: _textLight,
+                              ),
+                            ),
+                          )
+                        : ListView.separated(
+                            itemCount: students.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: 8),
+                            itemBuilder: (_, index) {
+                              final student = students[index];
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF5F9FF),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: _divider,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 38,
+                                      height: 38,
+                                      decoration: BoxDecoration(
+                                        color: _orange.withOpacity(0.15),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          student['name']!
+                                              .substring(0, 1)
+                                              .toUpperCase(),
+                                          style: TextStyle(
+                                            color: _orange,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            student['name']!,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700,
+                                              color: _textDark,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 
