@@ -571,4 +571,59 @@ service / on new http:Listener(9097) {
             return <ApiErrorResponse>{body: { message: "User Not Found" }};
         }
     }
+
+      //update the task  progress status
+    resource function patch tasks/activity_instances/[int activityInstanceId]
+(@http:Payload ActivityInstance activityInstance) returns ActivityInstance|ApiErrorResponse|error {
+        UpdateTaskInstanceResponse|graphql:ClientError updateTaskInstanceResponse = globalDataClient->updateTaskInstance(activityInstance);
+        
+        if(updateTaskInstanceResponse is UpdateTaskInstanceResponse){
+            ActivityInstance|error  activityInstanceRecord = updateTaskInstanceResponse.updateTaskInstance.cloneWithType(ActivityInstance);
+            if(activityInstanceRecord is ActivityInstance){
+                return activityInstanceRecord;
+            }else{
+                 log:printError("Error while updating the task instance status progress",activityInstanceRecord);
+                return <ApiErrorResponse>{body: { message: "Error while updating the task instance status  progress" }};
+            }
+        }else {
+            log:printError("Error while updating the task instance status progress",updateTaskInstanceResponse);
+            return <ApiErrorResponse>{body: { message: "Error while updating the task instance status progress" }};
+        }
+    } 
+
+
+    // Get Activity Instances by checking Activity Participant table's end_date
+    // and participant_task_status = 'Completed'
+    resource function get organizations/[int organizationId]/activity_instances/activity_participant/[string endDate](
+    ) returns ActivityInstance[]|error {
+
+        GetActivityInstancesByParticipantEndDateResponse|graphql:ClientError response = 
+            globalDataClient->GetActivityInstancesByParticipantEndDate(endDate);
+
+        if (response is GetActivityInstancesByParticipantEndDateResponse) {
+            ActivityInstance[] activityInstances = [];
+
+            var instances = response?.activityInstancesByParticipantEndDate;
+            if (instances is ()) {
+                return <ActivityInstance[]>[];
+            }
+
+            foreach var instance_record in instances {
+                ActivityInstance|error activityInstance = instance_record.cloneWithType(ActivityInstance);
+                if (activityInstance is ActivityInstance) {
+                    activityInstances.push(activityInstance);
+                } else {
+                    log:printError("Error while mapping activity instance record", activityInstance);
+                    return error("Error while mapping activity instance record: " + activityInstance.message() +
+                        ":: Detail: " + activityInstance.detail().toString());
+                }
+            }
+
+            return activityInstances;
+        } else {
+            log:printError("Error while getting activity instances by participant end date", response);
+            return error("Error while getting activity instances by participant end date: " + response.message() +
+                ":: Detail: " + response.detail().toString());
+        }
+    }   
 }    

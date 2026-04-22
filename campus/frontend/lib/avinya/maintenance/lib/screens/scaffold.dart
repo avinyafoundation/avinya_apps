@@ -21,6 +21,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
   bool isDirectorDashboardSectionHovered = false;
   bool isAddTaskSectionHovered = false;
   bool isFinanceApprovalsSectionHovered = false;
+  bool isInspectionSectionHovered = false;
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +74,6 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                 ),
               ),
             ),
-            // ),
           ),
         ),
       ];
@@ -439,6 +439,51 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                   onTap: () {
                     Navigator.pop(context); // Close the drawer
                     routeState.go(AppRoutes.taskDetailsRoute);
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+        MouseRegion(
+          onEnter: (_) {
+            setState(() {
+              isInspectionSectionHovered = true;
+            });
+          },
+          onExit: (_) {
+            setState(() {
+              isInspectionSectionHovered = false;
+            });
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: isInspectionSectionHovered
+                  ? Colors.white.withOpacity(0.3)
+                  : null,
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            margin: EdgeInsets.all(8.0),
+            child: Material(
+              type: MaterialType.transparency,
+              child: Container(
+                child: ListTile(
+                  leading: Icon(Icons.assignment_turned_in,
+                      color: Colors.white, size: 20.0),
+                  title: Container(
+                    margin: EdgeInsets.only(left: 12.0),
+                    transform: Matrix4.translationValues(-25, 0.0, 0.0),
+                    child: Text(
+                      "Tasks Inspection",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context); // Close the drawer
+                    routeState.go(AppRoutes.inspectionRoute);
                   },
                 ),
               ),

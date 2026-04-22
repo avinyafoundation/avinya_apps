@@ -36,6 +36,7 @@ class _MaintenanceManagementSystemState
         AppRoutes.taskDetailsRoute,
         AppRoutes.addTaskRoute,
         AppRoutes.financeApprovalsRoute,
+        AppRoutes.inspectionRoute,
       ],
       guard: _guard,
       // initialRoute: '/signin',
@@ -118,7 +119,10 @@ class _MaintenanceManagementSystemState
         AppRoutes.addTaskRoute, AppRoutes.addTaskRoute, {}, {});
 
     final financeApprovalsRoute = ParsedRoute(
-        AppRoutes.financeApprovalsRoute, AppRoutes.financeApprovalsRoute, {}, {});    
+        AppRoutes.financeApprovalsRoute, AppRoutes.financeApprovalsRoute, {}, {});   
+
+    final inspectionRoute = ParsedRoute(
+        AppRoutes.inspectionRoute, AppRoutes.inspectionRoute, {}, {});     
 
     if (signedIn && from == maintenanceDashboardRoute) {
       return maintenanceDashboardRoute;
@@ -134,6 +138,9 @@ class _MaintenanceManagementSystemState
     }
     else if (signedIn && from == financeApprovalsRoute) {
       return financeApprovalsRoute;
+    }
+    else if (signedIn && from == inspectionRoute) {
+      return inspectionRoute;
     }
     // else if (signedIn && from == studentsRoute) {
     //   return studentsRoute;

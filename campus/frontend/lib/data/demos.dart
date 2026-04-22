@@ -168,6 +168,12 @@ class Demos {
         category: GalleryDemoCategory.study,
         studyId: 'fortnightly',
       ),
+      'food_wastage': GalleryDemo(
+        title: 'Food Wastage Management',
+        subtitle: "Avinya Food Wastage Management App",
+        category: GalleryDemoCategory.study,
+        studyId: 'food_wastage',
+      ),
       'campuspctiadminApp': GalleryDemo(
         title: "Campus Pcti Admin App",
         subtitle: "Campus Pcti Admin App for the Admin",
