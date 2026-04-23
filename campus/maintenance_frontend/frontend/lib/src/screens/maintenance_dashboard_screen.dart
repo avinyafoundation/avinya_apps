@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../data/activity_attendance.dart';
+import '../data/food_waste.dart';
 import '../data/task_item.dart';
 import 'kanban_screen.dart';
 
