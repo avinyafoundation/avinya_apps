@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import '../config/app_config.dart';
 
+//Get data for the smarboard food waste chart (Most recent 7 days)
 Future<List<Map<String, dynamic>>> getFoodWasteData(
   int organizationId,
   int days,
