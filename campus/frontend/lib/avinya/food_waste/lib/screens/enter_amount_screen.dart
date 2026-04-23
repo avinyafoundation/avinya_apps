@@ -79,7 +79,7 @@ class _EnterAmountScreenState extends State<EnterAmountScreen> {
                       const SizedBox(width: 16),
                       const Expanded(
                         child: PageTitle(
-                          title: 'Log Waste Amount',
+                          title: 'Food Waste Amount',
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF172B4D),

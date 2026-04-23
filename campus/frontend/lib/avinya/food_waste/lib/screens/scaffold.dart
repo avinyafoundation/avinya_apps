@@ -97,7 +97,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                   margin: EdgeInsets.only(left: 12.0),
                   transform: Matrix4.translationValues(-25, 0.0, 0.0),
                   child: Text(
-                    "Add Log Waste",
+                    "Add Food Waste",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 12,
@@ -141,7 +141,7 @@ class _SMSScaffoldState extends State<SMSScaffold> {
                   margin: EdgeInsets.only(left: 12.0),
                   transform: Matrix4.translationValues(-25, 0.0, 0.0),
                   child: Text(
-                    "Log Waste History",
+                    "Food Waste History",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 12,

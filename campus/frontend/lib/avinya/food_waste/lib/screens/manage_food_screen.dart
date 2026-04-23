@@ -546,6 +546,7 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
 
               try {
                 await FoodItemService.deleteFoodItem(item.id!);
+                _loadFoodItems();
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -553,7 +554,6 @@ class _ManageFoodScreenState extends State<ManageFoodScreen> {
                       backgroundColor: Colors.green,
                     ),
                   );
-                  _loadFoodItems();
                 }
               } catch (e) {
                 if (mounted) {
