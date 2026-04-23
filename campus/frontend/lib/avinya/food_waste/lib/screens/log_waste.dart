@@ -195,7 +195,7 @@ class _LogWasteScreenState extends State<LogWasteScreen> {
                             Expanded(
                               child: PageTitle(
                                 title:
-                                    isEditing ? 'Edit Waste Log' : 'Log Waste',
+                                    isEditing ? 'Edit Waste Log' : 'Food Waste',
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: const Color(0xFF172B4D),
