@@ -5,7 +5,7 @@ const https = require('https');
 
 const options = {
   hostname: 'api.github.com',
-  path:     '/repos/avinyafoundation/attendance-workflow/dispatches',
+  path:     '/repos/avinyafoundation/avinya_apps/dispatches',
   method:   'POST',
   headers: {
     'Accept':               'application/vnd.github+json',
