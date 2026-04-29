@@ -1144,6 +1144,8 @@ service / on new http:Listener(9091) {
                                      
                                 }else{
                                     log:printError("Failed to Fetch person from the database");
+                                    // Send the OK back to the device to STOP the looping
+                                    return createErrorResponse(200,"Failed to Fetch person from the database");
                                 }
                             }
 
