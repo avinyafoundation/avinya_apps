@@ -32,14 +32,14 @@ class GenerateQRCodeState extends State<GenerateQRCode> {
           //This button when pressed navigates to QR code generation
           ElevatedButton(
               onPressed: () async {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: ((context) {
-                      return QRImage(sign_in_time);
-                    }),
-                  ),
-                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: ((context) {
+                //       return QRImage(sign_in_time);
+                //     }),
+                //   ),
+                // );
               },
               child: const Text('GENERATE QR CODE')),
         ],

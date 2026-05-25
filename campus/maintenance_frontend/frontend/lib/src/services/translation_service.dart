@@ -5,7 +5,7 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 class GeminiTranslator {
   // 1. FIXED: Use a 2026 stable model name
   static final _model = GenerativeModel(
-    model: 'gemini-2.0-flash-lite', // Highest free quota for 2026
+    model: 'gemini-3.1-flash-lite-preview', 
     apiKey: ApiKey.googleGenerativeAIKey,
   );
 

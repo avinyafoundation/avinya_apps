@@ -13,7 +13,7 @@ dependencies:
   email_validator: ^2.1.17
   flutter:
     sdk: flutter
-  flutter_appauth: ^6.0.2
+  flutter_appauth: ^9.0.1
   http: ^1.4.0
   intl: ^0.20.2
   jwt_decoder: ^2.0.1

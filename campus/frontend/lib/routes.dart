@@ -37,6 +37,8 @@ import 'package:alumni/app.dart' deferred as alumni;
 import 'package:alumni/routes.dart' as alumni_routes;
 import 'package:maintenance/app.dart' deferred as maintenance;
 import 'package:maintenance/routes.dart' as maintenance_routes;
+import 'package:gallery/avinya/food_waste/lib/app.dart' deferred as food_waste;
+import 'package:gallery/avinya/food_waste/lib/routes.dart' as food_waste_routes;
 
 typedef PathWidgetBuilder = Widget Function(BuildContext, String?);
 
@@ -185,6 +187,16 @@ class RouteConfiguration {
       ),
       openInSecondScreen: true,
     ),
+    Path(
+      r'^' + food_waste_routes.foodWastageDashboardRoute,
+      (context, match) => StudyWrapper(
+        study: DeferredWidget(
+            food_waste.loadLibrary,
+            () => food_waste
+                .FoodWastageApp()), // ignore: prefer_const_constructors
+      ),
+      openInSecondScreen: true,
+    ),   
     Path(
       r'^/',
       (context, match) => const RootPage(),

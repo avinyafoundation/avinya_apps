@@ -190,14 +190,8 @@ class _KanbanBoardState extends State<KanbanBoard> {
     bool isInvalidMove = false;
     String errorMessage = "";
 
-    // 1. Validation Logic: Cannot move Pending directly to Completed
-    if (fromGroupId == "pending" && toGroupId == "completed") {
-      isInvalidMove = true;
-      errorMessage =
-          "'කරන්න තියෙන' කාර්යයන් කෙලින්ම 'ඉවර කරපු' කාර්යයන් වෙත මාරු කළ නොහැක.";
-    }
-    // 2. Validation Logic: Cannot move OUT of Completed
-    else if (fromGroupId == "completed" &&
+    // Validation Logic: Cannot move OUT of Completed
+    if (fromGroupId == "completed" &&
         (toGroupId == "pending" || toGroupId == "progress")) {
       isInvalidMove = true;
       errorMessage =

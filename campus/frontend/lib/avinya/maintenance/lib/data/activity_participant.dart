@@ -107,6 +107,7 @@ enum ProgressStatus {
   pending,
   inProgress,
   completed,
+  incomplete,
 }
 
 //Convert status enum to string
@@ -118,6 +119,8 @@ String progressStatusToString(ProgressStatus status) {
       return 'In Progress';
     case ProgressStatus.completed:
       return 'Completed';
+    case ProgressStatus.incomplete:
+      return 'Incomplete';
     // default:
     //   throw Exception('Unknown status: $status');
   }
@@ -132,6 +135,8 @@ ProgressStatus getProgressStatusFromString(String statusString) {
       return ProgressStatus.inProgress;
     case 'completed':
       return ProgressStatus.completed;
+    case 'incomplete':
+      return ProgressStatus.incomplete;
     default:
       throw Exception('Unknown status: $statusString');
   }

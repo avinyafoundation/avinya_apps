@@ -1,5 +1,10 @@
 import ballerina/http;
 
+type AttendanceTask record {
+    string userName;
+    string dateTime;
+};
+
 public type AccessControllerEvent record {
     string? deviceName?;
     string? name?;

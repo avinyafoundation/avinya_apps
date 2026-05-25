@@ -1056,6 +1056,9 @@ class _CarouselCard extends StatelessWidget {
             Navigator.of(context)
                 .popUntil((route) => route.settings.name == '/');
             Navigator.of(context).restorablePushNamed(studyRoute);
+            // Navigator.of(context)
+            //     .popUntil((route) => route.settings.name == '/');
+            // Navigator.of(context).restorablePushNamed(studyRoute);
           },
           child: Stack(
             fit: StackFit.expand,

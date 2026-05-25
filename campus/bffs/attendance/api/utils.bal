@@ -4,6 +4,8 @@ import ballerina/http;
 import ballerina/log;
 import ballerina/mime;
 import ballerina/time;
+import ballerina/lang.runtime;
+import ballerina/io;
 
 public configurable boolean GLOBAL_DATA_USE_AUTH = true;
 public configurable string GLOBAL_DATA_API_URL = "http://localhost:4000/graphql";
@@ -159,4 +161,129 @@ public function sendWhatsAppAttendanceReport(string recipientPhone, string image
     }
 
     return responseJson;
+}
+
+// Polls the queue every 100ms.
+// If a task is found → process it.
+// If queue is empty  → sleep and check again.
+// ─────────────────────────────────────────────────────────────────
+function processAttendanceQueue() {
+    log:printInfo("Attendance queue worker is running...");
+
+    while true {
+        AttendanceTask|() task = ();
+
+        // Safely pull one task from the front of the queue
+        lock {
+            if attendanceQueue.length() > 0 {
+                task = attendanceQueue.remove(0);
+            }
+        }
+
+        if task is AttendanceTask {
+            // Task found — process it
+            log:printInfo("Worker picked up task for: " + task.userName);
+            doProcessAttendance(task);
+        } else {
+            // Queue is empty — wait 100ms before checking again
+            // This prevents a busy loop burning CPU
+            runtime:sleep(0.1);
+        }
+    }
+}
+
+function doProcessAttendance(AttendanceTask task) {
+
+    io:println(string `Verified User: ${task.userName}`);
+
+    // ^.*-  Matches everything from the start up to the hyphen
+    // \s* Matches any optional spaces
+    string nic = re `^.*-\s*`.replace(task.userName, "");
+    string formattedDateTime = formatDateTime(task.dateTime);
+
+    GetPersonResponse|graphql:ClientError getPersonResponse = globalDataClient->getPerson(nic);
+    if(getPersonResponse is GetPersonResponse) {
+        Person|error person_record = getPersonResponse.person_by_digital_id_or_nic.cloneWithType(Person);
+        
+        if(person_record is Person){
+            GetActivityInstancesTodayResponse|graphql:ClientError getActivityInstancesTodayResponse;
+            int avinyaType = person_record?.avinya_type_id?: 0;
+            io:println("person avinya type:",person_record?.avinya_type_id);
+            io:println("person nic:",person_record?.nic_no);
+
+            if(avinyaType==37 || avinyaType==110){
+                //Get today activity instance id for students
+                getActivityInstancesTodayResponse = globalDataClient->getActivityInstancesToday(4);
+            }else{
+                getActivityInstancesTodayResponse = globalDataClient->getActivityInstancesToday(1);
+            }
+            
+            if(getActivityInstancesTodayResponse is GetActivityInstancesTodayResponse) {
+                var instances = getActivityInstancesTodayResponse.activity_instances_today;
+                if instances.length() > 0 {
+                    // Access index 0
+                    var firstItem = instances[0];
+                    
+                    // Now you can clone it
+                    ActivityInstance|error activityInstance = firstItem.cloneWithType(ActivityInstance);
+                    
+                    if activityInstance is ActivityInstance{
+                        io:println("Found first instance: ", activityInstance?.id);
+                        ActivityParticipantAttendance attendance = {
+                            activity_instance_id: activityInstance?.id,
+                            person_id: person_record?.id,
+                            event_time: formattedDateTime
+                        };
+
+                        AddBiometricAttendanceResponse|graphql:ClientError addBiometricAttendanceResponse = globalDataClient->addBiometricAttendance(attendance);
+                        if(addBiometricAttendanceResponse is AddBiometricAttendanceResponse) {
+                            ActivityParticipantAttendance|error attendance_record = addBiometricAttendanceResponse.addBiometricAttendance.cloneWithType(ActivityParticipantAttendance);
+                            if(attendance_record is ActivityParticipantAttendance) {
+                                log:printInfo("Biometric Attendance Marked Successfully.Person Name:"+task.userName.toString());
+                            }else{
+                                log:printError("Failed to record biometric attendance. Person Name:"+task.userName.toString());
+                            }   
+                        }else {
+                            log:printError("Failed to record biometric attendance. Person Name:"+task.userName.toString());
+                            return;
+                        }                                     
+                    }
+                } else {
+                    io:println("No activity instances found for today.");
+                }
+
+            }else {
+                log:printError("Error while creating the activity instances", getActivityInstancesTodayResponse);
+                return;
+            }
+        }
+            
+    }else{
+        log:printError("Failed to Fetch person from the database");
+        // Send the OK back to the device to STOP the looping
+        return;
+    }
+
+}
+
+function cleanupOldSerialNos(int nowEpoch) {
+
+    // Collect expired keys first
+    // cannot remove while iterating — causes runtime error
+    string[] keysToRemove = [];
+
+    foreach var [key, storedTime] in processedSerialNos.entries() {
+        int ageInSeconds = nowEpoch - storedTime;
+
+        if ageInSeconds > DEDUPE_WINDOW_SECONDS {
+            keysToRemove.push(key);
+        }
+    }
+    // remove them safely
+    foreach var key in keysToRemove {
+        _ = processedSerialNos.remove(key);
+        io:println(string `Cleaned up expired serialNo: ${key}`);
+        log:printDebug(string `Cleaned up expired serialNo: ${key}`);
+    }
+
 }

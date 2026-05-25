@@ -48,6 +48,7 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
 
   Color turquoiseBlue = Color(0xFF009DB1);
   int person_id = 0;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -73,6 +74,9 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
     // Retrieve user data from local instance
     //AlumniPerson AlumniUser = campusAppsPortalInstance.getAlumniUserPerson();
     AlumniPerson AlumniUser;
+    setState(() {
+      _isLoading = true;
+    });
     if (alumniPerson.id == null) {
       // to check alumni object is null
       AlumniUser = await fetchAlumniPerson(person_id);
@@ -83,6 +87,7 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
 
     setState(() {
       alumniPerson = AlumniUser;
+      _isLoading = false;
     });
   }
 
@@ -145,8 +150,7 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
   }
 
   Widget _buildStatusSection(AlumniPerson alumniPerson) {
-    print(
-        '===============HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII=======================');
+    
     final status = alumniPerson.alumni != null
         ? alumniPerson.alumni!.status ?? 'N/A'
         : 'N/A';
@@ -757,7 +761,13 @@ class _MyAlumniDashboardScreenState extends State<MyAlumniDashboardScreen> {
     String imagePath = alumniPerson.sex == 'Male'
         ? 'assets/images/student_profile_male.jpg' // Replace with the male profile image path
         : 'assets/images/student_profile.jpg'; // Default or female profile image
-
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(), // ← loading spinner
+        ),
+      );
+    }
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(

@@ -359,6 +359,11 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
               child: Text("Completed",
                   style: TextStyle(
                       color: Colors.green, fontWeight: FontWeight.bold))),
+          DropdownMenuItem(
+              value: "Incomplete",
+              child: Text("Incomplete",
+                  style: TextStyle(
+                      color: Colors.red, fontWeight: FontWeight.bold))),
         ],
         onChanged: (newStatus) {
           if (newStatus != null) {
@@ -391,7 +396,9 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
                 participant.status = ProgressStatus.inProgress;
               } else if (newStatus == "Completed") {
                 participant.status = ProgressStatus.completed;
-              }
+              } else if (newStatus == "Incomplete") {
+                participant.status = ProgressStatus.incomplete;
+              }       
             });
           }
         },
@@ -400,6 +407,8 @@ class _TaskDetailsDialogState extends State<TaskDetailsDialog> {
             return Colors.green;
           } else if (value == "In Progress") {
             return Colors.blue;
+          } else if (value == "Incomplete") {
+            return Colors.red;
           } else {
             return Colors.orange;
           }

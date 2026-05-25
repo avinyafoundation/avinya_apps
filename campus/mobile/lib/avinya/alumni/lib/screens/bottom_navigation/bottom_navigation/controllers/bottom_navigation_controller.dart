@@ -35,6 +35,7 @@ class BottomNavigationController extends GetxController {
     MyAlumniDashboardScreen(),
     const JobPostListScreen(),
     UnderDevelopmentScreen(),
+    UnderDevelopmentScreen(),
     Container(color: kOtherColor, child: MyAlumniInfoViweScreen())
   ];
 }

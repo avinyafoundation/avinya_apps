@@ -266,24 +266,34 @@ Future<List<ActivityInstance>> fetchOverdueActivityInstance(
   }
 }
 
-// MOCK APIs. Use these for testing UI without backend integration.
+Future<List<ActivityInstance>> fetchActivityInstancesByDate(
+    int organizationId, String date) async {
+  final response = await http.get(
+    Uri.parse(
+        '${AppConfig.campusMaintenanceBffApiUrl}/organizations/$organizationId/activity_instances/activity_participant/$date'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+  );
 
-List<ActivityInstance> getMockPendingFinancialActivityInstancesData() {
-  final Map<String, dynamic> decoded = jsonDecode(pendingFinancialTasksJson);
-  final List<dynamic> tasks = decoded['tasks'];
-
-  return tasks.map((taskItem) {
-    final instance = taskItem['activityInstance'];
-    return ActivityInstance.fromJson(instance);
-  }).toList();
+  if (response.statusCode == 200) {
+    var resultsJson = json.decode(response.body).cast<Map<String, dynamic>>();
+    List<ActivityInstance> activityInstances = resultsJson
+        .map<ActivityInstance>((json) => ActivityInstance.fromJson(json))
+        .toList();
+    return activityInstances;
+  } else {
+    throw Exception('Failed to load Activity Instances for date: $date');
+  }
 }
 
 //Update activity instance
 Future<ActivityInstance> updateActivityInstance(
     ActivityInstance activityInstance) async {
   final response = await http.put(
-    Uri.parse(
-        '${AppConfig.campusMaintenanceBffApiUrl}/organizations/2/tasks'),
+    Uri.parse('${AppConfig.campusMaintenanceBffApiUrl}/organizations/2/tasks'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'accept': 'application/json',
@@ -296,5 +306,30 @@ Future<ActivityInstance> updateActivityInstance(
     return ActivityInstance.fromJson(json.decode(response.body));
   } else {
     throw Exception('Failed to update Activity Instance');
+  }
+}
+
+//Update activity instance overall task status
+Future<ActivityInstance> updateActivityInstanceStatus(
+    int activityInstanceId, String newStatus) async {
+  final response = await http.patch(
+    Uri.parse(
+        '${AppConfig.campusMaintenanceBffApiUrl}/tasks/activity_instances/$activityInstanceId'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${AppConfig.campusBffApiKey}',
+    },
+    body: jsonEncode({
+      'id': activityInstanceId,
+      'overall_task_status': newStatus,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return ActivityInstance.fromJson(json.decode(response.body));
+  } else {
+    throw Exception(
+        'Failed to update task status. Status code: ${response.statusCode}');
   }
 }

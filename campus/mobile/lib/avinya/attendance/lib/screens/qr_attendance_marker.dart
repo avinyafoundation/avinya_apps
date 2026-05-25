@@ -34,7 +34,7 @@ class _QrAttendanceMarkerScreenState extends State<QrAttendanceMarkerScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 40),
-                QrAttendanceMarker(),
+               // QrAttendanceMarker(),
                 const SizedBox(height: 20),
                 const SizedBox(height: 5),
               ],

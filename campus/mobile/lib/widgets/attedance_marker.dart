@@ -34,14 +34,14 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
       in_marked_by: campusAppsPortalInstance.getUserPerson().digital_id,
     ));
     await refreshPersonActivityAttendanceToday();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: ((context) {
-          return QRImage(sign_in_time);
-        }),
-      ),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: ((context) {
+    //       return QRImage(sign_in_time);
+    //     }),
+    //   ),
+    // );
     setState(() {
       qrCodeData = sign_in_time;
     });
@@ -209,14 +209,14 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
                       icon: Icon(Icons.qr_code),
                       onPressed: () {
                         // Navigate to the QR code view screen when the button is clicked
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return QRImage(qrCodeData);
-                            },
-                          ),
-                        );
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) {
+                        //       return QRImage(qrCodeData);
+                        //     },
+                        //   ),
+                        // );
                       },
                       tooltip: 'View QR Code',
                     ),

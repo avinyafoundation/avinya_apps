@@ -50,14 +50,14 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
     ));
     String dataJson = jsonEncode(data);
     await refreshPersonActivityAttendanceToday();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: ((context) {
-          return QRImage(dataJson);
-        }),
-      ),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: ((context) {
+    //       return QRImage(dataJson);
+    //     }),
+    //   ),
+    // );
     setState(() {
       qrCodeData = dataJson;
     });
@@ -98,14 +98,14 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
     }
 
     String dataJson = jsonEncode(data);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: ((context) {
-          return QRImage(dataJson);
-        }),
-      ),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: ((context) {
+    //       return QRImage(dataJson);
+    //     }),
+    //   ),
+    // );
     setState(() {
       qrCodeData = dataJson;
     });
@@ -135,14 +135,14 @@ class _AttendanceMarkerState extends State<AttendanceMarker> {
     ));
     String dataJson = jsonEncode(data);
     await refreshPersonActivityAttendanceToday();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: ((context) {
-          return QRImage(dataJson);
-        }),
-      ),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: ((context) {
+    //       return QRImage(dataJson);
+    //     }),
+    //   ),
+    // );
     setState(() {
       qrCodeData = dataJson;
     });
