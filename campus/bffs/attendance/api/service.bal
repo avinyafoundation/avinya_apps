@@ -3,6 +3,7 @@ import ballerina/graphql;
 import ballerina/log;
 import ballerina/io;
 import ballerina/mime;
+import ballerina/time;
 
 public function initClientConfig() returns ConnectionConfig{
     ConnectionConfig _clientConig = {};
@@ -23,6 +24,13 @@ final GraphqlClient globalDataClient = check new (GLOBAL_DATA_API_URL,
     config = initClientConfig()
 );
 
+map<int> processedSerialNos = {};
+final int DEDUPE_WINDOW_SECONDS = 30;
+
+//CORRECT — plain array, declared ONCE
+AttendanceTask[] attendanceQueue = [];
+final int MAX_QUEUE_SIZE = 200;
+
 # A service representing a network-accessible API
 # bound to port `9091`.
 @http:ServiceConfig {
@@ -31,6 +39,18 @@ final GraphqlClient globalDataClient = check new (GLOBAL_DATA_API_URL,
     }
 }
 service / on new http:Listener(9091) {
+
+    // It runs automatically when the service starts — just ONCE.
+    function init() {
+        log:printInfo("Starting attendance background worker...");
+
+        // 'start' launches processAttendanceQueue() as a separate
+        // async strand — it runs concurrently, never blocks the service
+        _ = start processAttendanceQueue();
+
+        log:printInfo("Background worker started.");
+    }
+
 
     # A resource for generating greetings
     # + name - the input string name
@@ -1001,7 +1021,7 @@ service / on new http:Listener(9091) {
                 ":: Detail: " + getBatchPaymentPlanByOrgIdResponse.detail().toString());
         }
     }
-    
+
     resource function post attendance/events(http:Request req) returns http:Response|error {
         // Prepare the response immediately
         http:Response response = new;
@@ -1011,6 +1031,13 @@ service / on new http:Listener(9091) {
 
         // Extract parts (JSON + Image)
         var bodyParts = req.getBodyParts();
+
+        if !(bodyParts is mime:Entity[]){
+           log:printError("Failed to parse multipart body");
+           return response;
+        }
+
+
         if bodyParts is mime:Entity[] {
             foreach var part in bodyParts {
                 if part.getContentType().startsWith("application/json") {
@@ -1049,12 +1076,12 @@ service / on new http:Listener(9091) {
                         log:printError("Invalid or missing dateTime");
                         return createErrorResponse(200, "Invalid or missing dateTime");
                     }
-
-                    
                     
                     AccessControllerEvent|error event = accessControllerEvent.fromJsonWithType(AccessControllerEvent);
                     string userName="";
                     int subType=0;
+                    int serialNo=0;
+
                     if(event is AccessControllerEvent){
                         if event?.name is string && event?.name != "" {
                             userName = event?.name.toString();
@@ -1069,81 +1096,68 @@ service / on new http:Listener(9091) {
                             log:printError("subEventType is missing");
                            return createErrorResponse(200, "subEventType is missing");
                         }
+                        
+                        if event?.serialNo is int {
+                            serialNo = event?.serialNo ?: 0;
+                        }else {
+                            log:printError("Event Serial No is missing");
+                           return createErrorResponse(200, "Event Serial No is missing");
+                        }
 
+                    }else{
+                        log:printError("Failed to parse AccessControllerEvent", event);
+                        return createErrorResponse(200,"Failed to parse AccessControllerEvent");
                     }
+                        
+                        // Only process biometric events
+                        if !(subType == 75 || subType == 38 || subType == 104) {
+                            log:printInfo(string `Non-biometric event ignored. subType: ${subType}`);
+                            return response;
+                        }
+
+                        if subType == 75 || subType == 38 || subType == 104 {
+
+                            if userName.trim() == "" {
+                                log:printError("Empty userName");
+                                return response;
+                            }
 
 
-                        if subType == 75 || subType == 38 {
+                            //DEDUPE CHECK
+                            boolean isDuplicate = false;
+                            lock {
+                                int nowEpoch = time:utcNow()[0];
+
+                                if processedSerialNos.hasKey(serialNo.toString()) {
+                                    isDuplicate = true;
+                                } else {
+
+                                    processedSerialNos[serialNo.toString()] = nowEpoch;
+                                    io:println(string `serial no:${serialNo} & epoch:${nowEpoch}`);
+                                    cleanupOldSerialNos(nowEpoch);
+                                }
+                            }
+
+                            if isDuplicate {
+                                log:printInfo(string `Duplicate dropped. serialNo: ${serialNo} User: ${userName}`);
+                                return response;
+                            }
 
                             if userName is string && userName.trim() != ""{
                               io:println(string `Verified User: ${userName}`);
+                              
+                                   AttendanceTask task = {
+                                        dateTime:dateTime,
+                                        userName: userName
+                                    };
 
-                                // ^.*-  Matches everything from the start up to the hyphen
-                                // \s* Matches any optional spaces
-                                string nic = re `^.*-\s*`.replace(userName, "");
-                                string formattedDateTime = formatDateTime(dateTime);
-
-                                GetPersonResponse|graphql:ClientError getPersonResponse = globalDataClient->getPerson(nic);
-                                if(getPersonResponse is GetPersonResponse) {
-                                    Person|error person_record = getPersonResponse.person_by_digital_id_or_nic.cloneWithType(Person);
-                                    
-                                    if(person_record is Person){
-                                        GetActivityInstancesTodayResponse|graphql:ClientError getActivityInstancesTodayResponse;
-                                        int avinyaType = person_record?.avinya_type_id?: 0;
-                                        io:println("person avinya type:",person_record?.avinya_type_id);
-                                        io:println("person nic:",person_record?.nic_no);
-
-                                        if(avinyaType==37 || avinyaType==110){
-                                            //Get today activity instance id for students
-                                          getActivityInstancesTodayResponse = globalDataClient->getActivityInstancesToday(4);
-                                        }else{
-                                          getActivityInstancesTodayResponse = globalDataClient->getActivityInstancesToday(1);
-                                        }
-                                        
-                                        if(getActivityInstancesTodayResponse is GetActivityInstancesTodayResponse) {
-                                           var instances = getActivityInstancesTodayResponse.activity_instances_today;
-                                           if instances.length() > 0 {
-                                                // Access index 0
-                                                var firstItem = instances[0];
-                                                
-                                                // Now you can clone it
-                                                ActivityInstance|error activityInstance = firstItem.cloneWithType(ActivityInstance);
-                                                
-                                                if activityInstance is ActivityInstance{
-                                                    io:println("Found first instance: ", activityInstance?.id);
-                                                    ActivityParticipantAttendance attendance = {
-                                                        activity_instance_id: activityInstance?.id,
-                                                        person_id: person_record?.id,
-                                                        event_time: formattedDateTime
-                                                    };
-
-                                                    AddBiometricAttendanceResponse|graphql:ClientError addBiometricAttendanceResponse = globalDataClient->addBiometricAttendance(attendance);
-                                                    if(addBiometricAttendanceResponse is AddBiometricAttendanceResponse) {
-                                                        ActivityParticipantAttendance|error attendance_record = addBiometricAttendanceResponse.addBiometricAttendance.cloneWithType(ActivityParticipantAttendance);
-                                                        if(attendance_record is ActivityParticipantAttendance) {
-                                                          log:printInfo("Biometric Attendance Marked Successfully.Person Name:"+userName.toString());
-                                                        }else{
-                                                          log:printError("Failed to record biometric attendance. Person Name:"+userName.toString());
-                                                        }   
-                                                    }else {
-                                                        log:printError("Failed to record biometric attendance. Person Name:"+userName.toString());
-                                                        return error("Error while adding  biometric attendance: " + addBiometricAttendanceResponse.message() +
-                                                            ":: Detail: " + addBiometricAttendanceResponse.detail().toString());
-                                                    }                                     
-                                                }
-                                            } else {
-                                                io:println("No activity instances found for today.");
-                                            }
-
-                                        }else {
-                                            log:printError("Error while creating the activity instances", getActivityInstancesTodayResponse);
-                                            return error("Error while creating the activity instances: " + getActivityInstancesTodayResponse.message() + 
-                                                ":: Detail: " + getActivityInstancesTodayResponse.detail().toString());
-                                        }
+                                lock {
+                                    if attendanceQueue.length() < MAX_QUEUE_SIZE {
+                                        attendanceQueue.push(task);
+                                        log:printInfo(string `Queued task for: ${userName} serialNo: ${serialNo}`);
+                                    } else {
+                                        log:printError("Queue full! Dropping event for: " + userName);
                                     }
-                                     
-                                }else{
-                                    log:printError("Failed to Fetch person from the database");
                                 }
                             }
 
@@ -1157,6 +1171,171 @@ service / on new http:Listener(9091) {
         // Send the OK back to the device to STOP the looping
         return response;
     }
+    
+    // resource function post attendance/events(http:Request req) returns http:Response|error {
+    //     // Prepare the response immediately
+    //     http:Response response = new;
+    //     response.statusCode = 200;
+    //     response.setPayload("OK");
+    //     string dateTime;
+
+    //     // Extract parts (JSON + Image)
+    //     var bodyParts = req.getBodyParts();
+
+    //     if !(bodyParts is mime:Entity[]){
+    //        log:printError("Failed to parse multipart body");
+    //        return response;
+    //     }
+
+
+    //     if bodyParts is mime:Entity[] {
+    //         foreach var part in bodyParts {
+    //             if part.getContentType().startsWith("application/json") {
+    //                 json|error payload = check part.getJson();
+    //                 io:println("payload:",payload);
+    //                 if(payload is error){
+    //                     log:printError("Invalid JSON payload");
+    //                    return createErrorResponse(200,"Invalid JSON payload");
+    //                 }
+
+    //                 // Access fields safely
+    //                 json?|error accessControllerEvent = payload?.AccessControllerEvent;
+    //                 json?|error dateTimeJson = payload?.dateTime;
+
+    //                 // Check AccessControllerEvent exists
+    //                 if (accessControllerEvent is ()) {
+    //                     log:printError("AccessControllerEvent is missing");
+    //                   return createErrorResponse(200, "AccessControllerEvent is missing");
+    //                 }
+
+    //                 if(accessControllerEvent is error){
+    //                     log:printError("Error in access AccessControllerEvent");
+    //                  return createErrorResponse(200, "Error in access AccessControllerEvent");
+    //                 }
+
+    //                 // Check dateTime exists
+    //                 if dateTimeJson is () {
+    //                     log:printError("dateTime is missing");
+    //                    return createErrorResponse(200, "dateTime is missing");
+    //                 }
+
+                     
+    //                 if(dateTimeJson is string){
+    //                   dateTime = dateTimeJson.toString();
+    //                 }else{
+    //                     log:printError("Invalid or missing dateTime");
+    //                     return createErrorResponse(200, "Invalid or missing dateTime");
+    //                 }
+
+                    
+                    
+    //                 AccessControllerEvent|error event = accessControllerEvent.fromJsonWithType(AccessControllerEvent);
+    //                 string userName="";
+    //                 int subType=0;
+    //                 if(event is AccessControllerEvent){
+    //                     if event?.name is string && event?.name != "" {
+    //                         userName = event?.name.toString();
+    //                     } else {
+    //                         log:printError("name is missing in AccessControllerEvent");
+    //                        return createErrorResponse(200, "name is missing in AccessControllerEvent");
+    //                     }
+
+    //                     if event?.subEventType is int {
+    //                         subType = event?.subEventType ?: 0;
+    //                     }else {
+    //                         log:printError("subEventType is missing");
+    //                        return createErrorResponse(200, "subEventType is missing");
+    //                     }
+
+    //                 }
+
+
+    //                     if subType == 75 || subType == 38 || subType == 104 {
+
+    //                         if userName is string && userName.trim() != ""{
+    //                           io:println(string `Verified User: ${userName}`);
+
+    //                             // ^.*-  Matches everything from the start up to the hyphen
+    //                             // \s* Matches any optional spaces
+    //                             string nic = re `^.*-\s*`.replace(userName, "");
+    //                             string formattedDateTime = formatDateTime(dateTime);
+
+    //                             GetPersonResponse|graphql:ClientError getPersonResponse = globalDataClient->getPerson(nic);
+    //                             if(getPersonResponse is GetPersonResponse) {
+    //                                 Person|error person_record = getPersonResponse.person_by_digital_id_or_nic.cloneWithType(Person);
+                                    
+    //                                 if(person_record is Person){
+    //                                     GetActivityInstancesTodayResponse|graphql:ClientError getActivityInstancesTodayResponse;
+    //                                     int avinyaType = person_record?.avinya_type_id?: 0;
+    //                                     io:println("person avinya type:",person_record?.avinya_type_id);
+    //                                     io:println("person nic:",person_record?.nic_no);
+
+    //                                     if(avinyaType==37 || avinyaType==110){
+    //                                         //Get today activity instance id for students
+    //                                       getActivityInstancesTodayResponse = globalDataClient->getActivityInstancesToday(4);
+    //                                     }else{
+    //                                       getActivityInstancesTodayResponse = globalDataClient->getActivityInstancesToday(1);
+    //                                     }
+                                        
+    //                                     if(getActivityInstancesTodayResponse is GetActivityInstancesTodayResponse) {
+    //                                        var instances = getActivityInstancesTodayResponse.activity_instances_today;
+    //                                        if instances.length() > 0 {
+    //                                             // Access index 0
+    //                                             var firstItem = instances[0];
+                                                
+    //                                             // Now you can clone it
+    //                                             ActivityInstance|error activityInstance = firstItem.cloneWithType(ActivityInstance);
+                                                
+    //                                             if activityInstance is ActivityInstance{
+    //                                                 io:println("Found first instance: ", activityInstance?.id);
+    //                                                 ActivityParticipantAttendance attendance = {
+    //                                                     activity_instance_id: activityInstance?.id,
+    //                                                     person_id: person_record?.id,
+    //                                                     event_time: formattedDateTime
+    //                                                 };
+
+    //                                                 AddBiometricAttendanceResponse|graphql:ClientError addBiometricAttendanceResponse = globalDataClient->addBiometricAttendance(attendance);
+    //                                                 if(addBiometricAttendanceResponse is AddBiometricAttendanceResponse) {
+    //                                                     ActivityParticipantAttendance|error attendance_record = addBiometricAttendanceResponse.addBiometricAttendance.cloneWithType(ActivityParticipantAttendance);
+    //                                                     if(attendance_record is ActivityParticipantAttendance) {
+    //                                                       log:printInfo("Biometric Attendance Marked Successfully.Person Name:"+userName.toString());
+    //                                                     }else{
+    //                                                       log:printError("Failed to record biometric attendance. Person Name:"+userName.toString());
+    //                                                     }   
+    //                                                 }else {
+    //                                                     log:printError("Failed to record biometric attendance. Person Name:"+userName.toString());
+    //                                                     return error("Error while adding  biometric attendance: " + addBiometricAttendanceResponse.message() +
+    //                                                         ":: Detail: " + addBiometricAttendanceResponse.detail().toString());
+    //                                                 }                                     
+    //                                             }
+    //                                         } else {
+    //                                             io:println("No activity instances found for today.");
+    //                                         }
+
+    //                                     }else {
+    //                                         log:printError("Error while creating the activity instances", getActivityInstancesTodayResponse);
+    //                                         return error("Error while creating the activity instances: " + getActivityInstancesTodayResponse.message() + 
+    //                                             ":: Detail: " + getActivityInstancesTodayResponse.detail().toString());
+    //                                     }
+    //                                 }
+                                     
+    //                             }else{
+    //                                 log:printError("Failed to Fetch person from the database");
+    //                                 // Send the OK back to the device to STOP the looping
+    //                                 return createErrorResponse(200,"Failed to Fetch person from the database");
+    //                             }
+    //                         }
+
+    //                     }
+    //             } else if part.getContentType().startsWith("image/jpeg") {
+    //                 // We acknowledge the image but don't print the binary mess
+    //                 io:println("[System] Face Image Captured and Processed.");
+    //             }
+    //         }
+    //     }
+    //     // Send the OK back to the device to STOP the looping
+    //     return response;
+    // }
     //Get Organizations Late Attendance Summary List
     resource function get organizations/[int parent_organization_id]/'late\-attendance\-summary(
         string date = "",
