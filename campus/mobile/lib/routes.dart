@@ -69,7 +69,7 @@ class RouteConfiguration {
             () => attendance
                 .CampusAttendanceManagementSystem()), // ignore: prefer_const_constructors
       ),
-      openInSecondScreen: true,
+      openInSecondScreen: false,
     ),
     Path(
       r'^' + alumni_routes.AppRoutes.alumniHome,
@@ -78,7 +78,7 @@ class RouteConfiguration {
         study: DeferredWidget(alumni.loadLibrary,
             () => alumni.AlumniSystem()), // ignore: prefer_const_constructors
       ),
-      openInSecondScreen: true,
+      openInSecondScreen: false,
     ),
     // Path(
     //   //block added lahiru-2023-03-10
