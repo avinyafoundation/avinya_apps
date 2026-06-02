@@ -24,8 +24,9 @@ final GraphqlClient globalDataClient = check new (GLOBAL_DATA_API_URL,
     config = initClientConfig()
 );
 
-map<int> processedSerialNos = {};
-final int DEDUPE_WINDOW_SECONDS = 30;
+map<int> processedEvents = {};
+final int DEDUPE_WINDOW_SECONDS  = 300;
+boolean midnightCleanupDone = false;
 
 //CORRECT — plain array, declared ONCE
 AttendanceTask[] attendanceQueue = [];
@@ -1021,7 +1022,7 @@ service / on new http:Listener(9091) {
                 ":: Detail: " + getBatchPaymentPlanByOrgIdResponse.detail().toString());
         }
     }
-
+    
     resource function post attendance/events(http:Request req) returns http:Response|error {
         // Prepare the response immediately
         http:Response response = new;
@@ -1121,34 +1122,45 @@ service / on new http:Listener(9091) {
                                 log:printError("Empty userName");
                                 return response;
                             }
+                            
+                            // Extract NIC once here
+                            string nic = re `^.*-\s*`.replace(userName, "");
 
+                            if nic.trim() == "" {
+                                log:printError("Could not extract NIC from userName: " + userName);
+                                return response;
+                            }
 
                             //DEDUPE CHECK
                             boolean isDuplicate = false;
                             lock {
                                 int nowEpoch = time:utcNow()[0];
 
-                                if processedSerialNos.hasKey(serialNo.toString()) {
+                                if processedEvents.hasKey(nic) {
+                                    // NIC exists in map -> always block, no time check needed
                                     isDuplicate = true;
+                                    log:printInfo(string `Duplicate blocked. NIC=${nic}  User=${userName}`);
                                 } else {
-
-                                    processedSerialNos[serialNo.toString()] = nowEpoch;
-                                    io:println(string `serial no:${serialNo} & epoch:${nowEpoch}`);
-                                    cleanupOldSerialNos(nowEpoch);
+                                    // NIC not in map → first scan or cooldown already expired
+                                    processedEvents[nic] = nowEpoch;// first scan
+                                    log:printInfo(string `New NIC stored. NIC=${nic} User=${userName}`);
+                                    
                                 }
+                                cleanupOldEvents(nowEpoch); // removes NICs older than 5 minutes
                             }
-
+                            
                             if isDuplicate {
-                                log:printInfo(string `Duplicate dropped. serialNo: ${serialNo} User: ${userName}`);
                                 return response;
                             }
 
-                            if userName is string && userName.trim() != ""{
+                            if nic is string {
                               io:println(string `Verified User: ${userName}`);
-                              
+                                   
+                                    // Queue the task
                                    AttendanceTask task = {
                                         dateTime:dateTime,
-                                        userName: userName
+                                        userName: userName,
+                                        nic:nic
                                     };
 
                                 lock {
