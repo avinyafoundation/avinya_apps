@@ -3,6 +3,7 @@ import ballerina/http;
 type AttendanceTask record {
     string userName;
     string dateTime;
+    string nic;
 };
 
 public type AccessControllerEvent record {

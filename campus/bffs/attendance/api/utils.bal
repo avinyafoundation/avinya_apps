@@ -169,10 +169,11 @@ public function sendWhatsAppAttendanceReport(string recipientPhone, string image
 // ─────────────────────────────────────────────────────────────────
 function processAttendanceQueue() {
     log:printInfo("Attendance queue worker is running...");
-
+    string[] keysToRemove = [];
     while true {
+        int nowEpoch = time:utcNow()[0];
         AttendanceTask|() task = ();
-
+                
         // Safely pull one task from the front of the queue
         lock {
             if attendanceQueue.length() > 0 {
@@ -185,9 +186,25 @@ function processAttendanceQueue() {
             log:printInfo("Worker picked up task for: " + task.userName);
             doProcessAttendance(task);
         } else {
-            // Queue is empty — wait 100ms before checking again
-            // This prevents a busy loop burning CPU
-            runtime:sleep(0.1);
+            time:Civil ct = time:utcToCivil(time:utcNow());
+            lock {
+                if ct.hour == 18 && ct.minute == 30 && !midnightCleanupDone {
+                    foreach var [key, storedTime] in processedEvents.entries() {
+                        int ageInSeconds = nowEpoch - storedTime;
+                        io:println(string `Midnight cleanup serialNo: ${key}`);
+                        if ageInSeconds > DEDUPE_WINDOW_SECONDS {
+                            keysToRemove.push(key); // expired -> mark for removal
+                        }
+                    }
+                    processedEvents.removeAll();
+                    midnightCleanupDone = true;
+                    log:printInfo("Midnight cleanup done. All NICs cleared.");
+                }else if ct.hour == 19 && ct.minute == 30 {
+                    midnightCleanupDone = false;
+                    log:printInfo("Reset done for next day's midnight cleanup");
+                }
+            }
+            runtime:sleep(10.0);
         }
     }
 }
@@ -198,7 +215,7 @@ function doProcessAttendance(AttendanceTask task) {
 
     // ^.*-  Matches everything from the start up to the hyphen
     // \s* Matches any optional spaces
-    string nic = re `^.*-\s*`.replace(task.userName, "");
+    string nic = task.nic;
     string formattedDateTime = formatDateTime(task.dateTime);
 
     GetPersonResponse|graphql:ClientError getPersonResponse = globalDataClient->getPerson(nic);
@@ -266,23 +283,22 @@ function doProcessAttendance(AttendanceTask task) {
 
 }
 
-function cleanupOldSerialNos(int nowEpoch) {
-
+function cleanupOldEvents(int nowEpoch) {
+    
     // Collect expired keys first
     // cannot remove while iterating — causes runtime error
     string[] keysToRemove = [];
 
-    foreach var [key, storedTime] in processedSerialNos.entries() {
+    foreach var [key, storedTime] in processedEvents.entries() {
         int ageInSeconds = nowEpoch - storedTime;
 
         if ageInSeconds > DEDUPE_WINDOW_SECONDS {
-            keysToRemove.push(key);
+            keysToRemove.push(key); // expired -> mark for removal
         }
     }
     // remove them safely
     foreach var key in keysToRemove {
-        _ = processedSerialNos.remove(key);
-        io:println(string `Cleaned up expired serialNo: ${key}`);
+        _ = processedEvents.remove(key);
         log:printDebug(string `Cleaned up expired serialNo: ${key}`);
     }
 
