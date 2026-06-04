@@ -25,7 +25,8 @@ final GraphqlClient globalDataClient = check new (GLOBAL_DATA_API_URL,
 );
 
 map<int> processedEvents = {};
-final int DEDUPE_WINDOW_SECONDS  = 300;
+final int DEDUPE_WINDOW_SECONDS  = 180;
+final decimal CLEANUP_INTERVAL_SECONDS = 300.0;     // Run cleaner every 5 minutes
 boolean midnightCleanupDone = false;
 
 //CORRECT — plain array, declared ONCE
@@ -47,9 +48,10 @@ service / on new http:Listener(9091) {
 
         // 'start' launches processAttendanceQueue() as a separate
         // async strand — it runs concurrently, never blocks the service
-        _ = start processAttendanceQueue();
+        _ = start processAttendanceQueue();  // Worker 1 — processes tasks
+        _ = start startCleanupWorker();      // Worker 2 — cleans expired NICs
 
-        log:printInfo("Background worker started.");
+        log:printInfo("Both background workers started.");
     }
 
 

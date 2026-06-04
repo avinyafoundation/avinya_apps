@@ -169,9 +169,9 @@ public function sendWhatsAppAttendanceReport(string recipientPhone, string image
 // ─────────────────────────────────────────────────────────────────
 function processAttendanceQueue() {
     log:printInfo("Attendance queue worker is running...");
-    string[] keysToRemove = [];
+
     while true {
-        int nowEpoch = time:utcNow()[0];
+
         AttendanceTask|() task = ();
                 
         // Safely pull one task from the front of the queue
@@ -186,24 +186,6 @@ function processAttendanceQueue() {
             log:printInfo("Worker picked up task for: " + task.userName);
             doProcessAttendance(task);
         } else {
-            time:Civil ct = time:utcToCivil(time:utcNow());
-            lock {
-                if ct.hour == 18 && ct.minute == 30 && !midnightCleanupDone {
-                    foreach var [key, storedTime] in processedEvents.entries() {
-                        int ageInSeconds = nowEpoch - storedTime;
-                        io:println(string `Midnight cleanup serialNo: ${key}`);
-                        if ageInSeconds > DEDUPE_WINDOW_SECONDS {
-                            keysToRemove.push(key); // expired -> mark for removal
-                        }
-                    }
-                    processedEvents.removeAll();
-                    midnightCleanupDone = true;
-                    log:printInfo("Midnight cleanup done. All NICs cleared.");
-                }else if ct.hour == 19 && ct.minute == 30 {
-                    midnightCleanupDone = false;
-                    log:printInfo("Reset done for next day's midnight cleanup");
-                }
-            }
             runtime:sleep(10.0);
         }
     }
@@ -302,4 +284,13 @@ function cleanupOldEvents(int nowEpoch) {
         log:printDebug(string `Cleaned up expired serialNo: ${key}`);
     }
 
+}
+
+// ─Dedicated cleanup worker (runs independently) ─
+function startCleanupWorker() {
+    log:printInfo("Cleanup worker started.");
+    while true {
+        runtime:sleep(CLEANUP_INTERVAL_SECONDS); // sleep 5 min, then clean
+        cleanupOldEvents(time:utcNow()[0]);
+    }
 }
