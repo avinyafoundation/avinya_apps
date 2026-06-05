@@ -278,12 +278,19 @@ function cleanupOldEvents(int nowEpoch) {
             keysToRemove.push(key); // expired -> mark for removal
         }
     }
+
+    if keysToRemove.length() == 0 {
+        log:printInfo("Cleanup ran - no expired NICs found.");
+        return;
+    }
+
     // remove them safely
     foreach var key in keysToRemove {
         _ = processedEvents.remove(key);
-        log:printInfo(string `Cleaned up expired serialNo: ${key}`);
-        log:printDebug(string `Cleaned up expired serialNo: ${key}`);
+        log:printInfo(string `Expired NIC removed: ${key}`);
     }
+
+    log:printInfo(string `Cleanup done. Removed ${keysToRemove.length()} expired NIC(s).`);
 
 }
 
