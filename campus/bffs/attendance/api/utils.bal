@@ -12,11 +12,11 @@ public configurable string GLOBAL_DATA_API_URL = "http://localhost:4000/graphql"
 public configurable string CHOREO_TOKEN_URL = "https://id.choreo.dev/oauth2/token";
 public configurable string GLOBAL_DATA_CLIENT_ID = "undefined";
 public configurable string GLOBAL_DATA_CLIENT_SECRET = "undefined";
-configurable string CLOUDINARY_CLOUD_NAME = "dmxguzfw0";
-configurable string CLOUDINARY_API_KEY = "525715291842356";
-configurable string CLOUDINARY_API_SECRET = "FbyHMJO9UycR7o34XYvcUaK2bWY";
-configurable string WHATSAPP_PHONE_NUMBER_ID = "952124911325951";
-configurable string WHATSAPP_ACCESS_TOKEN = "EAAUfjOHLDbgBQ6kKgLQdKVzka0m7tmCYPeSPvx4GxrqVQneFJ8ST6euv1UVq5OCzigzFB4yuxzKI926orFEhgzASMZCa7gPIT1MxZB5IrZCVD5ZCpdI3vqkNolqiWFDhfJTEKS2whNKun4okQdAEASu2XDf22z7dFsu5CEQNt1Y2hpfROwKx7ZBiesSQ0owZDZD";
+configurable string CLOUDINARY_CLOUD_NAME = ?;
+configurable string CLOUDINARY_API_KEY = ?;
+configurable string CLOUDINARY_API_SECRET = ?;
+configurable string WHATSAPP_PHONE_NUMBER_ID = ?;
+configurable string WHATSAPP_ACCESS_TOKEN = ?;
 
 type OperationResponse record {| anydata...; |}|record {| anydata...; |}[]|boolean|string|int|float|();
 
