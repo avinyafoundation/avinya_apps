@@ -16,6 +16,12 @@ public function initClientConfig() returns ConnectionConfig{
     } else { 
         _clientConig = {};
     }
+
+    log:printInfo("CHOREO_TOKEN_URL: " + CHOREO_TOKEN_URL);
+    log:printInfo("GLOBAL_DATA_CLIENT_ID: " + GLOBAL_DATA_CLIENT_ID);
+    log:printInfo("CLOUDINARY_CLOUD_NAME: " + CLOUDINARY_CLOUD_NAME);
+    log:printInfo("CLOUDINARY_API_KEY: " + CLOUDINARY_API_KEY);
+    log:printInfo("CLOUDINARY_API_SECRET: " + CLOUDINARY_API_SECRET);
     return _clientConig;
 }
 

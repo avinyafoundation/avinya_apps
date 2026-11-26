@@ -1,0 +1,1382 @@
+openapi: 3.0.1
+info:
+  title: Maintenance Bff Openapi Yaml
+  version: 2.1.0
+servers:
+- url: "{server}:{port}/"
+  variables:
+    server:
+      default: http://localhost
+    port:
+      default: "9097"
+paths:
+  /organizations/{organizationId}/locations:
+    get:
+      operationId: getOrganizationsOrganizationidLocations
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrganizationLocation'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postOrganizationsOrganizationidLocations
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationLocation'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationLocation'
+        "400":
+          description: BadRequest
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations/{organizationId}/persons:
+    get:
+      operationId: getOrganizationsOrganizationidPersons
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations/{organizationId}/tasks:
+    get:
+      operationId: getOrganizationsOrganizationidTasks
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: personId
+        in: query
+        schema:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+      - name: fromDate
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: toDate
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: taskStatus
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: financialStatus
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: taskType
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: location
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      - name: title
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          format: int64
+          default: 10
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          format: int64
+          default: 0
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityInstance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    put:
+      operationId: putOrganizationsOrganizationidTasks
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityInstance'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityInstance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postOrganizationsOrganizationidTasks
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintenanceTask'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceTask'
+        "400":
+          description: BadRequest
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /tasks/{organizationId}/overdue:
+    get:
+      operationId: getTasksOrganizationidOverdue
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          format: int64
+          default: 10
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          format: int64
+          default: 0
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityInstance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /tasks/{taskId}/deactivate:
+    put:
+      operationId: putTasksTaskidDeactivate
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: modifiedBy
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceTask'
+        "400":
+          description: BadRequest
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations/{organizationId}/tasks/finance/{financeId}:
+    put:
+      operationId: putOrganizationsOrganizationidTasksFinanceFinanceid
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: financeId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintenanceFinance'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaintenanceFinance'
+        "400":
+          description: BadRequest
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations/{organizationId}/reports/monthly/{year}/{month}:
+    get:
+      operationId: getOrganizationsOrganizationidReportsMonthlyYearMonth
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: year
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: month
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMonthlyMaintenanceReportResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations/{organizationId}/reports/monthly/{year}/{month}/tasks:
+    get:
+      operationId: getOrganizationsOrganizationidReportsMonthlyYearMonthTasks
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: year
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: month
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: overallTaskStatus
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          format: int64
+          default: 1000
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          format: int64
+          default: 0
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityInstance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations/{organizationId}/getTasksByStatus:
+    get:
+      operationId: getOrganizationsOrganizationidGettasksbystatus
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: personId
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      - name: fromDate
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: toDate
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: taskType
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: location
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityInstance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /tasks/{organizationId}/monthlyCostSummary/{year}:
+    get:
+      operationId: getTasksOrganizationidMonthlycostsummaryYear
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: year
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMonthlyCostSummaryResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations/{organizationId}/reports/monthly/{year}/{month}/costs:
+    get:
+      operationId: getOrganizationsOrganizationidReportsMonthlyYearMonthCosts
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: year
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: month
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyTaskCostReportResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /tasks/activity_instances/{activityInstanceId}/participants/{personId}:
+    patch:
+      operationId: patchTasksActivityInstancesActivityinstanceidParticipantsPersonid
+      parameters:
+      - name: activityInstanceId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: personId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityParticipant'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityParticipant'
+        "400":
+          description: BadRequest
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations/{organizationId}/getSinhalaTasks:
+    get:
+      operationId: getOrganizationsOrganizationidGetsinhalatasks
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: personId
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      - name: fromDate
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: toDate
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: taskType
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: location
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /validate_pin:
+    post:
+      operationId: postValidatePin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonPin'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        "400":
+          description: BadRequest
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /tasks/activity_instances/{activityInstanceId}:
+    patch:
+      operationId: patchTasksActivityInstancesActivityinstanceid
+      parameters:
+      - name: activityInstanceId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityInstance'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityInstance'
+        "400":
+          description: BadRequest
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations/{organizationId}/activity_instances/activity_participant/{endDate}:
+    get:
+      operationId: getOrganizationsOrganizationidActivityInstancesActivityParticipantEnddate
+      parameters:
+      - name: organizationId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: endDate
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityInstance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+components:
+  schemas:
+    OrganizationLocation:
+      type: object
+      properties:
+        location_name:
+          type: string
+          nullable: true
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+    ErrorPayload:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: Reason phrase
+        path:
+          type: string
+          description: Request path
+        method:
+          type: string
+          description: Method type of the request
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: string
+          description: Timestamp of the error
+        status:
+          type: integer
+          description: Relevant HTTP status code
+          format: int32
+    Province:
+      type: object
+      properties:
+        record_type:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        name_en:
+          type: string
+        name_ta:
+          type: string
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+    District:
+      type: object
+      properties:
+        name_en:
+          type: string
+        name_ta:
+          type: string
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        province_id:
+          type: integer
+          format: int64
+        province:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Province'
+        cities:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/City'
+    City:
+      type: object
+      properties:
+        record_type:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        district:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/District'
+        district_id:
+          type: integer
+          format: int64
+        name_en:
+          type: string
+          nullable: true
+        name_ta:
+          type: string
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        suburb_name_en:
+          type: string
+          nullable: true
+        suburb_name_ta:
+          type: string
+          nullable: true
+        suburb_name_si:
+          type: string
+          nullable: true
+        postcode:
+          type: string
+          nullable: true
+        latitude:
+          nullable: true
+        longitude:
+          nullable: true
+    Address:
+      type: object
+      properties:
+        street_address:
+          type: string
+          nullable: true
+        name_ta:
+          type: string
+          nullable: true
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        city_id:
+          type: integer
+          format: int64
+          nullable: true
+        name_en:
+          type: string
+        city:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/City'
+    Alumni:
+      type: object
+      properties:
+        created:
+          type: string
+          nullable: true
+        linkedin_id:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        facebook_id:
+          type: string
+          nullable: true
+        instagram_id:
+          type: string
+          nullable: true
+        canva_cv_url:
+          type: string
+          nullable: true
+        company_name:
+          type: string
+          nullable: true
+        tiktok_id:
+          type: string
+          nullable: true
+        updated_by:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        job_title:
+          type: string
+          nullable: true
+        person_count:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+    Person:
+      type: object
+      properties:
+        permanent_address_id:
+          type: integer
+          format: int64
+          nullable: true
+        street_address:
+          type: string
+          nullable: true
+        bank_branch:
+          type: string
+          nullable: true
+        bank_account_number:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        parent_student:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        date_of_birth:
+          type: string
+          nullable: true
+        parent_organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        avinya_type_id:
+          type: integer
+          format: int64
+          nullable: true
+        permanent_address:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        is_graduated:
+          type: boolean
+          nullable: true
+        mailing_address_id:
+          type: integer
+          format: int64
+          nullable: true
+        alumni:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Alumni'
+        profile_picture_folder_id:
+          type: string
+          nullable: true
+        id_no:
+          type: string
+          nullable: true
+        jwt_email:
+          type: string
+          nullable: true
+        bank_name:
+          type: string
+          nullable: true
+        alumni_id:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        digital_id:
+          type: string
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+        passport_no:
+          type: string
+          nullable: true
+        current_job:
+          type: string
+          nullable: true
+        created_by:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        mailing_address:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        branch_code:
+          type: string
+          nullable: true
+        child_student:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        bank_account_name:
+          type: string
+          nullable: true
+        avinya_phone:
+          type: integer
+          format: int64
+          nullable: true
+        full_name:
+          type: string
+          nullable: true
+        nic_no:
+          type: string
+          nullable: true
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        updated_by:
+          type: integer
+          format: int64
+          nullable: true
+        academy_org_name:
+          type: string
+          nullable: true
+        asgardeo_id:
+          type: string
+          nullable: true
+        documents_id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        preferred_name:
+          type: string
+          nullable: true
+        jwt_sub_id:
+          type: string
+          nullable: true
+        academy_org_id:
+          type: integer
+          format: int64
+          nullable: true
+    MaterialCost:
+      type: object
+      properties:
+        item:
+          type: string
+          nullable: true
+        unit:
+          type: string
+          nullable: true
+        financial_id:
+          type: integer
+          format: int64
+          nullable: true
+        quantity:
+          nullable: true
+        unit_cost:
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+    MaintenanceFinance:
+      type: object
+      properties:
+        labour_cost:
+          nullable: true
+        reviewed_by:
+          type: string
+          nullable: true
+        total_cost:
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        materialCosts:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MaterialCost'
+        record_type:
+          type: string
+          nullable: true
+        activity_instance_id:
+          type: integer
+          format: int64
+          nullable: true
+        estimated_cost:
+          nullable: true
+        rejection_reason:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        reviewed_date:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+    MaintenanceTask:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+          nullable: true
+        exception_deadline:
+          type: integer
+          format: int64
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        has_financial_info:
+          type: integer
+          format: int64
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        location_id:
+          type: integer
+          format: int64
+          nullable: true
+        frequency:
+          type: string
+          nullable: true
+        modified_by:
+          type: string
+          nullable: true
+        person_id_list:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        task_type:
+          type: string
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        finance:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/MaintenanceFinance'
+        start_date:
+          type: string
+          nullable: true
+    ActivityParticipant:
+      type: object
+      properties:
+        end_date:
+          type: string
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        participant_task_status:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        is_attending:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        activity_instance_id:
+          type: integer
+          format: int64
+          nullable: true
+        person:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Person'
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true
+        start_date:
+          type: string
+          nullable: true
+    ActivityInstance:
+      type: object
+      properties:
+        notes:
+          type: string
+          nullable: true
+        activity_participants:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/ActivityParticipant'
+        created:
+          type: string
+          nullable: true
+        weekly_sequence:
+          type: integer
+          format: int64
+          nullable: true
+        end_time:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        task_id:
+          type: integer
+          format: int64
+          nullable: true
+        daily_sequence:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        monthly_sequence:
+          type: integer
+          format: int64
+          nullable: true
+        start_time:
+          type: string
+          nullable: true
+        task:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/MaintenanceTask'
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        overall_task_status:
+          type: string
+          nullable: true
+        activity_id:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        place_id:
+          type: integer
+          format: int64
+          nullable: true
+        finance:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/MaintenanceFinance'
+    GetMonthlyMaintenanceReportResponse:
+      required:
+      - monthlyMaintenanceReport
+      type: object
+      properties:
+        __extensions:
+          type: object
+          additionalProperties: true
+        monthlyMaintenanceReport: {}
+    GetMonthlyCostSummaryResponse:
+      required:
+      - monthlyCostSummary
+      type: object
+      properties:
+        __extensions:
+          type: object
+          additionalProperties: true
+        monthlyCostSummary:
+          nullable: true
+    MonthlyTaskCostReportResponse:
+      required:
+      - monthlyTaskCostReport
+      type: object
+      properties:
+        __extensions:
+          type: object
+          additionalProperties: true
+        monthlyTaskCostReport: {}
+    PersonPin:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true
+        pin_hash:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        updated:
+          type: string
+          nullable: true

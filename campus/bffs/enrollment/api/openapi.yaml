@@ -1,0 +1,885 @@
+openapi: 3.0.1
+info:
+  title: Enrollment Bff Openapi Yaml
+  version: 2.1.0
+servers:
+- url: "{server}:{port}/"
+  variables:
+    server:
+      default: http://localhost
+    port:
+      default: "9095"
+paths:
+  /persons/{organization_id}/{avinya_type_id}:
+    get:
+      operationId: getPersonsOrganizationIdAvinyaTypeId
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: avinya_type_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      - name: class_id
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      - name: search
+        in: query
+        schema:
+          type: string
+          nullable: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /person_by_id/{id}:
+    get:
+      operationId: getPersonByIdId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /districts:
+    get:
+      operationId: getDistricts
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/District'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /cities/{district_id}:
+    get:
+      operationId: getCitiesDistrictId
+      parameters:
+      - name: district_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/City'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /all_organizations:
+    get:
+      operationId: getAllOrganizations
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /update_person:
+    put:
+      operationId: putUpdatePerson
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /add_person:
+    post:
+      operationId: postAddPerson
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Person'
+                - $ref: '#/components/schemas/ErrorDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /upload_document:
+    post:
+      operationId: postUploadDocument
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              description: Any type of entity body
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/UserDocument'
+                - $ref: '#/components/schemas/ErrorDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /document_list/{id}:
+    get:
+      operationId: getDocumentListId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDocument'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /student_count/{organization_id}:
+    get:
+      operationId: getStudentCountOrganizationId
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentCount'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /student_age_distribution/{organization_id}:
+    get:
+      operationId: getStudentAgeDistributionOrganizationId
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgeDistribution'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /student_district_distribution/{organization_id}:
+    get:
+      operationId: getStudentDistrictDistributionOrganizationId
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DistrictDistribution'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+components:
+  schemas:
+    Province:
+      type: object
+      properties:
+        record_type:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        name_en:
+          type: string
+        name_ta:
+          type: string
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+    District:
+      type: object
+      properties:
+        name_en:
+          type: string
+        name_ta:
+          type: string
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        province_id:
+          type: integer
+          format: int64
+        province:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Province'
+        cities:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/City'
+    City:
+      type: object
+      properties:
+        record_type:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        district:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/District'
+        district_id:
+          type: integer
+          format: int64
+        name_en:
+          type: string
+          nullable: true
+        name_ta:
+          type: string
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        suburb_name_en:
+          type: string
+          nullable: true
+        suburb_name_ta:
+          type: string
+          nullable: true
+        suburb_name_si:
+          type: string
+          nullable: true
+        postcode:
+          type: string
+          nullable: true
+        latitude:
+          nullable: true
+        longitude:
+          nullable: true
+    Address:
+      type: object
+      properties:
+        street_address:
+          type: string
+          nullable: true
+        name_ta:
+          type: string
+          nullable: true
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        city_id:
+          type: integer
+          format: int64
+          nullable: true
+        name_en:
+          type: string
+        city:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/City'
+    Alumni:
+      type: object
+      properties:
+        created:
+          type: string
+          nullable: true
+        linkedin_id:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        facebook_id:
+          type: string
+          nullable: true
+        instagram_id:
+          type: string
+          nullable: true
+        company_name:
+          type: string
+          nullable: true
+        tiktok_id:
+          type: string
+          nullable: true
+        updated_by:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        job_title:
+          type: string
+          nullable: true
+        person_count:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+    Person:
+      type: object
+      properties:
+        permanent_address_id:
+          type: integer
+          format: int64
+          nullable: true
+        street_address:
+          type: string
+          nullable: true
+        bank_branch:
+          type: string
+          nullable: true
+        bank_account_number:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        parent_student:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        date_of_birth:
+          type: string
+          nullable: true
+        parent_organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        avinya_type_id:
+          type: integer
+          format: int64
+          nullable: true
+        rank_position:
+          type: integer
+          format: int64
+          nullable: true
+        permanent_address:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        is_graduated:
+          type: boolean
+          nullable: true
+        mailing_address_id:
+          type: integer
+          format: int64
+          nullable: true
+        alumni:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Alumni'
+        profile_picture_folder_id:
+          type: string
+          nullable: true
+        attendance_percentage:
+          nullable: true
+        id_no:
+          type: string
+          nullable: true
+        jwt_email:
+          type: string
+          nullable: true
+        bank_name:
+          type: string
+          nullable: true
+        alumni_id:
+          type: integer
+          format: int64
+          nullable: true
+        attendance_percentage_raw:
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        digital_id:
+          type: string
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+        passport_no:
+          type: string
+          nullable: true
+        current_job:
+          type: string
+          nullable: true
+        created_by:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        mailing_address:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        branch_code:
+          type: string
+          nullable: true
+        child_student:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        bank_account_name:
+          type: string
+          nullable: true
+        avinya_phone:
+          type: integer
+          format: int64
+          nullable: true
+        full_name:
+          type: string
+          nullable: true
+        nic_no:
+          type: string
+          nullable: true
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        updated_by:
+          type: integer
+          format: int64
+          nullable: true
+        academy_org_name:
+          type: string
+          nullable: true
+        asgardeo_id:
+          type: string
+          nullable: true
+        documents_id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        preferred_name:
+          type: string
+          nullable: true
+        jwt_sub_id:
+          type: string
+          nullable: true
+        academy_org_id:
+          type: integer
+          format: int64
+          nullable: true
+    ErrorPayload:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: Reason phrase
+        path:
+          type: string
+          description: Request path
+        method:
+          type: string
+          description: Method type of the request
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: string
+          description: Timestamp of the error
+        status:
+          type: integer
+          description: Relevant HTTP status code
+          format: int32
+    AvinyaType:
+      type: object
+      properties:
+        level:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        active:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+        foundation_type:
+          type: string
+          nullable: true
+        focus:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        global_type:
+          type: string
+    Organization:
+      type: object
+      properties:
+        parent_organizations:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        name_ta:
+          type: string
+          nullable: true
+        child_organizations:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        address_id:
+          type: integer
+          format: int64
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        avinya_type_id:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        name_en:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        address:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        avinya_type:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/AvinyaType'
+    ErrorDetail:
+      required:
+      - errorCode
+      - message
+      type: object
+      properties:
+        message:
+          type: string
+        errorCode:
+          type: integer
+          format: int64
+    UserDocument:
+      type: object
+      properties:
+        birth_certificate_back_id:
+          type: string
+          nullable: true
+        additional_certificate_01_id:
+          type: string
+          nullable: true
+        additional_certificate_02_id:
+          type: string
+          nullable: true
+        nic_back_id:
+          type: string
+          nullable: true
+        document:
+          type: string
+          nullable: true
+        additional_certificate_05_id:
+          type: string
+          nullable: true
+        additional_certificate_04_id:
+          type: string
+          nullable: true
+        additional_certificate_03_id:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        al_certificate_id:
+          type: string
+          nullable: true
+        nic_front_id:
+          type: string
+          nullable: true
+        ol_certificate_id:
+          type: string
+          nullable: true
+        birth_certificate_front_id:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        folder_id:
+          type: string
+          nullable: true
+        document_type:
+          type: string
+          nullable: true
+    StudentCount:
+      required:
+      - current_student_count
+      - dropout_student_count
+      - female_student_count
+      - male_student_count
+      type: object
+      properties:
+        current_student_count:
+          type: integer
+          format: int64
+        male_student_count:
+          type: integer
+          format: int64
+        female_student_count:
+          type: integer
+          format: int64
+        dropout_student_count:
+          type: integer
+          format: int64
+    AgeGroup:
+      required:
+      - age_group
+      - count
+      type: object
+      properties:
+        age_group:
+          type: string
+        count:
+          type: integer
+          format: int64
+    AgeDistribution:
+      required:
+      - age_groups
+      - total_students
+      type: object
+      properties:
+        total_students:
+          type: integer
+          format: int64
+        age_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgeGroup'
+    DistrictCount:
+      required:
+      - count
+      - district_name
+      type: object
+      properties:
+        district_name:
+          type: string
+        count:
+          type: integer
+          format: int64
+    DistrictDistribution:
+      required:
+      - districts
+      - total_students
+      type: object
+      properties:
+        total_students:
+          type: integer
+          format: int64
+        districts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DistrictCount'

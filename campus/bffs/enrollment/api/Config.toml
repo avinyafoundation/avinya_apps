@@ -1,1 +1,3 @@
 GLOBAL_DATA_USE_AUTH = false
+GLOBAL_DATA_API_URL = "http://localhost:4000/graphql"
+CHOREO_TOKEN_URL = "https://id.choreo.dev/oauth2/token"
