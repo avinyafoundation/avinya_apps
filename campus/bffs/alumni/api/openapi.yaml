@@ -1,0 +1,1512 @@
+openapi: 3.0.1
+info:
+  title: Alumni Bff Openapi Yaml
+  version: 2.1.0
+servers:
+- url: "{server}:{port}/"
+  variables:
+    server:
+      default: http://localhost
+    port:
+      default: "9096"
+paths:
+  /update_alumni:
+    put:
+      operationId: putUpdateAlumni
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /create_alumni:
+    post:
+      operationId: postCreateAlumni
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Person'
+                - $ref: '#/components/schemas/ErrorDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /create_alumni_education_qualification:
+    post:
+      operationId: postCreateAlumniEducationQualification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlumniEducationQualification'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlumniEducationQualification'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /create_alumni_work_experience:
+    post:
+      operationId: postCreateAlumniWorkExperience
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlumniWorkExperience'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlumniWorkExperience'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /update_alumni_education_qualification:
+    put:
+      operationId: putUpdateAlumniEducationQualification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlumniEducationQualification'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlumniEducationQualification'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /update_alumni_work_experience:
+    put:
+      operationId: putUpdateAlumniWorkExperience
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlumniWorkExperience'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlumniWorkExperience'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /alumni_education_qualification_by_id/{id}:
+    get:
+      operationId: getAlumniEducationQualificationByIdId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlumniEducationQualification'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    delete:
+      operationId: deleteAlumniEducationQualificationByIdId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /alumni_work_experience_by_id/{id}:
+    get:
+      operationId: getAlumniWorkExperienceByIdId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlumniWorkExperience'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    delete:
+      operationId: deleteAlumniWorkExperienceByIdId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /alumni_person_by_id/{id}:
+    get:
+      operationId: getAlumniPersonByIdId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /create_activity_participant:
+    post:
+      operationId: postCreateActivityParticipant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityParticipant'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityParticipant'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /create_activity_instance_evaluation:
+    post:
+      operationId: postCreateActivityInstanceEvaluation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityInstanceEvaluation'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityInstanceEvaluation'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /upcoming_events/{person_id}:
+    get:
+      operationId: getUpcomingEventsPersonId
+      parameters:
+      - name: person_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityInstance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /completed_events/{person_id}:
+    get:
+      operationId: getCompletedEventsPersonId
+      parameters:
+      - name: person_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityInstance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /alumni_persons/{parent_organization_id}:
+    get:
+      operationId: getAlumniPersonsParentOrganizationId
+      parameters:
+      - name: parent_organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /alumni_summary/{alumni_batch_id}:
+    get:
+      operationId: getAlumniSummaryAlumniBatchId
+      parameters:
+      - name: alumni_batch_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Alumni'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /upload_person_profile_picture:
+    post:
+      operationId: postUploadPersonProfilePicture
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              description: Any type of entity body
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/PersonProfilePicture'
+                - $ref: '#/components/schemas/ErrorDetail'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /person_profile_picture_by_id/{id}:
+    delete:
+      operationId: deletePersonProfilePictureByIdId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /create_job_post:
+    post:
+      operationId: postCreateJobPost
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              description: Any type of entity body
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobPost'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /update_job_post:
+    put:
+      operationId: putUpdateJobPost
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              description: Any type of entity body
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobPost'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /job_post:
+    delete:
+      operationId: deleteJobPost
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /job_post/{id}:
+    get:
+      operationId: getJobPostId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobPost'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /job_posts/{result_limit}/{offset}:
+    get:
+      operationId: getJobPostsResultLimitOffset
+      parameters:
+      - name: result_limit
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: offset
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JobPost'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /job_categories:
+    get:
+      operationId: getJobCategories
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JobCategory'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /alumni/{personId}/cv_requests:
+    post:
+      operationId: postAlumniPersonidCvRequests
+      parameters:
+      - name: personId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CvRequest'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CvRequest'
+        "500":
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /alumni/{personId}/cv_requests/last:
+    get:
+      operationId: getAlumniPersonidCvRequestsLast
+      parameters:
+      - name: personId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CvRequest'
+        "500":
+          description: InternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /alumni/{personId}/cv:
+    get:
+      operationId: getAlumniPersonidCv
+      parameters:
+      - name: personId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: driveFileId
+        in: query
+        schema:
+          type: string
+          nullable: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonCv'
+        "400":
+          description: BadRequest
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postAlumniPersonidCv
+      parameters:
+      - name: personId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              description: Any type of entity body
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonCv'
+        "400":
+          description: BadRequest
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /fcm/{personId}/token:
+    get:
+      operationId: getFcmPersonidToken
+      parameters:
+      - name: personId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonFcmToken'
+        "400":
+          description: BadRequest
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    put:
+      operationId: putFcmPersonidToken
+      parameters:
+      - name: personId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonFcmToken'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonFcmToken'
+        "400":
+          description: BadRequest
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postFcmPersonidToken
+      parameters:
+      - name: personId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonFcmToken'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonFcmToken'
+        "400":
+          description: BadRequest
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+components:
+  schemas:
+    Province:
+      type: object
+      properties:
+        record_type:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        name_en:
+          type: string
+        name_ta:
+          type: string
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+    District:
+      type: object
+      properties:
+        name_en:
+          type: string
+        name_ta:
+          type: string
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        province_id:
+          type: integer
+          format: int64
+        province:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Province'
+        cities:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/City'
+    City:
+      type: object
+      properties:
+        record_type:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        district:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/District'
+        district_id:
+          type: integer
+          format: int64
+        name_en:
+          type: string
+          nullable: true
+        name_ta:
+          type: string
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        suburb_name_en:
+          type: string
+          nullable: true
+        suburb_name_ta:
+          type: string
+          nullable: true
+        suburb_name_si:
+          type: string
+          nullable: true
+        postcode:
+          type: string
+          nullable: true
+        latitude:
+          nullable: true
+        longitude:
+          nullable: true
+    Address:
+      type: object
+      properties:
+        street_address:
+          type: string
+          nullable: true
+        name_ta:
+          type: string
+          nullable: true
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        city_id:
+          type: integer
+          format: int64
+          nullable: true
+        name_en:
+          type: string
+        city:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/City'
+    Alumni:
+      type: object
+      properties:
+        created:
+          type: string
+          nullable: true
+        linkedin_id:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        facebook_id:
+          type: string
+          nullable: true
+        instagram_id:
+          type: string
+          nullable: true
+        canva_cv_url:
+          type: string
+          nullable: true
+        company_name:
+          type: string
+          nullable: true
+        tiktok_id:
+          type: string
+          nullable: true
+        updated_by:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        job_title:
+          type: string
+          nullable: true
+        person_count:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+    Person:
+      type: object
+      properties:
+        permanent_address_id:
+          type: integer
+          format: int64
+          nullable: true
+        street_address:
+          type: string
+          nullable: true
+        bank_branch:
+          type: string
+          nullable: true
+        bank_account_number:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        parent_student:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        date_of_birth:
+          type: string
+          nullable: true
+        parent_organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        avinya_type_id:
+          type: integer
+          format: int64
+          nullable: true
+        permanent_address:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        is_graduated:
+          type: boolean
+          nullable: true
+        mailing_address_id:
+          type: integer
+          format: int64
+          nullable: true
+        alumni:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Alumni'
+        profile_picture_folder_id:
+          type: string
+          nullable: true
+        id_no:
+          type: string
+          nullable: true
+        jwt_email:
+          type: string
+          nullable: true
+        bank_name:
+          type: string
+          nullable: true
+        alumni_id:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        digital_id:
+          type: string
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+        passport_no:
+          type: string
+          nullable: true
+        current_job:
+          type: string
+          nullable: true
+        created_by:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        mailing_address:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        branch_code:
+          type: string
+          nullable: true
+        child_student:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        bank_account_name:
+          type: string
+          nullable: true
+        avinya_phone:
+          type: integer
+          format: int64
+          nullable: true
+        full_name:
+          type: string
+          nullable: true
+        nic_no:
+          type: string
+          nullable: true
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        updated_by:
+          type: integer
+          format: int64
+          nullable: true
+        academy_org_name:
+          type: string
+          nullable: true
+        asgardeo_id:
+          type: string
+          nullable: true
+        documents_id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        preferred_name:
+          type: string
+          nullable: true
+        jwt_sub_id:
+          type: string
+          nullable: true
+        academy_org_id:
+          type: integer
+          format: int64
+          nullable: true
+    ErrorPayload:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: Reason phrase
+        path:
+          type: string
+          description: Request path
+        method:
+          type: string
+          description: Method type of the request
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: string
+          description: Timestamp of the error
+        status:
+          type: integer
+          description: Relevant HTTP status code
+          format: int32
+    ErrorDetail:
+      required:
+      - errorCode
+      - message
+      - statusCode
+      type: object
+      properties:
+        message:
+          type: string
+        errorCode:
+          type: integer
+          format: int64
+        statusCode:
+          type: integer
+          format: int64
+    AlumniEducationQualification:
+      type: object
+      properties:
+        end_date:
+          type: string
+          nullable: true
+        course_name:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        is_currently_studying:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        university_name:
+          type: string
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true
+        start_date:
+          type: string
+          nullable: true
+    AlumniWorkExperience:
+      type: object
+      properties:
+        end_date:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        company_name:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        job_title:
+          type: string
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true
+        currently_working:
+          type: integer
+          format: int64
+          nullable: true
+        start_date:
+          type: string
+          nullable: true
+    ActivityParticipant:
+      type: object
+      properties:
+        end_date:
+          type: string
+          nullable: true
+        activity_instance_id:
+          type: integer
+          format: int64
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        is_attending:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true
+        start_date:
+          type: string
+          nullable: true
+    ActivityInstanceEvaluation:
+      type: object
+      properties:
+        feedback:
+          type: string
+          nullable: true
+        activity_instance_id:
+          type: integer
+          format: int64
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        evaluator_id:
+          type: integer
+          format: int64
+          nullable: true
+        rating:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+    ActivityInstance:
+      type: object
+      properties:
+        notes:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        weekly_sequence:
+          type: integer
+          format: int64
+          nullable: true
+        end_time:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        daily_sequence:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        monthly_sequence:
+          type: integer
+          format: int64
+          nullable: true
+        start_time:
+          type: string
+          nullable: true
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        activity_id:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        place_id:
+          type: integer
+          format: int64
+          nullable: true
+    PersonProfilePicture:
+      type: object
+      properties:
+        uploaded_by:
+          type: string
+          nullable: true
+        nic_no:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        profile_picture_drive_id:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        picture:
+          type: string
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true
+    JobPost:
+      type: object
+      properties:
+        job_type:
+          type: string
+          nullable: true
+        job_link:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        application_deadline:
+          type: string
+          nullable: true
+        job_image_drive_id:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        uploaded_by:
+          type: string
+          nullable: true
+        job_text:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        job_category_id:
+          type: integer
+          format: int64
+          nullable: true
+        job_post_image:
+          type: string
+          nullable: true
+        job_category:
+          type: string
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        current_date_time:
+          type: string
+          nullable: true
+    JobCategory:
+      type: object
+      properties:
+        record_type:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+    CvRequest:
+      type: object
+      properties:
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true
+        status:
+          type: string
+          nullable: true
+    PersonCv:
+      type: object
+      properties:
+        file_content:
+          type: string
+          nullable: true
+        uploaded_by:
+          type: string
+          nullable: true
+        nic_no:
+          type: string
+          nullable: true
+        drive_file_id:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true
+    PersonFcmToken:
+      type: object
+      properties:
+        created:
+          type: string
+          nullable: true
+        fcm_token:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true

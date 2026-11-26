@@ -1,0 +1,2484 @@
+openapi: 3.0.1
+info:
+  title: Attendance Bff Openapi Yaml
+  version: 2.1.0
+servers:
+- url: "{server}:{port}/"
+  variables:
+    server:
+      default: http://localhost
+    port:
+      default: "9091"
+paths:
+  /greeting:
+    get:
+      summary: A resource for generating greetings
+      operationId: getGreeting
+      parameters:
+      - name: name
+        in: query
+        description: the input string name
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /avinya_types:
+    get:
+      operationId: getAvinyaTypes
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AvinyaType'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    put:
+      operationId: putAvinyaTypes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvinyaType'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvinyaType'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postAvinyaTypes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvinyaType'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvinyaType'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /activity/{name}:
+    get:
+      operationId: getActivityName
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /activity_attendance:
+    post:
+      operationId: postActivityAttendance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityParticipantAttendance'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityParticipantAttendance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /activity_attendance/{id}:
+    delete:
+      operationId: deleteActivityAttendanceId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /person_activity_attendance/{person_id}:
+    delete:
+      operationId: deletePersonActivityAttendancePersonId
+      parameters:
+      - name: person_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /activity_instances_today/{activity_id}:
+    get:
+      operationId: getActivityInstancesTodayActivityId
+      parameters:
+      - name: activity_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityInstance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /class_attendance_today/{organization_id}/{activity_id}:
+    get:
+      operationId: getClassAttendanceTodayOrganizationIdActivityId
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: activity_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityParticipantAttendance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /person_attendance_today/{person_id}/{activity_id}:
+    get:
+      operationId: getPersonAttendanceTodayPersonIdActivityId
+      parameters:
+      - name: person_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: activity_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityParticipantAttendance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /class_attendance_report/{organization_id}/{activity_id}/{result_limit}:
+    get:
+      operationId: getClassAttendanceReportOrganizationIdActivityIdResultLimit
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: activity_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: result_limit
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityParticipantAttendance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /class_attendance_report_date/{organization_id}/{activity_id}/{from_date}/{to_date}:
+    get:
+      operationId: getClassAttendanceReportDateOrganizationIdActivityIdFromDateToDate
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: activity_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: from_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: to_date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityParticipantAttendance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /class_attendance_report_by_parent_org/{parent_organization_id}/{activity_id}/{from_date}/{to_date}:
+    get:
+      operationId: getClassAttendanceReportByParentOrgParentOrganizationIdActivityIdFromDateToDate
+      parameters:
+      - name: parent_organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: activity_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: from_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: to_date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityParticipantAttendance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /attendance_report_by_batch/{batch_id}/{activity_id}/{from_date}/{to_date}:
+    get:
+      operationId: getAttendanceReportByBatchBatchIdActivityIdFromDateToDate
+      parameters:
+      - name: batch_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: activity_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: from_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: to_date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityParticipantAttendance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /late_attendance_report_date/{organization_id}/{activity_id}/{from_date}/{to_date}:
+    get:
+      operationId: getLateAttendanceReportDateOrganizationIdActivityIdFromDateToDate
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: activity_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: from_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: to_date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityParticipantAttendance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /late_attendance_report_by_parent_org/{parent_organization_id}/{activity_id}/{from_date}/{to_date}:
+    get:
+      operationId: getLateAttendanceReportByParentOrgParentOrganizationIdActivityIdFromDateToDate
+      parameters:
+      - name: parent_organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: activity_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: from_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: to_date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityParticipantAttendance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /person_attendance_report/{person_id}/{activity_id}/{result_limit}:
+    get:
+      operationId: getPersonAttendanceReportPersonIdActivityIdResultLimit
+      parameters:
+      - name: person_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: activity_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: result_limit
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityParticipantAttendance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /evaluations:
+    put:
+      operationId: putEvaluations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Evaluation'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evaluation'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postEvaluations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Evaluation'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /evaluations/{id}:
+    delete:
+      operationId: deleteEvaluationsId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /activity_instance_evaluations/{activity_instancce_id}:
+    get:
+      operationId: getActivityInstanceEvaluationsActivityInstancceId
+      parameters:
+      - name: activity_instancce_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Evaluation'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /duty_participants/{organization_id}:
+    get:
+      operationId: getDutyParticipantsOrganizationId
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DutyParticipant'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /duty_for_participant:
+    post:
+      operationId: postDutyForParticipant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DutyParticipant'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DutyParticipant'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /activities_by_avinya_type/{avinya_type_id}:
+    get:
+      operationId: getActivitiesByAvinyaTypeAvinyaTypeId
+      parameters:
+      - name: avinya_type_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activity'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /duty_for_participant/{id}:
+    delete:
+      operationId: deleteDutyForParticipantId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /update_duty_rotation_metadata:
+    put:
+      operationId: putUpdateDutyRotationMetadata
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DutyRotationMetaDetails'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DutyRotationMetaDetails'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /duty_rotation_metadata_by_organization/{organization_id}:
+    get:
+      operationId: getDutyRotationMetadataByOrganizationOrganizationId
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DutyRotationMetaDetails'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /duty_participants_by_duty_activity_id/{organization_id}/{duty_activity_id}:
+    get:
+      operationId: getDutyParticipantsByDutyActivityIdOrganizationIdDutyActivityId
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: duty_activity_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DutyParticipant'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /duty_attendance:
+    post:
+      operationId: postDutyAttendance
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityParticipantAttendance'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityParticipantAttendance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /duty_attendance_today/{organization_id}/{activity_id}:
+    get:
+      operationId: getDutyAttendanceTodayOrganizationIdActivityId
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: activity_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityParticipantAttendance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /duty_participant/{person_id}:
+    get:
+      operationId: getDutyParticipantPersonId
+      parameters:
+      - name: person_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DutyParticipant'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /attendance_dashboard_card_data/{from_date}/{to_date}/{organization_id}:
+    get:
+      operationId: getAttendanceDashboardCardDataFromDateToDateOrganizationId
+      parameters:
+      - name: from_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: to_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttendanceDashboardDataMain'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /attendance_dashboard_card_data_by_parent_org/{from_date}/{to_date}/{parent_organization_id}:
+    get:
+      operationId: getAttendanceDashboardCardDataByParentOrgFromDateToDateParentOrganizationId
+      parameters:
+      - name: from_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: to_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: parent_organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttendanceDashboardDataMain'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /duty_evaluation:
+    post:
+      operationId: postDutyEvaluation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Evaluation'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evaluation'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /attendance_missed_by_security_by_org/{organization_id}/{from_date}/{to_date}:
+    get:
+      operationId: getAttendanceMissedBySecurityByOrgOrganizationIdFromDateToDate
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: from_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: to_date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityParticipantAttendance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /attendance_missed_by_security_by_parent_org/{parent_organization_id}/{from_date}/{to_date}:
+    get:
+      operationId: getAttendanceMissedBySecurityByParentOrgParentOrganizationIdFromDateToDate
+      parameters:
+      - name: parent_organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: from_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: to_date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityParticipantAttendance'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /daily_students_attendance_by_parent_org/{parent_organization_id}:
+    get:
+      operationId: getDailyStudentsAttendanceByParentOrgParentOrganizationId
+      parameters:
+      - name: parent_organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DailyActivityParticipantAttendanceByParentOrg'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /total_attendance_count_by_date_by_org/{organization_id}/{from_date}/{to_date}:
+    get:
+      operationId: getTotalAttendanceCountByDateByOrgOrganizationIdFromDateToDate
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: from_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: to_date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TotalAttendanceCountByDate'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /total_attendance_count_by_date_by_parent_org/{parent_organization_id}/{from_date}/{to_date}:
+    get:
+      operationId: getTotalAttendanceCountByDateByParentOrgParentOrganizationIdFromDateToDate
+      parameters:
+      - name: parent_organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: from_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: to_date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TotalAttendanceCountByDate'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /daily_attendance_summary_report/{organization_id}/{avinya_type_id}/{from_date}/{to_date}:
+    get:
+      operationId: getDailyAttendanceSummaryReportOrganizationIdAvinyaTypeIdFromDateToDate
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: avinya_type_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: from_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: to_date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityParticipantAttendanceSummary'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /employees/attendance_summary_report/{parent_organization_id}/{from_date}/{to_date}:
+    get:
+      operationId: getEmployeesAttendanceSummaryReportParentOrganizationIdFromDateToDate
+      parameters:
+      - name: parent_organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: from_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: to_date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityParticipantAttendanceSummary'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations_by_avinya_type_and_status:
+    get:
+      operationId: getOrganizationsByAvinyaTypeAndStatus
+      parameters:
+      - name: avinya_type
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      - name: active
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /add_monthly_leave_dates:
+    post:
+      operationId: postAddMonthlyLeaveDates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MonthlyLeaveDates'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyLeaveDates'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /update_monthly_leave_dates:
+    put:
+      operationId: putUpdateMonthlyLeaveDates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MonthlyLeaveDates'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyLeaveDates'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /monthly_leave_dates_record_by_id/{organization_id}/{batch_id}/{year}/{month}:
+    get:
+      operationId: getMonthlyLeaveDatesRecordByIdOrganizationIdBatchIdYearMonth
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: batch_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: year
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: month
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyLeaveDates'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /batch_payment_plan_by_org_id/{organization_id}/{batch_id}/{selected_month_date}:
+    get:
+      operationId: getBatchPaymentPlanByOrgIdOrganizationIdBatchIdSelectedMonthDate
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: batch_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: selected_month_date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchPaymentPlan'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /attendance/events:
+    post:
+      operationId: postAttendanceEvents
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              description: Any type of entity body
+      responses:
+        default:
+          description: Any Response
+          content:
+            '*/*':
+              schema:
+                description: Any type of entity body
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations/{parent_organization_id}/late-attendance-summary:
+    get:
+      operationId: getOrganizationsParentOrganizationIdLateAttendanceSummary
+      parameters:
+      - name: parent_organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: date
+        in: query
+        schema:
+          type: string
+          default: ""
+      - name: activity_id
+        in: query
+        schema:
+          type: integer
+          format: int64
+          default: 4
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations/{parent_organization_id}/daily-absence-summary:
+    get:
+      operationId: getOrganizationsParentOrganizationIdDailyAbsenceSummary
+      parameters:
+      - name: parent_organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: organization_id
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      - name: parent_org_id
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      - name: activity_id
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: result_limit
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: from_date
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: to_date
+        in: query
+        schema:
+          type: string
+          nullable: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /upload/image:
+    post:
+      operationId: postUploadImage
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              description: Any type of entity body
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageUploadResponse'
+        "400":
+          description: BadRequest
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /whatsapp/send/image:
+    post:
+      operationId: postWhatsappSendImage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WhatsAppImageRequest'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: BadRequest
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations/{parent_organization_id}/persons/{person_id}/absence-reasons:
+    get:
+      operationId: getOrganizationsParentOrganizationIdPersonsPersonIdAbsenceReasons
+      parameters:
+      - name: parent_organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: person_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: activity_id
+        in: query
+        schema:
+          type: integer
+          format: int64
+          default: 4
+      - name: from_date
+        in: query
+        schema:
+          type: string
+          default: ""
+      - name: to_date
+        in: query
+        schema:
+          type: string
+          default: ""
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Evaluation'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations/{parent_organization_id}/students/attendance-ranking:
+    get:
+      operationId: getOrganizationsParentOrganizationIdStudentsAttendanceRanking
+      parameters:
+      - name: parent_organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: organization_id
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      - name: class_id
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      - name: from_date
+        in: query
+        schema:
+          type: string
+          default: ""
+      - name: to_date
+        in: query
+        schema:
+          type: string
+          default: ""
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          format: int64
+          default: 10
+      - name: sort
+        in: query
+        schema:
+          type: string
+          nullable: true
+          default: ASC
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations/{parent_organization_id}/classes/attendance-percentage:
+    get:
+      operationId: getOrganizationsParentOrganizationIdClassesAttendancePercentage
+      parameters:
+      - name: parent_organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: organization_id
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      - name: class_id
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      - name: from_date
+        in: query
+        schema:
+          type: string
+          default: ""
+      - name: to_date
+        in: query
+        schema:
+          type: string
+          default: ""
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          format: int64
+          default: 10
+      - name: sort
+        in: query
+        schema:
+          type: string
+          nullable: true
+          default: ASC
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+components:
+  schemas:
+    ActivityParticipantAttendance:
+      type: object
+      properties:
+        activity_instance_id:
+          type: integer
+          format: int64
+          nullable: true
+        in_marked_by:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        sign_in_time:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        out_marked_by:
+          type: string
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        event_time:
+          type: string
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true
+        sign_out_time:
+          type: string
+          nullable: true
+    Evaluation:
+      type: object
+      properties:
+        parent_evaluations:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        activity_instance_id:
+          type: integer
+          format: int64
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        evaluatee_id:
+          type: integer
+          format: int64
+          nullable: true
+        evaluation_criteria_id:
+          type: integer
+          format: int64
+          nullable: true
+        response:
+          type: string
+          nullable: true
+        child_evaluations:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        evaluator_id:
+          type: integer
+          format: int64
+          nullable: true
+        grade:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+    Organization:
+      type: object
+      properties:
+        notes:
+          type: string
+          nullable: true
+        name_ta:
+          type: string
+          nullable: true
+        child_organizations:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        address_id:
+          type: integer
+          format: int64
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        avinya_type:
+          type: integer
+          format: int64
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        active:
+          type: integer
+          format: int64
+          nullable: true
+        child_organizations_for_dashboard:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        record_type:
+          type: string
+          nullable: true
+        attendance_percentage:
+          nullable: true
+        parent_organizations:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        name_en:
+          type: string
+          nullable: true
+    ActivityInstance:
+      type: object
+      properties:
+        notes:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        weekly_sequence:
+          type: integer
+          format: int64
+          nullable: true
+        end_time:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        daily_sequence:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        monthly_sequence:
+          type: integer
+          format: int64
+          nullable: true
+        start_time:
+          type: string
+          nullable: true
+        activity_id:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        place_id:
+          type: integer
+          format: int64
+          nullable: true
+    Address:
+      type: object
+      properties:
+        street_address:
+          type: string
+        name_ta:
+          type: string
+          nullable: true
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        city_id:
+          type: integer
+          format: int64
+        name_en:
+          type: string
+    Activity:
+      type: object
+      properties:
+        notes:
+          type: string
+          nullable: true
+        parent_activities:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/Activity'
+        created:
+          type: string
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        avinya_type_id:
+          type: integer
+          format: int64
+          nullable: true
+        child_activities:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/Activity'
+        description:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+    Alumni:
+      type: object
+      properties:
+        created:
+          type: string
+          nullable: true
+        linkedin_id:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        facebook_id:
+          type: string
+          nullable: true
+        instagram_id:
+          type: string
+          nullable: true
+        canva_cv_url:
+          type: string
+          nullable: true
+        company_name:
+          type: string
+          nullable: true
+        tiktok_id:
+          type: string
+          nullable: true
+        updated_by:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        job_title:
+          type: string
+          nullable: true
+        person_count:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+    AttendanceDashboardData:
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: true
+        numOfFiles:
+          type: integer
+          format: int64
+          nullable: true
+        svgSrc:
+          type: string
+          nullable: true
+        color:
+          type: string
+          nullable: true
+        percentage:
+          type: number
+          format: double
+          nullable: true
+    DailyActivityParticipantAttendanceByParentOrg:
+      required:
+      - color
+      - description
+      - present_count
+      - svg_src
+      - total_student_count
+      type: object
+      properties:
+        description:
+          type: string
+          nullable: true
+        present_count:
+          type: integer
+          format: int64
+          nullable: true
+        svg_src:
+          type: string
+          nullable: true
+        color:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        total_student_count:
+          type: integer
+          format: int64
+          nullable: true
+    AvinyaType:
+      type: object
+      properties:
+        level:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        active:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+        foundation_type:
+          type: string
+          nullable: true
+        focus:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        global_type:
+          type: string
+    ErrorPayload:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: Reason phrase
+        path:
+          type: string
+          description: Request path
+        method:
+          type: string
+          description: Method type of the request
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: string
+          description: Timestamp of the error
+        status:
+          type: integer
+          description: Relevant HTTP status code
+          format: int32
+    AttendanceDashboardDataMain:
+      type: object
+      properties:
+        attendance_dashboard_data:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/AttendanceDashboardData'
+    DutyRotationMetaDetails:
+      type: object
+      properties:
+        end_date:
+          type: string
+          nullable: true
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        start_date:
+          type: string
+          nullable: true
+    WhatsAppImageRequest:
+      required:
+      - date
+      - image_url
+      - to
+      type: object
+      properties:
+        to:
+          type: string
+        image_url:
+          type: string
+        date:
+          type: string
+    ActivityParticipantAttendanceSummary:
+      required:
+      - late_attendance_percentage
+      - late_count
+      - present_attendance_percentage
+      - present_count
+      - sign_in_date
+      - total_count
+      type: object
+      properties:
+        sign_in_date:
+          type: string
+          nullable: true
+        present_count:
+          type: integer
+          format: int64
+          nullable: true
+        late_count:
+          type: integer
+          format: int64
+          nullable: true
+        total_count:
+          type: integer
+          format: int64
+          nullable: true
+        present_attendance_percentage:
+          type: number
+          format: double
+          nullable: true
+        late_attendance_percentage:
+          type: number
+          format: double
+          nullable: true
+    ImageUploadResponse:
+      required:
+      - public_id
+      - secure_url
+      type: object
+      properties:
+        secure_url:
+          type: string
+        public_id:
+          type: string
+    MonthlyLeaveDates:
+      type: object
+      properties:
+        leave_dates_list:
+          type: array
+          items:
+            type: integer
+            format: int64
+        year:
+          type: integer
+          format: int64
+          nullable: true
+        batch_id:
+          type: integer
+          format: int64
+          nullable: true
+        monthly_payment_amount:
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        leave_dates:
+          type: string
+          nullable: true
+        month:
+          type: integer
+          format: int64
+          nullable: true
+        total_days_in_month:
+          type: integer
+          format: int64
+          nullable: true
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        daily_amount:
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+    Person:
+      type: object
+      properties:
+        permanent_address_id:
+          type: integer
+          format: int64
+          nullable: true
+        street_address:
+          type: string
+          nullable: true
+        bank_branch:
+          type: string
+          nullable: true
+        bank_account_number:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        parent_student:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        date_of_birth:
+          type: string
+          nullable: true
+        parent_organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        avinya_type_id:
+          type: integer
+          format: int64
+          nullable: true
+        rank_position:
+          type: integer
+          format: int64
+        permanent_address:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        is_graduated:
+          type: boolean
+          nullable: true
+        mailing_address_id:
+          type: integer
+          format: int64
+          nullable: true
+        alumni:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Alumni'
+        profile_picture_folder_id:
+          type: string
+          nullable: true
+        attendance_percentage:
+          nullable: true
+        id_no:
+          type: string
+          nullable: true
+        jwt_email:
+          type: string
+          nullable: true
+        bank_name:
+          type: string
+          nullable: true
+        alumni_id:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        digital_id:
+          type: string
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+        passport_no:
+          type: string
+          nullable: true
+        current_job:
+          type: string
+          nullable: true
+        created_by:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        mailing_address:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        branch_code:
+          type: string
+          nullable: true
+        child_student:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        bank_account_name:
+          type: string
+          nullable: true
+        avinya_phone:
+          type: integer
+          format: int64
+          nullable: true
+        full_name:
+          type: string
+          nullable: true
+        nic_no:
+          type: string
+          nullable: true
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        updated_by:
+          type: integer
+          format: int64
+          nullable: true
+        academy_org_name:
+          type: string
+          nullable: true
+        asgardeo_id:
+          type: string
+          nullable: true
+        documents_id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        preferred_name:
+          type: string
+          nullable: true
+        jwt_sub_id:
+          type: string
+          nullable: true
+        academy_org_id:
+          type: integer
+          format: int64
+          nullable: true
+    DutyParticipant:
+      type: object
+      properties:
+        role:
+          type: string
+          nullable: true
+        activity:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Activity'
+        person:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Person'
+        created:
+          type: string
+          nullable: true
+        activity_id:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true
+    TotalAttendanceCountByDate:
+      required:
+      - attendance_date
+      - daily_total
+      type: object
+      properties:
+        attendance_date:
+          type: string
+          nullable: true
+        daily_total:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+    BatchPaymentPlan:
+      required:
+      - batch_id
+      - monthly_payment_amount
+      - organization_id
+      type: object
+      properties:
+        record_type:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        batch_id:
+          type: integer
+          format: int64
+          nullable: true
+        monthly_payment_amount:
+          nullable: true

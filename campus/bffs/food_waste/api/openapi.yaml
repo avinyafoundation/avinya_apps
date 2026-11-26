@@ -1,0 +1,535 @@
+openapi: 3.0.1
+info:
+  title: Meals Bff Openapi Yaml
+  version: 2.1.0
+servers:
+- url: "{server}:{port}/"
+  variables:
+    server:
+      default: http://localhost
+    port:
+      default: "9098"
+paths:
+  /food_items:
+    get:
+      operationId: getFoodItems
+      parameters:
+      - name: meal_type
+        in: query
+        schema:
+          type: string
+          nullable: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFoodItemsResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postFoodItems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FoodItemInput'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddFoodItemResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /food_items/{id}:
+    put:
+      operationId: putFoodItemsId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FoodItemUpdateInput'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateFoodItemResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    delete:
+      operationId: deleteFoodItemsId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /meal_servings/organizations/{organization_id}:
+    get:
+      operationId: getMealServingsOrganizationsOrganizationId
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: offset
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: limit
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: from_date
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: to_date
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: id
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMealServingsResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /meal_servings:
+    post:
+      operationId: postMealServings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MealServingInput'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddMealServingResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /meal_servings/{id}:
+    put:
+      operationId: putMealServingsId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MealServingUpdateInput'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateMealServingResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    delete:
+      operationId: deleteMealServingsId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /analytics/organizations/{organization_id}/waste:
+    get:
+      operationId: getAnalyticsOrganizationsOrganizationIdWaste
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: days
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetWasteDataResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /analytics/organizations/{organization_id}/top_wasted:
+    get:
+      operationId: getAnalyticsOrganizationsOrganizationIdTopWasted
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: limit
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: days
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTopWastedItemsResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /analytics/organizations/{organization_id}/summary:
+    get:
+      operationId: getAnalyticsOrganizationsOrganizationIdSummary
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: days
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAnalyticsResponse'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+components:
+  schemas:
+    GetFoodItemsResponse:
+      required:
+      - food_items
+      type: object
+      properties:
+        __extensions:
+          type: object
+          additionalProperties: true
+        food_items:
+          type: array
+          items: {}
+    ErrorPayload:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: Reason phrase
+        path:
+          type: string
+          description: Request path
+        method:
+          type: string
+          description: Method type of the request
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: string
+          description: Timestamp of the error
+        status:
+          type: integer
+          description: Relevant HTTP status code
+          format: int32
+    FoodItemInput:
+      required:
+      - cost_per_portion
+      - meal_type
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        cost_per_portion: {}
+        meal_type:
+          type: string
+    AddFoodItemResponse:
+      required:
+      - add_food_item
+      type: object
+      properties:
+        __extensions:
+          type: object
+          additionalProperties: true
+        add_food_item:
+          nullable: true
+    FoodItemUpdateInput:
+      required:
+      - cost_per_portion
+      - meal_type
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        cost_per_portion: {}
+        meal_type:
+          type: string
+    UpdateFoodItemResponse:
+      required:
+      - update_food_item
+      type: object
+      properties:
+        __extensions:
+          type: object
+          additionalProperties: true
+        update_food_item:
+          nullable: true
+    GetMealServingsResponse:
+      required:
+      - meal_servings
+      type: object
+      properties:
+        __extensions:
+          type: object
+          additionalProperties: true
+        meal_servings:
+          type: array
+          items: {}
+    FoodWaste:
+      type: object
+      properties:
+        food_item_id:
+          type: integer
+          format: int64
+        created:
+          type: string
+          nullable: true
+        wasted_portions:
+          type: integer
+          format: int64
+        meal_serving_id:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+    MealServingInput:
+      required:
+      - food_wastes
+      - meal_type
+      - notes
+      - organization_id
+      - served_count
+      - serving_date
+      type: object
+      properties:
+        organization_id:
+          type: integer
+          format: int64
+        served_count:
+          type: integer
+          format: int64
+        serving_date:
+          type: string
+        meal_type:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        food_wastes:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/FoodWaste'
+    AddMealServingResponse:
+      required:
+      - add_meal_serving
+      type: object
+      properties:
+        __extensions:
+          type: object
+          additionalProperties: true
+        add_meal_serving:
+          nullable: true
+    MealServingUpdateInput:
+      required:
+      - food_wastes
+      - meal_type
+      - notes
+      - served_count
+      - serving_date
+      type: object
+      properties:
+        served_count:
+          type: integer
+          format: int64
+        serving_date:
+          type: string
+        meal_type:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        food_wastes:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/FoodWaste'
+    UpdateMealServingResponse:
+      required:
+      - update_meal_serving
+      type: object
+      properties:
+        __extensions:
+          type: object
+          additionalProperties: true
+        update_meal_serving:
+          nullable: true
+    GetWasteDataResponse:
+      required:
+      - daily_waste
+      type: object
+      properties:
+        __extensions:
+          type: object
+          additionalProperties: true
+        daily_waste:
+          type: array
+          items: {}
+    GetTopWastedItemsResponse:
+      required:
+      - top_wasted_items
+      type: object
+      properties:
+        __extensions:
+          type: object
+          additionalProperties: true
+        top_wasted_items:
+          type: array
+          items: {}
+    GetAnalyticsResponse:
+      required:
+      - getAnalyticsData
+      type: object
+      properties:
+        __extensions:
+          type: object
+          additionalProperties: true
+        getAnalyticsData: {}

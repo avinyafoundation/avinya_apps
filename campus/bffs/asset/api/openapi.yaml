@@ -1,0 +1,1634 @@
+openapi: 3.0.1
+info:
+  title: Asset Bff Openapi Yaml
+  version: 2.1.0
+servers:
+- url: "{server}:{port}/"
+  variables:
+    server:
+      default: http://localhost
+    port:
+      default: "9094"
+paths:
+  /asset:
+    get:
+      operationId: getAsset
+      parameters:
+      - name: assetId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    put:
+      operationId: putAsset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Asset'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postAsset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Asset'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asset'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /assets:
+    get:
+      operationId: getAssets
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Asset'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /supplier:
+    get:
+      operationId: getSupplier
+      parameters:
+      - name: supplierId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    put:
+      operationId: putSupplier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postSupplier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supplier'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supplier'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /suppliers:
+    get:
+      operationId: getSuppliers
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Supplier'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /consumable:
+    get:
+      operationId: getConsumable
+      parameters:
+      - name: consumableId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consumable'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    put:
+      operationId: putConsumable
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Consumable'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consumable'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postConsumable
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Consumable'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consumable'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /consumables:
+    get:
+      operationId: getConsumables
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Consumable'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /resource_property:
+    get:
+      operationId: getResourceProperty
+      parameters:
+      - name: resourcePropertyId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceProperty'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    put:
+      operationId: putResourceProperty
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceProperty'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceProperty'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postResourceProperty
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceProperty'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceProperty'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /resource_properties:
+    get:
+      operationId: getResourceProperties
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResourceProperty'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /supply:
+    get:
+      operationId: getSupply
+      parameters:
+      - name: supplyId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supply'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    put:
+      operationId: putSupply
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supply'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supply'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postSupply
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Supply'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supply'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /supplies:
+    get:
+      operationId: getSupplies
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Supply'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /resource_allocation:
+    get:
+      operationId: getResourceAllocation
+      parameters:
+      - name: resourceAllocationId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResourceAllocation'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    put:
+      operationId: putResourceAllocation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceAllocation'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceAllocation'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postResourceAllocation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceAllocation'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceAllocation'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /resource_allocation_by_person:
+    get:
+      operationId: getResourceAllocationByPerson
+      parameters:
+      - name: personId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResourceAllocation'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /resource_allocations:
+    get:
+      operationId: getResourceAllocations
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResourceAllocation'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /inventory:
+    get:
+      operationId: getInventory
+      parameters:
+      - name: inventoryId
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    put:
+      operationId: putInventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Inventory'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    post:
+      operationId: postInventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Inventory'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /inventories:
+    get:
+      operationId: getInventories
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Inventory'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /assetByAvinyaType:
+    get:
+      operationId: getAssetbyavinyatype
+      parameters:
+      - name: avinyaType
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Asset'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /avinyaTypesByAsset:
+    get:
+      operationId: getAvinyatypesbyasset
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AvinyaType'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /resource_allocations_report/{organization_id}/{avinya_type_id}:
+    get:
+      operationId: getResourceAllocationsReportOrganizationIdAvinyaTypeId
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: avinya_type_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResourceAllocation'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organizations_by_avinya_type:
+    get:
+      operationId: getOrganizationsByAvinyaType
+      parameters:
+      - name: avinya_type
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /all_avinya_types:
+    get:
+      operationId: getAllAvinyaTypes
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AvinyaType'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /inventory_data_by_organization/{organization_id}/{date}:
+    get:
+      operationId: getInventoryDataByOrganizationOrganizationIdDate
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Inventory'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /consumable_replenishment/{person_id}/{organization_id}/{date}:
+    post:
+      operationId: postConsumableReplenishmentPersonIdOrganizationIdDate
+      parameters:
+      - name: person_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: date
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Inventory'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /consumable_depletion/{person_id}/{organization_id}/{date}:
+    post:
+      operationId: postConsumableDepletionPersonIdOrganizationIdDate
+      parameters:
+      - name: person_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: date
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Inventory'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /consumable_weekly_report/{organization_id}/{from_date}/{to_date}:
+    get:
+      operationId: getConsumableWeeklyReportOrganizationIdFromDateToDate
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: from_date
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: to_date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Inventory'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /consumable_replenishment:
+    put:
+      operationId: putConsumableReplenishment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Inventory'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /consumable_depletion:
+    put:
+      operationId: putConsumableDepletion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Inventory'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /consumable_monthly_report/{organization_id}/{year}/{month}:
+    get:
+      operationId: getConsumableMonthlyReportOrganizationIdYearMonth
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: year
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: month
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Inventory'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /consumable_yearly_report/{organization_id}/{consumable_id}/{year}:
+    get:
+      operationId: getConsumableYearlyReportOrganizationIdConsumableIdYear
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: consumable_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: year
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Inventory'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /add_vehicle_fuel_consumption:
+    post:
+      operationId: postAddVehicleFuelConsumption
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleFuelConsumption'
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleFuelConsumption'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /vehicle_fuel_consumption_by_date/{organization_id}/{date}:
+    get:
+      operationId: getVehicleFuelConsumptionByDateOrganizationIdDate
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VehicleFuelConsumption'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /vehicle_fuel_consumption_by_id/{id}:
+    get:
+      operationId: getVehicleFuelConsumptionByIdId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleFuelConsumption'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+    delete:
+      operationId: deleteVehicleFuelConsumptionByIdId
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /update_vehicle_fuel_consumption:
+    put:
+      operationId: putUpdateVehicleFuelConsumption
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleFuelConsumption'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleFuelConsumption'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /vehicles/{organization_id}:
+    get:
+      operationId: getVehiclesOrganizationId
+      parameters:
+      - name: organization_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vehicle'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /vehicle_reasons:
+    get:
+      operationId: getVehicleReasons
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VehicleReasonMetadata'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+components:
+  schemas:
+    Asset:
+      type: object
+      properties:
+        registration_number:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        avinya_type_id:
+          type: integer
+          format: int64
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        model:
+          type: string
+          nullable: true
+        serial_number:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        manufacturer:
+          type: string
+          nullable: true
+    ErrorPayload:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: Reason phrase
+        path:
+          type: string
+          description: Request path
+        method:
+          type: string
+          description: Method type of the request
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: string
+          description: Timestamp of the error
+        status:
+          type: integer
+          description: Relevant HTTP status code
+          format: int32
+    Supplier:
+      type: object
+      properties:
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        address_id:
+          type: integer
+          format: int64
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+    Consumable:
+      type: object
+      properties:
+        created:
+          type: string
+          nullable: true
+        avinya_type_id:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        model:
+          type: string
+          nullable: true
+        serial_number:
+          type: string
+          nullable: true
+        threshold:
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        manufacturer:
+          type: string
+          nullable: true
+    ResourceProperty:
+      type: object
+      properties:
+        consumable_id:
+          type: integer
+          format: int64
+          nullable: true
+        property:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        asset_id:
+          type: integer
+          format: int64
+          nullable: true
+        value:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+    Supply:
+      type: object
+      properties:
+        order_date:
+          type: string
+          nullable: true
+        delivery_date:
+          type: string
+          nullable: true
+        consumable_id:
+          type: integer
+          format: int64
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        order_amount:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        asset_id:
+          type: integer
+          format: int64
+          nullable: true
+        supplier_id:
+          type: integer
+          format: int64
+          nullable: true
+        order_id:
+          type: string
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true
+    ResourceAllocation:
+      type: object
+      properties:
+        end_date:
+          type: string
+          nullable: true
+        consumable_id:
+          type: integer
+          format: int64
+          nullable: true
+        quantity:
+          type: integer
+          format: int64
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        asset_id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        resource_properties:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/ResourceProperty'
+        requested:
+          type: boolean
+          nullable: true
+        approved:
+          type: boolean
+          nullable: true
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        allocated:
+          type: boolean
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true
+        start_date:
+          type: string
+          nullable: true
+    Inventory:
+      type: object
+      properties:
+        month_name:
+          type: string
+          nullable: true
+        consumable_id:
+          type: integer
+          format: int64
+          nullable: true
+        quantity:
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        prev_quantity:
+          nullable: true
+        avinya_type_id:
+          type: integer
+          format: int64
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        asset_id:
+          type: integer
+          format: int64
+          nullable: true
+        is_below_threshold:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        manufacturer:
+          type: string
+          nullable: true
+        quantity_out:
+          nullable: true
+        resource_property_id:
+          type: integer
+          format: int64
+          nullable: true
+        quantity_in:
+          nullable: true
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        resource_property_value:
+          type: string
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true
+    AvinyaType:
+      type: object
+      properties:
+        level:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        active:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+        foundation_type:
+          type: string
+          nullable: true
+        focus:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        global_type:
+          type: string
+    Organization:
+      type: object
+      properties:
+        parent_organizations:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        notes:
+          type: string
+          nullable: true
+        name_ta:
+          type: string
+          nullable: true
+        child_organizations:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        address_id:
+          type: integer
+          format: int64
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        avinya_type:
+          type: integer
+          format: int64
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        name_en:
+          type: string
+    VehicleFuelConsumption:
+      type: object
+      properties:
+        date_time:
+          type: string
+          nullable: true
+        distance:
+          type: string
+          nullable: true
+        starting_meter:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        ending_meter:
+          type: string
+          nullable: true
+        comment:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        vehicle_id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        reason_id:
+          type: integer
+          format: int64
+          nullable: true
+    Vehicle:
+      type: object
+      properties:
+        record_type:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        vehicle_number:
+          type: string
+          nullable: true
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        person_id:
+          type: integer
+          format: int64
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+    VehicleReasonMetadata:
+      type: object
+      properties:
+        record_type:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true

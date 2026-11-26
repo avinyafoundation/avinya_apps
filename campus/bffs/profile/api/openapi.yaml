@@ -1,0 +1,432 @@
+openapi: 3.0.1
+info:
+  title: Profile Bff Openapi Yaml
+  version: 2.1.0
+servers:
+- url: "{server}:{port}/"
+  variables:
+    server:
+      default: http://localhost
+    port:
+      default: "9090"
+paths:
+  /greeting:
+    get:
+      summary: A resource for generating greetings
+      operationId: getGreeting
+      parameters:
+      - name: name
+        in: query
+        description: the input string name
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /person:
+    get:
+      summary: Person resource for getting person details given the digitial ID
+      operationId: getPerson
+      parameters:
+      - name: digital_id
+        in: query
+        description: is the Asgardeo ID of the user which is also the official email
+          address
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /student_list_by_parent_org_id:
+    get:
+      operationId: getStudentListByParentOrgId
+      parameters:
+      - name: parent_organization_id
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /student_list_by_batch_id:
+    get:
+      operationId: getStudentListByBatchId
+      parameters:
+      - name: batch_id
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+  /organization:
+    get:
+      operationId: getOrganization
+      parameters:
+      - name: id
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorPayload'
+components:
+  schemas:
+    ErrorPayload:
+      type: object
+      properties:
+        reason:
+          type: string
+          description: Reason phrase
+        path:
+          type: string
+          description: Request path
+        method:
+          type: string
+          description: Method type of the request
+        message:
+          type: string
+          description: Error message
+        timestamp:
+          type: string
+          description: Timestamp of the error
+        status:
+          type: integer
+          description: Relevant HTTP status code
+          format: int32
+    Organization:
+      type: object
+      properties:
+        parent_organizations:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/Organization'
+        notes:
+          type: string
+          nullable: true
+        name_ta:
+          type: string
+          nullable: true
+        child_organizations:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/Organization'
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        address_id:
+          type: integer
+          format: int64
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        avinya_type:
+          type: integer
+          format: int64
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        name_en:
+          type: string
+    Address:
+      type: object
+      properties:
+        street_address:
+          type: string
+        name_ta:
+          type: string
+          nullable: true
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        name_si:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        city_id:
+          type: integer
+          format: int64
+        name_en:
+          type: string
+    Alumni:
+      type: object
+      properties:
+        created:
+          type: string
+          nullable: true
+        linkedin_id:
+          type: string
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        facebook_id:
+          type: string
+          nullable: true
+        instagram_id:
+          type: string
+          nullable: true
+        company_name:
+          type: string
+          nullable: true
+        tiktok_id:
+          type: string
+          nullable: true
+        updated_by:
+          type: string
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        job_title:
+          type: string
+          nullable: true
+        person_count:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+    Person:
+      type: object
+      properties:
+        permanent_address_id:
+          type: integer
+          format: int64
+          nullable: true
+        street_address:
+          type: string
+          nullable: true
+        bank_branch:
+          type: string
+          nullable: true
+        bank_account_number:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        parent_student:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        date_of_birth:
+          type: string
+          nullable: true
+        parent_organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        avinya_type_id:
+          type: integer
+          format: int64
+          nullable: true
+        permanent_address:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        is_graduated:
+          type: boolean
+          nullable: true
+        mailing_address_id:
+          type: integer
+          format: int64
+          nullable: true
+        alumni:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Alumni'
+        profile_picture_folder_id:
+          type: string
+          nullable: true
+        id_no:
+          type: string
+          nullable: true
+        jwt_email:
+          type: string
+          nullable: true
+        bank_name:
+          type: string
+          nullable: true
+        alumni_id:
+          type: integer
+          format: int64
+          nullable: true
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        created:
+          type: string
+          nullable: true
+        digital_id:
+          type: string
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+        passport_no:
+          type: string
+          nullable: true
+        current_job:
+          type: string
+          nullable: true
+        created_by:
+          type: integer
+          format: int64
+          nullable: true
+        record_type:
+          type: string
+          nullable: true
+        mailing_address:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/Address'
+        branch_code:
+          type: string
+          nullable: true
+        child_student:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            format: int64
+        bank_account_name:
+          type: string
+          nullable: true
+        avinya_phone:
+          type: integer
+          format: int64
+          nullable: true
+        full_name:
+          type: string
+          nullable: true
+        nic_no:
+          type: string
+          nullable: true
+        phone:
+          type: integer
+          format: int64
+          nullable: true
+        organization_id:
+          type: integer
+          format: int64
+          nullable: true
+        updated_by:
+          type: integer
+          format: int64
+          nullable: true
+        academy_org_name:
+          type: string
+          nullable: true
+        asgardeo_id:
+          type: string
+          nullable: true
+        documents_id:
+          type: integer
+          format: int64
+          nullable: true
+        updated:
+          type: string
+          nullable: true
+        preferred_name:
+          type: string
+          nullable: true
+        jwt_sub_id:
+          type: string
+          nullable: true
+        academy_org_id:
+          type: integer
+          format: int64
+          nullable: true

@@ -1,0 +1,70 @@
+# OpenChoreo Workload Descriptor
+apiVersion: openchoreo.dev/v1alpha1
+
+metadata:
+  # +required Name of the workload
+  name: asset-bff
+
+# +optional Incoming connection details for the component
+endpoints:
+  - # +required Unique name for the endpoint
+    name: asset-bff-api
+    # +required Numeric port value that gets exposed via the endpoint
+    port: 9094
+    # +required Type of traffic that the endpoint is accepting
+    type: HTTP
+    # +optional Path the service actually serves on.
+    basePath: /
+    # +optional Visibility of the endpoint
+    # Narrow this to `internal` if the back office should not be reachable
+    # from the public internet.
+    visibility:
+      - external
+    # +optional Schema definition, relative to this file.
+    # Regenerate with: ./generate-specs.sh
+    schemaFile: openapi.yaml
+
+# +optional Outgoing connections to other components.
+# OpenChoreo resolves the global data project namespace-scoped address and injects it into
+# GLOBAL_DATA_URL. config.bal reads that variable and appends `GLOBAL_DATA_PATH`,
+dependencies:
+  endpoints:
+    - component: global-data-graphql
+      name: graphql
+      # global-data-graphql lives in its own project, so this is a cross-project
+      # dependency: name the project, and consume at namespace visibility.
+      project: global-data
+      visibility: namespace
+      envBindings:
+        address: GLOBAL_DATA_URL   #ex:- http://catalog-graphql.dp-default-ballerina-sho-development-65b91027.svc.cluster.local:9000
+
+# +optional Environment and file configuration for the container.
+configurations:
+  env:
+    # Ballerina reads these files left to right and the FIRST file to define a
+    # key wins, so the secret overlay is listed before the plain defaults.
+    # A path that does not exist is skipped rather than failing startup.
+    - name: BAL_CONFIG_FILES
+      value: /mnt/secrets/Secrets.toml:/mnt/config/Config.toml
+
+  files:
+    # Non-secret settings. `mountPath` is the directory and `name` is the
+    # filename, so this lands at /mnt/config/Config.toml.
+    #
+    # Every key must match a `configurable` in config.bal — Ballerina fails
+    # startup on an unused configuration value.
+    - name: Config.toml
+      mountPath: /mnt/config
+      value: |
+        GLOBAL_DATA_PATH = "/graphql"
+        GLOBAL_DATA_URL_ENV = "GLOBAL_DATA_URL"
+      
+    # The secret half, resolved from a SecretReference at deploy time and
+    # mounted at /mnt/secrets/Secrets.toml.
+    # See openchoreo/secrets.yaml for the SecretReference this points at.
+    - name: Secrets.toml
+      mountPath: /mnt/secrets
+      valueFrom:
+        secretKeyRef:
+          name: asset-bff-secrets
+          key: Secrets.toml
